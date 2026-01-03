@@ -276,7 +276,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         URL.revokeObjectURL(url);
     };
 
-    const renderDashboard = () => {
+    const renderFinancial = () => {
         const totalReceived = students.filter(s => s.status === 'active').reduce((acc, s) => acc + (s.amount || 0), 0);
         const totalPending = students.filter(s => s.status === 'overdue').reduce((acc, s) => acc + (s.amount || 0), 0);
         const overdueStudents = students.filter(s => s.status === 'overdue' || s.status === 'blocked');
@@ -300,8 +300,6 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     </div>
                 </div>
 
-
-
                 <div className="px-6 mt-8">
                     <div className="flex justify-between items-center mb-4">
                         <h4 className="text-sm font-black text-white uppercase tracking-tight">Pagamentos Atrasados</h4>
@@ -315,7 +313,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                         <img src={student.avatarUrl} className="w-10 h-10 rounded-full object-cover" alt="" />
                                         <div>
                                             <h5 className="text-sm font-bold text-white">{student.name}</h5>
-                                            <p className="text-[10px] text-red-400 font-bold">5 dias de atraso</p>
+                                            <p className="text-[10px] text-red-400 font-bold">Atrasado</p>
                                         </div>
                                     </div>
                                     <div className="text-right flex items-center gap-2">
@@ -333,7 +331,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         );
     };
 
-    const renderStudentList = () => {
+    const renderAgenda = () => {
         const getWeekDates = (date: Date) => {
             const current = new Date(date);
             const first = current.getDate() - (current.getDay() === 0 ? 6 : current.getDay() - 1); // Start from Monday
@@ -375,18 +373,17 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
         return (
             <div className="flex-1 overflow-y-auto hide-scrollbar pb-32">
-                {/* Top Summary Cards */}
                 <div className="grid grid-cols-2 gap-4 px-6 pt-6">
                     <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5 flex flex-col justify-between">
                         <div className="flex justify-between items-start mb-2">
-                            <p className="text-[12px] text-gray-400 font-bold">Alunos Hoje</p>
+                            <p className="text-[12px] text-gray-400 font-bold">Agenda Hoje</p>
                             <span className="material-symbols-rounded text-blue-500 text-xl">groups</span>
                         </div>
                         <h3 className="text-3xl font-black text-white">{studentsTodayCount}</h3>
                     </div>
                     <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5 flex flex-col justify-between">
                         <div className="flex justify-between items-start mb-2">
-                            <p className="text-[12px] text-gray-400 font-bold">Pag. Pendentes</p>
+                            <p className="text-[12px] text-gray-400 font-bold">Pendentes</p>
                             <span className="material-symbols-rounded text-red-500 text-xl">warning</span>
                         </div>
                         <div className="flex items-baseline gap-2">
@@ -396,7 +393,6 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     </div>
                 </div>
 
-                {/* Calendar Strip */}
                 <div className="px-6 mt-6">
                     <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5">
                         <div className="flex justify-between items-center mb-6 px-2">
@@ -435,22 +431,12 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     </div>
                 </div>
 
-                {/* Agenda List */}
                 <div className="px-6 mt-8">
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="text-xl font-black text-white tracking-tight">Agenda - {selectedDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}</h3>
-                        <div className="flex items-center gap-2">
-                            <button
-                                onClick={handleDownloadTXT}
-                                className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 hover:bg-blue-500/20 transition-all"
-                                title="Baixar lista em .TXT"
-                            >
-                                <span className="material-symbols-rounded">download</span>
-                            </button>
-                            <button onClick={() => setIsSearchOpen(true)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400">
-                                <span className="material-symbols-rounded">search</span>
-                            </button>
-                        </div>
+                        <button onClick={() => setIsSearchOpen(true)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400">
+                            <span className="material-symbols-rounded">search</span>
+                        </button>
                     </div>
 
                     <div className="space-y-4">
@@ -525,6 +511,64 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         );
     };
 
+    const renderStudentList = () => {
+        return (
+            <div className="flex-1 flex flex-col bg-[#101622] overflow-hidden">
+                <div className="px-6 pt-6 pb-2">
+                    <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-500">search</span>
+                        <input
+                            type="text"
+                            placeholder="Buscar aluno por nome..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full h-12 bg-[#1A202C] rounded-2xl border border-white/5 pl-12 pr-4 text-white text-sm focus:outline-none focus:border-[#0081FF] transition-all"
+                        />
+                    </div>
+                </div>
+
+                <div className="flex-1 overflow-y-auto hide-scrollbar px-6 py-4 space-y-4 pb-32">
+                    <div className="flex justify-between items-center mb-2 px-1">
+                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Total: {students.length} alunos cadastrados</p>
+                        <button onClick={handleDownloadTXT} className="text-[10px] font-black text-[#0081FF] uppercase flex items-center gap-1 hover:underline">
+                            <span className="material-symbols-rounded text-sm">download</span> Exportar .TXT
+                        </button>
+                    </div>
+
+                    {filteredStudents.length > 0 ? (
+                        filteredStudents.map(student => (
+                            <button
+                                key={student.id}
+                                onClick={() => openStudentDetails(student)}
+                                className="w-full bg-[#1A202C] p-4 rounded-3xl border border-white/5 flex items-center justify-between hover:border-white/10 active:scale-[0.98] transition-all text-left"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className="relative">
+                                        <img src={student.avatarUrl} className="w-12 h-12 rounded-full object-cover border-2 border-[#101622]" alt="" />
+                                        <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-[#1A202C] ${student.status === 'active' ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                                    </div>
+                                    <div>
+                                        <h4 className="text-sm font-bold text-white">{student.name}</h4>
+                                        <p className="text-[10px] text-gray-500 font-bold uppercase">{student.modality} • {student.level}</p>
+                                    </div>
+                                </div>
+                                <div className="text-right">
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase mb-0.5">Pagamento</p>
+                                    <p className="text-xs font-black text-white">Dia {student.paymentDay || '05'}</p>
+                                </div>
+                            </button>
+                        ))
+                    ) : (
+                        <div className="py-20 text-center bg-[#1A202C]/30 rounded-3xl border border-dashed border-white/5">
+                            <span className="material-symbols-rounded text-5xl text-gray-700 mb-4">person_search</span>
+                            <p className="text-gray-500 text-sm font-medium">Nenhum aluno encontrado.</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    };
+
     const renderPlaceholder = (title: string) => (
         <div className="flex-1 flex flex-col items-center justify-center p-10 text-center">
             <span className="material-symbols-rounded text-4xl text-gray-600 mb-4">construction</span>
@@ -535,11 +579,11 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
     const renderContent = () => {
         switch (activeTab) {
-            case 'dashboard': return renderDashboard();
+            case 'dashboard': return renderAgenda();
             case 'students': return renderStudentList();
-            case 'reports': return renderPlaceholder('Relatórios Financeiros');
+            case 'reports': return renderFinancial();
             case 'settings': return renderPlaceholder('Configurações do Painel');
-            default: return renderDashboard();
+            default: return renderAgenda();
         }
     };
 
@@ -550,7 +594,9 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     <button className="text-white" onClick={() => onNavigate(Screen.LIBRARY)}>
                         <span className="material-symbols-rounded text-2xl">menu</span>
                     </button>
-                    <h2 className="text-xl font-black text-white tracking-tight">Dashboard</h2>
+                    <h2 className="text-xl font-black text-white tracking-tight">
+                        {activeTab === 'dashboard' ? 'Agenda' : activeTab === 'students' ? 'Alunos' : activeTab === 'reports' ? 'Financeiro' : 'Ajustes'}
+                    </h2>
                 </div>
                 <button onClick={() => setShowConfig(!showConfig)} className="relative">
                     <img src={user?.avatarUrl || 'https://picsum.photos/200'} alt="Profile" className="w-10 h-10 rounded-full border-2 border-[#1A202C]" />
@@ -573,9 +619,9 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
             <div className="fixed bottom-0 inset-x-0 bg-[#101622] border-t border-white/5 px-6 py-3 flex justify-between items-center z-30 pb-8">
                 {[
-                    { id: 'dashboard', icon: 'dashboard', label: 'Dashboard' },
-                    { id: 'students', icon: 'school', label: 'Alunos' },
-                    { id: 'reports', icon: 'bar_chart', label: 'Relatórios' },
+                    { id: 'dashboard', icon: 'calendar_month', label: 'Início' },
+                    { id: 'students', icon: 'groups', label: 'Alunos' },
+                    { id: 'reports', icon: 'payments', label: 'Financeiro' },
                     { id: 'settings', icon: 'settings', label: 'Ajustes' }
                 ].map(tab => (
                     <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} className={`flex flex-col items-center gap-1 ${activeTab === tab.id ? 'text-[#0081FF]' : 'text-gray-400'}`}>
