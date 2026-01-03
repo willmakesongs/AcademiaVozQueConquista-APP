@@ -10,7 +10,8 @@ export enum Screen {
   CHAT = 'CHAT', // Nova tela da IA
   ROUTINE = 'ROUTINE',
   PROFILE = 'PROFILE',
-  CALENDAR = 'CALENDAR'
+  CALENDAR = 'CALENDAR',
+  ADMIN_DASHBOARD = 'ADMIN_DASHBOARD'
 }
 
 export interface Vocalize {

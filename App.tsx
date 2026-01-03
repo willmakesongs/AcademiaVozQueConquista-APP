@@ -107,8 +107,8 @@ const AppContent = () => {
       setProfileResetKey(prev => prev + 1);
     }
 
-    if (targetScreen === Screen.TEACHER_DASHBOARD) {
-      setDashboardInitialTab('students'); // Início via BottomNav
+    if (targetScreen === Screen.TEACHER_DASHBOARD || targetScreen === Screen.ADMIN_DASHBOARD) {
+      setDashboardInitialTab(targetScreen === Screen.TEACHER_DASHBOARD ? 'students' : 'dashboard');
       setDashboardResetKey(prev => prev + 1);
     }
 
@@ -130,6 +130,7 @@ const AppContent = () => {
       case Screen.STUDENT_DASHBOARD:
         return <StudentDashboard onNavigate={handleNavigate} onPlayVocalize={navigateToPlayer} />;
       case Screen.TEACHER_DASHBOARD:
+      case Screen.ADMIN_DASHBOARD:
         return <TeacherDashboard key={dashboardResetKey} initialTab={dashboardInitialTab} onNavigate={handleNavigate} onLogout={handleLogout} />;
       case Screen.PLAYER:
         return (
