@@ -841,7 +841,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                         <div className="space-y-2">
                             <h5 className="font-bold text-white text-sm">4. Faltas e reposição</h5>
                             <p className="text-xs text-gray-400 leading-relaxed">
-                                Avisos devem ser feitos com no mínimo 24 horas de antecedência. Faltas sem aviso não geram reposição.
+                                Avisos devem ser feitos com no mínimo 24 horas de antecedência. Faltas sem aviso ou feriados nacionais não geram reposição.
                             </p>
                         </div>
                         <div className="space-y-2">
