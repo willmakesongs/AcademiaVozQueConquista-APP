@@ -71,8 +71,8 @@ const AppContent = () => {
         setPreviousScreen(screen);
       }
     }
-    if (targetScreen === Screen.TEACHER_DASHBOARD || targetScreen === Screen.ADMIN_DASHBOARD) {
-      setDashboardInitialTab(targetScreen === Screen.ADMIN_DASHBOARD ? 'dashboard' : 'students');
+    if (targetScreen === Screen.TEACHER_DASHBOARD || targetScreen === Screen.ADMIN_DASHBOARD || targetScreen === Screen.ADMIN_SETTINGS) {
+      setDashboardInitialTab(targetScreen === Screen.ADMIN_DASHBOARD ? 'dashboard' : targetScreen === Screen.ADMIN_SETTINGS ? 'settings' : 'students');
       setDashboardResetKey(prev => prev + 1);
     }
     setScreen(targetScreen);
@@ -130,8 +130,35 @@ const AppContent = () => {
       case Screen.STUDENT_DASHBOARD:
         return <StudentDashboard onNavigate={handleNavigate} onPlayVocalize={navigateToPlayer} />;
       case Screen.TEACHER_DASHBOARD:
+        return (
+          <TeacherDashboard
+            key={dashboardResetKey}
+            initialTab="dashboard"
+            isAdminView={false}
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          />
+        );
       case Screen.ADMIN_DASHBOARD:
-        return <TeacherDashboard key={dashboardResetKey} initialTab={dashboardInitialTab} onNavigate={handleNavigate} onLogout={handleLogout} />;
+        return (
+          <TeacherDashboard
+            key={dashboardResetKey}
+            initialTab="reports"
+            isAdminView={true}
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          />
+        );
+      case Screen.ADMIN_SETTINGS:
+        return (
+          <TeacherDashboard
+            key={dashboardResetKey}
+            initialTab="settings"
+            isAdminView={true}
+            onNavigate={handleNavigate}
+            onLogout={handleLogout}
+          />
+        );
       case Screen.PLAYER:
         return (
           <PlayerScreen

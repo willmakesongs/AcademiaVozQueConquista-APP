@@ -8,11 +8,12 @@ interface Props {
     onNavigate: (screen: Screen) => void;
     onLogout: () => void;
     initialTab?: 'dashboard' | 'students' | 'history' | 'reports' | 'settings';
+    isAdminView?: boolean;
 }
 
 const WEEK_DAYS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 
-export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initialTab = 'dashboard' }) => {
+export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initialTab = 'dashboard', isAdminView = false }) => {
     const { user } = useAuth();
     const [showConfig, setShowConfig] = useState(false);
     const [students, setStudents] = useState<StudentSummary[]>([]);
@@ -914,18 +915,19 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
                 {/* Navigation Tabs (Novas Abas Superiores) */}
                 <div className="px-6 pb-0 overflow-x-auto hide-scrollbar flex gap-4">
-                    {[
-                        { id: 'dashboard', label: 'Início', icon: 'calendar_month' },
-                        { id: 'students', label: 'Alunos', icon: 'groups' },
+                    {(isAdminView ? [
                         { id: 'reports', label: 'Financeiro', icon: 'payments' },
                         { id: 'settings', label: 'Ajustes', icon: 'settings' }
-                    ].map(tab => (
+                    ] : [
+                        { id: 'dashboard', label: 'Início', icon: 'calendar_month' },
+                        { id: 'students', label: 'Alunos', icon: 'groups' }
+                    ]).map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
                             className={`flex items-center gap-2 px-1 pb-3 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${activeTab === tab.id
-                                    ? 'text-[#0081FF] border-[#0081FF]'
-                                    : 'text-gray-500 border-transparent hover:text-gray-300'
+                                ? 'text-[#0081FF] border-[#0081FF]'
+                                : 'text-gray-500 border-transparent hover:text-gray-300'
                                 }`}
                         >
                             <span className={`material-symbols-rounded text-lg ${activeTab === tab.id ? 'filled' : ''}`}>{tab.icon}</span>
