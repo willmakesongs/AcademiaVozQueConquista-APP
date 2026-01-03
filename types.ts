@@ -62,7 +62,7 @@ export interface User {
   name: string;
   role: UserRole;
   avatarUrl: string;
-  status?: SubscriptionStatus;
+  status: 'active' | 'overdue' | 'blocked'; // Refatorado para o novo sistema
   plan?: string;
   nextDueDate?: string;
   amount?: string;
@@ -75,16 +75,15 @@ export interface StudentSummary {
   level: string;
   lastPractice: string;
   progress: number;
-  status: 'active' | 'inactive';
-  // Novos campos para detalhes
-  notes?: string;
-  phone?: string;
-  age?: string;
+  status: 'active' | 'overdue' | 'blocked'; // Unificado com User
+  phone: string;
+  age: string;
   paymentDay?: string;
+  notes?: string;
   modality?: 'Online' | 'Presencial';
-  // Agendamento
   scheduleDay?: string;
   scheduleTime?: string;
+  amount?: number; // Para cálculo financeiro no Dashboard
 }
 
 export interface Appointment {

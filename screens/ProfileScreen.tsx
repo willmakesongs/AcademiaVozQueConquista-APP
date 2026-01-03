@@ -377,15 +377,15 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                             </button>
                         )}
 
-                        {/* Atalho para Painel Administrativo para Admins/Professores */}
+                        {/* Mostrar Painel Administrativo para Admins e Professores */}
                         {(user?.role === 'admin' || user?.role === 'teacher') && (
                             <button
-                                onClick={() => onNavigate(user?.role === 'admin' ? 'teacher_dashboard' : 'teacher_dashboard')}
+                                onClick={() => onNavigate(Screen.TEACHER_DASHBOARD)}
                                 className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
                             >
                                 <div className="flex items-center gap-4">
-                                    <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400">
-                                        <span className="material-symbols-rounded text-lg">dashboard_customize</span>
+                                    <div className="w-8 h-8 rounded-lg bg-purple-500/10 flex items-center justify-center text-purple-400">
+                                        <span className="material-symbols-rounded text-lg">admin_panel_settings</span>
                                     </div>
                                     <div className="text-left">
                                         <span className="text-sm font-semibold text-white block">Painel Administrativo</span>
@@ -412,8 +412,8 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                         <Logo size="sm" />
                     </div>
                 </div>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 
     const renderPersonalData = () => (
