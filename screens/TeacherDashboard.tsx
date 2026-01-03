@@ -161,6 +161,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
         try {
             const { data, error } = await supabase.from('profiles').insert([{
+                id: fakeId,
                 name: newStudentName,
                 role: 'student',
                 avatar_url: avatarUrl,
