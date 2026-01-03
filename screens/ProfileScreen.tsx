@@ -380,7 +380,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                         {/* Mostrar Painel Administrativo para Admins e Professores */}
                         {(user?.role === 'admin' || user?.role === 'teacher') && (
                             <button
-                                onClick={() => onNavigate(Screen.TEACHER_DASHBOARD)}
+                                onClick={() => onNavigate(Screen.ADMIN_DASHBOARD)}
                                 className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
                             >
                                 <div className="flex items-center gap-4">
@@ -389,7 +389,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                                     </div>
                                     <div className="text-left">
                                         <span className="text-sm font-semibold text-white block">Painel Administrativo</span>
-                                        <span className="text-[10px] text-gray-500 block">Gerenciar alunos e conteúdos</span>
+                                        <span className="text-[10px] text-gray-500 block">Financeiro, Relatórios e Gestão ADM</span>
                                     </div>
                                 </div>
                                 <span className="material-symbols-rounded text-gray-600">chevron_right</span>
