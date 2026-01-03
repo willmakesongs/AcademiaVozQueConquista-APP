@@ -145,6 +145,10 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
     const [detectedHighMidi, setDetectedHighMidi] = useState<number | null>(null);
     const [rangeAnalysisStatus, setRangeAnalysisStatus] = useState('Aguardando som...');
 
+    // Piano Integration State
+    const [pianoNote, setPianoNote] = useState<string | null>(null);
+    const [pianoFreq, setPianoFreq] = useState<number | null>(null);
+
     // Refs de Áudio
     const audioContextRef = useRef<AudioContext | null>(null);
     const analyserRef = useRef<AnalyserNode | null>(null);
@@ -1001,74 +1005,121 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
         </div>
     );
 
-    const renderTuner = () => (
-        <div className="flex-1 flex flex-col animate-in slide-in-from-right">
-            {renderHeader('Afinador', () => { stopMic(); setActiveView('menu'); })}
+    const renderTuner = () => {
+        const isPianoActive = !!pianoNote;
+        // Parse piano note (e.g., "C#4" -> Note: "C#", Octave: "4")
+        const displayNote = isPianoActive ? pianoNote?.replace(/[0-9]/g, '') : pitchNote;
+        const displayOctave = isPianoActive ? pianoNote?.slice(-1) : pitchOctave;
+        const displayHz = isPianoActive ? pianoFreq : null;
 
-            <div className="flex-1 flex flex-col items-center justify-center p-6">
-                {!isMicOn ? (
-                    <div className="text-center">
-                        <div className="w-24 h-24 bg-[#1A202C] rounded-full flex items-center justify-center mx-auto mb-6 border border-white/5">
-                            <span className="material-symbols-rounded text-4xl text-gray-500">mic_off</span>
-                        </div>
-                        <p className="text-gray-400 text-sm mb-6 max-w-xs mx-auto">
-                            Ative o microfone para começar a detectar a nota que você está cantando.
-                        </p>
-                        <button
-                            onClick={startMic}
-                            className="px-8 py-3 rounded-xl bg-[#0081FF] text-white font-bold hover:bg-[#006bd1] transition-colors shadow-lg shadow-blue-900/20"
-                        >
-                            Ligar Microfone
-                        </button>
-                    </div>
-                ) : (
-                    <div className="text-center w-full max-w-xs">
-                        <div className={`relative w-64 h-64 mx-auto rounded-full border-8 flex items-center justify-center transition-colors duration-300 ${Math.abs(pitchCents) < 10 && pitchNote !== '-' ? 'border-green-500 bg-green-500/5' : 'border-[#1A202C] bg-[#1A202C]'
-                            }`}>
-                            <div>
-                                <div className="text-8xl font-bold text-white font-mono tracking-tighter">
-                                    {pitchNote}
-                                </div>
-                                {pitchOctave !== null && (
-                                    <div className="text-2xl text-gray-500 font-medium">
-                                        {pitchOctave}
-                                    </div>
-                                )}
+        const isTuned = !isPianoActive && Math.abs(pitchCents) < 10 && pitchNote !== '-';
+
+        const circleBorderColor = isPianoActive
+            ? 'border-[#0081FF]'
+            : (isTuned ? 'border-green-500' : 'border-[#1A202C]');
+
+        const circleBgColor = isPianoActive
+            ? 'bg-[#0081FF]/10'
+            : (isTuned ? 'bg-green-500/5' : 'bg-[#1A202C]');
+
+        return (
+            <div className="flex-1 flex flex-col animate-in slide-in-from-right relative">
+                {renderHeader('Afinador', () => { stopMic(); setActiveView('menu'); })}
+
+                <div className="flex-1 flex flex-col items-center pt-4 relative z-10 min-h-[400px]">
+
+                    {/* TUNER CIRCLE */}
+                    <div className={`relative w-56 h-56 top-4 sm:w-64 sm:h-64 mx-auto rounded-full border-8 flex items-center justify-center transition-all duration-300 ${circleBorderColor} ${circleBgColor}`}>
+                        <div className="text-center">
+                            <div className={`text-7xl sm:text-8xl font-bold font-mono tracking-tighter ${isPianoActive ? 'text-[#0081FF]' : 'text-white'}`}>
+                                {displayNote}
                             </div>
-
-                            {/* Gauge Needle */}
-                            {pitchNote !== '-' && (
-                                <div
-                                    className="absolute top-0 bottom-0 w-1 bg-red-500 origin-center transition-transform duration-100 ease-linear rounded-full opacity-70"
-                                    style={{ transform: `rotate(${pitchCents}deg)` }}
-                                ></div>
+                            {displayOctave !== null && (
+                                <div className={`text-2xl font-medium ${isPianoActive ? 'text-[#0081FF]/70' : 'text-gray-500'}`}>
+                                    {displayOctave}
+                                </div>
+                            )}
+                            {isPianoActive && displayHz && (
+                                <div className="text-sm font-mono text-[#0081FF]/50 mt-1">
+                                    {displayHz} Hz
+                                </div>
                             )}
                         </div>
 
-                        <div className="mt-8 flex justify-center items-center gap-2">
+                        {/* Needle (Voice Only) */}
+                        {!isPianoActive && pitchNote !== '-' && (
+                            <div
+                                className="absolute top-0 bottom-0 w-1 bg-red-500 origin-center transition-transform duration-100 ease-linear rounded-full opacity-70"
+                                style={{ transform: `rotate(${pitchCents}deg)` }}
+                            ></div>
+                        )}
+
+                        {/* Status Label (Piano or Tuned) */}
+                        {isPianoActive ? (
+                            <div className="absolute -bottom-4 bg-[#0081FF] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-blue-500/20">
+                                Piano
+                            </div>
+                        ) : (Math.abs(pitchCents) < 10 && pitchNote !== '-') ? (
+                            <div className="absolute -bottom-4 bg-green-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-green-500/20">
+                                Afinado
+                            </div>
+                        ) : null}
+                    </div>
+
+                    {/* Tuning Indicators (Voice Only) */}
+                    {!isPianoActive && isMicOn && pitchNote !== '-' && (
+                        <div className="flex justify-center items-center gap-2 mt-8 mb-4">
                             <div className={`w-3 h-3 rounded-full ${pitchCents < -10 ? 'bg-red-500' : 'bg-gray-700'}`}></div>
                             <span className="text-xs font-bold text-gray-500 uppercase tracking-widest px-2">
-                                {Math.abs(pitchCents) < 10 && pitchNote !== '-' ? 'AFINADO' : (pitchCents < 0 ? 'BAIXO' : 'ALTO')}
+                                {Math.abs(pitchCents) < 10 ? 'AFINADO' : (pitchCents < 0 ? 'BAIXO' : 'ALTO')}
                             </span>
                             <div className={`w-3 h-3 rounded-full ${pitchCents > 10 ? 'bg-red-500' : 'bg-gray-700'}`}></div>
                         </div>
+                    )}
 
-                        <button
-                            onClick={stopMic}
-                            className="mt-12 px-6 py-2 rounded-lg bg-white/5 text-gray-400 text-xs hover:bg-white/10 transition-colors"
-                        >
-                            Parar
-                        </button>
+                    {/* Mic Controls */}
+                    <div className="mt-8 mb-4">
+                        {!isMicOn ? (
+                            <button
+                                onClick={startMic}
+                                className="px-8 py-3 rounded-xl bg-white/5 text-white font-bold hover:bg-white/10 transition-colors border border-white/10 flex items-center gap-2"
+                            >
+                                <span className="material-symbols-rounded">mic</span>
+                                Ligar Microfone
+                            </button>
+                        ) : (
+                            !isPianoActive && (
+                                <button
+                                    onClick={stopMic}
+                                    className="px-6 py-2 rounded-lg text-gray-500 text-xs hover:text-white transition-colors flex items-center gap-2"
+                                >
+                                    <span className="material-symbols-rounded text-sm">mic_off</span>
+                                    Parar
+                                </button>
+                            )
+                        )}
                     </div>
-                )}
-            </div>
 
-            {/* Embedded Piano */}
-            <div className="w-full border-t border-white/5">
-                <PianoScreen onBack={() => { }} embedded={true} />
+                </div>
+
+                {/* PIANO - Centered/Bottom */}
+                <div className="w-full relative z-20 border-t border-white/5">
+                    <PianoScreen
+                        onBack={() => { }}
+                        embedded={true}
+                        onPlayNote={(note, freq) => {
+                            setPianoNote(note);
+                            setPianoFreq(freq);
+                        }}
+                        onStopNote={() => {
+                            setPianoNote(null);
+                            setPianoFreq(null);
+                        }}
+                    />
+                </div>
             </div>
-        </div>
-    );
+        );
+    };
 
     const renderVocalTest = () => (
         <div className="flex-1 flex flex-col relative animate-in zoom-in-95 duration-300">

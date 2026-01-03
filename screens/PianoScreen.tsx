@@ -4,6 +4,8 @@ import * as Tone from 'tone';
 interface Props {
     onBack: () => void;
     embedded?: boolean;
+    onPlayNote?: (note: string, freq: number) => void;
+    onStopNote?: () => void;
 }
 
 const NOTE_FREQUENCIES: Record<string, number> = {
@@ -75,7 +77,7 @@ const getFrequency = (note: string): number => {
 const OCTAVES = [2, 3, 4, 5, 6];
 const NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
-export const PianoScreen: React.FC<Props> = ({ onBack, embedded }) => {
+export const PianoScreen: React.FC<Props> = ({ onBack, embedded, onPlayNote, onStopNote }) => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [activeNote, setActiveNote] = useState<{ note: string, freq: number } | null>(null);
 
@@ -239,6 +241,11 @@ export const PianoScreen: React.FC<Props> = ({ onBack, embedded }) => {
         const newFreq = parseFloat(getFrequency(note).toFixed(2));
         setActiveNote({ note, freq: newFreq });
 
+        // Callback for embedded mode
+        if (onPlayNote) {
+            onPlayNote(note, newFreq);
+        }
+
         // Reset comparisons when new note is played
         setStabilityCounter(0);
         setFeedbackStatus('silence');
@@ -248,7 +255,12 @@ export const PianoScreen: React.FC<Props> = ({ onBack, embedded }) => {
         if (samplerRef.current && isLoaded) {
             samplerRef.current.triggerRelease(note);
         }
+
         // Keeps active note for reference while singing
+        // But if user wants to stop via callback:
+        if (onStopNote) {
+            onStopNote();
+        }
     };
 
     // Generate Key List (Flat array for rendering)
@@ -319,7 +331,7 @@ export const PianoScreen: React.FC<Props> = ({ onBack, embedded }) => {
     };
 
     return (
-        <div className={`flex flex-col ${embedded ? 'w-full bg-[#101622] border-t border-white/5 pb-8' : 'min-h-screen bg-[#101622] animate-in fade-in duration-300'}`}>
+        <div className={`flex flex-col ${embedded ? 'w-full bg-[#101622] pt-4 pb-0' : 'min-h-screen bg-[#101622] animate-in fade-in duration-300'}`}>
             {/* Header - HIDDEN IF EMBEDDED */}
             {!embedded && (
                 <div className="pt-8 px-6 pb-4 flex items-center gap-4 z-10 bg-gradient-to-b from-[#101622] to-transparent">
@@ -348,86 +360,89 @@ export const PianoScreen: React.FC<Props> = ({ onBack, embedded }) => {
                 </div>
             )}
 
-            {/* Info Display Area */}
-            <div className={`${embedded ? 'h-auto py-8' : 'flex-1'} flex flex-col items-center justify-center relative overflow-hidden transition-all duration-500`}>
+            {/* Info Display Area - HIDDEN IF EMBEDDED */}
+            {!embedded && (
+                <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-gradient-to-b from-[#151A23] to-[#101622] relative overflow-hidden">
 
-                {/* Background Feedback Color */}
-                <div className={`absolute inset-0 transition-opacity duration-500
-                    ${feedbackStatus === 'success' ? 'bg-green-500/10' : ''}
-                    ${feedbackStatus === 'low' ? 'bg-yellow-500/5' : ''}
-                    ${feedbackStatus === 'high' ? 'bg-yellow-500/5' : ''}
-                `}></div>
+                    {/* Background Feedback Color */}
+                    <div className={`absolute inset-0 transition-opacity duration-500
+                        ${feedbackStatus === 'success' ? 'bg-green-500/10' : ''}
+                        ${feedbackStatus === 'low' ? 'bg-yellow-500/5' : ''}
+                        ${feedbackStatus === 'high' ? 'bg-yellow-500/5' : ''}
+                    `}></div>
 
-                <div className={`transition-all duration-200 transform z-10 
-                    ${activeNote ? 'scale-100 opacity-100' : 'scale-95 opacity-50 grayscale'}
-                `}>
-                    {/* Note Name Big */}
-                    <div className={`text-[100px] sm:text-[120px] font-black leading-none drop-shadow-lg font-sans tracking-tighter transition-colors duration-300
-                        ${feedbackStatus === 'success' ? 'text-green-400' : 'text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-400'}
+                    <div className={`transition-all duration-200 transform z-10 
+                        ${activeNote ? 'scale-100 opacity-100' : 'scale-95 opacity-50 grayscale'}
                     `}>
-                        {activeNote ? activeNote.note.replace(/[0-9]/g, '') : '-'}
-                    </div>
-
-                    <div className="flex flex-wrap items-center justify-center gap-3 mt-4">
-                        <div className="px-4 py-1 rounded-full bg-white/10 border border-white/10 text-white font-bold text-xl backdrop-blur-md">
-                            {activeNote ? activeNote.note.slice(-1) : '-'} <span className="text-xs text-gray-500 uppercase ml-1">Oitava</span>
+                        {/* Note Name Big */}
+                        <div className={`text-[100px] sm:text-[120px] font-black leading-none drop-shadow-lg font-sans tracking-tighter transition-colors duration-300
+                            ${feedbackStatus === 'success' ? 'text-green-400' : 'text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-400'}
+                        `}>
+                            {activeNote ? activeNote.note.replace(/[0-9]/g, '') : '-'}
                         </div>
 
-                        <div className="px-4 py-1 rounded-full bg-[#0081FF]/20 border border-[#0081FF]/30 text-[#0081FF] font-bold text-xl backdrop-blur-md font-mono">
-                            {activeNote ? `${activeNote.freq} Hz` : '- Hz'}
-                        </div>
-                    </div>
-
-                    {/* PEDAGOGICAL FEEDBACK AREA */}
-                    <div className="h-24 mt-8 flex flex-col items-center justify-center">
-                        {activeNote ? (
-                            <>
-                                {feedbackStatus === 'silence' && (
-                                    <div className="text-gray-500 flex flex-col items-center animate-pulse">
-                                        <span className="material-symbols-rounded text-2xl mb-1 opacity-50">graphic_eq</span>
-                                        <p className="text-xs">Toque e cante a nota...</p>
-                                    </div>
-                                )}
-
-                                {feedbackStatus === 'success' && (
-                                    <div className="animate-in fade-in slide-in-from-bottom duration-300">
-                                        <p className="text-green-400 font-bold text-lg mb-1 flex items-center gap-2">
-                                            <span className="material-symbols-rounded">check_circle</span>
-                                            Boa! Afinada.
-                                        </p>
-                                        <p className="text-green-500/60 text-xs">Mantenha essa estabilidade!</p>
-                                    </div>
-                                )}
-
-                                {(feedbackStatus === 'low' || feedbackStatus === 'high') && (
-                                    <div className="animate-in fade-in slide-in-from-bottom duration-300">
-                                        <p className="text-yellow-400 font-bold text-sm mb-1 flex items-center gap-2">
-                                            <span className="material-symbols-rounded">{feedbackStatus === 'low' ? 'arrow_upward' : 'arrow_downward'}</span>
-                                            {feedbackStatus === 'low' ? 'Um pouco abaixo' : 'Passou um pouco'}
-                                        </p>
-                                        <p className="text-gray-400 text-xs">{feedbackStatus === 'low' ? 'Suba levemente a nota.' : 'Relaxe e desça suavemente.'}</p>
-                                    </div>
-                                )}
-                            </>
-                        ) : (
-                            <div className="text-gray-600 flex flex-col items-center">
-                                <p className="text-xs">Selecione uma tecla para começar</p>
+                        <div className="flex flex-wrap items-center justify-center gap-3 mt-4">
+                            <div className="px-4 py-1 rounded-full bg-white/10 border border-white/10 text-white font-bold text-xl backdrop-blur-md">
+                                {activeNote ? activeNote.note.slice(-1) : '-'} <span className="text-xs text-gray-500 uppercase ml-1">Oitava</span>
                             </div>
-                        )}
+
+                            <div className="px-4 py-1 rounded-full bg-[#0081FF]/20 border border-[#0081FF]/30 text-[#0081FF] font-bold text-xl backdrop-blur-md font-mono">
+                                {activeNote ? `${activeNote.freq} Hz` : '- Hz'}
+                            </div>
+                        </div>
+
+                        {/* PEDAGOGICAL FEEDBACK AREA */}
+                        <div className="h-24 mt-8 flex flex-col items-center justify-center">
+                            {activeNote ? (
+                                <>
+                                    {feedbackStatus === 'silence' && (
+                                        <div className="text-gray-500 flex flex-col items-center animate-pulse">
+                                            <span className="material-symbols-rounded text-2xl mb-1 opacity-50">graphic_eq</span>
+                                            <p className="text-xs">Toque e cante a nota...</p>
+                                        </div>
+                                    )}
+
+                                    {feedbackStatus === 'success' && (
+                                        <div className="animate-in fade-in slide-in-from-bottom duration-300">
+                                            <p className="text-green-400 font-bold text-lg mb-1 flex items-center gap-2">
+                                                <span className="material-symbols-rounded">check_circle</span>
+                                                Boa! Afinada.
+                                            </p>
+                                            <p className="text-green-500/60 text-xs">Mantenha essa estabilidade!</p>
+                                        </div>
+                                    )}
+
+                                    {(feedbackStatus === 'low' || feedbackStatus === 'high') && (
+                                        <div className="animate-in fade-in slide-in-from-bottom duration-300">
+                                            <p className="text-yellow-400 font-bold text-sm mb-1 flex items-center gap-2">
+                                                <span className="material-symbols-rounded">{feedbackStatus === 'low' ? 'arrow_upward' : 'arrow_downward'}</span>
+                                                {feedbackStatus === 'low' ? 'Um pouco abaixo' : 'Passou um pouco'}
+                                            </p>
+                                            <p className="text-gray-400 text-xs">{feedbackStatus === 'low' ? 'Suba levemente a nota.' : 'Relaxe e desça suavemente.'}</p>
+                                        </div>
+                                    )}
+                                </>
+                            ) : (
+                                <div className="text-gray-600 flex flex-col items-center">
+                                    <p className="text-xs">Selecione uma tecla para começar</p>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
+            )}
 
-            {/* Keyboard Area */}
+            {/* Keyboard Area - Always Visible */}
             <div
                 ref={scrollContainerRef}
-                className="h-[280px] sm:h-[320px] bg-[#0d121c] border-t-4 border-[#FF00BC] relative overflow-x-auto hide-scrollbar touch-pan-x shadow-[inset_0_10px_20px_rgba(0,0,0,0.5)]"
+                className={`
+                    ${embedded ? 'h-[280px] bg-[#0d121c] border-t-0 relative overflow-x-auto hide-scrollbar touch-pan-x' : 'h-[280px] sm:h-[320px] bg-[#0d121c] border-t-4 border-[#FF00BC] relative overflow-x-auto hide-scrollbar touch-pan-x shadow-[inset_0_10px_20px_rgba(0,0,0,0.5)]'}
+                `}
             >
                 <div className="flex px-[50vw] h-full pt-10 pb-10 min-w-min">
                     {renderKeys()}
                 </div>
-                <div className="fixed left-0 bottom-0 w-12 h-[320px] bg-gradient-to-r from-[#101622] to-transparent pointer-events-none z-30"></div>
-                <div className="fixed right-0 bottom-0 w-12 h-[320px] bg-gradient-to-l from-[#101622] to-transparent pointer-events-none z-30"></div>
+                <div className="fixed left-0 bottom-0 w-12 hover:w-0 transition-all pointer-events-none z-30"></div>
             </div>
 
         </div>
