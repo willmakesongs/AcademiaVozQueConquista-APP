@@ -71,8 +71,8 @@ const AppContent = () => {
         setPreviousScreen(screen);
       }
     }
-    if (targetScreen === Screen.TEACHER_DASHBOARD) {
-      setDashboardInitialTab('dashboard'); // Painel Administrativo via onNavigate
+    if (targetScreen === Screen.TEACHER_DASHBOARD || targetScreen === Screen.ADMIN_DASHBOARD) {
+      setDashboardInitialTab(targetScreen === Screen.ADMIN_DASHBOARD ? 'dashboard' : 'students');
       setDashboardResetKey(prev => prev + 1);
     }
     setScreen(targetScreen);
