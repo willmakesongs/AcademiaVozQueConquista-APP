@@ -35,6 +35,10 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     // States Edição Agendamento
     const [editScheduleDay, setEditScheduleDay] = useState('Seg');
     const [editScheduleTime, setEditScheduleTime] = useState('');
+    const [editAge, setEditAge] = useState('');
+    const [editAddress, setEditAddress] = useState('');
+    const [editInstagram, setEditInstagram] = useState('');
+    const [editAmount, setEditAmount] = useState(97);
 
     // Form Novo Aluno
     const [newStudentName, setNewStudentName] = useState('');
@@ -94,7 +98,9 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     modality: s.modality || 'Online',
                     scheduleDay: s.schedule_day || 'Seg',
                     scheduleTime: s.schedule_time || '14:00',
-                    amount: s.amount || 97
+                    amount: s.amount || 97,
+                    address: s.address || '',
+                    instagram: s.instagram || ''
                 }));
 
                 const allStudentsMap = new Map<string, StudentSummary>();
@@ -181,6 +187,10 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         setEditPhone(student.phone || '');
         setEditScheduleDay(student.scheduleDay || 'Seg');
         setEditScheduleTime(student.scheduleTime || '14:00');
+        setEditAge(student.age || '');
+        setEditAddress(student.address || '');
+        setEditInstagram(student.instagram || '');
+        setEditAmount(student.amount || 97);
         setIsEditing(false);
     };
 
@@ -200,7 +210,11 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             notes: notesInput,
             phone: editPhone,
             scheduleDay: editScheduleDay,
-            scheduleTime: editScheduleTime
+            scheduleTime: editScheduleTime,
+            age: editAge,
+            address: editAddress,
+            instagram: editInstagram,
+            amount: editAmount
         };
 
         try {
@@ -208,7 +222,11 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 phone: editPhone,
                 notes: notesInput,
                 schedule_day: editScheduleDay,
-                schedule_time: editScheduleTime
+                schedule_time: editScheduleTime,
+                age: editAge ? parseInt(editAge) : null,
+                address: editAddress,
+                instagram: editInstagram,
+                amount: editAmount
             }).eq('id', selectedStudent.id);
 
             const existingLocal = localStorage.getItem('vocalizes_local_students');
@@ -499,10 +517,17 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                 </div>
                             ))
                         ) : (
-                            <div className="py-12 text-center bg-[#1A202C]/50 rounded-[32px] border border-dashed border-white/10">
+                            <div className="py-12 text-center bg-[#1A202C]/50 rounded-[32px] border border-dashed border-white/10 px-6">
                                 <span className="material-symbols-rounded text-4xl text-gray-600 mb-2">calendar_today</span>
-                                <p className="text-gray-500 text-sm font-medium">Nenhum aluno agendado para hoje.</p>
-                                <p className="text-[10px] text-gray-600 uppercase font-black mt-1">Use o botão + para adicionar</p>
+                                <p className="text-gray-500 text-sm font-medium">Nenhum aluno agendado para este dia.</p>
+                                <p className="text-[10px] text-gray-600 uppercase font-black mt-1 mb-4">Verifique outros dias ou adicione um novo</p>
+                                <button
+                                    onClick={() => setActiveTab('students')}
+                                    className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl text-[10px] font-black text-[#0081FF] uppercase tracking-wider hover:bg-white/10 transition-all"
+                                >
+                                    <span className="material-symbols-rounded text-sm">groups</span>
+                                    Ver todos os alunos cadastrados
+                                </button>
                             </div>
                         )}
                     </div>
@@ -658,14 +683,60 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                 </div>
                             </div>
 
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="p-3 bg-white/5 rounded-xl border border-white/5">
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase">Idade</p>
+                                    <input
+                                        type="number"
+                                        value={editAge}
+                                        onChange={(e) => setEditAge(e.target.value)}
+                                        className="w-full bg-transparent border-none text-white text-sm focus:outline-none"
+                                        placeholder="Idade"
+                                    />
+                                </div>
+                                <div className="p-3 bg-white/5 rounded-xl border border-white/5">
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase">Mensalidade</p>
+                                    <div className="flex items-center gap-1">
+                                        <span className="text-white text-sm">R$</span>
+                                        <input
+                                            type="number"
+                                            value={editAmount}
+                                            onChange={(e) => setEditAmount(parseInt(e.target.value) || 0)}
+                                            className="w-full bg-transparent border-none text-white text-sm focus:outline-none"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+
                             <div className="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
-                                <p className="text-[10px] text-gray-500 font-bold uppercase">Dados de Cadastro</p>
+                                <p className="text-[10px] text-gray-500 font-bold uppercase">Redes Sociais & Contato</p>
                                 <div className="flex items-center gap-3">
+                                    <span className="text-gray-500 text-sm">@</span>
+                                    <input
+                                        type="text"
+                                        value={editInstagram}
+                                        onChange={(e) => setEditInstagram(e.target.value)}
+                                        placeholder="Instagram"
+                                        className="flex-1 bg-transparent border-none text-white text-sm focus:outline-none"
+                                    />
+                                </div>
+                                <div className="flex items-center gap-3 border-t border-white/5 pt-2">
+                                    <span className="material-symbols-rounded text-gray-500 text-sm">location_on</span>
+                                    <input
+                                        type="text"
+                                        value={editAddress}
+                                        onChange={(e) => setEditAddress(e.target.value)}
+                                        placeholder="Endereço"
+                                        className="flex-1 bg-transparent border-none text-white text-sm focus:outline-none"
+                                    />
+                                </div>
+                                <div className="flex items-center gap-3 border-t border-white/5 pt-2">
+                                    <span className="material-symbols-rounded text-gray-500 text-sm">call</span>
                                     <input
                                         type="text"
                                         value={editPhone}
                                         onChange={(e) => setEditPhone(e.target.value)}
-                                        placeholder="Telefone do aluno"
+                                        placeholder="Telefone"
                                         className="flex-1 bg-transparent border-none text-white text-sm focus:outline-none"
                                     />
                                     <button
@@ -677,12 +748,15 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                 </div>
                             </div>
 
-                            <textarea
-                                value={notesInput}
-                                onChange={(e) => setNotesInput(e.target.value)}
-                                className="w-full h-32 bg-[#101622] rounded-xl border border-white/10 p-4 text-sm text-white focus:outline-none focus:border-[#0081FF] resize-none"
-                                placeholder="Observações de desenvolvimento..."
-                            />
+                            <div className="space-y-2">
+                                <p className="text-[10px] text-gray-500 font-bold uppercase ml-1">Observações de desenvolvimento</p>
+                                <textarea
+                                    value={notesInput}
+                                    onChange={(e) => setNotesInput(e.target.value)}
+                                    className="w-full h-32 bg-[#101622] rounded-xl border border-white/10 p-4 text-sm text-white focus:outline-none focus:border-[#0081FF] resize-none"
+                                    placeholder="Escreva aqui a evolução do aluno..."
+                                />
+                            </div>
                             <div className="flex gap-3">
                                 <button
                                     onClick={() => handleDeleteStudent(selectedStudent.id)}
