@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Screen } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { Logo } from '../components/Logo';
+import { PianoScreen } from './PianoScreen';
 import * as Tone from 'tone';
 
 interface Props {
@@ -804,50 +805,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
         </div>
     );
 
-    const renderPiano = () => (
-        <div className="flex-1 flex flex-col animate-in slide-in-from-right">
-            {renderHeader('Piano Virtual', () => setActiveView('menu'))}
 
-            <div className="flex-1 flex items-center justify-center p-4">
-                <div className="relative flex justify-center items-start bg-[#151A23] p-6 rounded-3xl border border-white/5 shadow-2xl overflow-x-auto hide-scrollbar">
-                    {/* Teclas Brancas */}
-                    {['C3', 'D3', 'E3', 'F3', 'G3', 'A3', 'B3', 'C4', 'D4', 'E4', 'F4', 'G4'].map(note => (
-                        <button
-                            key={note}
-                            onMouseDown={() => playNote(note)}
-                            onTouchStart={(e) => { e.preventDefault(); playNote(note); }}
-                            className="w-12 h-40 bg-white border border-gray-300 rounded-b-lg hover:bg-gray-100 active:bg-gray-200 transition-colors mx-0.5 relative z-10 shadow-sm"
-                        >
-                            <span className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] font-bold text-gray-500">{note}</span>
-                        </button>
-                    ))}
-
-                    {/* Teclas Pretas (Absolutas) */}
-                    <div className="absolute top-6 left-6 flex pointer-events-none z-20">
-                        <div className="w-[52px]"></div> {/* Spacer C */}
-                        <button onMouseDown={() => playNote('C#3')} onTouchStart={(e) => { e.preventDefault(); playNote('C#3'); }} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
-                        <div className="w-[52px]"></div> {/* Spacer D */}
-                        <button onMouseDown={() => playNote('D#3')} onTouchStart={(e) => { e.preventDefault(); playNote('D#3'); }} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
-                        <div className="w-[104px]"></div> {/* Spacer E, F */}
-                        <button onMouseDown={() => playNote('F#3')} onTouchStart={(e) => { e.preventDefault(); playNote('F#3'); }} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
-                        <div className="w-[52px]"></div> {/* Spacer G */}
-                        <button onMouseDown={() => playNote('G#3')} onTouchStart={(e) => { e.preventDefault(); playNote('G#3'); }} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
-                        <div className="w-[52px]"></div> {/* Spacer A */}
-                        <button onMouseDown={() => playNote('A#3')} onTouchStart={(e) => { e.preventDefault(); playNote('A#3'); }} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
-                        <div className="w-[104px]"></div> {/* Spacer B, C */}
-                        <button onMouseDown={() => playNote('C#4')} onTouchStart={(e) => { e.preventDefault(); playNote('C#4'); }} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
-                        <div className="w-[52px]"></div> {/* Spacer D */}
-                        <button onMouseDown={() => playNote('D#4')} onTouchStart={(e) => { e.preventDefault(); playNote('D#4'); }} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
-                        <div className="w-[104px]"></div> {/* Spacer E, F */}
-                        <button onMouseDown={() => playNote('F#4')} onTouchStart={(e) => { e.preventDefault(); playNote('F#4'); }} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
-                    </div>
-                </div>
-            </div>
-            <div className="p-6 text-center text-gray-500 text-xs">
-                Toque nas teclas para ouvir o tom de referência.
-            </div>
-        </div>
-    );
 
     const renderContract = () => (
         <div className="flex-1 flex flex-col bg-[#101622] animate-in slide-in-from-right">
@@ -1377,7 +1335,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
             {activeView === 'subscription' && renderSubscription()}
             {activeView === 'contract' && renderContract()}
             {activeView === 'vocal_test' && renderVocalTest()}
-            {activeView === 'piano' && renderPiano()}
+            {activeView === 'piano' && <PianoScreen onBack={() => setActiveView('menu')} />}
             {activeView === 'tuner' && renderTuner()}
         </div>
     );
