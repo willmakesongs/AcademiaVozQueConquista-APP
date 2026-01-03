@@ -227,6 +227,28 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         }
     };
 
+    const handleDeleteStudent = async (studentId: string) => {
+        if (!window.confirm('Tem certeza que deseja excluir este aluno?')) return;
+        setLoadingAction(true);
+        try {
+            await supabase.from('profiles').delete().eq('id', studentId);
+
+            const existingLocal = localStorage.getItem('vocalizes_local_students');
+            if (existingLocal) {
+                const localList: StudentSummary[] = JSON.parse(existingLocal);
+                const updatedList = localList.filter(s => s.id !== studentId);
+                localStorage.setItem('vocalizes_local_students', JSON.stringify(updatedList));
+            }
+
+            setStudents(prev => prev.filter(s => s.id !== studentId));
+            setSelectedStudent(null);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoadingAction(false);
+        }
+    };
+
     const handleDownloadTXT = () => {
         if (students.length === 0) return;
 
@@ -415,69 +437,71 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     </div>
 
                     <div className="space-y-4">
-                        {(appointments.length > 0 ? appointments : [
-                            { id: '1', studentName: 'João Silva', time: '09:00', endTime: '10:00', type: 'Piano - Intermediário', paymentStatus: 'active', avatarUrl: 'https://i.pravatar.cc/150?u=1' },
-                            { id: '2', studentName: 'Mariana S.', time: '10:30', endTime: '11:30', type: 'Violão - Iniciante', paymentStatus: 'overdue', avatarUrl: 'https://i.pravatar.cc/150?u=2' },
-                            { id: '3', studentName: 'Pedro Sa...', time: '14:00', endTime: '15:00', type: 'Teoria Musical', paymentStatus: 'none', avatarUrl: 'https://i.pravatar.cc/150?u=3', inactive: true },
-                            { id: '4', studentName: 'Ana Costa', time: '15:30', endTime: '16:30', type: 'Canto - Avançado', paymentStatus: 'active', avatarUrl: 'https://i.pravatar.cc/150?u=4' },
-                            { id: '5', studentName: 'Carlos Me...', time: '17:00', endTime: '18:00', type: 'Bateria - Intermediário', paymentStatus: 'overdue', avatarUrl: 'https://i.pravatar.cc/150?u=5' },
-                        ]).map((apt: any) => (
-                            <div key={apt.id} className="bg-[#1A202C] rounded-[24px] p-4 border border-white/5 flex items-center gap-4 relative overflow-hidden">
-                                {apt.paymentStatus === 'overdue' && <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500"></div>}
+                        {appointments.length > 0 ? (
+                            appointments.map((apt: any) => (
+                                <div key={apt.id} className="bg-[#1A202C] rounded-[24px] p-4 border border-white/5 flex items-center gap-4 relative overflow-hidden">
+                                    {apt.paymentStatus === 'overdue' && <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500"></div>}
 
-                                <div className="text-center min-w-[60px]">
-                                    <p className="text-sm font-black text-white">{apt.time}</p>
-                                    <p className="text-[10px] text-gray-500 font-bold">{apt.endTime}</p>
-                                </div>
+                                    <div className="text-center min-w-[60px]">
+                                        <p className="text-sm font-black text-white">{apt.time}</p>
+                                        <p className="text-[10px] text-gray-500 font-bold">{apt.endTime}</p>
+                                    </div>
 
-                                <div className="flex-1 flex items-center gap-3 min-w-0">
-                                    <img src={apt.avatarUrl} className={`w-12 h-12 rounded-full object-cover border-2 ${apt.inactive ? 'border-gray-700 grayscale' : 'border-[#1A202C]'}`} alt="" />
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-2 mb-0.5">
-                                            <h4 className={`text-sm font-bold truncate ${apt.inactive ? 'text-gray-500' : 'text-white'}`}>{apt.studentName}</h4>
-                                            <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase ${apt.inactive ? 'bg-gray-800 text-gray-500' : 'bg-green-500/10 text-green-500'}`}>
-                                                {apt.inactive ? 'Inativo' : 'Ativo'}
-                                            </span>
-                                        </div>
-                                        <p className="text-[10px] text-gray-500 truncate mb-1">{apt.type}</p>
-                                        <div className="flex items-center gap-1">
-                                            {apt.inactive ? (
-                                                <span className="text-[9px] text-gray-500 font-bold">Sem pagamentos</span>
-                                            ) : apt.paymentStatus === 'overdue' ? (
-                                                <div className="flex items-center gap-1 text-[9px] text-red-500 font-bold uppercase">
-                                                    <span className="material-symbols-rounded text-[12px]">error</span> Pagamento Pendente
-                                                </div>
-                                            ) : (
-                                                <div className="flex items-center gap-1 text-[9px] text-green-500 font-bold uppercase">
-                                                    <span className="material-symbols-rounded text-[12px]">check_circle</span> Em dia
-                                                </div>
-                                            )}
+                                    <div className="flex-1 flex items-center gap-3 min-w-0">
+                                        <img src={apt.avatarUrl} className={`w-12 h-12 rounded-full object-cover border-2 ${apt.inactive ? 'border-gray-700 grayscale' : 'border-[#1A202C]'}`} alt="" />
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 mb-0.5">
+                                                <h4 className={`text-sm font-bold truncate ${apt.inactive ? 'text-gray-500' : 'text-white'}`}>{apt.studentName}</h4>
+                                                <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase ${apt.inactive ? 'bg-gray-800 text-gray-500' : 'bg-green-500/10 text-green-500'}`}>
+                                                    {apt.inactive ? 'Inativo' : 'Ativo'}
+                                                </span>
+                                            </div>
+                                            <p className="text-[10px] text-gray-500 truncate mb-1">{apt.type}</p>
+                                            <div className="flex items-center gap-1">
+                                                {apt.inactive ? (
+                                                    <span className="text-[9px] text-gray-500 font-bold">Sem pagamentos</span>
+                                                ) : apt.paymentStatus === 'overdue' ? (
+                                                    <div className="flex items-center gap-1 text-[9px] text-red-500 font-bold uppercase">
+                                                        <span className="material-symbols-rounded text-[12px]">error</span> Pagamento Pendente
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex items-center gap-1 text-[9px] text-green-500 font-bold uppercase">
+                                                        <span className="material-symbols-rounded text-[12px]">check_circle</span> Em dia
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <div className="flex flex-col gap-2">
-                                    <button
-                                        onClick={() => {
-                                            const student = students.find(s => s.name === apt.studentName);
-                                            if (student) openStudentDetails(student);
-                                        }}
-                                        className="w-9 h-9 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center hover:bg-blue-500/20 transition-all"
-                                    >
-                                        <span className="material-symbols-rounded text-lg">edit</span>
-                                    </button>
-                                    <button
-                                        onClick={() => {
-                                            const student = students.find(s => s.name === apt.studentName);
-                                            if (student && student.phone) openWhatsApp(student.phone);
-                                        }}
-                                        className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${apt.paymentStatus === 'overdue' ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' : 'bg-white/5 text-gray-400 hover:text-white'}`}
-                                    >
-                                        <span className="material-symbols-rounded text-lg">{apt.paymentStatus === 'overdue' ? 'notifications_active' : 'schedule'}</span>
-                                    </button>
+                                    <div className="flex flex-col gap-2">
+                                        <button
+                                            onClick={() => {
+                                                const student = students.find(s => s.name === apt.studentName);
+                                                if (student) openStudentDetails(student);
+                                            }}
+                                            className="w-9 h-9 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center hover:bg-blue-500/20 transition-all"
+                                        >
+                                            <span className="material-symbols-rounded text-lg">edit</span>
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                const student = students.find(s => s.name === apt.studentName);
+                                                if (student && student.phone) openWhatsApp(student.phone);
+                                            }}
+                                            className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${apt.paymentStatus === 'overdue' ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' : 'bg-white/5 text-gray-400 hover:text-white'}`}
+                                        >
+                                            <span className="material-symbols-rounded text-lg">{apt.paymentStatus === 'overdue' ? 'notifications_active' : 'schedule'}</span>
+                                        </button>
+                                    </div>
                                 </div>
+                            ))
+                        ) : (
+                            <div className="py-12 text-center bg-[#1A202C]/50 rounded-[32px] border border-dashed border-white/10">
+                                <span className="material-symbols-rounded text-4xl text-gray-600 mb-2">calendar_today</span>
+                                <p className="text-gray-500 text-sm font-medium">Nenhum aluno agendado para hoje.</p>
+                                <p className="text-[10px] text-gray-600 uppercase font-black mt-1">Use o botão + para adicionar</p>
                             </div>
-                        ))}
+                        )}
                     </div>
                 </div>
             </div>
@@ -597,6 +621,14 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                 placeholder="Observações de desenvolvimento..."
                             />
                             <div className="flex gap-3">
+                                <button
+                                    onClick={() => handleDeleteStudent(selectedStudent.id)}
+                                    disabled={loadingAction}
+                                    className="w-12 h-12 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center hover:bg-red-500/20 transition-all border border-red-500/20"
+                                    title="Excluir Aluno"
+                                >
+                                    <span className="material-symbols-rounded">delete</span>
+                                </button>
                                 <button onClick={() => setSelectedStudent(null)} className="flex-1 h-12 rounded-xl border border-white/10 text-gray-400 font-bold text-sm">Fechar</button>
                                 <button onClick={handleSaveChanges} disabled={loadingAction} className="flex-1 h-12 rounded-xl bg-[#0081FF] text-white font-bold text-sm disabled:opacity-50">
                                     {loadingAction ? 'Salvando...' : 'Salvar Alterações'}
