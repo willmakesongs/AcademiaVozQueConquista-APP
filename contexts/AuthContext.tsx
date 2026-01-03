@@ -7,7 +7,7 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   signIn: (role: 'student' | 'teacher', email?: string, password?: string) => Promise<{ error: any }>;
-  signUp: (email: string, password: string, name: string, role: 'student' | 'teacher') => Promise<{ error: any; data?: any }>;
+  signUp: (email: string, password: string, name: string, phone: string, role: 'student' | 'teacher', adminCode?: string) => Promise<{ error: any; data?: any }>;
   signInWithGoogle: (role: 'student' | 'teacher') => Promise<{ error: any }>;
   signInWithPhone: (phone: string) => Promise<{ error: any }>;
   signInAsGuest: (role: 'student' | 'teacher') => Promise<void>;
@@ -140,7 +140,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signUp = async (email: string, password: string, name: string, role: 'student' | 'teacher') => {
+  const signUp = async (email: string, password: string, name: string, phone: string, role: 'student' | 'teacher', adminCode?: string) => {
     if (!isSupabaseConfigured) return { error: 'Configure a URL do Supabase' };
 
     try {
@@ -148,7 +148,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         email,
         password,
         options: {
-          data: { role, full_name: name },
+          data: { role, full_name: name, phone: phone, admin_code: adminCode },
           emailRedirectTo: window.location.origin
         }
       });
@@ -163,6 +163,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             id: authData.user.id,
             name: name,
             role: role,
+            phone: phone,
             avatar_url: `https://ui-avatars.com/api/?name=${name}&background=random`
           }], { onConflict: 'id' });
 

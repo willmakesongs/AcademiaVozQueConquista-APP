@@ -12,7 +12,7 @@ interface Props {
 
 const WEEK_DAYS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 
-export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initialTab = 'students' }) => {
+export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initialTab = 'dashboard' }) => {
     const { user } = useAuth();
     const [showConfig, setShowConfig] = useState(false);
     const [students, setStudents] = useState<StudentSummary[]>([]);
@@ -24,7 +24,10 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [loadingAction, setLoadingAction] = useState(false);
+
     const [selectedDate, setSelectedDate] = useState(new Date());
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [syncStatus, setSyncStatus] = useState<'synced' | 'error' | 'loading'>('loading');
 
     // States Detalhes
     const [selectedStudent, setSelectedStudent] = useState<StudentSummary | null>(null);
@@ -40,6 +43,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     const [editInstagram, setEditInstagram] = useState('');
     const [editAmount, setEditAmount] = useState(97);
     const [editPaymentDay, setEditPaymentDay] = useState('05');
+    const [editStatus, setEditStatus] = useState<'active' | 'blocked' | 'overdue'>('active');
 
     // Form Novo Aluno
     const [newStudentName, setNewStudentName] = useState('');
@@ -66,25 +70,17 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         fetchData();
     }, []);
 
-    const fetchData = async () => {
-        const localData = localStorage.getItem('vocalizes_local_students');
-        const localStudents: StudentSummary[] = localData ? JSON.parse(localData) : [];
-
+    const fetchData = async (force: boolean = false) => {
+        setLoadingAction(true);
         try {
             const { data: sData, error: sError } = await supabase
                 .from('profiles')
                 .select('*')
                 .eq('role', 'student');
 
-            if (sError) {
-                if (String(sError.code) === '42501') {
-                    const merged = [...localStudents];
-                    const unique = merged.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
-                    setStudents(unique);
-                } else {
-                    throw sError;
-                }
-            } else if (sData) {
+            if (sError) throw sError;
+
+            if (sData) {
                 const dbStudents: StudentSummary[] = sData.map(s => ({
                     id: s.id,
                     name: s.name,
@@ -105,22 +101,39 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     instagram: s.instagram || ''
                 }));
 
-                const allStudentsMap = new Map<string, StudentSummary>();
-                dbStudents.forEach(s => allStudentsMap.set(s.id, s));
-                localStudents.forEach(s => allStudentsMap.set(s.id, s));
+                // Update local storage and state with fresh data from DB
+                // SERVER IS SOURCE OF TRUTH
+                localStorage.setItem('vocalizes_local_students', JSON.stringify(dbStudents));
+                setStudents(dbStudents);
 
-                setStudents(Array.from(allStudentsMap.values()));
+                if (force) alert('Dados atualizados com sucesso da nuvem! ☁️');
+                setSyncStatus('synced');
             }
-        } catch (error) {
-            console.warn('Fallback to local data:', error);
-            const merged = [...localStudents];
-            const unique = merged.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
-            setStudents(unique);
+        } catch (error: any) {
+            console.warn('Network/DB error, using fallback:', error);
+            setSyncStatus('error');
+            if (force) alert('Erro ao buscar dados. Verifique a conexão. ⚠️');
+
+            // Emergency fallback for offline use
+            const localData = localStorage.getItem('vocalizes_local_students');
+            if (localData) {
+                try {
+                    setStudents(JSON.parse(localData));
+                } catch (e) {
+                    console.error('Local data corrupt:', e);
+                }
+            }
+        } finally {
+            setLoadingAction(false);
+            if (syncStatus === 'loading') setSyncStatus('synced'); // Default to synced if no error caught initially
         }
     };
 
     const handleAddStudent = async () => {
-        if (!newStudentName.trim()) return;
+        if (!newStudentName.trim() || !newStudentAge.trim() || !newStudentPhone.trim()) {
+            alert('Por favor, preencha os campos obrigatórios: Nome, Idade e Telefone.');
+            return;
+        }
         setLoadingAction(true);
         const fakeId = crypto.randomUUID();
         const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(newStudentName)}&background=random&color=fff`;
@@ -146,8 +159,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         };
 
         try {
-            await supabase.from('profiles').insert([{
-                id: fakeId,
+            const { data, error } = await supabase.from('profiles').insert([{
                 name: newStudentName,
                 role: 'student',
                 avatar_url: avatarUrl,
@@ -161,7 +173,30 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 notes: newStudentNotes || null,
                 amount: parseInt(String(newStudentAmount)) || 97,
                 payment_day: paymentDay
-            }]);
+            }]).select();
+
+            if (error) throw error;
+
+            const savedStudent = data?.[0];
+            const newStudentLocal: StudentSummary = {
+                id: savedStudent?.id || fakeId,
+                name: newStudentName,
+                avatarUrl,
+                level: newStudentLevel,
+                lastPractice: 'Nunca',
+                progress: 0,
+                status: 'active',
+                age: newStudentAge,
+                phone: newStudentPhone,
+                paymentDay: paymentDay,
+                notes: newStudentNotes,
+                modality: newStudentModality,
+                scheduleDay: scheduleDay,
+                scheduleTime: scheduleTime,
+                amount: parseInt(String(newStudentAmount)) || 97,
+                address: newStudentAddress,
+                instagram: newStudentInstagram
+            };
 
             const existingLocal = localStorage.getItem('vocalizes_local_students');
             const localList = existingLocal ? JSON.parse(existingLocal) : [];
@@ -195,7 +230,9 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         setEditAddress(student.address || '');
         setEditInstagram(student.instagram || '');
         setEditAmount(student.amount || 97);
+        setEditAmount(student.amount || 97);
         setEditPaymentDay(student.paymentDay || '05');
+        setEditStatus(student.status as any || 'active');
         setIsEditing(false);
     };
 
@@ -220,11 +257,12 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             address: editAddress,
             instagram: editInstagram,
             amount: editAmount,
-            paymentDay: editPaymentDay
+            paymentDay: editPaymentDay,
+            status: editStatus
         };
 
         try {
-            await supabase.from('profiles').update({
+            const { data, error } = await supabase.from('profiles').update({
                 phone: editPhone,
                 notes: notesInput,
                 schedule_day: editScheduleDay,
@@ -233,8 +271,15 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 address: editAddress,
                 instagram: editInstagram,
                 amount: editAmount,
-                payment_day: editPaymentDay
-            }).eq('id', selectedStudent.id);
+                payment_day: editPaymentDay,
+                status: editStatus
+            }).eq('id', selectedStudent.id).select();
+
+            if (error) throw error;
+
+            if (!data || data.length === 0) {
+                alert('⚠️ Atenção: As alterações NÃO foram salvas no servidor. \n\nIsso acontece se você não tiver permissão para editar este aluno. As mudanças serão perdidas ao recarregar o app.');
+            }
 
             const existingLocal = localStorage.getItem('vocalizes_local_students');
             let localList: StudentSummary[] = existingLocal ? JSON.parse(existingLocal) : [];
@@ -253,11 +298,27 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         }
     };
 
-    const handleDeleteStudent = async (studentId: string) => {
-        if (!window.confirm('Tem certeza que deseja excluir este aluno?')) return;
+    const handleDeleteStudent = () => {
+        setShowDeleteConfirm(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!selectedStudent) return;
+        const studentId = selectedStudent.id;
         setLoadingAction(true);
         try {
-            await supabase.from('profiles').delete().eq('id', studentId);
+            const { data, error } = await supabase.from('profiles').delete().eq('id', studentId).select();
+
+            if (error) {
+                console.error('Delete error:', error);
+                alert('Erro ao excluir do servidor: ' + error.message);
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                console.warn('No rows deleted from Supabase. Check RLS policies.');
+                alert('⚠️ Atenção: O aluno foi removido da sua tela, mas o servidor NÃO permitiu a exclusão permanente no banco de dados. \n\nIsso geralmente acontece quando você não tem permissão de "Professor Administrador" para este registro. Após recarregar, o aluno voltará.');
+            }
 
             const existingLocal = localStorage.getItem('vocalizes_local_students');
             if (existingLocal) {
@@ -268,8 +329,10 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
             setStudents(prev => prev.filter(s => s.id !== studentId));
             setSelectedStudent(null);
-        } catch (err) {
+            setShowDeleteConfirm(false);
+        } catch (err: any) {
             console.error(err);
+            alert('Erro inesperado: ' + err.message);
         } finally {
             setLoadingAction(false);
         }
@@ -306,51 +369,206 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         const totalPending = students.filter(s => s.status === 'overdue').reduce((acc, s) => acc + (s.amount || 0), 0);
         const overdueStudents = students.filter(s => s.status === 'overdue' || s.status === 'blocked');
 
+        // Mock data for chart - in a real app this would come from historical table
+        const chartData = [10, 25, 18, 32, 28, 45]; // Simple relative points
+        const maxVal = Math.max(...chartData);
+        const points = chartData.map((val, idx) => {
+            const x = (idx / (chartData.length - 1)) * 100;
+            const y = 100 - ((val / maxVal) * 100);
+            return `${x},${y}`;
+        }).join(' ');
+
         return (
             <div className="flex-1 overflow-y-auto hide-scrollbar pb-24">
+                {/* Summary Cards */}
                 <div className="grid grid-cols-2 gap-4 px-6 pt-6">
-                    <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5">
-                        <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-400 mb-3">
+                    <div className="bg-white rounded-[24px] p-5 shadow-lg relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-green-500/10 rounded-bl-[100px] -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
+                        <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 mb-3 relative z-10">
                             <span className="material-symbols-rounded">arrow_upward</span>
                         </div>
-                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Recebido (Mês)</p>
-                        <h3 className="text-xl font-black text-white">R$ {totalReceived.toLocaleString('pt-BR')}</h3>
+                        <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wider mb-1">Recebido (Mês)</p>
+                        <h3 className="text-2xl font-black text-[#101622]">R$ {totalReceived.toLocaleString('pt-BR')}</h3>
+                        <p className="text-[10px] text-green-600 font-bold flex items-center mt-1">
+                            <span className="material-symbols-rounded text-sm mr-0.5">trending_up</span> +12% vs mês anterior
+                        </p>
                     </div>
-                    <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5">
-                        <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-400 mb-3">
+
+                    <div className="bg-white rounded-[24px] p-5 shadow-lg relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-orange-500/10 rounded-bl-[100px] -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
+                        <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-500 mb-3 relative z-10">
                             <span className="material-symbols-rounded">priority_high</span>
                         </div>
-                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Pendente</p>
-                        <h3 className="text-xl font-black text-white">R$ {totalPending.toLocaleString('pt-BR')}</h3>
+                        <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wider mb-1">Pendente</p>
+                        <h3 className="text-2xl font-black text-[#101622]">R$ {totalPending.toLocaleString('pt-BR')}</h3>
+                        <p className="text-[10px] text-orange-500 font-bold flex items-center mt-1">
+                            <span className="material-symbols-rounded text-sm mr-0.5">warning</span> Ação necessária
+                        </p>
                     </div>
                 </div>
 
+                {/* Revenue Chart Section */}
+                <div className="px-6 mt-6">
+                    <div className="bg-white rounded-[24px] p-6 shadow-sm">
+                        <div className="flex justify-between items-start mb-6">
+                            <div>
+                                <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wider mb-1">Tendência de Receita</p>
+                                <h3 className="text-3xl font-black text-[#101622]">R$ 152k <span className="text-sm font-bold text-green-500 bg-green-100 px-2 py-0.5 rounded-full ml-1">+8.5%</span></h3>
+                                <p className="text-xs text-gray-400 mt-1">Últimos 6 meses</p>
+                            </div>
+                        </div>
+
+                        <div className="h-32 w-full relative">
+                            {/* Simple SVG Chart */}
+                            <svg viewBox="0 0 100 100" className="w-full h-full overflow-visible" preserveAspectRatio="none">
+                                {/* Gradient Defs */}
+                                <defs>
+                                    <linearGradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
+                                        <stop offset="0%" stopColor="#0081FF" stopOpacity="0.2" />
+                                        <stop offset="100%" stopColor="#0081FF" stopOpacity="0" />
+                                    </linearGradient>
+                                </defs>
+
+                                {/* Area Path */}
+                                <path
+                                    d={`M0,100 L${points} L100,100 Z`}
+                                    fill="url(#chartGradient)"
+                                />
+
+                                {/* Line Path */}
+                                <path
+                                    d={`M${points}`}
+                                    fill="none"
+                                    stroke="#0081FF"
+                                    strokeWidth="3"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    vectorEffect="non-scaling-stroke"
+                                />
+
+                                {/* Points */}
+                                {chartData.map((val, idx) => {
+                                    const x = (idx / (chartData.length - 1)) * 100;
+                                    const y = 100 - ((val / maxVal) * 100);
+                                    return (
+                                        <circle key={idx} cx={x} cy={y} r="2" fill="white" stroke="#0081FF" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+                                    );
+                                })}
+                            </svg>
+
+                            {/* X Axis Labels */}
+                            <div className="flex justify-between text-[9px] font-bold text-gray-400 uppercase mt-4">
+                                <span>Jan</span>
+                                <span>Fev</span>
+                                <span>Mar</span>
+                                <span>Abr</span>
+                                <span>Mai</span>
+                                <span>Jun</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Overdue List */}
                 <div className="px-6 mt-8">
                     <div className="flex justify-between items-center mb-4">
-                        <h4 className="text-sm font-black text-white uppercase tracking-tight">Pagamentos Atrasados</h4>
-                        <button className="text-xs text-[#0081FF] font-bold">Ver todos</button>
+                        <h4 className="text-lg font-black text-white tracking-tight">Pagamentos Atrasados</h4>
+                        <button
+                            onClick={() => {
+                                setSearchQuery('');
+                                setActiveTab('students');
+                            }}
+                            className="text-xs text-[#0081FF] font-bold hover:underline"
+                        >
+                            Ver todos
+                        </button>
                     </div>
                     <div className="space-y-3">
                         {overdueStudents.length > 0 ? (
                             overdueStudents.map(student => (
-                                <div key={student.id} onClick={() => openStudentDetails(student)} className="bg-[#1A202C] p-4 rounded-[24px] border border-white/5 flex items-center justify-between">
+                                <div key={student.id} onClick={() => openStudentDetails(student)} className="bg-white p-4 rounded-[24px] shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all cursor-pointer">
                                     <div className="flex items-center gap-3">
-                                        <img src={student.avatarUrl} className="w-10 h-10 rounded-full object-cover" alt="" />
+                                        <div className="relative">
+                                            <img src={student.avatarUrl} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" alt="" />
+                                            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-white">
+                                                <span className="material-symbols-rounded text-[10px] font-bold">!</span>
+                                            </div>
+                                        </div>
                                         <div>
-                                            <h5 className="text-sm font-bold text-white">{student.name}</h5>
-                                            <p className="text-[10px] text-red-400 font-bold">Atrasado</p>
+                                            <h5 className="text-sm font-bold text-[#101622]">{student.name}</h5>
+                                            <p className="text-[10px] text-red-500 font-bold">5 dias de atraso</p>
                                         </div>
                                     </div>
-                                    <div className="text-right flex items-center gap-2">
-                                        <p className="text-sm font-black text-white">R$ {student.amount || 97},00</p>
-                                        <span className="material-symbols-rounded text-red-500 text-lg">warning</span>
+                                    <div className="text-right">
+                                        <p className="text-sm font-black text-[#101622]">R$ {student.amount || 97},00</p>
+                                        <span className="material-symbols-rounded text-red-500 text-lg opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0">arrow_forward</span>
                                     </div>
                                 </div>
                             ))
                         ) : (
-                            <div className="py-8 text-center bg-[#1A202C]/50 rounded-[24px] border border-dashed border-white/10 text-gray-500 text-xs">Nenhum pagamento atrasado ✨</div>
+                            <div className="py-8 text-center bg-[#1A202C]/50 rounded-[24px] border border-dashed border-white/10 text-gray-500 text-xs">
+                                <span className="material-symbols-rounded text-2xl mb-1 block opacity-50">task_alt</span>
+                                Nenhum pagamento atrasado ✨
+                            </div>
                         )}
                     </div>
+                </div>
+            </div>
+        );
+    };
+
+    const renderSettings = () => {
+        return (
+            <div className="flex-1 overflow-y-auto hide-scrollbar pb-32">
+                <div className="px-6 pt-6 space-y-6">
+                    <section className="space-y-3">
+                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Escola & Administração</p>
+                        <div className="bg-[#1A202C] rounded-3xl border border-white/5 overflow-hidden">
+                            {[
+                                { icon: 'edit', label: 'Editar Perfil Profissional', color: 'text-blue-400' },
+                                { icon: 'schedule', label: 'Horários Disponíveis', color: 'text-purple-400' },
+                                { icon: 'history', label: 'Histórico de Atendimentos', color: 'text-orange-400' },
+                                { icon: 'description', label: 'Modelo de Contrato Padrao', color: 'text-green-400' }
+                            ].map((item, idx) => (
+                                <button key={idx} className={`w-full p-4 flex items-center justify-between hover:bg-white/5 transition-all ${idx !== 0 ? 'border-t border-white/5' : ''}`}>
+                                    <div className="flex items-center gap-3">
+                                        <span className={`material-symbols-rounded ${item.color}`}>{item.icon}</span>
+                                        <span className="text-sm text-gray-200">{item.label}</span>
+                                    </div>
+                                    <span className="material-symbols-rounded text-gray-600">chevron_right</span>
+                                </button>
+                            ))}
+                        </div>
+                    </section>
+
+                    <section className="space-y-3">
+                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Suporte & App</p>
+                        <div className="bg-[#1A202C] rounded-3xl border border-white/5 overflow-hidden">
+                            {[
+                                { icon: 'help', label: 'Central de Ajuda', color: 'text-gray-400' },
+                                { icon: 'bug_report', label: 'Reportar um Problema', color: 'text-red-400' },
+                                { icon: 'info', label: 'Sobre o App', color: 'text-blue-400' }
+                            ].map((item, idx) => (
+                                <button key={idx} className={`w-full p-4 flex items-center justify-between hover:bg-white/5 transition-all ${idx !== 0 ? 'border-t border-white/5' : ''}`}>
+                                    <div className="flex items-center gap-3">
+                                        <span className={`material-symbols-rounded ${item.color}`}>{item.icon}</span>
+                                        <span className="text-sm text-gray-200">{item.label}</span>
+                                    </div>
+                                    <span className="material-symbols-rounded text-gray-600">chevron_right</span>
+                                </button>
+                            ))}
+                        </div>
+                    </section>
+
+                    <button
+                        onClick={onLogout}
+                        className="w-full p-4 bg-red-500/10 rounded-3xl border border-red-500/20 text-red-500 font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2"
+                    >
+                        <span className="material-symbols-rounded text-lg">logout</span>
+                        Encerrar Sessão
+                    </button>
+
+                    <p className="text-center text-[10px] text-gray-700 font-bold uppercase py-4">Versão 1.2.0-beta • 2026</p>
                 </div>
             </div>
         );
@@ -393,28 +611,24 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             phone: s.phone
         })).sort((a, b) => a.time.localeCompare(b.time));
 
+        const totalReceived = students.filter(s => s.status === 'active').reduce((acc, s) => acc + (s.amount || 0), 0);
         const studentsTodayCount = dayAppointments.length;
         const pendingPaymentsCount = students.filter(s => s.status === 'overdue').length;
 
         return (
             <div className="flex-1 overflow-y-auto hide-scrollbar pb-32">
-                <div className="grid grid-cols-2 gap-4 px-6 pt-6">
-                    <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5 flex flex-col justify-between">
-                        <div className="flex justify-between items-start mb-2">
-                            <p className="text-[12px] text-gray-400 font-bold">Agenda Hoje</p>
-                            <span className="material-symbols-rounded text-blue-500 text-xl">groups</span>
-                        </div>
-                        <h3 className="text-3xl font-black text-white">{studentsTodayCount}</h3>
+                <div className="grid grid-cols-3 gap-3 px-6 pt-6">
+                    <div className="bg-[#1A202C] rounded-[24px] p-4 border border-white/5 flex flex-col justify-between">
+                        <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Agenda</p>
+                        <h3 className="text-xl font-black text-white">{studentsTodayCount}</h3>
                     </div>
-                    <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5 flex flex-col justify-between">
-                        <div className="flex justify-between items-start mb-2">
-                            <p className="text-[12px] text-gray-400 font-bold">Pendentes</p>
-                            <span className="material-symbols-rounded text-red-500 text-xl">warning</span>
-                        </div>
-                        <div className="flex items-baseline gap-2">
-                            <h3 className="text-3xl font-black text-white">{pendingPaymentsCount}</h3>
-                            <span className="text-[10px] text-red-500 font-bold uppercase">Atrasados</span>
-                        </div>
+                    <div className="bg-[#1A202C] rounded-[24px] p-4 border border-white/5 flex flex-col justify-between">
+                        <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Recebido</p>
+                        <h3 className="text-xl font-black text-green-400">R$ {totalReceived}</h3>
+                    </div>
+                    <div className="bg-[#1A202C] rounded-[24px] p-4 border border-white/5 flex flex-col justify-between">
+                        <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Pendente</p>
+                        <h3 className="text-xl font-black text-red-400">{pendingPaymentsCount}</h3>
                     </div>
                 </div>
 
@@ -459,9 +673,6 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 <div className="px-6 mt-8">
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="text-xl font-black text-white tracking-tight">Agenda - {selectedDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}</h3>
-                        <button onClick={() => setIsSearchOpen(true)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400">
-                            <span className="material-symbols-rounded">search</span>
-                        </button>
                     </div>
 
                     <div className="space-y-4">
@@ -476,21 +687,16 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     </div>
 
                                     <div className="flex-1 flex items-center gap-3 min-w-0">
-                                        <img src={apt.avatarUrl} className={`w-12 h-12 rounded-full object-cover border-2 ${apt.inactive ? 'border-gray-700 grayscale' : 'border-[#1A202C]'}`} alt="" />
+                                        <img src={apt.avatarUrl} className="w-12 h-12 rounded-full object-cover border-2 border-[#1A202C]" alt="" />
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 mb-0.5">
-                                                <h4 className={`text-sm font-bold truncate ${apt.inactive ? 'text-gray-500' : 'text-white'}`}>{apt.studentName}</h4>
-                                                <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase ${apt.inactive ? 'bg-gray-800 text-gray-500' : 'bg-green-500/10 text-green-500'}`}>
-                                                    {apt.inactive ? 'Inativo' : 'Ativo'}
-                                                </span>
+                                                <h4 className="text-sm font-bold text-white truncate">{apt.studentName}</h4>
                                             </div>
                                             <p className="text-[10px] text-gray-500 truncate mb-1">{apt.type}</p>
                                             <div className="flex items-center gap-1">
-                                                {apt.inactive ? (
-                                                    <span className="text-[9px] text-gray-500 font-bold">Sem pagamentos</span>
-                                                ) : apt.paymentStatus === 'overdue' ? (
+                                                {apt.paymentStatus === 'overdue' ? (
                                                     <div className="flex items-center gap-1 text-[9px] text-red-500 font-bold uppercase">
-                                                        <span className="material-symbols-rounded text-[12px]">error</span> Pagamento Pendente
+                                                        <span className="material-symbols-rounded text-[12px]">error</span> Pendente
                                                     </div>
                                                 ) : (
                                                     <div className="flex items-center gap-1 text-[9px] text-green-500 font-bold uppercase">
@@ -614,7 +820,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             case 'dashboard': return renderAgenda();
             case 'students': return renderStudentList();
             case 'reports': return renderFinancial();
-            case 'settings': return renderPlaceholder('Configurações do Painel');
+            case 'settings': return renderSettings();
             default: return renderAgenda();
         }
     };
@@ -631,10 +837,16 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     </h2>
                 </div>
                 <button onClick={() => setShowConfig(!showConfig)} className="relative">
+                    <div className={`absolute top-0 right-0 w-3 h-3 rounded-full border-2 border-[#101622] z-10 ${syncStatus === 'synced' ? 'bg-green-500' :
+                        syncStatus === 'error' ? 'bg-red-500 animate-pulse' : 'bg-yellow-500'
+                        }`}></div>
                     <img src={user?.avatarUrl || 'https://picsum.photos/200'} alt="Profile" className="w-10 h-10 rounded-full border-2 border-[#1A202C]" />
                     {showConfig && (
                         <div className="absolute right-0 top-12 w-48 bg-[#1A202C] rounded-2xl border border-white/10 shadow-2xl z-50 overflow-hidden">
-                            <button onClick={onLogout} className="w-full text-left px-3 py-2 hover:bg-white/5 text-sm flex items-center gap-2 text-red-400 font-bold">
+                            <button onClick={() => fetchData(true)} className="w-full text-left px-3 py-3 hover:bg-white/5 text-sm flex items-center gap-2 text-blue-400 font-bold border-b border-white/5">
+                                <span className="material-symbols-rounded text-lg">sync</span> Atualizar
+                            </button>
+                            <button onClick={onLogout} className="w-full text-left px-3 py-3 hover:bg-white/5 text-sm flex items-center gap-2 text-red-400 font-bold">
                                 <span className="material-symbols-rounded text-lg">logout</span> Sair
                             </button>
                         </div>
@@ -677,8 +889,48 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                 <div>
                                     <h4 className="text-lg font-bold text-white">{selectedStudent.name}</h4>
                                     <p className="text-xs text-gray-500 uppercase font-black">{selectedStudent.modality} • {selectedStudent.level}</p>
+                                    <div className={`mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-md border ${selectedStudent.status === 'blocked'
+                                        ? 'bg-red-500/20 border-red-500/30 text-red-400'
+                                        : 'bg-green-500/20 border-green-500/30 text-green-400'
+                                        }`}>
+                                        <span className="material-symbols-rounded text-[14px]">
+                                            {selectedStudent.status === 'blocked' ? 'lock' : 'check_circle'}
+                                        </span>
+                                        <span className="text-[10px] font-bold uppercase">
+                                            {selectedStudent.status === 'blocked' ? 'Bloqueado' : 'Ativo'}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
+
+                            {/* Status Control Toggle */}
+                            <div className="p-4 bg-[#101622] rounded-xl border border-white/5 flex items-center justify-between">
+                                <div>
+                                    <p className="text-xs font-bold text-white uppercase">Acesso ao App</p>
+                                    <p className="text-[10px] text-gray-500">Bloquear acesso em caso de pendência</p>
+                                </div>
+                                <div className="flex bg-[#1A202C] p-1 rounded-lg border border-white/5">
+                                    <button
+                                        onClick={() => setEditStatus('active')}
+                                        className={`px-3 py-1.5 rounded-md text-[10px] font-bold uppercase transition-all flex items-center gap-1 ${editStatus === 'active' || editStatus === 'overdue'
+                                            ? 'bg-green-500 text-white'
+                                            : 'text-gray-500 hover:text-white'
+                                            }`}
+                                    >
+                                        <span className="material-symbols-rounded text-[14px]">check</span> Liberado
+                                    </button>
+                                    <button
+                                        onClick={() => setEditStatus('blocked')}
+                                        className={`px-3 py-1.5 rounded-md text-[10px] font-bold uppercase transition-all flex items-center gap-1 ${editStatus === 'blocked'
+                                            ? 'bg-red-500 text-white'
+                                            : 'text-gray-500 hover:text-white'
+                                            }`}
+                                    >
+                                        <span className="material-symbols-rounded text-[14px]">lock</span> Bloqueado
+                                    </button>
+                                </div>
+                            </div>
+
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="p-3 bg-white/5 rounded-xl border border-white/5">
                                     <p className="text-[10px] text-gray-500 font-bold uppercase">Pagamento</p>
@@ -774,7 +1026,11 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                             </div>
                             <div className="flex gap-3">
                                 <button
-                                    onClick={() => handleDeleteStudent(selectedStudent.id)}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleDeleteStudent();
+                                    }}
                                     disabled={loadingAction}
                                     className="w-12 h-12 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center hover:bg-red-500/20 transition-all border border-red-500/20"
                                     title="Excluir Aluno"
@@ -782,12 +1038,49 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     <span className="material-symbols-rounded">delete</span>
                                 </button>
                                 <button onClick={() => setSelectedStudent(null)} className="flex-1 h-12 rounded-xl border border-white/10 text-gray-400 font-bold text-sm">Fechar</button>
-                                <button onClick={handleSaveChanges} disabled={loadingAction} className="flex-1 h-12 rounded-xl bg-[#0081FF] text-white font-bold text-sm disabled:opacity-50">
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        handleSaveChanges();
+                                    }}
+                                    disabled={loadingAction}
+                                    className="flex-1 h-12 rounded-xl bg-[#0081FF] text-white font-bold text-sm disabled:opacity-50"
+                                >
                                     {loadingAction ? 'Salvando...' : 'Salvar Alterações'}
                                 </button>
                             </div>
                         </div>
                     </div>
+
+                    {/* Pop-up de Confirmação customizado */}
+                    {showDeleteConfirm && (
+                        <div className="absolute inset-0 z-[60] flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-in fade-in zoom-in duration-200">
+                            <div className="w-full max-w-[280px] bg-[#1A202C] rounded-[32px] border border-white/10 p-8 shadow-2xl flex flex-col items-center text-center">
+                                <div className="w-16 h-16 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center mb-6">
+                                    <span className="material-symbols-rounded text-3xl">delete_forever</span>
+                                </div>
+                                <h3 className="text-white font-black text-lg mb-2">Excluir Aluno?</h3>
+                                <p className="text-gray-400 text-sm mb-8 leading-relaxed">Esta ação não pode ser desfeita. Deseja continuar?</p>
+
+                                <div className="grid grid-cols-2 gap-3 w-full">
+                                    <button
+                                        onClick={() => setShowDeleteConfirm(false)}
+                                        className="h-12 rounded-2xl bg-white/5 text-gray-400 font-black text-xs uppercase tracking-widest hover:bg-white/10 transition-all"
+                                    >
+                                        NÃO
+                                    </button>
+                                    <button
+                                        onClick={confirmDelete}
+                                        disabled={loadingAction}
+                                        className="h-12 rounded-2xl bg-red-500 text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-red-500/20 active:scale-95 transition-all disabled:opacity-50"
+                                    >
+                                        {loadingAction ? '...' : 'SIM'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -802,7 +1095,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                             <h3 className="text-lg font-black text-white">Novo Aluno</h3>
                             <button
                                 onClick={handleAddStudent}
-                                disabled={!newStudentName.trim() || loadingAction}
+                                disabled={!newStudentName.trim() || !newStudentAge.trim() || !newStudentPhone.trim() || loadingAction}
                                 className="text-[#0081FF] font-black text-sm uppercase tracking-wider disabled:opacity-30 px-2"
                             >
                                 {loadingAction ? '...' : 'Salvar'}
