@@ -24,6 +24,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [loadingAction, setLoadingAction] = useState(false);
+    const [selectedDate, setSelectedDate] = useState(new Date());
 
     // States Detalhes
     const [selectedStudent, setSelectedStudent] = useState<StudentSummary | null>(null);
@@ -333,19 +334,44 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     };
 
     const renderStudentList = () => {
-        const studentsTodayCount = appointments.length;
-        const pendingPaymentsCount = students.filter(s => s.status === 'overdue').length;
+        const getWeekDates = (date: Date) => {
+            const current = new Date(date);
+            const first = current.getDate() - (current.getDay() === 0 ? 6 : current.getDay() - 1); // Start from Monday
+            const week = [];
+            for (let i = 0; i < 7; i++) {
+                const day = new Date(current.setDate(first + i));
+                week.push({
+                    date: new Date(day),
+                    dayName: WEEK_DAYS[i].charAt(0),
+                    dayNum: day.getDate().toString().padStart(2, '0'),
+                    fullDayName: WEEK_DAYS[i],
+                    active: day.toDateString() === selectedDate.toDateString()
+                });
+            }
+            return week;
+        };
 
-        // Mock dates for the calendar strip
-        const weekDates = [
-            { dayName: 'S', dayNum: '22' },
-            { dayName: 'T', dayNum: '23' },
-            { dayName: 'Q', dayNum: '24', active: true },
-            { dayName: 'Q', dayNum: '25' },
-            { dayName: 'S', dayNum: '26' },
-            { dayName: 'S', dayNum: '27' },
-            { dayName: 'D', dayNum: '28' },
-        ];
+        const weekDates = getWeekDates(selectedDate);
+        const selectedDayLabel = WEEK_DAYS[selectedDate.getDay() === 0 ? 6 : selectedDate.getDay() - 1];
+
+        const dayAppointments = students.filter(s => s.scheduleDay === selectedDayLabel).map(s => ({
+            id: s.id,
+            studentName: s.name,
+            time: s.scheduleTime || '00:00',
+            endTime: s.scheduleTime ? (() => {
+                const [h, m] = s.scheduleTime.split(':');
+                const date = new Date();
+                date.setHours(parseInt(h), parseInt(m) + 60);
+                return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+            })() : '01:00',
+            type: `${s.level} • ${s.modality}`,
+            paymentStatus: s.status,
+            avatarUrl: s.avatarUrl,
+            phone: s.phone
+        })).sort((a, b) => a.time.localeCompare(b.time));
+
+        const studentsTodayCount = dayAppointments.length;
+        const pendingPaymentsCount = students.filter(s => s.status === 'overdue').length;
 
         return (
             <div className="flex-1 overflow-y-auto hide-scrollbar pb-32">
@@ -374,20 +400,36 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 <div className="px-6 mt-6">
                     <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5">
                         <div className="flex justify-between items-center mb-6 px-2">
-                            <span className="material-symbols-rounded text-gray-400 text-lg">chevron_left</span>
+                            <button onClick={() => {
+                                const newDate = new Date(selectedDate);
+                                newDate.setDate(newDate.getDate() - 7);
+                                setSelectedDate(newDate);
+                            }} className="w-8 h-8 rounded-full hover:bg-white/5 flex items-center justify-center transition-colors">
+                                <span className="material-symbols-rounded text-gray-400 text-lg">chevron_left</span>
+                            </button>
                             <p className="text-sm font-black text-white">
-                                {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }).toUpperCase()}
+                                {selectedDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }).toUpperCase()}
                             </p>
-                            <span className="material-symbols-rounded text-gray-400 text-lg">chevron_right</span>
+                            <button onClick={() => {
+                                const newDate = new Date(selectedDate);
+                                newDate.setDate(newDate.getDate() + 7);
+                                setSelectedDate(newDate);
+                            }} className="w-8 h-8 rounded-full hover:bg-white/5 flex items-center justify-center transition-colors">
+                                <span className="material-symbols-rounded text-gray-400 text-lg">chevron_right</span>
+                            </button>
                         </div>
                         <div className="flex justify-between">
                             {weekDates.map((date, idx) => (
-                                <div key={idx} className="flex flex-col items-center gap-3">
+                                <button
+                                    key={idx}
+                                    onClick={() => setSelectedDate(date.date)}
+                                    className="flex flex-col items-center gap-3"
+                                >
                                     <span className="text-[10px] text-gray-500 font-bold uppercase">{date.dayName}</span>
                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all ${date.active ? 'bg-[#0081FF] text-white shadow-lg shadow-blue-500/20 scale-110' : 'text-white hover:bg-white/5'}`}>
                                         {date.dayNum}
                                     </div>
-                                </div>
+                                </button>
                             ))}
                         </div>
                     </div>
@@ -396,7 +438,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 {/* Agenda List */}
                 <div className="px-6 mt-8">
                     <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-xl font-black text-white tracking-tight">Agenda - {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}</h3>
+                        <h3 className="text-xl font-black text-white tracking-tight">Agenda - {selectedDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}</h3>
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={handleDownloadTXT}
@@ -412,8 +454,8 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     </div>
 
                     <div className="space-y-4">
-                        {appointments.length > 0 ? (
-                            appointments.map((apt: any) => (
+                        {dayAppointments.length > 0 ? (
+                            dayAppointments.map((apt: any) => (
                                 <div key={apt.id} className="bg-[#1A202C] rounded-[24px] p-4 border border-white/5 flex items-center gap-4 relative overflow-hidden">
                                     {apt.paymentStatus === 'overdue' && <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500"></div>}
 
