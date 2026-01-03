@@ -122,7 +122,7 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
             `;
 
                 const model = genAI.getGenerativeModel({
-                    model: "gemini-2.0-flash",
+                    model: "gemini-1.5-flash-latest",
                     systemInstruction: systemPrompt
                 });
 
@@ -133,7 +133,7 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                         parts: [{ text: m.text }]
                     }));
 
-                console.log("Lorena IA: Inicializando com gemini-2.0-flash...");
+                console.log("Lorena IA: Iniciando com gemini-1.5-flash-latest...");
 
                 chatSessionRef.current = model.startChat({
                     history: history
@@ -187,7 +187,7 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
             `;
 
             const genAI = new GoogleGenerativeAI(apiKey);
-            const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash", systemInstruction: systemPrompt });
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest", systemInstruction: systemPrompt });
             chatSessionRef.current = model.startChat({});
         }
 
