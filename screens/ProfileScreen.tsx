@@ -114,6 +114,10 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
     // Navigation State
     const [activeView, setActiveView] = useState<'menu' | 'personal_data' | 'subscription' | 'contract' | 'vocal_test' | 'piano' | 'tuner'>('menu');
 
+    // --- ESTADO DE EDIÇÃO DE VENCIMENTO ---
+    const [isEditingDueDate, setIsEditingDueDate] = useState(false);
+    const [editDueDateDay, setEditDueDateDay] = useState('02');
+
     // --- ESTADOS DO TESTE VOCAL & AFINADOR ---
     const [rangeStep, setRangeStep] = useState<'intro' | 'low' | 'high' | 'result'>('intro');
     const [vocalType, setVocalType] = useState<string>('Indefinido');
@@ -775,7 +779,39 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                         </div>
                         <div className="flex justify-between items-center border-t border-white/5 pt-3">
                             <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Vencimento</span>
-                            <span className="text-sm font-bold text-white uppercase">Todo dia: {formatDayOfMonth(user?.nextDueDate)} do mês</span>
+                            <div className="flex items-center gap-2">
+                                {isEditingDueDate ? (
+                                    <div className="flex items-center gap-1">
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            max="31"
+                                            value={editDueDateDay}
+                                            onChange={(e) => setEditDueDateDay(e.target.value.padStart(2, '0'))}
+                                            className="w-12 h-8 bg-[#101622] border border-[#0081FF]/30 rounded-lg text-center text-sm font-bold text-white focus:outline-none"
+                                        />
+                                        <button
+                                            onClick={() => setIsEditingDueDate(false)}
+                                            className="w-8 h-8 rounded-lg bg-green-500/20 text-green-500 flex items-center justify-center"
+                                        >
+                                            <span className="material-symbols-rounded text-sm">check</span>
+                                        </button>
+                                    </div>
+                                ) : (
+                                    <>
+                                        <span className="text-sm font-bold text-white uppercase">Todo dia: {editDueDateDay} do mês</span>
+                                        <button
+                                            onClick={() => {
+                                                setEditDueDateDay(formatDayOfMonth(user?.nextDueDate));
+                                                setIsEditingDueDate(true);
+                                            }}
+                                            className="w-8 h-8 rounded-lg bg-white/5 text-gray-400 flex items-center justify-center hover:text-white"
+                                        >
+                                            <span className="material-symbols-rounded text-sm">edit</span>
+                                        </button>
+                                    </>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
