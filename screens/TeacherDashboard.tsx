@@ -488,7 +488,8 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
             {renderContent()}
 
-            <button onClick={() => setIsAddModalOpen(true)} className="fixed bottom-28 right-6 w-14 h-14 rounded-full bg-[#0081FF] text-white shadow-lg flex items-center justify-center z-20 hover:scale-110 active:scale-95 transition-all">
+            {/* Botão de Add - agora absolute para respeitar o max-w do container pai */}
+            <button onClick={() => setIsAddModalOpen(true)} className="absolute bottom-28 right-6 w-14 h-14 rounded-full bg-[#0081FF] text-white shadow-lg flex items-center justify-center z-20 hover:scale-110 active:scale-95 transition-all">
                 <span className="material-symbols-rounded text-3xl">add</span>
             </button>
 
@@ -570,18 +571,18 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             )}
 
             {isAddModalOpen && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-0 bg-black/90 backdrop-blur-xl animate-in slide-in-from-bottom duration-300">
-                    <div className="w-full h-full bg-[#101622] flex flex-col pt-12">
-                        {/* Header */}
-                        <div className="px-6 py-4 flex justify-between items-center border-b border-white/5">
-                            <button onClick={() => setIsAddModalOpen(false)} className="w-10 h-10 rounded-full flex items-center justify-center text-gray-400 hover:text-white">
-                                <span className="material-symbols-rounded">close</span>
+                <div className="absolute inset-0 z-[60] flex flex-col bg-[#101622] animate-in slide-in-from-bottom duration-300">
+                    <div className="w-full h-full flex flex-col">
+                        {/* Header - Alinhado com o estilo mobile do app */}
+                        <div className="px-6 pt-12 pb-4 flex justify-between items-center border-b border-white/5 bg-[#151A23]">
+                            <button onClick={() => setIsAddModalOpen(false)} className="w-10 h-10 rounded-full flex items-center justify-center text-gray-400 hover:bg-white/5 transition-colors">
+                                <span className="material-symbols-rounded text-2xl">close</span>
                             </button>
                             <h3 className="text-lg font-black text-white">Novo Aluno</h3>
                             <button
                                 onClick={handleAddStudent}
                                 disabled={!newStudentName.trim() || loadingAction}
-                                className="text-[#0081FF] font-black text-sm uppercase tracking-wider disabled:opacity-30"
+                                className="text-[#0081FF] font-black text-sm uppercase tracking-wider disabled:opacity-30 px-2"
                             >
                                 {loadingAction ? '...' : 'Salvar'}
                             </button>
