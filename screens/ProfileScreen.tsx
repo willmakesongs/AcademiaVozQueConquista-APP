@@ -80,6 +80,21 @@ function getNoteStringFromMidi(midi: number) {
     return `${note}${octave}`;
 }
 
+// --- FUNÇÃO AUXILIAR DE DATA ---
+function formatDateBR(dateString?: string) {
+    if (!dateString) return '---';
+    try {
+        // Se a data vier no formato ISO 2026-02-02...
+        const parts = dateString.split(' ')[0].split('-');
+        if (parts.length === 3) {
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+        return dateString;
+    } catch (e) {
+        return dateString;
+    }
+}
+
 export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
     const { user } = useAuth();
 
@@ -618,7 +633,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                         <div className="bg-[#1A202C] rounded-xl border border-white/5 divide-y divide-white/5">
                             <div className="p-4 flex justify-between items-center">
                                 <span className="text-sm text-gray-400">Renovação</span>
-                                <span className="text-sm text-white font-medium">{user?.nextDueDate || 'Indefinida'}</span>
+                                <span className="text-sm text-white font-medium">{formatDateBR(user?.nextDueDate)}</span>
                             </div>
                             <div className="p-4 flex justify-between items-center">
                                 <span className="text-sm text-gray-400">Valor</span>
@@ -747,7 +762,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                         </div>
                         <div className="flex justify-between items-center border-t border-white/5 pt-3">
                             <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Vencimento</span>
-                            <span className="text-sm font-bold text-white">Dia {user?.nextDueDate?.split(' ')[0] || '10'} de cada mês</span>
+                            <span className="text-sm font-bold text-white">{formatDateBR(user?.nextDueDate)} de cada mês</span>
                         </div>
                     </div>
                 </div>
