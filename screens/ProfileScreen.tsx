@@ -49,6 +49,12 @@ function autoCorrelate(buf: Float32Array, sampleRate: number) {
         for (let j = 0; j < SIZE - i; j++) {
             c[i] = c[i] + buf[j] * buf[j + i];
         }
+        // Normalização crucial para evitar erro de oitava (bias para lags menores)
+        // Sem isso, frequências mais altas (lags menores/C3) ganham da fundamental (lags maiores/C2)
+        // porque somam mais amostras.
+        if (SIZE - i > 0) {
+            c[i] = c[i] / (SIZE - i);
+        }
     }
 
     let d = 0; while (c[d] > c[d + 1]) d++;
