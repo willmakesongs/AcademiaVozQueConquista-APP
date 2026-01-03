@@ -227,6 +227,32 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         }
     };
 
+    const handleDownloadTXT = () => {
+        if (students.length === 0) return;
+
+        const header = `LISTA DE ALUNOS - ACADEMIA VOZ QUE CONQUISTA\nData de Exportação: ${new Date().toLocaleDateString('pt-BR')}\n${'='.repeat(50)}\n\n`;
+        const content = students.map((s, idx) => {
+            return `${idx + 1}. ${s.name.toUpperCase()}\n` +
+                `   Status: ${s.status === 'active' ? 'ATIVO' : s.status === 'overdue' ? 'PENDENTE' : 'INATIVO'}\n` +
+                `   Plano: ${s.plan || 'Pro'}\n` +
+                `   Vencimento: Dia ${s.paymentDay || '05'}\n` +
+                `   Telefone: ${s.phone || 'Não informado'}\n` +
+                `   Agendamento: ${s.scheduleDay || '---'} às ${s.scheduleTime || '--:--'}\n` +
+                `   Obs: ${s.notes || 'Nenhuma'}\n` +
+                `${'-'.repeat(30)}`;
+        }).join('\n\n');
+
+        const blob = new Blob([header + content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `Alunos_AcademiaVoz_${new Date().toISOString().split('T')[0]}.txt`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    };
+
     const renderDashboard = () => {
         const totalReceived = students.filter(s => s.status === 'active').reduce((acc, s) => acc + (s.amount || 0), 0);
         const totalPending = students.filter(s => s.status === 'overdue').reduce((acc, s) => acc + (s.amount || 0), 0);
@@ -374,7 +400,18 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 <div className="px-6 mt-8">
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="text-xl font-black text-white tracking-tight">Agenda - 24 de Outubro</h3>
-                        <button onClick={() => setIsSearchOpen(true)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400"><span className="material-symbols-rounded">search</span></button>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={handleDownloadTXT}
+                                className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400 hover:bg-blue-500/20 transition-all"
+                                title="Baixar lista em .TXT"
+                            >
+                                <span className="material-symbols-rounded">download</span>
+                            </button>
+                            <button onClick={() => setIsSearchOpen(true)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400">
+                                <span className="material-symbols-rounded">search</span>
+                            </button>
+                        </div>
                     </div>
 
                     <div className="space-y-4">
