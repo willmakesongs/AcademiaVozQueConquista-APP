@@ -56,21 +56,26 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
     useEffect(() => {
         const checkKey = () => {
             // 1. Tenta pegar do ambiente (Vercel/env)
-            const envKey = process.env.API_KEY;
-            // Verifica se é uma chave válida (não vazia e não placeholder)
+            // No Vite, as variáveis do Vercel mapeadas no vite.config.ts ficam em process.env
+            const envKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
+
+            // Verifica se é uma chave válida
             if (envKey && envKey.length > 20 && !envKey.includes('PLACEHOLDER')) {
+                console.log("Lorena IA: Usando Chave Mestra do Ambiente.");
                 setApiKey(envKey);
+                setShowConfig(false);
                 return;
             }
 
-            // 2. Tenta pegar do LocalStorage (Salva pelo usuário)
+            // 2. Tenta pegar do LocalStorage (Caso o admin queira trocar)
             const localKey = localStorage.getItem('gemini_api_key');
             if (localKey) {
                 setApiKey(localKey);
+                setShowConfig(false);
                 return;
             }
 
-            // 3. Se não tiver chave, mostra tela de configuração
+            // 3. Se não tiver chave em NENHUM lugar, mostra tela de configuração
             setShowConfig(true);
         };
 
