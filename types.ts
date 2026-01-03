@@ -86,6 +86,8 @@ export interface StudentSummary {
   scheduleTime?: string;
   amount?: number;
   instrument?: string; // e.g., "Canto", "Piano"
+  address?: string;
+  instagram?: string;
 }
 
 export interface Appointment {

@@ -39,7 +39,9 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     const [newStudentName, setNewStudentName] = useState('');
     const [newStudentAge, setNewStudentAge] = useState('');
     const [newStudentPhone, setNewStudentPhone] = useState('');
-    const [newStudentInsta, setNewStudentInsta] = useState('');
+    const [newStudentAddress, setNewStudentAddress] = useState('');
+    const [newStudentInstagram, setNewStudentInstagram] = useState('');
+    const [newStudentNotes, setNewStudentNotes] = useState('');
 
     // Agendamento Novo Aluno
     const [scheduleDay, setScheduleDay] = useState('Seg');
@@ -125,11 +127,13 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             age: newStudentAge,
             phone: newStudentPhone,
             paymentDay: paymentDay,
-            notes: '',
+            notes: newStudentNotes,
             modality: newStudentModality,
             scheduleDay: scheduleDay,
             scheduleTime: scheduleTime,
-            amount: 97
+            amount: 97,
+            address: newStudentAddress,
+            instagram: newStudentInstagram
         };
 
         try {
@@ -142,7 +146,10 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 age: newStudentAge ? parseInt(newStudentAge) : null,
                 modality: newStudentModality,
                 schedule_day: scheduleDay,
-                schedule_time: scheduleTime
+                schedule_time: scheduleTime,
+                instagram: newStudentInstagram || null,
+                address: newStudentAddress || null,
+                notes: newStudentNotes || null
             }]);
 
             const existingLocal = localStorage.getItem('vocalizes_local_students');
@@ -151,7 +158,14 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             localStorage.setItem('vocalizes_local_students', JSON.stringify(localList));
 
             setStudents(prev => [...prev, newStudentLocal]);
+
+            // Reset fields
             setNewStudentName('');
+            setNewStudentAge('');
+            setNewStudentPhone('');
+            setNewStudentAddress('');
+            setNewStudentInstagram('');
+            setNewStudentNotes('');
             setIsAddModalOpen(false);
         } catch (err) {
             console.error(err);
@@ -556,23 +570,175 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             )}
 
             {isAddModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-                    <div className="w-full max-w-sm bg-[#1A202C] rounded-2xl border border-white/10 shadow-2xl flex flex-col">
-                        <div className="px-6 py-4 border-b border-white/5 flex justify-between items-center bg-[#151A23] rounded-t-2xl">
-                            <h3 className="font-bold text-white">Novo Aluno</h3>
-                            <button onClick={() => setIsAddModalOpen(false)} className="text-gray-400 hover:text-white"><span className="material-symbols-rounded">close</span></button>
-                        </div>
-                        <div className="p-6 space-y-4">
-                            <input type="text" value={newStudentName} onChange={(e) => setNewStudentName(e.target.value)} placeholder="Nome do Aluno" className="w-full h-12 bg-[#101622] rounded-xl border border-white/10 px-4 text-white focus:outline-none focus:border-[#0081FF]" />
-                            <div className="grid grid-cols-2 gap-3">
-                                <select value={scheduleDay} onChange={(e) => setScheduleDay(e.target.value)} className="h-12 bg-[#101622] rounded-xl border border-white/10 px-3 text-white outline-none">
-                                    {WEEK_DAYS.map(d => <option key={d} value={d}>{d}</option>)}
-                                </select>
-                                <input type="time" value={scheduleTime} onChange={(e) => setScheduleTime(e.target.value)} className="h-12 bg-[#101622] rounded-xl border border-white/10 px-3 text-white outline-none" />
-                            </div>
-                            <button onClick={handleAddStudent} disabled={!newStudentName.trim() || loadingAction} className="w-full h-12 bg-[#0081FF] text-white font-bold rounded-xl shadow-lg disabled:opacity-50">
-                                {loadingAction ? 'Salvando...' : 'Cadastrar'}
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-0 bg-black/90 backdrop-blur-xl animate-in slide-in-from-bottom duration-300">
+                    <div className="w-full h-full bg-[#101622] flex flex-col pt-12">
+                        {/* Header */}
+                        <div className="px-6 py-4 flex justify-between items-center border-b border-white/5">
+                            <button onClick={() => setIsAddModalOpen(false)} className="w-10 h-10 rounded-full flex items-center justify-center text-gray-400 hover:text-white">
+                                <span className="material-symbols-rounded">close</span>
                             </button>
+                            <h3 className="text-lg font-black text-white">Novo Aluno</h3>
+                            <button
+                                onClick={handleAddStudent}
+                                disabled={!newStudentName.trim() || loadingAction}
+                                className="text-[#0081FF] font-black text-sm uppercase tracking-wider disabled:opacity-30"
+                            >
+                                {loadingAction ? '...' : 'Salvar'}
+                            </button>
+                        </div>
+
+                        {/* Form Content */}
+                        <div className="flex-1 overflow-y-auto px-6 py-8 space-y-8 hide-scrollbar">
+
+                            {/* Dados Pessoais */}
+                            <section className="space-y-4">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <span className="material-symbols-rounded text-[#0081FF] text-lg">person</span>
+                                    <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Dados Pessoais</h4>
+                                </div>
+
+                                <div className="space-y-4">
+                                    <div>
+                                        <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Nome Completo</p>
+                                        <input
+                                            type="text"
+                                            value={newStudentName}
+                                            onChange={(e) => setNewStudentName(e.target.value)}
+                                            placeholder="Ex: Maria Silva"
+                                            className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white focus:outline-none focus:border-[#0081FF] transition-all"
+                                        />
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="col-span-1">
+                                            <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Idade</p>
+                                            <input
+                                                type="number"
+                                                value={newStudentAge}
+                                                onChange={(e) => setNewStudentAge(e.target.value)}
+                                                placeholder="25"
+                                                className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white focus:outline-none focus:border-[#0081FF] transition-all text-center"
+                                            />
+                                        </div>
+                                        <div className="col-span-2">
+                                            <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Endereço</p>
+                                            <input
+                                                type="text"
+                                                value={newStudentAddress}
+                                                onChange={(e) => setNewStudentAddress(e.target.value)}
+                                                placeholder="Rua, Número, Bairro"
+                                                className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white focus:outline-none focus:border-[#0081FF] transition-all"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            {/* Contato */}
+                            <section className="space-y-4">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <span className="material-symbols-rounded text-[#0081FF] text-lg">contact_mail</span>
+                                    <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Contato</h4>
+                                </div>
+                                <div className="space-y-4">
+                                    <div className="relative">
+                                        <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Telefone / WhatsApp</p>
+                                        <div className="relative">
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-500 text-lg">call</span>
+                                            <input
+                                                type="text"
+                                                value={newStudentPhone}
+                                                onChange={(e) => setNewStudentPhone(e.target.value)}
+                                                placeholder="(00) 00000-0000"
+                                                className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 pl-12 pr-4 text-white focus:outline-none focus:border-[#0081FF] transition-all"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="relative">
+                                        <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Instagram</p>
+                                        <div className="relative">
+                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-500 text-lg">alternate_email</span>
+                                            <input
+                                                type="text"
+                                                value={newStudentInstagram}
+                                                onChange={(e) => setNewStudentInstagram(e.target.value)}
+                                                placeholder="usuario_insta"
+                                                className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 pl-12 pr-4 text-white focus:outline-none focus:border-[#0081FF] transition-all"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            {/* Detalhes da Aula */}
+                            <section className="space-y-4">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <span className="material-symbols-rounded text-[#0081FF] text-lg">school</span>
+                                    <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Detalhes da Aula</h4>
+                                </div>
+                                <div className="space-y-4">
+                                    <div>
+                                        <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Tipo de Aula</p>
+                                        <div className="grid grid-cols-2 gap-2 bg-white/5 p-1.5 rounded-2xl border border-white/5">
+                                            <button
+                                                onClick={() => setNewStudentModality('Presencial')}
+                                                className={`flex items-center justify-center gap-2 h-11 rounded-xl text-sm font-bold transition-all ${newStudentModality === 'Presencial' ? 'bg-[#0081FF] text-white shadow-lg' : 'text-gray-400'}`}
+                                            >
+                                                <span className="material-symbols-rounded text-lg">location_on</span> Presencial
+                                            </button>
+                                            <button
+                                                onClick={() => setNewStudentModality('Online')}
+                                                className={`flex items-center justify-center gap-2 h-11 rounded-xl text-sm font-bold transition-all ${newStudentModality === 'Online' ? 'bg-[#0081FF] text-white shadow-lg' : 'text-gray-400'}`}
+                                            >
+                                                <span className="material-symbols-rounded text-lg">videocam</span> Online
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Classificação Vocal</p>
+                                        <div className="relative">
+                                            <select
+                                                value={newStudentLevel}
+                                                onChange={(e) => setNewStudentLevel(e.target.value)}
+                                                className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white focus:outline-none appearance-none"
+                                            >
+                                                {['Iniciante', 'Intermediário', 'Avançado'].map(l => (
+                                                    <option key={l} value={l} className="bg-[#1A202C]">{l}</option>
+                                                ))}
+                                            </select>
+                                            <span className="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-500 pointer-events-none">expand_more</span>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Dia da Aula</p>
+                                            <select value={scheduleDay} onChange={(e) => setScheduleDay(e.target.value)} className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white outline-none">
+                                                {WEEK_DAYS.map(d => <option key={d} value={d} className="bg-[#1A202C]">{d}</option>)}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Horário</p>
+                                            <input type="time" value={scheduleTime} onChange={(e) => setScheduleTime(e.target.value)} className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white outline-none" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+
+                            {/* Outros */}
+                            <section className="space-y-4">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <span className="material-symbols-rounded text-[#0081FF] text-lg">description</span>
+                                    <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Outros</h4>
+                                </div>
+                                <div>
+                                    <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Anotações</p>
+                                    <textarea
+                                        value={newStudentNotes}
+                                        onChange={(e) => setNewStudentNotes(e.target.value)}
+                                        placeholder="Observações importantes sobre o aluno..."
+                                        className="w-full h-32 bg-white/5 rounded-2xl border border-white/5 p-4 text-white focus:outline-none focus:border-[#0081FF] resize-none transition-all"
+                                    />
+                                </div>
+                            </section>
                         </div>
                     </div>
                 </div>
