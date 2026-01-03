@@ -259,9 +259,9 @@ export const PianoScreen: React.FC<Props> = ({ onBack, embedded }) => {
             NOTES.forEach(noteName => {
                 if (noteName.includes('#')) return;
 
-                const fullNote = `${noteName}${octave} `;
+                const fullNote = `${noteName}${octave}`;
                 const hasSharp = ['C', 'D', 'F', 'G', 'A'].includes(noteName);
-                const sharpNote = `${noteName} #${octave} `;
+                const sharpNote = `${noteName}#${octave}`;
 
                 keys.push(
                     <div key={fullNote} className="relative flex-shrink-0 select-none">
@@ -273,17 +273,17 @@ export const PianoScreen: React.FC<Props> = ({ onBack, embedded }) => {
                             onTouchStart={(e) => { e.preventDefault(); playNote(fullNote); }}
                             onTouchEnd={(e) => { e.preventDefault(); stopNote(fullNote); }}
                             className={`
-w - 14 h - 48 sm: w - 16 sm: h - 56
-bg - white border - l border - b border - r border - [#E2E8F0]
-rounded - b - lg
-active: bg - gray - 200 active: scale - [0.99] active: shadow - inner
-transition - all duration - 75
-                            flex items - end justify - center pb - 4
-z - 10 relative
-shadow - [0_4px_0_0_rgba(180, 180, 180, 1)]
-active: translate - y - [2px] active: shadow - none
-                            ${activeNote?.note === fullNote ? '!bg-blue-50 !shadow-none !translate-y-[2px]' : ''}
-`}
+                                w-14 h-48 sm:w-16 sm:h-56
+                                bg-white border-l border-b border-r border-[#E2E8F0]
+                                rounded-b-lg
+                                active:bg-gray-200 active:scale-[0.99] active:shadow-inner
+                                transition-all duration-75
+                                flex items-end justify-center pb-4
+                                z-10 relative
+                                shadow-[0_4px_0_0_rgba(180,180,180,1)]
+                                active:translate-y-[2px] active:shadow-none
+                                ${activeNote?.note === fullNote ? '!bg-blue-50 !shadow-none !translate-y-[2px]' : ''}
+                            `}
                         >
                             <span className="text-gray-400 font-bold text-xs">{fullNote}</span>
                         </button>
@@ -297,16 +297,16 @@ active: translate - y - [2px] active: shadow - none
                                 onTouchStart={(e) => { e.stopPropagation(); e.preventDefault(); playNote(sharpNote); }}
                                 onTouchEnd={(e) => { e.stopPropagation(); e.preventDefault(); stopNote(sharpNote); }}
                                 className={`
-absolute - right - 4 top - 0
-w - 8 h - 32 sm: w - 10 sm: h - 36
-bg - [#151A23] border border - gray - 900
-rounded - b - lg
-z - 20
-shadow - [0_4px_0_4px_rgba(0, 0, 0, 0.3)]
-active: shadow - none active: translate - y - [2px]
-active: bg - gray - 900
-                                ${activeNote?.note === sharpNote ? '!bg-[#FF00BC] !shadow-none !translate-y-[2px]' : 'bg-gradient-to-b from-black to-gray-900'}
-`}
+                                    absolute -right-4 top-0
+                                    w-8 h-32 sm:w-10 sm:h-36
+                                    bg-[#151A23] border border-gray-900
+                                    rounded-b-lg
+                                    z-20
+                                    shadow-[0_4px_0_4px_rgba(0,0,0,0.3)]
+                                    active:shadow-none active:translate-y-[2px]
+                                    active:bg-gray-900
+                                    ${activeNote?.note === sharpNote ? '!bg-[#FF00BC] !shadow-none !translate-y-[2px]' : 'bg-gradient-to-b from-black to-gray-900'}
+                                `}
                             >
                             </button>
                         )}
