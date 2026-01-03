@@ -3,8 +3,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Screen, StudentSummary, Appointment } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
-// MOCK_STUDENTS and TEACHER_APPOINTMENTS removed
-
 
 interface Props {
     onNavigate: (screen: Screen) => void;
@@ -13,31 +11,18 @@ interface Props {
 
 const WEEK_DAYS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 
-// Helper para formatar mensagens de erro
-const formatErrorMessage = (error: any): string => {
-    if (!error) return 'Erro desconhecido';
-    if (typeof error === 'string') return error;
-    if (error.message) return error.message;
-    try {
-        return JSON.stringify(error);
-    } catch {
-        return 'Erro não detalhado';
-    }
-};
-
 export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
     const { user } = useAuth();
     const [showConfig, setShowConfig] = useState(false);
     const [students, setStudents] = useState<StudentSummary[]>([]);
     const [appointments, setAppointments] = useState<Appointment[]>([]);
-    const configRef = useRef<HTMLDivElement>(null);
     const [activeTab, setActiveTab] = useState<'dashboard' | 'students' | 'history' | 'reports' | 'settings'>('dashboard');
 
     // States UI
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [loadingAction, setLoadingAction] = useState(false); // Feedback visual
+    const [loadingAction, setLoadingAction] = useState(false);
 
     // States Detalhes
     const [selectedStudent, setSelectedStudent] = useState<StudentSummary | null>(null);
@@ -72,35 +57,28 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
     }, []);
 
     const fetchData = async () => {
-        // 1. Carrega alunos salvos localmente (Fallback)
         const localData = localStorage.getItem('vocalizes_local_students');
         const localStudents: StudentSummary[] = localData ? JSON.parse(localData) : [];
 
         try {
-            // 2. Tenta carregar do Supabase
             const { data: sData, error: sError } = await supabase
                 .from('profiles')
                 .select('*')
                 .eq('role', 'student');
 
             if (sError) {
-                // Se for erro de permissão (RLS), ignoramos o banco e usamos Mock + Local
                 if (String(sError.code) === '42501') {
-                    console.warn('RLS na leitura: usando dados locais e mock.');
-                    // Mescla Mock + Local (Mock removido)
                     const merged = [...localStudents];
-                    // Remove duplicatas por ID (priorizando local se houver conflito com mock)
                     const unique = merged.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
                     setStudents(unique);
                 } else {
                     throw sError;
                 }
             } else if (sData) {
-                // Formata dados do Supabase
                 const dbStudents: StudentSummary[] = sData.map(s => ({
                     id: s.id,
                     name: s.name,
-                    avatarUrl: s.avatar_url || `https://ui-avatars.com/api/?name=${s.name}&background=random`,
+                    avatarUrl: s.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=random`,
                     level: 'Iniciante',
                     lastPractice: 'Hoje',
                     progress: 0,
@@ -112,42 +90,33 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
                     modality: s.modality || 'Online',
                     scheduleDay: s.schedule_day || 'Seg',
                     scheduleTime: s.schedule_time || '14:00',
-                    amount: s.amount || 97 // Valor padrão
+                    amount: s.amount || 97
                 }));
 
-                // Mescla: DB + Local (Local tem prioridade se o usuário acabou de criar e o DB falhou)
                 const allStudentsMap = new Map<string, StudentSummary>();
                 dbStudents.forEach(s => allStudentsMap.set(s.id, s));
                 localStudents.forEach(s => allStudentsMap.set(s.id, s));
 
                 setStudents(Array.from(allStudentsMap.values()));
             }
-
-            setAppointments([]);
-
         } catch (error) {
-            console.warn('Usando dados locais/mock devido a erro:', error);
-            // Fallback total
+            console.warn('Fallback to local data:', error);
             const merged = [...localStudents];
             const unique = merged.filter((v, i, a) => a.findIndex(v2 => (v2.id === v.id)) === i);
             setStudents(unique);
-            setAppointments([]);
         }
     };
 
-    // Salvar Novo Aluno
     const handleAddStudent = async () => {
         if (!newStudentName.trim()) return;
         setLoadingAction(true);
-
         const fakeId = crypto.randomUUID();
         const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(newStudentName)}&background=random&color=fff`;
 
-        // Objeto do Aluno
         const newStudentLocal: StudentSummary = {
             id: fakeId,
             name: newStudentName,
-            avatarUrl: avatarUrl,
+            avatarUrl,
             level: newStudentLevel,
             lastPractice: 'Nunca',
             progress: 0,
@@ -158,12 +127,12 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
             notes: '',
             modality: newStudentModality,
             scheduleDay: scheduleDay,
-            scheduleTime: scheduleTime
+            scheduleTime: scheduleTime,
+            amount: 97
         };
 
         try {
-            // Tenta salvar no Supabase
-            const { error } = await supabase.from('profiles').insert([{
+            await supabase.from('profiles').insert([{
                 id: fakeId,
                 name: newStudentName,
                 role: 'student',
@@ -175,35 +144,16 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
                 schedule_time: scheduleTime
             }]);
 
-            // Se der erro no DB, salvamos apenas localmente sem assustar o usuário
-            if (error) {
-                console.warn("Erro ao salvar no DB (salvando localmente):", error);
-            }
-
-            // SALVA NO LOCALSTORAGE (Garante persistência mesmo com erro no DB)
             const existingLocal = localStorage.getItem('vocalizes_local_students');
             const localList = existingLocal ? JSON.parse(existingLocal) : [];
             localList.push(newStudentLocal);
             localStorage.setItem('vocalizes_local_students', JSON.stringify(localList));
 
-            // Atualiza Estado React
             setStudents(prev => [...prev, newStudentLocal]);
-
-            // Reset
             setNewStudentName('');
-            setNewStudentAge('');
-            setNewStudentPhone('');
-            setScheduleDay('Seg');
-            setScheduleTime('14:00');
             setIsAddModalOpen(false);
-
-            alert("Aluno cadastrado com sucesso!");
-
-        } catch (err: any) {
-            console.error("Erro inesperado:", err);
-            // Mesmo com erro crítico, tenta salvar local
-            setStudents(prev => [...prev, newStudentLocal]);
-            setIsAddModalOpen(false);
+        } catch (err) {
+            console.error(err);
         } finally {
             setLoadingAction(false);
         }
@@ -221,7 +171,6 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
     const handleSaveChanges = async () => {
         if (!selectedStudent) return;
         setLoadingAction(true);
-
         const updatedStudent: StudentSummary = {
             ...selectedStudent,
             notes: notesInput,
@@ -231,54 +180,28 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
         };
 
         try {
-            // Tenta atualizar DB
-            const { error } = await supabase
-                .from('profiles')
-                .update({
-                    phone: editPhone,
-                    notes: notesInput,
-                    schedule_day: editScheduleDay,
-                    schedule_time: editScheduleTime
-                })
-                .eq('id', selectedStudent.id);
+            await supabase.from('profiles').update({
+                phone: editPhone,
+                notes: notesInput,
+                schedule_day: editScheduleDay,
+                schedule_time: editScheduleTime
+            }).eq('id', selectedStudent.id);
 
-            if (error) console.warn("Erro update DB (salvando local):", error);
-
-            // ATUALIZA LOCALSTORAGE
             const existingLocal = localStorage.getItem('vocalizes_local_students');
             let localList: StudentSummary[] = existingLocal ? JSON.parse(existingLocal) : [];
-
-            // Verifica se já existe no local, se não, adiciona (caso seja um mock que foi editado)
             const localIndex = localList.findIndex(s => s.id === selectedStudent.id);
-            if (localIndex >= 0) {
-                localList[localIndex] = updatedStudent;
-            } else {
-                // Se editou um aluno que veio do Mock/DB mas falhou o save, salvamos cópia local
-                localList.push(updatedStudent);
-            }
+            if (localIndex >= 0) localList[localIndex] = updatedStudent;
+            else localList.push(updatedStudent);
             localStorage.setItem('vocalizes_local_students', JSON.stringify(localList));
 
-            // Atualiza Estado
             setStudents(prev => prev.map(s => s.id === selectedStudent.id ? updatedStudent : s));
             setSelectedStudent(updatedStudent);
             setIsEditing(false);
-
-        } catch (err: any) {
+        } catch (err) {
             console.error(err);
-            alert("Erro ao salvar alterações.");
         } finally {
             setLoadingAction(false);
         }
-    };
-
-    // Utilitário para Link WhatsApp
-    const openWhatsApp = (phone: string) => {
-        if (!phone) return;
-        const cleanPhone = phone.replace(/\D/g, '');
-        if (!cleanPhone) return;
-
-        const finalPhone = cleanPhone.length <= 11 ? `55${cleanPhone}` : cleanPhone;
-        window.open(`https://wa.me/${finalPhone}`, '_blank');
     };
 
     const renderDashboard = () => {
@@ -288,7 +211,6 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
 
         return (
             <div className="flex-1 overflow-y-auto hide-scrollbar pb-24">
-                {/* Summary Cards */}
                 <div className="grid grid-cols-2 gap-4 px-6 pt-6">
                     <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5">
                         <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-400 mb-3">
@@ -308,21 +230,13 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
                     </div>
                 </div>
 
-                {/* Revenue Trend Chart */}
                 <div className="px-6 mt-6">
                     <div className="bg-[#1A202C] rounded-[32px] p-6 border border-white/5">
-                        <div className="flex justify-between items-start mb-6">
-                            <div>
-                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Tendência de Receita</p>
-                                <div className="flex items-center gap-2">
-                                    <h3 className="text-2xl font-black text-white">R$ 152k</h3>
-                                    <span className="bg-green-500/10 text-green-400 text-[10px] font-bold px-2 py-0.5 rounded-full">+8.5%</span>
-                                </div>
-                                <p className="text-[10px] text-gray-500 mt-1">Últimos 6 meses</p>
-                            </div>
+                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Tendência de Receita</p>
+                        <div className="flex items-center gap-2 mb-4">
+                            <h3 className="text-2xl font-black text-white">R$ 152k</h3>
+                            <span className="bg-green-500/10 text-green-400 text-[10px] font-bold px-2 py-0.5 rounded-full">+8.5%</span>
                         </div>
-
-                        {/* Chart Area */}
                         <div className="h-32 w-full relative">
                             <svg className="w-full h-full overflow-visible" preserveAspectRatio="none">
                                 <defs>
@@ -331,28 +245,18 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
                                         <stop offset="100%" stopColor="#0081FF" stopOpacity="0" />
                                     </linearGradient>
                                 </defs>
-                                <path
-                                    d="M0 80 Q 40 20, 80 50 T 160 40 T 240 60 T 320 30 T 400 50"
-                                    fill="none"
-                                    stroke="#0081FF"
-                                    strokeWidth="3"
-                                    strokeLinecap="round"
-                                />
-                                <path
-                                    d="M0 80 Q 40 20, 80 50 T 160 40 T 240 60 T 320 30 T 400 50 L 400 120 L 0 120 Z"
-                                    fill="url(#chartGradient)"
-                                />
+                                <path d="M0 80 Q 40 20, 80 50 T 160 40 T 240 60 T 320 30 T 400 50" fill="none" stroke="#0081FF" strokeWidth="3" strokeLinecap="round" />
+                                <path d="M0 80 Q 40 20, 80 50 T 160 40 T 240 60 T 320 30 T 400 50 L 400 120 L 0 120 Z" fill="url(#chartGradient)" />
                             </svg>
-                            <div className="flex justify-between mt-4">
-                                {['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN'].map(m => (
-                                    <span key={m} className={`text-[9px] font-bold ${m === 'JUN' ? 'text-[#0081FF]' : 'text-gray-300'}`}>{m}</span>
-                                ))}
-                            </div>
+                        </div>
+                        <div className="flex justify-between mt-4">
+                            {['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN'].map(m => (
+                                <span key={m} className={`text-[9px] font-bold ${m === 'JUN' ? 'text-[#0081FF]' : 'text-gray-300'}`}>{m}</span>
+                            ))}
                         </div>
                     </div>
                 </div>
 
-                {/* Late Payments */}
                 <div className="px-6 mt-8">
                     <div className="flex justify-between items-center mb-4">
                         <h4 className="text-sm font-black text-white uppercase tracking-tight">Pagamentos Atrasados</h4>
@@ -361,7 +265,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
                     <div className="space-y-3">
                         {overdueStudents.length > 0 ? (
                             overdueStudents.map(student => (
-                                <div key={student.id} onClick={() => openStudentDetails(student)} className="bg-[#1A202C] p-4 rounded-[24px] border border-white/5 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all">
+                                <div key={student.id} onClick={() => openStudentDetails(student)} className="bg-[#1A202C] p-4 rounded-[24px] border border-white/5 flex items-center justify-between">
                                     <div className="flex items-center gap-3">
                                         <img src={student.avatarUrl} className="w-10 h-10 rounded-full object-cover" alt="" />
                                         <div>
@@ -370,17 +274,13 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
                                         </div>
                                     </div>
                                     <div className="text-right flex items-center gap-2">
-                                        <div>
-                                            <p className="text-sm font-black text-white">R$ {student.amount || 97},00</p>
-                                        </div>
+                                        <p className="text-sm font-black text-white">R$ {student.amount || 97},00</p>
                                         <span className="material-symbols-rounded text-red-500 text-lg">warning</span>
                                     </div>
                                 </div>
                             ))
                         ) : (
-                            <div className="py-8 text-center bg-[#1A202C]/50 rounded-[24px] border border-dashed border-white/10">
-                                <p className="text-xs text-gray-500 font-medium italic">Nenhum pagamento atrasado ✨</p>
-                            </div>
+                            <div className="py-8 text-center bg-[#1A202C]/50 rounded-[24px] border border-dashed border-white/10 text-gray-500 text-xs">Nenhum pagamento atrasado ✨</div>
                         )}
                     </div>
                 </div>
@@ -390,42 +290,10 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
 
     const renderStudentList = () => (
         <div className="px-6 py-6 space-y-8 flex-1 overflow-y-auto hide-scrollbar pb-24">
-            {/* Schedule Strip */}
-            <div>
-                <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-bold text-white">Agenda de Hoje</h3>
-                    <button onClick={() => onNavigate(Screen.CALENDAR)} className="text-xs text-[#0081FF] font-medium hover:text-white">Ver calendário</button>
-                </div>
-                <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-2">
-                    {appointments.map((apt) => (
-                        <div key={apt.id} className="min-w-[200px] p-4 bg-[#1A202C] rounded-2xl border border-white/5 relative overflow-hidden group flex flex-col justify-between">
-                            <div className={`absolute left-0 top-0 bottom-0 w-1 ${apt.status === 'confirmed' ? 'bg-[#0081FF]' : 'bg-[#FF00BC]'}`}></div>
-                            <div>
-                                <div className="flex justify-between items-start mb-3 pl-2"><span className="text-xl font-bold text-white">{apt.time}</span></div>
-                                <div className="flex items-center gap-3 pl-2 mb-3">
-                                    <img src={apt.avatarUrl} className="w-8 h-8 rounded-full bg-gray-700" alt={apt.studentName} />
-                                    <div className="overflow-hidden"><p className="text-sm font-semibold text-white truncate">{apt.studentName}</p><p className="text-[10px] text-gray-400 truncate">{apt.type}</p></div>
-                                </div>
-                            </div>
-                            <div className="flex gap-2 pl-2">
-                                <button className="flex-1 py-2 rounded-lg bg-white/5 text-xs text-gray-300 hover:bg-white/10" onClick={() => {
-                                    const student = students.find(s => s.id === apt.studentId || s.name === apt.studentName);
-                                    if (student) openStudentDetails(student);
-                                }}>Detalhes</button>
-                            </div>
-                        </div>
-                    ))}
-                    <div className="min-w-[60px] flex items-center justify-center">
-                        <button onClick={() => setIsAddModalOpen(true)} className="w-12 h-12 rounded-full border-2 border-dashed border-gray-700 text-gray-500 flex items-center justify-center hover:border-[#6F4CE7] hover:text-[#6F4CE7]"><span className="material-symbols-rounded">add</span></button>
-                    </div>
-                </div>
-            </div>
-
-            {/* Students List */}
             <div>
                 <div className="flex justify-between items-center mb-4 h-10">
                     {isSearchOpen ? (
-                        <div className="flex-1 flex items-center bg-[#1A202C] rounded-xl px-3 border border-[#0081FF] animate-in fade-in slide-in-from-right duration-200">
+                        <div className="flex-1 flex items-center bg-[#1A202C] rounded-xl px-3 border border-[#0081FF]">
                             <span className="material-symbols-rounded text-[#0081FF] text-sm">search</span>
                             <input type="text" autoFocus placeholder="Buscar aluno..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-transparent border-none text-white text-sm w-full h-10 px-2 focus:outline-none" />
                             <button onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="text-gray-400 hover:text-white"><span className="material-symbols-rounded text-sm">close</span></button>
@@ -437,7 +305,6 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
                         </>
                     )}
                 </div>
-
                 <div className="space-y-3">
                     {filteredStudents.length > 0 ? (
                         filteredStudents.map((student) => (
@@ -454,358 +321,137 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
                             </div>
                         ))
                     ) : (
-                        <div className="p-8 text-center text-gray-500"><p className="text-sm">Nenhum aluno encontrado.</p></div>
+                        <div className="p-8 text-center text-gray-500 text-sm">Nenhum aluno encontrado.</div>
                     )}
                 </div>
             </div>
         </div>
+    );
+
+    const renderPlaceholder = (title: string) => (
+        <div className="flex-1 flex flex-col items-center justify-center p-10 text-center">
+            <span className="material-symbols-rounded text-4xl text-gray-600 mb-4">construction</span>
+            <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
+            <p className="text-sm text-gray-500 italic">Esta funcionalidade está em desenvolvimento.</p>
+        </div>
+    );
+
+    const renderContent = () => {
+        switch (activeTab) {
+            case 'dashboard': return renderDashboard();
+            case 'students': return renderStudentList();
+            case 'reports': return renderPlaceholder('Relatórios Financeiros');
+            case 'settings': return renderPlaceholder('Configurações do Painel');
+            default: return renderDashboard();
+        }
     };
 
-const renderPlaceholder = (title: string) => (
-    <div className="flex-1 flex flex-col items-center justify-center p-10 text-center">
-        <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center text-gray-600 mb-4">
-            <span className="material-symbols-rounded text-4xl">construction</span>
-        </div>
-        <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
-        <p className="text-sm text-gray-500 italic">Esta funcionalidade está em desenvolvimento para a próxima versão.</p>
-    </div>
-);
-
-const renderContent = () => {
-    switch (activeTab) {
-        case 'dashboard': return renderDashboard();
-        case 'students': return renderStudentList();
-        case 'reports': return renderPlaceholder('Relatórios Financeiros');
-        case 'settings': return renderPlaceholder('Configurações do Painel');
-        default: return renderDashboard();
-    }
-};
-
-return (
-    <div className="flex flex-col h-screen bg-[#101622] relative">
-        {/* Header Mockup Style - DARK */}
-        <header className="px-6 pt-12 pb-4 bg-[#101622] border-b border-white/5 flex justify-between items-center">
-            <div className="flex items-center gap-4">
-                <button className="text-white" onClick={() => onNavigate(Screen.LIBRARY)}>
-                    <span className="material-symbols-rounded text-2xl">menu</span>
+    return (
+        <div className="flex flex-col h-screen bg-[#101622] relative">
+            <header className="px-6 pt-12 pb-4 bg-[#101622] border-b border-white/5 flex justify-between items-center z-40">
+                <div className="flex items-center gap-4">
+                    <button className="text-white" onClick={() => onNavigate(Screen.LIBRARY)}>
+                        <span className="material-symbols-rounded text-2xl">menu</span>
+                    </button>
+                    <h2 className="text-xl font-black text-white tracking-tight">Dashboard</h2>
+                </div>
+                <button onClick={() => setShowConfig(!showConfig)} className="relative">
+                    <img src={user?.avatarUrl || 'https://picsum.photos/200'} alt="Profile" className="w-10 h-10 rounded-full border-2 border-[#1A202C]" />
+                    {showConfig && (
+                        <div className="absolute right-0 top-12 w-48 bg-[#1A202C] rounded-2xl border border-white/10 shadow-2xl z-50 overflow-hidden">
+                            <button onClick={onLogout} className="w-full text-left px-3 py-2 hover:bg-white/5 text-sm flex items-center gap-2 text-red-400 font-bold">
+                                <span className="material-symbols-rounded text-lg">logout</span> Sair
+                            </button>
+                        </div>
+                    )}
                 </button>
-                <h2 className="text-xl font-black text-white tracking-tight">Dashboard</h2>
+            </header>
+
+            {renderContent()}
+
+            <button onClick={() => setIsAddModalOpen(true)} className="fixed bottom-28 right-6 w-14 h-14 rounded-full bg-[#0081FF] text-white shadow-lg flex items-center justify-center z-20 hover:scale-110 active:scale-95 transition-all">
+                <span className="material-symbols-rounded text-3xl">add</span>
+            </button>
+
+            <div className="fixed bottom-0 inset-x-0 bg-[#101622] border-t border-white/5 px-6 py-3 flex justify-between items-center z-30 pb-8">
+                {[
+                    { id: 'dashboard', icon: 'dashboard', label: 'Dashboard' },
+                    { id: 'students', icon: 'school', label: 'Alunos' },
+                    { id: 'reports', icon: 'bar_chart', label: 'Relatórios' },
+                    { id: 'settings', icon: 'settings', label: 'Ajustes' }
+                ].map(tab => (
+                    <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} className={`flex flex-col items-center gap-1 ${activeTab === tab.id ? 'text-[#0081FF]' : 'text-gray-400'}`}>
+                        <span className="material-symbols-rounded text-2xl">{tab.icon}</span>
+                        <span className="text-[9px] font-bold uppercase">{tab.label}</span>
+                    </button>
+                ))}
             </div>
-            <button onClick={() => setShowConfig(!showConfig)} className="relative">
-                <img src={user?.avatarUrl || 'https://picsum.photos/200'} alt="Profile" className="w-10 h-10 rounded-full border-2 border-[#1A202C] shadow-lg" />
-                {showConfig && (
-                    <div className="absolute right-0 top-12 w-48 bg-[#1A202C] rounded-2xl border border-white/10 shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                        <div className="p-1">
-                            <button onClick={onLogout} className="w-full text-left px-3 py-2 rounded-lg hover:bg-white/5 text-sm flex items-center gap-2 text-red-400 font-bold">
-                                <span className="material-symbols-rounded text-lg">logout</span> Sair da Conta
+
+            {/* Modals */}
+            {selectedStudent && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+                    <div className="w-full max-w-sm bg-[#1A202C] rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col">
+                        <div className="px-6 py-4 border-b border-white/5 flex justify-between items-center bg-[#151A23]">
+                            <h3 className="font-bold text-white">Detalhes do Aluno</h3>
+                            <button onClick={() => setSelectedStudent(null)} className="text-gray-400 hover:text-white"><span className="material-symbols-rounded">close</span></button>
+                        </div>
+                        <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+                            <div className="flex gap-4 items-center">
+                                <img src={selectedStudent.avatarUrl} className="w-16 h-16 rounded-full border-2 border-[#0081FF]" alt="" />
+                                <div>
+                                    <h4 className="text-lg font-bold text-white">{selectedStudent.name}</h4>
+                                    <p className="text-xs text-gray-500 uppercase font-black">{selectedStudent.modality} • {selectedStudent.level}</p>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-3">
+                                <div className="p-3 bg-white/5 rounded-xl border border-white/5">
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase">Pagamento</p>
+                                    <p className="text-sm text-white">Dia {selectedStudent.paymentDay || '05'}</p>
+                                </div>
+                                <div className="p-3 bg-white/5 rounded-xl border border-white/5">
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase">Agenda</p>
+                                    <p className="text-sm text-white">{selectedStudent.scheduleDay} {selectedStudent.scheduleTime}</p>
+                                </div>
+                            </div>
+                            <textarea
+                                value={notesInput}
+                                onChange={(e) => setNotesInput(e.target.value)}
+                                className="w-full h-32 bg-[#101622] rounded-xl border border-white/10 p-4 text-sm text-white focus:outline-none focus:border-[#0081FF] resize-none"
+                                placeholder="Observações..."
+                            />
+                            <div className="flex gap-3">
+                                <button onClick={() => setSelectedStudent(null)} className="flex-1 h-12 rounded-xl border border-white/10 text-gray-400 font-bold text-sm">Fechar</button>
+                                <button onClick={handleSaveChanges} disabled={loadingAction} className="flex-1 h-12 rounded-xl bg-[#0081FF] text-white font-bold text-sm disabled:opacity-50">
+                                    {loadingAction ? 'Salvando...' : 'Salvar'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {isAddModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+                    <div className="w-full max-w-sm bg-[#1A202C] rounded-2xl border border-white/10 shadow-2xl flex flex-col">
+                        <div className="px-6 py-4 border-b border-white/5 flex justify-between items-center bg-[#151A23] rounded-t-2xl">
+                            <h3 className="font-bold text-white">Novo Aluno</h3>
+                            <button onClick={() => setIsAddModalOpen(false)} className="text-gray-400 hover:text-white"><span className="material-symbols-rounded">close</span></button>
+                        </div>
+                        <div className="p-6 space-y-4">
+                            <input type="text" value={newStudentName} onChange={(e) => setNewStudentName(e.target.value)} placeholder="Nome do Aluno" className="w-full h-12 bg-[#101622] rounded-xl border border-white/10 px-4 text-white focus:outline-none focus:border-[#0081FF]" />
+                            <div className="grid grid-cols-2 gap-3">
+                                <select value={scheduleDay} onChange={(e) => setScheduleDay(e.target.value)} className="h-12 bg-[#101622] rounded-xl border border-white/10 px-3 text-white outline-none">
+                                    {WEEK_DAYS.map(d => <option key={d} value={d}>{d}</option>)}
+                                </select>
+                                <input type="time" value={scheduleTime} onChange={(e) => setScheduleTime(e.target.value)} className="h-12 bg-[#101622] rounded-xl border border-white/10 px-3 text-white outline-none" />
+                            </div>
+                            <button onClick={handleAddStudent} disabled={!newStudentName.trim() || loadingAction} className="w-full h-12 bg-[#0081FF] text-white font-bold rounded-xl shadow-lg disabled:opacity-50">
+                                {loadingAction ? 'Salvando...' : 'Cadastrar'}
                             </button>
                         </div>
                     </div>
-                )}
-            </button>
-        </header>
-
-        {renderContent()}
-
-        {/* Floating Action Button */}
-        <button
-            onClick={() => setIsAddModalOpen(true)}
-            className="fixed bottom-28 right-6 w-14 h-14 rounded-full bg-[#0081FF] text-white shadow-lg shadow-[#0081FF]/20 flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-20"
-        >
-            <span className="material-symbols-rounded text-3xl">add</span>
-        </button>
-
-        {/* Bottom Navigation Like Mockup - DARK */}
-        <div className="fixed bottom-0 inset-x-0 bg-[#101622] border-t border-white/5 px-6 py-3 flex justify-between items-center z-30 pb-8">
-            <button
-                onClick={() => setActiveTab('dashboard')}
-                className={`flex flex-col items-center gap-1 ${activeTab === 'dashboard' ? 'text-[#0081FF]' : 'text-gray-400'}`}
-            >
-                <span className="material-symbols-rounded text-2xl">dashboard</span>
-                <span className="text-[9px] font-bold uppercase tracking-wider">Dashboard</span>
-            </button>
-            <button
-                onClick={() => setActiveTab('students')}
-                className={`flex flex-col items-center gap-1 ${activeTab === 'students' ? 'text-[#0081FF]' : 'text-gray-400'}`}
-            >
-                <span className="material-symbols-rounded text-2xl">school</span>
-                <span className="text-[9px] font-bold uppercase tracking-wider">Alunos</span>
-            </button>
-            <button
-                onClick={() => setActiveTab('reports')}
-                className={`flex flex-col items-center gap-1 ${activeTab === 'reports' ? 'text-[#0081FF]' : 'text-gray-400'}`}
-            >
-                <span className="material-symbols-rounded text-2xl">bar_chart</span>
-                <span className="text-[9px] font-bold uppercase tracking-wider">Relatórios</span>
-            </button>
-            <button
-                onClick={() => setActiveTab('settings')}
-                className={`flex flex-col items-center gap-1 ${activeTab === 'settings' ? 'text-[#0081FF]' : 'text-gray-400'}`}
-            >
-                <span className="material-symbols-rounded text-2xl">settings</span>
-                <span className="text-[9px] font-bold uppercase tracking-wider">Ajustes</span>
-            </button>
+                </div>
+            )}
         </div>
-
-        {/* Floating Action Button */}
-        <button onClick={() => setIsAddModalOpen(true)} className="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-[#0081FF] text-white shadow-lg shadow-blue-900/40 flex items-center justify-center hover:scale-110 transition-transform z-20">
-            <span className="material-symbols-rounded text-2xl">person_add</span>
-        </button>
-
-        {/* MODAL: Student Details & Observations (COM EDIT MODE E AGENDAMENTO) */}
-        {
-            selectedStudent && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="w-full max-w-md max-h-[90vh] bg-[#1A202C] rounded-2xl border border-white/10 shadow-2xl flex flex-col animate-in zoom-in-95 duration-200">
-                        {/* Header Modal */}
-                        <div className="p-6 pb-4 border-b border-white/5 flex items-start justify-between bg-[#151A23] rounded-t-2xl">
-                            <div className="flex items-center gap-4">
-                                <img src={selectedStudent.avatarUrl} alt={selectedStudent.name} className="w-16 h-16 rounded-full border-2 border-[#0081FF]" />
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="text-xl font-bold text-white leading-none mb-1">{selectedStudent.name}</h3>
-                                    <p className="text-sm text-gray-400">{selectedStudent.level}</p>
-                                </div>
-                            </div>
-
-                            <div className="flex gap-2">
-                                <button
-                                    onClick={() => setIsEditing(!isEditing)}
-                                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isEditing ? 'bg-[#0081FF] text-white' : 'bg-white/5 text-gray-400 hover:text-white'}`}
-                                    title="Editar"
-                                >
-                                    <span className="material-symbols-rounded text-sm">edit</span>
-                                </button>
-                                <button onClick={() => setSelectedStudent(null)} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white">
-                                    <span className="material-symbols-rounded">close</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div className="p-6 overflow-y-auto hide-scrollbar flex-1">
-                            {/* Info Grid */}
-                            <div className="grid grid-cols-2 gap-3 mb-6">
-                                {isEditing ? (
-                                    <>
-                                        {/* Editar Telefone */}
-                                        <div className="p-2 bg-[#101622] border border-[#0081FF] rounded-xl flex items-center gap-2 shadow-[0_0_10px_rgba(0,129,255,0.2)] col-span-2">
-                                            <span className="material-symbols-rounded text-[#0081FF]">phone</span>
-                                            <div className="flex-1">
-                                                <p className="text-[9px] text-[#0081FF] uppercase font-bold">Editar Tel</p>
-                                                <input
-                                                    type="tel"
-                                                    value={editPhone}
-                                                    onChange={(e) => setEditPhone(e.target.value)}
-                                                    className="w-full bg-transparent text-white text-xs font-medium focus:outline-none"
-                                                    placeholder="(00) 00000-0000"
-                                                />
-                                            </div>
-                                        </div>
-
-                                        {/* Editar Agenda */}
-                                        <div className="col-span-2 space-y-2 mt-2 pt-2 border-t border-white/5">
-                                            <p className="text-[10px] text-[#FF00BC] font-bold uppercase">Editar Agenda</p>
-                                            <div className="flex gap-2">
-                                                <select
-                                                    value={editScheduleDay}
-                                                    onChange={(e) => setEditScheduleDay(e.target.value)}
-                                                    className="flex-1 h-10 bg-[#101622] rounded-lg border border-white/10 px-2 text-white text-xs focus:outline-none focus:border-[#0081FF]"
-                                                >
-                                                    {WEEK_DAYS.map(d => <option key={d} value={d}>{d}</option>)}
-                                                </select>
-                                                <input
-                                                    type="time"
-                                                    value={editScheduleTime}
-                                                    onChange={(e) => setEditScheduleTime(e.target.value)}
-                                                    className="flex-1 h-10 bg-[#101622] rounded-lg border border-white/10 px-2 text-white text-xs focus:outline-none focus:border-[#0081FF]"
-                                                />
-                                            </div>
-                                        </div>
-                                    </>
-                                ) : (
-                                    <>
-                                        {/* Visualizar Contato e Agenda */}
-                                        <button
-                                            onClick={() => openWhatsApp(selectedStudent.phone || '')}
-                                            className="p-3 bg-green-500/10 border border-green-500/20 rounded-xl flex items-center gap-3 hover:bg-green-500/20 transition-colors text-left"
-                                        >
-                                            <span className="material-symbols-rounded text-green-500">chat</span>
-                                            <div>
-                                                <p className="text-[10px] text-green-400 uppercase font-bold">WhatsApp</p>
-                                                <p className="text-xs text-white font-medium">{selectedStudent.phone || 'N/A'}</p>
-                                            </div>
-                                        </button>
-
-                                        <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center gap-3">
-                                            <span className="material-symbols-rounded text-blue-400">calendar_month</span>
-                                            <div>
-                                                <p className="text-[10px] text-blue-400 uppercase font-bold">Aula</p>
-                                                <p className="text-xs text-white font-medium">
-                                                    {selectedStudent.scheduleDay} - {selectedStudent.scheduleTime}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </>
-                                )}
-                            </div>
-
-                            {/* Observation Area */}
-                            <div className="space-y-2 h-full flex flex-col">
-                                <label className="text-xs text-gray-400 font-bold uppercase ml-1 flex items-center gap-2">
-                                    <span className="material-symbols-rounded text-sm">edit_note</span>
-                                    Caderno de Observações
-                                </label>
-                                <div className="relative flex-1 min-h-[150px]">
-                                    <textarea
-                                        value={notesInput}
-                                        onChange={(e) => setNotesInput(e.target.value)}
-                                        placeholder="Registre o desenvolvimento..."
-                                        className="w-full h-full bg-[#101622] rounded-xl border border-white/10 p-4 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#0081FF] resize-none leading-relaxed"
-                                    ></textarea>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Footer Actions */}
-                        <div className="p-4 border-t border-white/5 bg-[#151A23] rounded-b-2xl">
-                            {user?.role === 'admin' && (
-                                <div className="mb-4 space-y-2">
-                                    <p className="text-[10px] text-gray-500 font-bold uppercase ml-1">Status da Assinatura (ADM Only)</p>
-                                    <div className="flex gap-2">
-                                        {(['active', 'overdue', 'blocked'] as const).map((status) => (
-                                            <button
-                                                key={status}
-                                                onClick={async () => {
-                                                    setLoadingAction(true);
-                                                    try {
-                                                        const { error } = await supabase
-                                                            .from('profiles')
-                                                            .update({ status })
-                                                            .eq('id', selectedStudent.id);
-                                                        if (!error) {
-                                                            setStudents(prev => prev.map(s => s.id === selectedStudent.id ? { ...s, status: status as any } : s));
-                                                            setSelectedStudent(prev => prev ? { ...prev, status: status as any } : null);
-                                                        }
-                                                    } finally {
-                                                        setLoadingAction(false);
-                                                    }
-                                                }}
-                                                className={`flex-1 py-2 rounded-lg text-[10px] font-bold uppercase transition-all border ${selectedStudent.status === status
-                                                    ? (status === 'active' ? 'bg-green-500/20 border-green-500 text-green-500' : status === 'overdue' ? 'bg-amber-500/20 border-amber-500 text-amber-500' : 'bg-red-500/20 border-red-500 text-red-500')
-                                                    : 'bg-white/5 border-white/5 text-gray-400 hover:bg-white/10'
-                                                    }`}
-                                            >
-                                                {status === 'active' ? 'Ativo' : status === 'overdue' ? 'Atrasado' : 'Bloqueado'}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                            <div className="flex gap-3">
-                                <button onClick={() => setSelectedStudent(null)} className="flex-1 h-12 rounded-xl border border-white/10 text-gray-400 font-bold text-sm hover:bg-white/5">Cancelar</button>
-                                <button
-                                    onClick={handleSaveChanges}
-                                    disabled={loadingAction}
-                                    className="flex-1 h-12 rounded-xl bg-[#0081FF] text-white font-bold text-sm hover:bg-[#006bd1] shadow-lg flex items-center justify-center gap-2 disabled:opacity-50"
-                                >
-                                    <span className="material-symbols-rounded">save</span>
-                                    {loadingAction ? 'Salvando...' : 'Salvar Alterações'}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )
-        }
-
-        {/* MODAL: Add Student (COM AGENDAMENTO) */}
-        {
-            isAddModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="w-full max-w-sm max-h-[90vh] bg-[#1A202C] rounded-2xl border border-white/10 shadow-2xl flex flex-col animate-in zoom-in-95 duration-200">
-                        <div className="px-6 py-4 border-b border-white/5 flex justify-between items-center bg-[#151A23] rounded-t-2xl">
-                            <h3 className="font-bold text-white">Cadastrar Novo Aluno</h3>
-                            <button onClick={() => setIsAddModalOpen(false)} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white"><span className="material-symbols-rounded text-lg">close</span></button>
-                        </div>
-
-                        <div className="p-6 space-y-5 overflow-y-auto hide-scrollbar">
-                            <div className="flex justify-center">
-                                <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(newStudentName || 'Novo')}&background=random&color=fff&size=128`} alt="Avatar" className="w-16 h-16 rounded-full border-2 border-[#0081FF] shadow-lg" />
-                            </div>
-
-                            <div className="space-y-3">
-                                <p className="text-[10px] text-[#0081FF] font-bold uppercase tracking-wider border-b border-white/5 pb-1">Dados Pessoais</p>
-                                <div className="grid grid-cols-4 gap-3">
-                                    <div className="col-span-3 space-y-1">
-                                        <label className="text-xs text-gray-400 font-bold uppercase ml-1">Nome</label>
-                                        <input type="text" value={newStudentName} onChange={(e) => setNewStudentName(e.target.value)} placeholder="Ex: Ana Silva" className="w-full h-10 bg-[#101622] rounded-lg border border-white/10 px-3 text-white text-sm focus:outline-none focus:border-[#0081FF]" />
-                                    </div>
-                                    <div className="col-span-1 space-y-1">
-                                        <label className="text-xs text-gray-400 font-bold uppercase ml-1">Idade</label>
-                                        <input type="number" value={newStudentAge} onChange={(e) => setNewStudentAge(e.target.value)} className="w-full h-10 bg-[#101622] rounded-lg border border-white/10 px-3 text-white text-sm focus:outline-none focus:border-[#0081FF]" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Seção Agendamento */}
-                            <div className="space-y-3">
-                                <p className="text-[10px] text-[#0081FF] font-bold uppercase tracking-wider border-b border-white/5 pb-1">Agendamento</p>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div className="space-y-1">
-                                        <label className="text-xs text-gray-400 font-bold uppercase ml-1">Dia da Semana</label>
-                                        <div className="relative">
-                                            <select
-                                                value={scheduleDay}
-                                                onChange={(e) => setScheduleDay(e.target.value)}
-                                                className="w-full h-10 bg-[#101622] rounded-lg border border-white/10 px-3 text-white text-sm focus:outline-none focus:border-[#0081FF] appearance-none"
-                                            >
-                                                {WEEK_DAYS.map(d => <option key={d} value={d}>{d}</option>)}
-                                            </select>
-                                            <span className="material-symbols-rounded absolute right-3 top-2.5 text-gray-500 pointer-events-none text-sm">calendar_month</span>
-                                        </div>
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-xs text-gray-400 font-bold uppercase ml-1">Horário</label>
-                                        <div className="relative">
-                                            <input
-                                                type="time"
-                                                value={scheduleTime}
-                                                onChange={(e) => setScheduleTime(e.target.value)}
-                                                className="w-full h-10 bg-[#101622] rounded-lg border border-white/10 px-3 text-white text-sm focus:outline-none focus:border-[#0081FF]"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-3">
-                                <p className="text-[10px] text-[#0081FF] font-bold uppercase tracking-wider border-b border-white/5 pb-1">Contato</p>
-                                <div className="grid grid-cols-2 gap-3">
-                                    <div className="space-y-1">
-                                        <label className="text-xs text-gray-400 font-bold uppercase ml-1">WhatsApp</label>
-                                        <input type="tel" value={newStudentPhone} onChange={(e) => setNewStudentPhone(e.target.value)} placeholder="(00) 00000-0000" className="w-full h-10 bg-[#101622] rounded-lg border border-white/10 px-3 text-white text-sm focus:outline-none focus:border-[#0081FF]" />
-                                    </div>
-                                    <div className="space-y-1">
-                                        <label className="text-xs text-gray-400 font-bold uppercase ml-1">Insta</label>
-                                        <input type="text" value={newStudentInsta} onChange={(e) => setNewStudentInsta(e.target.value)} className="w-full h-10 bg-[#101622] rounded-lg border border-white/10 px-3 text-white text-sm focus:outline-none focus:border-[#0081FF]" />
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="pt-2">
-                                <button
-                                    onClick={handleAddStudent}
-                                    disabled={!newStudentName.trim() || loadingAction}
-                                    className="w-full h-12 bg-[#0081FF] hover:bg-[#006bd1] text-white font-bold rounded-xl shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
-                                >
-                                    <span className="material-symbols-rounded">save</span>
-                                    {loadingAction ? 'Salvando...' : 'Cadastrar Aluno'}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )
-        }
-    </div >
-);
+    );
 };
