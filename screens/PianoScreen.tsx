@@ -3,6 +3,7 @@ import * as Tone from 'tone';
 
 interface Props {
     onBack: () => void;
+    embedded?: boolean;
 }
 
 const NOTE_FREQUENCIES: Record<string, number> = {
@@ -74,7 +75,7 @@ const getFrequency = (note: string): number => {
 const OCTAVES = [2, 3, 4, 5, 6];
 const NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
-export const PianoScreen: React.FC<Props> = ({ onBack }) => {
+export const PianoScreen: React.FC<Props> = ({ onBack, embedded }) => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [activeNote, setActiveNote] = useState<{ note: string, freq: number } | null>(null);
 
@@ -258,9 +259,9 @@ export const PianoScreen: React.FC<Props> = ({ onBack }) => {
             NOTES.forEach(noteName => {
                 if (noteName.includes('#')) return;
 
-                const fullNote = `${noteName}${octave}`;
+                const fullNote = `${noteName}${octave} `;
                 const hasSharp = ['C', 'D', 'F', 'G', 'A'].includes(noteName);
-                const sharpNote = `${noteName}#${octave}`;
+                const sharpNote = `${noteName} #${octave} `;
 
                 keys.push(
                     <div key={fullNote} className="relative flex-shrink-0 select-none">
@@ -272,17 +273,17 @@ export const PianoScreen: React.FC<Props> = ({ onBack }) => {
                             onTouchStart={(e) => { e.preventDefault(); playNote(fullNote); }}
                             onTouchEnd={(e) => { e.preventDefault(); stopNote(fullNote); }}
                             className={`
-                            w-14 h-48 sm:w-16 sm:h-56
-                            bg-white border-l border-b border-r border-[#E2E8F0]
-                            rounded-b-lg
-                            active:bg-gray-200 active:scale-[0.99] active:shadow-inner
-                            transition-all duration-75
-                            flex items-end justify-center pb-4
-                            z-10 relative
-                            shadow-[0_4px_0_0_rgba(180,180,180,1)]
-                            active:translate-y-[2px] active:shadow-none
+w - 14 h - 48 sm: w - 16 sm: h - 56
+bg - white border - l border - b border - r border - [#E2E8F0]
+rounded - b - lg
+active: bg - gray - 200 active: scale - [0.99] active: shadow - inner
+transition - all duration - 75
+                            flex items - end justify - center pb - 4
+z - 10 relative
+shadow - [0_4px_0_0_rgba(180, 180, 180, 1)]
+active: translate - y - [2px] active: shadow - none
                             ${activeNote?.note === fullNote ? '!bg-blue-50 !shadow-none !translate-y-[2px]' : ''}
-                        `}
+`}
                         >
                             <span className="text-gray-400 font-bold text-xs">{fullNote}</span>
                         </button>
@@ -296,16 +297,16 @@ export const PianoScreen: React.FC<Props> = ({ onBack }) => {
                                 onTouchStart={(e) => { e.stopPropagation(); e.preventDefault(); playNote(sharpNote); }}
                                 onTouchEnd={(e) => { e.stopPropagation(); e.preventDefault(); stopNote(sharpNote); }}
                                 className={`
-                                absolute -right-4 top-0
-                                w-8 h-32 sm:w-10 sm:h-36
-                                bg-[#151A23] border border-gray-900
-                                rounded-b-lg
-                                z-20
-                                shadow-[0_4px_0_4px_rgba(0,0,0,0.3)]
-                                active:shadow-none active:translate-y-[2px]
-                                active:bg-gray-900
+absolute - right - 4 top - 0
+w - 8 h - 32 sm: w - 10 sm: h - 36
+bg - [#151A23] border border - gray - 900
+rounded - b - lg
+z - 20
+shadow - [0_4px_0_4px_rgba(0, 0, 0, 0.3)]
+active: shadow - none active: translate - y - [2px]
+active: bg - gray - 900
                                 ${activeNote?.note === sharpNote ? '!bg-[#FF00BC] !shadow-none !translate-y-[2px]' : 'bg-gradient-to-b from-black to-gray-900'}
-                            `}
+`}
                             >
                             </button>
                         )}
@@ -318,56 +319,52 @@ export const PianoScreen: React.FC<Props> = ({ onBack }) => {
     };
 
     return (
-        <div className="min-h-screen bg-[#101622] flex flex-col animate-in fade-in duration-300">
-
-            {/* Header */}
-            <div className="pt-8 px-6 pb-4 bg-[#101622] border-b border-white/5 flex items-center justify-between z-30">
-                <div className="flex items-center gap-3">
+        <div className={`flex flex-col ${embedded ? 'w-full bg-[#101622] border-t border-white/5 pb-8' : 'min-h-screen bg-[#101622] animate-in fade-in duration-300'}`}>
+            {/* Header - HIDDEN IF EMBEDDED */}
+            {!embedded && (
+                <div className="pt-8 px-6 pb-4 flex items-center gap-4 z-10 bg-gradient-to-b from-[#101622] to-transparent">
                     <button
-                        onClick={() => { stopMic(); onBack(); }}
-                        className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-white/10 transition-colors"
+                        onClick={() => {
+                            stopMic();
+                            // Safely stop audio context if needed
+                            if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+                                audioContextRef.current.close();
+                            }
+                            onBack();
+                        }}
+                        className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-white/10 transition-colors backdrop-blur-sm border border-white/5"
                     >
                         <span className="material-symbols-rounded">arrow_back</span>
                     </button>
-                    <h1 className="text-xl font-bold text-white">Piano Virtual</h1>
-                </div>
-
-                {/* Permission Status Indicator - Replaces Toggle */}
-                <div className="flex items-center gap-2">
-                    {micPermission === 'granted' && (
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/20">
-                            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                            <span className="text-[10px] font-bold text-green-500 uppercase">Ouvindo</span>
+                    <div>
+                        <h2 className="font-bold text-white text-lg leading-tight">Piano Virtual</h2>
+                        <div className="flex items-center gap-2">
+                            <span className={`w-2 h-2 rounded-full ${micPermission === 'granted' ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
+                            <span className="text-[10px] text-gray-400 uppercase tracking-wider font-bold">
+                                {micPermission === 'granted' ? 'Ouvindo Voz' : 'Sem Acesso ao Mic'}
+                            </span>
                         </div>
-                    )}
-                    {micPermission === 'denied' && (
-                        <div className="flex items-center gap-1 px-3 py-1 bg-red-500/10 rounded-full text-red-500">
-                            <span className="material-symbols-rounded text-sm">mic_off</span>
-                            <span className="text-[10px] font-bold">Sem Acesso</span>
-                        </div>
-                    )}
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Info Display Area */}
-            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-gradient-to-b from-[#151A23] to-[#101622] relative overflow-hidden">
+            <div className={`${embedded ? 'h-auto py-8' : 'flex-1'} flex flex-col items-center justify-center relative overflow-hidden transition-all duration-500`}>
 
                 {/* Background Feedback Color */}
                 <div className={`absolute inset-0 transition-opacity duration-500
-            ${feedbackStatus === 'success' ? 'bg-green-500/10' : ''}
-            ${feedbackStatus === 'low' ? 'bg-yellow-500/5' : ''}
-            ${feedbackStatus === 'high' ? 'bg-yellow-500/5' : ''}
-        `}></div>
+                    ${feedbackStatus === 'success' ? 'bg-green-500/10' : ''}
+                    ${feedbackStatus === 'low' ? 'bg-yellow-500/5' : ''}
+                    ${feedbackStatus === 'high' ? 'bg-yellow-500/5' : ''}
+                `}></div>
 
-                <div className={`
-             transition-all duration-200 transform z-10
-             ${activeNote ? 'scale-100 opacity-100' : 'scale-95 opacity-50 grayscale'}
-        `}>
+                <div className={`transition-all duration-200 transform z-10 
+                    ${activeNote ? 'scale-100 opacity-100' : 'scale-95 opacity-50 grayscale'}
+                `}>
                     {/* Note Name Big */}
-                    <div className={`
-                text-[100px] sm:text-[120px] font-black leading-none drop-shadow-lg font-sans tracking-tighter transition-colors duration-300
-                ${feedbackStatus === 'success' ? 'text-green-400' : 'text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-400'}
-            `}>
+                    <div className={`text-[100px] sm:text-[120px] font-black leading-none drop-shadow-lg font-sans tracking-tighter transition-colors duration-300
+                        ${feedbackStatus === 'success' ? 'text-green-400' : 'text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-400'}
+                    `}>
                         {activeNote ? activeNote.note.replace(/[0-9]/g, '') : '-'}
                     </div>
 
@@ -385,7 +382,6 @@ export const PianoScreen: React.FC<Props> = ({ onBack }) => {
                     <div className="h-24 mt-8 flex flex-col items-center justify-center">
                         {activeNote ? (
                             <>
-                                {/* Always show Mic Status/Instruction if silent, else feedback */}
                                 {feedbackStatus === 'silence' && (
                                     <div className="text-gray-500 flex flex-col items-center animate-pulse">
                                         <span className="material-symbols-rounded text-2xl mb-1 opacity-50">graphic_eq</span>
@@ -403,27 +399,15 @@ export const PianoScreen: React.FC<Props> = ({ onBack }) => {
                                     </div>
                                 )}
 
-                                {feedbackStatus === 'low' && (
+                                {(feedbackStatus === 'low' || feedbackStatus === 'high') && (
                                     <div className="animate-in fade-in slide-in-from-bottom duration-300">
                                         <p className="text-yellow-400 font-bold text-sm mb-1 flex items-center gap-2">
-                                            <span className="material-symbols-rounded">arrow_upward</span>
-                                            Um pouco abaixo
+                                            <span className="material-symbols-rounded">{feedbackStatus === 'low' ? 'arrow_upward' : 'arrow_downward'}</span>
+                                            {feedbackStatus === 'low' ? 'Um pouco abaixo' : 'Passou um pouco'}
                                         </p>
-                                        <p className="text-gray-400 text-xs">Suba levemente a nota.</p>
+                                        <p className="text-gray-400 text-xs">{feedbackStatus === 'low' ? 'Suba levemente a nota.' : 'Relaxe e desça suavemente.'}</p>
                                     </div>
                                 )}
-
-                                {feedbackStatus === 'high' && (
-                                    <div className="animate-in fade-in slide-in-from-bottom duration-300">
-                                        <p className="text-yellow-400 font-bold text-sm mb-1 flex items-center gap-2">
-                                            <span className="material-symbols-rounded">arrow_downward</span>
-                                            Passou um pouco
-                                        </p>
-                                        <p className="text-gray-400 text-xs">Relaxe e desça suavemente.</p>
-                                    </div>
-                                )}
-
-                                {/* Force Neutral if stuck? No, reset on silence takes care of it */}
                             </>
                         ) : (
                             <div className="text-gray-600 flex flex-col items-center">
@@ -431,11 +415,10 @@ export const PianoScreen: React.FC<Props> = ({ onBack }) => {
                             </div>
                         )}
                     </div>
-
                 </div>
             </div>
 
-            {/* Keyboard Area with visual mic reminder if denied */}
+            {/* Keyboard Area */}
             <div
                 ref={scrollContainerRef}
                 className="h-[280px] sm:h-[320px] bg-[#0d121c] border-t-4 border-[#FF00BC] relative overflow-x-auto hide-scrollbar touch-pan-x shadow-[inset_0_10px_20px_rgba(0,0,0,0.5)]"

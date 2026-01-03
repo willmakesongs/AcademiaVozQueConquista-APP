@@ -1062,6 +1062,11 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                     </div>
                 )}
             </div>
+
+            {/* Embedded Piano */}
+            <div className="w-full border-t border-white/5">
+                <PianoScreen onBack={() => { }} embedded={true} />
+            </div>
         </div>
     );
 
