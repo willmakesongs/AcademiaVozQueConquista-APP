@@ -290,35 +290,35 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
             <div className="flex-1 overflow-y-auto hide-scrollbar pb-24">
                 {/* Summary Cards */}
                 <div className="grid grid-cols-2 gap-4 px-6 pt-6">
-                    <div className="bg-white rounded-[24px] p-5 shadow-sm border border-gray-100">
-                        <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center text-green-500 mb-3">
+                    <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5">
+                        <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-400 mb-3">
                             <span className="material-symbols-rounded">arrow_upward</span>
                         </div>
-                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Recebido (Mês)</p>
-                        <h3 className="text-xl font-black text-gray-900">R$ {totalReceived.toLocaleString('pt-BR')}</h3>
-                        <p className="text-[10px] text-green-500 font-bold mt-1">+12% vs mês anterior</p>
+                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Recebido (Mês)</p>
+                        <h3 className="text-xl font-black text-white">R$ {totalReceived.toLocaleString('pt-BR')}</h3>
+                        <p className="text-[10px] text-green-400 font-bold mt-1">+12% vs mês anterior</p>
                     </div>
-                    <div className="bg-white rounded-[24px] p-5 shadow-sm border border-gray-100">
-                        <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center text-orange-500 mb-3">
+                    <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5">
+                        <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-400 mb-3">
                             <span className="material-symbols-rounded">priority_high</span>
                         </div>
-                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Pendente</p>
-                        <h3 className="text-xl font-black text-gray-900">R$ {totalPending.toLocaleString('pt-BR')}</h3>
-                        <p className="text-[10px] text-orange-500 font-bold mt-1">+5% inadimplência</p>
+                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Pendente</p>
+                        <h3 className="text-xl font-black text-white">R$ {totalPending.toLocaleString('pt-BR')}</h3>
+                        <p className="text-[10px] text-orange-400 font-bold mt-1">+5% inadimplência</p>
                     </div>
                 </div>
 
                 {/* Revenue Trend Chart */}
                 <div className="px-6 mt-6">
-                    <div className="bg-white rounded-[32px] p-6 shadow-sm border border-gray-100">
+                    <div className="bg-[#1A202C] rounded-[32px] p-6 border border-white/5">
                         <div className="flex justify-between items-start mb-6">
                             <div>
-                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-1">Tendência de Receita</p>
+                                <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Tendência de Receita</p>
                                 <div className="flex items-center gap-2">
-                                    <h3 className="text-2xl font-black text-gray-900">R$ 152k</h3>
-                                    <span className="bg-green-50 text-green-500 text-[10px] font-bold px-2 py-0.5 rounded-full">+8.5%</span>
+                                    <h3 className="text-2xl font-black text-white">R$ 152k</h3>
+                                    <span className="bg-green-500/10 text-green-400 text-[10px] font-bold px-2 py-0.5 rounded-full">+8.5%</span>
                                 </div>
-                                <p className="text-[10px] text-gray-400 mt-1">Últimos 6 meses</p>
+                                <p className="text-[10px] text-gray-500 mt-1">Últimos 6 meses</p>
                             </div>
                         </div>
 
@@ -355,31 +355,31 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
                 {/* Late Payments */}
                 <div className="px-6 mt-8">
                     <div className="flex justify-between items-center mb-4">
-                        <h4 className="text-sm font-black text-gray-900 uppercase tracking-tight">Pagamentos Atrasados</h4>
+                        <h4 className="text-sm font-black text-white uppercase tracking-tight">Pagamentos Atrasados</h4>
                         <button className="text-xs text-[#0081FF] font-bold">Ver todos</button>
                     </div>
                     <div className="space-y-3">
                         {overdueStudents.length > 0 ? (
                             overdueStudents.map(student => (
-                                <div key={student.id} onClick={() => openStudentDetails(student)} className="bg-white p-4 rounded-[24px] border border-gray-100 shadow-sm flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all">
+                                <div key={student.id} onClick={() => openStudentDetails(student)} className="bg-[#1A202C] p-4 rounded-[24px] border border-white/5 flex items-center justify-between cursor-pointer active:scale-[0.98] transition-all">
                                     <div className="flex items-center gap-3">
                                         <img src={student.avatarUrl} className="w-10 h-10 rounded-full object-cover" alt="" />
                                         <div>
-                                            <h5 className="text-sm font-bold text-gray-900">{student.name}</h5>
-                                            <p className="text-[10px] text-red-500 font-bold">5 dias de atraso</p>
+                                            <h5 className="text-sm font-bold text-white">{student.name}</h5>
+                                            <p className="text-[10px] text-red-400 font-bold">5 dias de atraso</p>
                                         </div>
                                     </div>
                                     <div className="text-right flex items-center gap-2">
                                         <div>
-                                            <p className="text-sm font-black text-gray-900">R$ {student.amount || 97},00</p>
+                                            <p className="text-sm font-black text-white">R$ {student.amount || 97},00</p>
                                         </div>
                                         <span className="material-symbols-rounded text-red-500 text-lg">warning</span>
                                     </div>
                                 </div>
                             ))
                         ) : (
-                            <div className="py-8 text-center bg-gray-50 rounded-[24px] border border-dashed border-gray-200">
-                                <p className="text-xs text-gray-400 font-medium italic">Nenhum pagamento atrasado ✨</p>
+                            <div className="py-8 text-center bg-[#1A202C]/50 rounded-[24px] border border-dashed border-white/10">
+                                <p className="text-xs text-gray-500 font-medium italic">Nenhum pagamento atrasado ✨</p>
                             </div>
                         )}
                     </div>
@@ -462,21 +462,21 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
     );
 
     return (
-        <div className="flex flex-col h-screen bg-[#F8F9FB] relative">
-            {/* Header Mockup Style */}
-            <header className="px-6 pt-12 pb-4 bg-white border-b border-gray-100 flex justify-between items-center">
+        <div className="flex flex-col h-screen bg-[#101622] relative">
+            {/* Header Mockup Style - DARK */}
+            <header className="px-6 pt-12 pb-4 bg-[#101622] border-b border-white/5 flex justify-between items-center">
                 <div className="flex items-center gap-4">
-                    <button className="text-gray-900">
+                    <button className="text-white">
                         <span className="material-symbols-rounded text-2xl">menu</span>
                     </button>
-                    <h2 className="text-xl font-black text-gray-900 tracking-tight">Dashboard</h2>
+                    <h2 className="text-xl font-black text-white tracking-tight">Dashboard</h2>
                 </div>
                 <button onClick={() => setShowConfig(!showConfig)} className="relative">
-                    <img src={user?.avatarUrl || 'https://picsum.photos/200'} alt="Profile" className="w-10 h-10 rounded-full border-2 border-white shadow-sm" />
+                    <img src={user?.avatarUrl || 'https://picsum.photos/200'} alt="Profile" className="w-10 h-10 rounded-full border-2 border-[#1A202C] shadow-lg" />
                     {showConfig && (
-                        <div className="absolute right-0 top-12 w-48 bg-white rounded-2xl border border-gray-100 shadow-xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                        <div className="absolute right-0 top-12 w-48 bg-[#1A202C] rounded-2xl border border-white/10 shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
                             <div className="p-1">
-                                <button onClick={onLogout} className="w-full text-left px-3 py-2 rounded-lg hover:bg-red-50 text-sm flex items-center gap-2 text-red-500 font-bold">
+                                <button onClick={onLogout} className="w-full text-left px-3 py-2 rounded-lg hover:bg-white/5 text-sm flex items-center gap-2 text-red-400 font-bold">
                                     <span className="material-symbols-rounded text-lg">logout</span> Sair da Conta
                                 </button>
                             </div>
@@ -490,37 +490,37 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
             {/* Floating Action Button */}
             <button
                 onClick={() => setIsAddModalOpen(true)}
-                className="fixed bottom-28 right-6 w-14 h-14 rounded-full bg-[#0081FF] text-white shadow-lg shadow-blue-200 flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-20"
+                className="fixed bottom-28 right-6 w-14 h-14 rounded-full bg-[#0081FF] text-white shadow-lg shadow-[#0081FF]/20 flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-20"
             >
                 <span className="material-symbols-rounded text-3xl">add</span>
             </button>
 
-            {/* Bottom Navigation Like Mockup */}
-            <div className="fixed bottom-0 inset-x-0 bg-white border-t border-gray-100 px-6 py-3 flex justify-between items-center z-30 pb-8">
+            {/* Bottom Navigation Like Mockup - DARK */}
+            <div className="fixed bottom-0 inset-x-0 bg-[#101622] border-t border-white/5 px-6 py-3 flex justify-between items-center z-30 pb-8">
                 <button
                     onClick={() => setActiveTab('dashboard')}
-                    className={`flex flex-col items-center gap-1 ${activeTab === 'dashboard' ? 'text-[#0081FF]' : 'text-gray-400'}`}
+                    className={`flex flex-col items-center gap-1 ${activeTab === 'dashboard' ? 'text-[#0081FF]' : 'text-gray-500'}`}
                 >
                     <span className="material-symbols-rounded text-2xl">dashboard</span>
                     <span className="text-[9px] font-bold uppercase tracking-wider">Dashboard</span>
                 </button>
                 <button
                     onClick={() => setActiveTab('students')}
-                    className={`flex flex-col items-center gap-1 ${activeTab === 'students' ? 'text-[#0081FF]' : 'text-gray-400'}`}
+                    className={`flex flex-col items-center gap-1 ${activeTab === 'students' ? 'text-[#0081FF]' : 'text-gray-500'}`}
                 >
                     <span className="material-symbols-rounded text-2xl">school</span>
                     <span className="text-[9px] font-bold uppercase tracking-wider">Alunos</span>
                 </button>
                 <button
                     onClick={() => setActiveTab('reports')}
-                    className={`flex flex-col items-center gap-1 ${activeTab === 'reports' ? 'text-[#0081FF]' : 'text-gray-400'}`}
+                    className={`flex flex-col items-center gap-1 ${activeTab === 'reports' ? 'text-[#0081FF]' : 'text-gray-500'}`}
                 >
                     <span className="material-symbols-rounded text-2xl">bar_chart</span>
                     <span className="text-[9px] font-bold uppercase tracking-wider">Relatórios</span>
                 </button>
                 <button
                     onClick={() => setActiveTab('settings')}
-                    className={`flex flex-col items-center gap-1 ${activeTab === 'settings' ? 'text-[#0081FF]' : 'text-gray-400'}`}
+                    className={`flex flex-col items-center gap-1 ${activeTab === 'settings' ? 'text-[#0081FF]' : 'text-gray-500'}`}
                 >
                     <span className="material-symbols-rounded text-2xl">settings</span>
                     <span className="text-[9px] font-bold uppercase tracking-wider">Ajustes</span>
