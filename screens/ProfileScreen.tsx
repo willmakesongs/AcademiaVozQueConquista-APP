@@ -757,27 +757,63 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                     <h3 className="text-xl font-black text-white tracking-tight">Termos e Condições</h3>
                     <div className="bg-[#1A202C] rounded-3xl p-6 border border-white/5 space-y-6 max-h-[400px] overflow-y-auto hide-scrollbar">
                         <div className="space-y-2">
-                            <h5 className="font-bold text-white text-sm">1. Objeto do Contrato</h5>
+                            <h5 className="font-bold text-white text-sm">1. Sobre este contrato</h5>
                             <p className="text-xs text-gray-400 leading-relaxed">
-                                O presente contrato tem como objeto a prestação de serviços de ensino musical no curso da <strong>Academia Voz que Conquista</strong>, a ser ministrado nas dependências físicas ou via plataforma online, conforme a modalidade escolhida pelo aluno.
+                                Este contrato estabelece as regras da prestação de serviços educacionais entre a Escola de Música e o Aluno.
                             </p>
                         </div>
                         <div className="space-y-2">
-                            <h5 className="font-bold text-white text-sm">2. Pagamentos e Mensalidade</h5>
+                            <h5 className="font-bold text-white text-sm">2. Serviços oferecidos</h5>
                             <p className="text-xs text-gray-400 leading-relaxed">
-                                O aluno compromete-se a efetuar o pagamento mensal no valor estipulado até o dia de vencimento escolhido. O atraso superior a 5 dias poderá acarretar suspensão temporária do acesso à plataforma e agendamentos.
+                                A escola oferece aulas conforme o plano contratado, além de acesso ao App com conteúdos pedagógicos.
                             </p>
                         </div>
                         <div className="space-y-2">
-                            <h5 className="font-bold text-white text-sm">3. Cancelamento</h5>
+                            <h5 className="font-bold text-white text-sm">3. Compromissos do aluno</h5>
                             <p className="text-xs text-gray-400 leading-relaxed">
-                                O cancelamento da matrícula pode ser solicitado a qualquer momento, respeitando o aviso prévio de 30 dias. Não haverá multas rescisórias, mas as mensalidades em aberto devem ser quitadas.
+                                O aluno deve comparecer às aulas, avisar faltas com antecedência e manter os pagamentos em dia.
                             </p>
                         </div>
                         <div className="space-y-2">
-                            <h5 className="font-bold text-white text-sm">4. Uso de Imagem</h5>
+                            <h5 className="font-bold text-white text-sm">4. Faltas e reposição</h5>
                             <p className="text-xs text-gray-400 leading-relaxed">
-                                O aluno autoriza o uso de sua imagem e voz em registros pedagógicos (gravações de aulas e feedbacks) para fins de acompanhamento de seu desenvolvimento técnico.
+                                Avisos devem ser feitos com no mínimo 24 horas de antecedência. Faltas sem aviso não geram reposição.
+                            </p>
+                        </div>
+                        <div className="space-y-2">
+                            <h5 className="font-bold text-white text-sm">5. Pagamentos</h5>
+                            <p className="text-xs text-gray-400 leading-relaxed">
+                                O pagamento deve ser realizado até a data de vencimento acordada.
+                            </p>
+                        </div>
+                        <div className="space-y-2">
+                            <h5 className="font-bold text-white text-sm">6. Bloqueio por atraso</h5>
+                            <p className="text-xs text-gray-400 leading-relaxed">
+                                Após 7 dias de atraso, o acesso ao App será automaticamente bloqueado até a regularização.
+                            </p>
+                        </div>
+                        <div className="space-y-2">
+                            <h5 className="font-bold text-white text-sm">7. Atrasos nas aulas</h5>
+                            <p className="text-xs text-gray-400 leading-relaxed">
+                                Há tolerância de até 10 minutos. A aula termina no horário previsto.
+                            </p>
+                        </div>
+                        <div className="space-y-2">
+                            <h5 className="font-bold text-white text-sm">8. Cancelamento</h5>
+                            <p className="text-xs text-gray-400 leading-relaxed">
+                                Cancelamentos devem ser solicitados com 30 dias de antecedência.
+                            </p>
+                        </div>
+                        <div className="space-y-2">
+                            <h5 className="font-bold text-white text-sm">9. Uso do App</h5>
+                            <p className="text-xs text-gray-400 leading-relaxed">
+                                O conteúdo é de uso exclusivo do aluno e não pode ser compartilhado.
+                            </p>
+                        </div>
+                        <div className="space-y-2">
+                            <h5 className="font-bold text-white text-sm">10. Boa-fé</h5>
+                            <p className="text-xs text-gray-400 leading-relaxed">
+                                Situações não previstas serão resolvidas com diálogo e bom senso.
                             </p>
                         </div>
                     </div>
