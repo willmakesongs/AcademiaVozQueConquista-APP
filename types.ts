@@ -11,7 +11,8 @@ export enum Screen {
   ROUTINE = 'ROUTINE',
   PROFILE = 'PROFILE',
   CALENDAR = 'CALENDAR',
-  ADMIN_DASHBOARD = 'ADMIN_DASHBOARD'
+  ADMIN_DASHBOARD = 'ADMIN_DASHBOARD',
+  CONTRACT = 'CONTRACT'
 }
 
 export interface Vocalize {

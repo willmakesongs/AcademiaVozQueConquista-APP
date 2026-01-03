@@ -84,7 +84,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
     const { user } = useAuth();
 
     // Navigation State
-    const [activeView, setActiveView] = useState<'menu' | 'personal_data' | 'subscription' | 'vocal_test' | 'piano' | 'tuner'>('menu');
+    const [activeView, setActiveView] = useState<'menu' | 'personal_data' | 'subscription' | 'contract' | 'vocal_test' | 'piano' | 'tuner'>('menu');
 
     // --- ESTADOS DO TESTE VOCAL & AFINADOR ---
     const [rangeStep, setRangeStep] = useState<'intro' | 'low' | 'high' | 'result'>('intro');
@@ -114,6 +114,12 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
         bio: 'Apaixonado por música e buscando evoluir minha técnica vocal.'
     });
     const [isEditing, setIsEditing] = useState(false);
+
+    // --- ESTADO DO CONTRATO ---
+    const [contractAgreed, setContractAgreed] = useState(false);
+    const [isSigning, setIsSigning] = useState(false);
+    const signatureCanvasRef = useRef<HTMLCanvasElement | null>(null);
+    const [hasSignature, setHasSignature] = useState(false);
 
     // --- ESTADO DO BOTÃO PIX ---
     const [pixCopyStatus, setPixCopyStatus] = useState('Copiar Chave');
@@ -249,6 +255,56 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
         setTimeout(() => setPixCopyStatus('Copiar Chave'), 2000);
     };
 
+    // --- LÓGICA DE ASSINATURA ---
+    const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
+        const canvas = signatureCanvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        ctx.strokeStyle = '#0081FF';
+        ctx.lineWidth = 3;
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+
+        const rect = canvas.getBoundingClientRect();
+        const x = ('touches' in e) ? e.touches[0].clientX - rect.left : e.nativeEvent.offsetX;
+        const y = ('touches' in e) ? e.touches[0].clientY - rect.top : e.nativeEvent.offsetY;
+
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        setIsSigning(true);
+        setHasSignature(true);
+    };
+
+    const draw = (e: React.MouseEvent | React.TouchEvent) => {
+        if (!isSigning) return;
+        const canvas = signatureCanvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const x = ('touches' in e) ? e.touches[0].clientX - rect.left : e.nativeEvent.offsetX;
+        const y = ('touches' in e) ? e.touches[0].clientY - rect.top : e.nativeEvent.offsetY;
+
+        ctx.lineTo(x, y);
+        ctx.stroke();
+    };
+
+    const stopDrawing = () => {
+        setIsSigning(false);
+    };
+
+    const clearSignature = () => {
+        const canvas = signatureCanvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        setHasSignature(false);
+    };
+
     // --- RENDERIZADORES DE VIEW ---
 
     const renderHeader = (title: string, onBackAction: () => void) => (
@@ -376,6 +432,22 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                                 <span className="material-symbols-rounded text-gray-600">chevron_right</span>
                             </button>
                         )}
+
+                        <button
+                            onClick={() => setActiveView('contract')}
+                            className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors border-t border-white/5"
+                        >
+                            <div className="flex items-center gap-4">
+                                <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-400">
+                                    <span className="material-symbols-rounded text-lg">description</span>
+                                </div>
+                                <div className="text-left">
+                                    <span className="text-sm font-semibold text-white block">Contrato de Matrícula</span>
+                                    <span className="text-[10px] text-gray-500 block">Visualizar e assinar termos</span>
+                                </div>
+                            </div>
+                            <span className="material-symbols-rounded text-gray-600">chevron_right</span>
+                        </button>
 
                         {/* Mostrar Painel Administrativo para Admins e Professores */}
                         {(user?.role === 'admin' || user?.role === 'teacher') && (
@@ -653,6 +725,126 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
         </div>
     );
 
+    const renderContract = () => (
+        <div className="flex-1 flex flex-col bg-[#101622] animate-in slide-in-from-right">
+            {renderHeader('Contrato de Matrícula', () => setActiveView('menu'))}
+
+            <div className="p-6 flex-1 overflow-y-auto hide-scrollbar space-y-8 pb-32">
+                {/* Student Card */}
+                <div className="bg-[#1A202C] rounded-3xl p-6 border border-white/5 shadow-xl">
+                    <div className="flex items-center gap-4 mb-6">
+                        <img src={user?.avatarUrl} className="w-16 h-16 rounded-full border-2 border-[#0081FF]/30 p-0.5" alt="" />
+                        <div>
+                            <h4 className="text-lg font-bold text-white leading-tight">{user?.name}</h4>
+                            <p className="text-xs text-gray-500 uppercase tracking-widest font-black">Plano {user?.plan || 'Vocalizes Pro'}</p>
+                        </div>
+                    </div>
+
+                    <div className="bg-[#101622] rounded-2xl p-4 border border-white/5 space-y-3">
+                        <div className="flex justify-between items-center">
+                            <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Mensalidade</span>
+                            <span className="text-sm font-black text-[#0081FF]">R$ {user?.amount || '97,00'}</span>
+                        </div>
+                        <div className="flex justify-between items-center border-t border-white/5 pt-3">
+                            <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Vencimento</span>
+                            <span className="text-sm font-bold text-white">Dia {user?.nextDueDate?.split(' ')[0] || '10'} de cada mês</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Terms and Conditions */}
+                <div className="space-y-4">
+                    <h3 className="text-xl font-black text-white tracking-tight">Termos e Condições</h3>
+                    <div className="bg-[#1A202C] rounded-3xl p-6 border border-white/5 space-y-6 max-h-[400px] overflow-y-auto hide-scrollbar">
+                        <div className="space-y-2">
+                            <h5 className="font-bold text-white text-sm">1. Objeto do Contrato</h5>
+                            <p className="text-xs text-gray-400 leading-relaxed">
+                                O presente contrato tem como objeto a prestação de serviços de ensino musical no curso da <strong>Academia Voz que Conquista</strong>, a ser ministrado nas dependências físicas ou via plataforma online, conforme a modalidade escolhida pelo aluno.
+                            </p>
+                        </div>
+                        <div className="space-y-2">
+                            <h5 className="font-bold text-white text-sm">2. Pagamentos e Mensalidade</h5>
+                            <p className="text-xs text-gray-400 leading-relaxed">
+                                O aluno compromete-se a efetuar o pagamento mensal no valor estipulado até o dia de vencimento escolhido. O atraso superior a 5 dias poderá acarretar suspensão temporária do acesso à plataforma e agendamentos.
+                            </p>
+                        </div>
+                        <div className="space-y-2">
+                            <h5 className="font-bold text-white text-sm">3. Cancelamento</h5>
+                            <p className="text-xs text-gray-400 leading-relaxed">
+                                O cancelamento da matrícula pode ser solicitado a qualquer momento, respeitando o aviso prévio de 30 dias. Não haverá multas rescisórias, mas as mensalidades em aberto devem ser quitadas.
+                            </p>
+                        </div>
+                        <div className="space-y-2">
+                            <h5 className="font-bold text-white text-sm">4. Uso de Imagem</h5>
+                            <p className="text-xs text-gray-400 leading-relaxed">
+                                O aluno autoriza o uso de sua imagem e voz em registros pedagógicos (gravações de aulas e feedbacks) para fins de acompanhamento de seu desenvolvimento técnico.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Digital Signature */}
+                <div className="space-y-4">
+                    <div className="flex justify-between items-end">
+                        <h3 className="text-lg font-black text-white">Assinatura Digital</h3>
+                        <button onClick={clearSignature} className="text-[10px] font-black text-[#0081FF] uppercase hover:underline">Limpar Assinatura</button>
+                    </div>
+                    <div className="relative bg-white/5 border-2 border-dashed border-white/10 rounded-3xl h-48 overflow-hidden">
+                        <canvas
+                            ref={signatureCanvasRef}
+                            width={400}
+                            height={200}
+                            className="w-full h-full cursor-crosshair touch-none"
+                            onMouseDown={startDrawing}
+                            onMouseMove={draw}
+                            onMouseUp={stopDrawing}
+                            onMouseLeave={stopDrawing}
+                            onTouchStart={startDrawing}
+                            onTouchMove={draw}
+                            onTouchEnd={stopDrawing}
+                        />
+                        {!hasSignature && (
+                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                <p className="text-gray-600 font-bold text-sm">Assine aqui com o dedo</p>
+                            </div>
+                        )}
+                    </div>
+                    <p className="text-[10px] text-gray-600 text-center italic">Ao assinar, você confirma ser o responsável legal ou o próprio aluno (se maior de idade).</p>
+                </div>
+
+                {/* Footer Agreement */}
+                <div className="bg-[#101622] pt-4 space-y-4">
+                    <label className="flex items-center gap-3 cursor-pointer group">
+                        <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all ${contractAgreed ? 'bg-[#0081FF] border-[#0081FF]' : 'border-white/10 bg-white/5 group-hover:border-white/20'}`}>
+                            {contractAgreed && <span className="material-symbols-rounded text-white text-lg">check</span>}
+                            <input
+                                type="checkbox"
+                                className="hidden"
+                                checked={contractAgreed}
+                                onChange={(e) => setContractAgreed(e.target.checked)}
+                            />
+                        </div>
+                        <span className="text-xs text-gray-300 font-bold flex-1">
+                            Li e concordo com todos os termos e condições descritos no contrato acima.
+                        </span>
+                    </label>
+
+                    <button
+                        disabled={!contractAgreed || !hasSignature}
+                        onClick={() => {
+                            alert("Contrato assinado com sucesso!");
+                            setActiveView('menu');
+                        }}
+                        className="w-full h-14 rounded-2xl bg-[#0081FF] text-white font-black flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 disabled:opacity-30 disabled:grayscale transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                        <span className="material-symbols-rounded">edit_square</span>
+                        Assinar e Confirmar
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+
     const renderTuner = () => (
         <div className="flex-1 flex flex-col animate-in slide-in-from-right">
             {renderHeader('Afinador', () => { stopMic(); setActiveView('menu'); })}
@@ -862,6 +1054,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
             {activeView === 'menu' && renderMenu()}
             {activeView === 'personal_data' && renderPersonalData()}
             {activeView === 'subscription' && renderSubscription()}
+            {activeView === 'contract' && renderContract()}
             {activeView === 'vocal_test' && renderVocalTest()}
             {activeView === 'piano' && renderPiano()}
             {activeView === 'tuner' && renderTuner()}
