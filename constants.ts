@@ -1008,7 +1008,7 @@ export const MODULES: Module[] = [
         topics: [
             {
                 id: '7.1',
-                title: 'Requisito de Segurança (Gatekeeper)',
+                title: 'Requisito de Segurança (Controle de Segurança Vocal)',
                 description: 'Leia antes de iniciar qualquer exercício deste módulo.',
                 content: `
           <div class="space-y-6 font-sans">
@@ -1017,7 +1017,7 @@ export const MODULES: Module[] = [
                 <div class="relative z-10">
                    <h3 class="text-xl font-bold text-red-400 mb-2 flex items-center gap-2">
                       <span class="material-symbols-rounded">block</span>
-                      GATEKEEPER: Pare Agora!
+                      Controle de Segurança Vocal: Pare Agora!
                    </h3>
                    <p class="text-sm text-red-100 mb-4 font-semibold">
                       O acesso aos exercícios de notas agudas só é permitido após a confirmação do aquecimento técnico.
@@ -1442,7 +1442,8 @@ export const CURRENT_USER: User = {
     id: 'u1',
     name: 'Lorena Pimentel',
     role: 'teacher',
-    avatarUrl: 'https://ui-avatars.com/api/?name=Lorena+Pimentel&background=0D8ABC&color=fff'
+    avatarUrl: 'https://ui-avatars.com/api/?name=Lorena+Pimentel&background=0D8ABC&color=fff',
+    status: 'active'
 };
 
 export const MOCK_STUDENTS: StudentSummary[] = [];
