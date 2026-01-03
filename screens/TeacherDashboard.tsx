@@ -214,8 +214,9 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             setNewStudentInstagram('');
             setNewStudentNotes('');
             setIsAddModalOpen(false);
-        } catch (err) {
+        } catch (err: any) {
             console.error(err);
+            alert('Erro ao salvar: ' + (err.message || JSON.stringify(err)));
         } finally {
             setLoadingAction(false);
         }
@@ -1171,7 +1172,10 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                             </button>
                             <h3 className="text-lg font-black text-white">Novo Aluno</h3>
                             <button
-                                onClick={handleAddStudent}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleAddStudent();
+                                }}
                                 disabled={loadingAction}
                                 className="text-[#0081FF] font-black text-sm uppercase tracking-wider disabled:opacity-30 px-2"
                             >
