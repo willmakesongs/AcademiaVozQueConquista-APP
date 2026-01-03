@@ -1172,7 +1172,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                             <h3 className="text-lg font-black text-white">Novo Aluno</h3>
                             <button
                                 onClick={handleAddStudent}
-                                disabled={!newStudentName.trim() || !newStudentAge.trim() || !newStudentPhone.trim() || loadingAction}
+                                disabled={loadingAction}
                                 className="text-[#0081FF] font-black text-sm uppercase tracking-wider disabled:opacity-30 px-2"
                             >
                                 {loadingAction ? '...' : 'Salvar'}
