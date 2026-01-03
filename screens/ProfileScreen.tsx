@@ -880,6 +880,12 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                                 Situações não previstas serão resolvidas com diálogo e bom senso.
                             </p>
                         </div>
+                        <div className="space-y-2">
+                            <h5 className="font-bold text-white text-sm">11. Férias e funcionamento em modelo híbrido</h5>
+                            <p className="text-xs text-gray-400 leading-relaxed">
+                                A escola atua em modelo híbrido, com atividades presenciais e digitais por meio do App. Durante as férias ou recesso, as aulas presenciais são suspensas, mas o processo continua via App com rotinas de estudos e conteúdos orientados. Por ser um plano contínuo, a mensalidade permanece ativa para assegurar sua vaga e o acesso à plataforma. As aulas presenciais retornam normalmente ao término do recesso.
+                            </p>
+                        </div>
                     </div>
                 </div>
 
