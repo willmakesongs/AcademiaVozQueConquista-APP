@@ -39,6 +39,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     const [editAddress, setEditAddress] = useState('');
     const [editInstagram, setEditInstagram] = useState('');
     const [editAmount, setEditAmount] = useState(97);
+    const [editPaymentDay, setEditPaymentDay] = useState('05');
 
     // Form Novo Aluno
     const [newStudentName, setNewStudentName] = useState('');
@@ -55,6 +56,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     const [newStudentLevel, setNewStudentLevel] = useState('Iniciante');
     const [newStudentModality, setNewStudentModality] = useState<'Online' | 'Presencial'>('Presencial');
     const [paymentDay, setPaymentDay] = useState('05');
+    const [newStudentAmount, setNewStudentAmount] = useState('97');
 
     const filteredStudents = students.filter(student =>
         student.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -93,7 +95,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     status: (s.status as any) || 'active',
                     phone: s.phone || '',
                     age: s.age ? String(s.age) : '',
-                    paymentDay: '05',
+                    paymentDay: s.payment_day || '05',
                     notes: s.notes || '',
                     modality: s.modality || 'Online',
                     scheduleDay: s.schedule_day || 'Seg',
@@ -138,7 +140,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             modality: newStudentModality,
             scheduleDay: scheduleDay,
             scheduleTime: scheduleTime,
-            amount: 97,
+            amount: parseInt(String(newStudentAmount)) || 97,
             address: newStudentAddress,
             instagram: newStudentInstagram
         };
@@ -156,7 +158,9 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 schedule_time: scheduleTime,
                 instagram: newStudentInstagram || null,
                 address: newStudentAddress || null,
-                notes: newStudentNotes || null
+                notes: newStudentNotes || null,
+                amount: parseInt(String(newStudentAmount)) || 97,
+                payment_day: paymentDay
             }]);
 
             const existingLocal = localStorage.getItem('vocalizes_local_students');
@@ -191,6 +195,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         setEditAddress(student.address || '');
         setEditInstagram(student.instagram || '');
         setEditAmount(student.amount || 97);
+        setEditPaymentDay(student.paymentDay || '05');
         setIsEditing(false);
     };
 
@@ -214,7 +219,8 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             age: editAge,
             address: editAddress,
             instagram: editInstagram,
-            amount: editAmount
+            amount: editAmount,
+            paymentDay: editPaymentDay
         };
 
         try {
@@ -226,7 +232,8 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 age: editAge ? parseInt(editAge) : null,
                 address: editAddress,
                 instagram: editInstagram,
-                amount: editAmount
+                amount: editAmount,
+                payment_day: editPaymentDay
             }).eq('id', selectedStudent.id);
 
             const existingLocal = localStorage.getItem('vocalizes_local_students');
@@ -675,7 +682,15 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="p-3 bg-white/5 rounded-xl border border-white/5">
                                     <p className="text-[10px] text-gray-500 font-bold uppercase">Pagamento</p>
-                                    <p className="text-sm text-white">Dia {selectedStudent.paymentDay || '05'}</p>
+                                    <select
+                                        value={editPaymentDay}
+                                        onChange={(e) => setEditPaymentDay(e.target.value)}
+                                        className="w-full bg-transparent border-none text-white text-sm focus:outline-none appearance-none"
+                                    >
+                                        {['01', '05', '10', '15', '20', '25'].map(d => (
+                                            <option key={d} value={d} className="bg-[#1A202C]">Dia {d}</option>
+                                        ))}
+                                    </select>
                                 </div>
                                 <div className="p-3 bg-white/5 rounded-xl border border-white/5">
                                     <p className="text-[10px] text-gray-500 font-bold uppercase">Agenda</p>
@@ -913,6 +928,30 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                                 ))}
                                             </select>
                                             <span className="absolute right-4 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-500 pointer-events-none">expand_more</span>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Dia do Vencimento</p>
+                                            <select
+                                                value={paymentDay}
+                                                onChange={(e) => setPaymentDay(e.target.value)}
+                                                className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white outline-none"
+                                            >
+                                                {['01', '05', '10', '15', '20', '25'].map(d => (
+                                                    <option key={d} value={d} className="bg-[#1A202C]">{d}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Valor Mensal (R$)</p>
+                                            <input
+                                                type="number"
+                                                value={newStudentAmount}
+                                                onChange={(e) => setNewStudentAmount(e.target.value)}
+                                                placeholder="97"
+                                                className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white outline-none"
+                                            />
                                         </div>
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
