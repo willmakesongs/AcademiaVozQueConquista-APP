@@ -525,8 +525,16 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                         <div className="text-right">
                             <p className="text-xs text-white/90 mb-1 font-medium drop-shadow-md shadow-black">Status do Plano</p>
                             <div className="flex items-center justify-end gap-2">
-                                <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_#4ade80]"></span>
-                                <span className="text-lg font-bold text-white drop-shadow-md shadow-black">Ativo</span>
+                                {user?.status === 'blocked' ? (
+                                    <span className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"></span>
+                                ) : user?.status === 'overdue' ? (
+                                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse shadow-[0_0_8px_#f59e0b]"></span>
+                                ) : (
+                                    <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_#4ade80]"></span>
+                                )}
+                                <span className="text-lg font-bold text-white drop-shadow-md shadow-black">
+                                    {user?.status === 'blocked' ? 'Bloqueado' : user?.status === 'overdue' ? 'Em Atraso' : 'Ativo'}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -538,11 +546,11 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                         <div className="bg-[#1A202C] rounded-xl border border-white/5 divide-y divide-white/5">
                             <div className="p-4 flex justify-between items-center">
                                 <span className="text-sm text-gray-400">Renovação</span>
-                                <span className="text-sm text-white font-medium">02 de Fevereiro, 2026</span>
+                                <span className="text-sm text-white font-medium">{user?.nextDueDate || 'Indefinida'}</span>
                             </div>
                             <div className="p-4 flex justify-between items-center">
                                 <span className="text-sm text-gray-400">Valor</span>
-                                <span className="text-sm text-white font-medium">R$ 97,00 / mês</span>
+                                <span className="text-sm text-white font-medium">R$ {user?.amount || '0,00'} / mês</span>
                             </div>
                             <div className="p-4 flex justify-between items-center">
                                 <span className="text-sm text-gray-400">Forma de Pagamento</span>
@@ -564,8 +572,8 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                                     <button
                                         onClick={handleCopyPix}
                                         className={`px-3 rounded-lg font-bold text-xs transition-all flex items-center justify-center gap-1 ${pixCopyStatus === 'Copiado!'
-                                                ? 'bg-green-500 text-white'
-                                                : 'bg-white/10 text-white hover:bg-white/20'
+                                            ? 'bg-green-500 text-white'
+                                            : 'bg-white/10 text-white hover:bg-white/20'
                                             }`}
                                     >
                                         <span className="material-symbols-rounded text-sm">

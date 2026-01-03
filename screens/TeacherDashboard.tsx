@@ -103,7 +103,8 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
                     level: 'Iniciante',
                     lastPractice: 'Hoje',
                     progress: 0,
-                    status: 'active',
+                    status: (s.status as 'active' | 'inactive') || 'active', // Suportando compatibilidade com tipo anterior
+                    subStatus: (s.status as any) || 'active', // Para uso interno com o novo sistema
                     phone: s.phone || '',
                     age: s.age ? String(s.age) : '',
                     paymentDay: '05',
@@ -513,16 +514,51 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
                         </div>
 
                         {/* Footer Actions */}
-                        <div className="p-4 border-t border-white/5 bg-[#151A23] rounded-b-2xl flex gap-3">
-                            <button onClick={() => setSelectedStudent(null)} className="flex-1 h-12 rounded-xl border border-white/10 text-gray-400 font-bold text-sm hover:bg-white/5">Cancelar</button>
-                            <button
-                                onClick={handleSaveChanges}
-                                disabled={loadingAction}
-                                className="flex-1 h-12 rounded-xl bg-[#0081FF] text-white font-bold text-sm hover:bg-[#006bd1] shadow-lg flex items-center justify-center gap-2 disabled:opacity-50"
-                            >
-                                <span className="material-symbols-rounded">save</span>
-                                {loadingAction ? 'Salvando...' : 'Salvar Alterações'}
-                            </button>
+                        <div className="p-4 border-t border-white/5 bg-[#151A23] rounded-b-2xl">
+                            {user?.role === 'admin' && (
+                                <div className="mb-4 space-y-2">
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase ml-1">Status da Assinatura (ADM Only)</p>
+                                    <div className="flex gap-2">
+                                        {(['active', 'overdue', 'blocked'] as const).map((status) => (
+                                            <button
+                                                key={status}
+                                                onClick={async () => {
+                                                    setLoadingAction(true);
+                                                    try {
+                                                        const { error } = await supabase
+                                                            .from('profiles')
+                                                            .update({ status })
+                                                            .eq('id', selectedStudent.id);
+                                                        if (!error) {
+                                                            setStudents(prev => prev.map(s => s.id === selectedStudent.id ? { ...s, subStatus: status, status: status === 'active' ? 'active' : 'inactive' } : s));
+                                                            setSelectedStudent(prev => prev ? { ...prev, subStatus: status, status: status === 'active' ? 'active' : 'inactive' } : null);
+                                                        }
+                                                    } finally {
+                                                        setLoadingAction(false);
+                                                    }
+                                                }}
+                                                className={`flex-1 py-2 rounded-lg text-[10px] font-bold uppercase transition-all border ${(selectedStudent as any).subStatus === status
+                                                        ? (status === 'active' ? 'bg-green-500/20 border-green-500 text-green-500' : status === 'overdue' ? 'bg-amber-500/20 border-amber-500 text-amber-500' : 'bg-red-500/20 border-red-500 text-red-500')
+                                                        : 'bg-white/5 border-white/5 text-gray-400 hover:bg-white/10'
+                                                    }`}
+                                            >
+                                                {status === 'active' ? 'Ativo' : status === 'overdue' ? 'Atrasado' : 'Bloqueado'}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            <div className="flex gap-3">
+                                <button onClick={() => setSelectedStudent(null)} className="flex-1 h-12 rounded-xl border border-white/10 text-gray-400 font-bold text-sm hover:bg-white/5">Cancelar</button>
+                                <button
+                                    onClick={handleSaveChanges}
+                                    disabled={loadingAction}
+                                    className="flex-1 h-12 rounded-xl bg-[#0081FF] text-white font-bold text-sm hover:bg-[#006bd1] shadow-lg flex items-center justify-center gap-2 disabled:opacity-50"
+                                >
+                                    <span className="material-symbols-rounded">save</span>
+                                    {loadingAction ? 'Salvando...' : 'Salvar Alterações'}
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

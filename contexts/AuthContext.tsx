@@ -111,7 +111,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: data.id,
           name: data.name,
           role: data.role,
-          avatarUrl: data.avatar_url || 'https://picsum.photos/200'
+          avatarUrl: data.avatar_url || 'https://picsum.photos/200',
+          status: data.status || 'active',
+          plan: data.plan || 'Plano Pro',
+          nextDueDate: data.next_due_date || '2026-02-02',
+          amount: data.amount || '97,00'
         });
       }
     } catch (error) {
@@ -231,7 +235,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       id: 'guest',
       name: 'Visitante (Teste)',
       role: role,
-      avatarUrl: `https://ui-avatars.com/api/?name=${role === 'student' ? 'Aluno' : 'Prof'}&background=random&color=fff&background=6F4CE7`
+      avatarUrl: `https://ui-avatars.com/api/?name=${role === 'student' ? 'Aluno' : 'Prof'}&background=random&color=fff&background=6F4CE7`,
+      status: 'active',
+      plan: 'Plano Pro',
+      nextDueDate: '2026-02-02',
+      amount: '97,00'
     });
     setLoading(false);
   };

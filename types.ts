@@ -54,11 +54,18 @@ export interface Module {
   }[];
 }
 
+export type SubscriptionStatus = 'active' | 'overdue' | 'blocked';
+export type UserRole = 'student' | 'teacher' | 'admin';
+
 export interface User {
   id: string;
   name: string;
-  role: 'student' | 'teacher';
+  role: UserRole;
   avatarUrl: string;
+  status?: SubscriptionStatus;
+  plan?: string;
+  nextDueDate?: string;
+  amount?: string;
 }
 
 export interface StudentSummary {
