@@ -366,78 +366,101 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
     const renderFinancial = () => {
         const totalReceived = students.filter(s => s.status === 'active').reduce((acc, s) => acc + (s.amount || 0), 0);
-        const totalPending = students.filter(s => s.status === 'overdue').reduce((acc, s) => acc + (s.amount || 0), 0);
+        const totalPending = students.filter(s => s.status === 'overdue' || s.status === 'blocked').reduce((acc, s) => acc + (s.amount || 0), 0);
         const overdueStudents = students.filter(s => s.status === 'overdue' || s.status === 'blocked');
 
-        // Mock data for chart - in a real app this would come from historical table
-        const chartData = [10, 25, 18, 32, 28, 45]; // Simple relative points
-        const maxVal = Math.max(...chartData);
+        // Mock data for chart to match reference image style
+        // Chart values: [10, 40, 25, 50, 45, 80] (approximate curve)
+        const chartData = [15, 65, 30, 55, 20, 90];
+        const maxVal = 100;
         const points = chartData.map((val, idx) => {
             const x = (idx / (chartData.length - 1)) * 100;
-            const y = 100 - ((val / maxVal) * 100);
+            const y = 100 - ((val / maxVal) * 80); // Leave some space at top
             return `${x},${y}`;
         }).join(' ');
+
+        // Bezier curve for smooth lines
+        const getSmoothPath = (data: number[]) => {
+            if (data.length === 0) return '';
+            const points = data.map((val, idx) => {
+                const x = (idx / (data.length - 1)) * 100;
+                const y = 100 - ((val / maxVal) * 80);
+                return [x, y];
+            });
+
+            let d = `M${points[0][0]},${points[0][1]}`;
+            for (let i = 1; i < points.length; i++) {
+                const [x0, y0] = points[i - 1];
+                const [x1, y1] = points[i];
+                const cX = (x0 + x1) / 2;
+                d += ` C${cX},${y0} ${cX},${y1} ${x1},${y1}`;
+            }
+            return d;
+        };
+        const smoothPath = getSmoothPath(chartData);
 
         return (
             <div className="flex-1 overflow-y-auto hide-scrollbar pb-24">
                 {/* Summary Cards */}
                 <div className="grid grid-cols-2 gap-4 px-6 pt-6">
-                    <div className="bg-white rounded-[24px] p-5 shadow-lg relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-green-500/10 rounded-bl-[100px] -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
-                        <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 mb-3 relative z-10">
-                            <span className="material-symbols-rounded">arrow_upward</span>
+                    {/* Recebido Card */}
+                    <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5 relative overflow-hidden group">
+                        <div className="flex items-center gap-3 mb-3">
+                            <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 hover:scale-110 transition-transform">
+                                <span className="material-symbols-rounded">arrow_upward</span>
+                            </div>
+                            <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Recebido (Mês)</span>
                         </div>
-                        <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wider mb-1">Recebido (Mês)</p>
-                        <h3 className="text-2xl font-black text-[#101622]">R$ {totalReceived.toLocaleString('pt-BR')}</h3>
-                        <p className="text-[10px] text-green-600 font-bold flex items-center mt-1">
-                            <span className="material-symbols-rounded text-sm mr-0.5">trending_up</span> +12% vs mês anterior
-                        </p>
+                        <h3 className="text-2xl font-black text-white mb-1">R$ {totalReceived.toLocaleString('pt-BR')}</h3>
+                        <p className="text-[10px] text-green-400 font-bold">+12% vs mês anterior</p>
                     </div>
 
-                    <div className="bg-white rounded-[24px] p-5 shadow-lg relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-orange-500/10 rounded-bl-[100px] -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
-                        <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-500 mb-3 relative z-10">
-                            <span className="material-symbols-rounded">priority_high</span>
+                    {/* Pendente Card */}
+                    <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5 relative overflow-hidden group">
+                        <div className="flex items-center gap-3 mb-3">
+                            <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-500 hover:scale-110 transition-transform">
+                                <span className="material-symbols-rounded">priority_high</span>
+                            </div>
+                            <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Pendente</span>
                         </div>
-                        <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wider mb-1">Pendente</p>
-                        <h3 className="text-2xl font-black text-[#101622]">R$ {totalPending.toLocaleString('pt-BR')}</h3>
-                        <p className="text-[10px] text-orange-500 font-bold flex items-center mt-1">
-                            <span className="material-symbols-rounded text-sm mr-0.5">warning</span> Ação necessária
-                        </p>
+                        <h3 className="text-2xl font-black text-white mb-1">R$ {totalPending.toLocaleString('pt-BR')}</h3>
+                        <p className="text-[10px] text-orange-400 font-bold">+5% inadimplência</p>
                     </div>
                 </div>
 
                 {/* Revenue Chart Section */}
                 <div className="px-6 mt-6">
-                    <div className="bg-white rounded-[24px] p-6 shadow-sm">
+                    <div className="bg-[#1A202C] rounded-[32px] p-6 border border-white/5">
                         <div className="flex justify-between items-start mb-6">
                             <div>
-                                <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wider mb-1">Tendência de Receita</p>
-                                <h3 className="text-3xl font-black text-[#101622]">R$ 152k <span className="text-sm font-bold text-green-500 bg-green-100 px-2 py-0.5 rounded-full ml-1">+8.5%</span></h3>
-                                <p className="text-xs text-gray-400 mt-1">Últimos 6 meses</p>
+                                <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wider mb-2">Tendência de Receita</p>
+                                <div className="flex items-center gap-3">
+                                    <h3 className="text-3xl font-black text-white">R$ 152k</h3>
+                                    <span className="bg-green-500/10 text-green-500 text-xs font-bold px-2 py-1 rounded-lg">+8.5%</span>
+                                </div>
+                                <p className="text-xs text-gray-500 mt-1">Últimos 6 meses</p>
                             </div>
                         </div>
 
-                        <div className="h-32 w-full relative">
-                            {/* Simple SVG Chart */}
+                        <div className="h-40 w-full relative">
+                            {/* Smooth SVG Chart */}
                             <svg viewBox="0 0 100 100" className="w-full h-full overflow-visible" preserveAspectRatio="none">
-                                {/* Gradient Defs */}
                                 <defs>
                                     <linearGradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
-                                        <stop offset="0%" stopColor="#0081FF" stopOpacity="0.2" />
+                                        <stop offset="0%" stopColor="#0081FF" stopOpacity="0.3" />
                                         <stop offset="100%" stopColor="#0081FF" stopOpacity="0" />
                                     </linearGradient>
                                 </defs>
 
-                                {/* Area Path */}
+                                {/* Area */}
                                 <path
-                                    d={`M0,100 L${points} L100,100 Z`}
+                                    d={`${smoothPath} L100,100 L0,100 Z`}
                                     fill="url(#chartGradient)"
                                 />
 
-                                {/* Line Path */}
+                                {/* Line */}
                                 <path
-                                    d={`M${points}`}
+                                    d={smoothPath}
                                     fill="none"
                                     stroke="#0081FF"
                                     strokeWidth="3"
@@ -445,25 +468,16 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     strokeLinejoin="round"
                                     vectorEffect="non-scaling-stroke"
                                 />
-
-                                {/* Points */}
-                                {chartData.map((val, idx) => {
-                                    const x = (idx / (chartData.length - 1)) * 100;
-                                    const y = 100 - ((val / maxVal) * 100);
-                                    return (
-                                        <circle key={idx} cx={x} cy={y} r="2" fill="white" stroke="#0081FF" strokeWidth="2" vectorEffect="non-scaling-stroke" />
-                                    );
-                                })}
                             </svg>
 
                             {/* X Axis Labels */}
-                            <div className="flex justify-between text-[9px] font-bold text-gray-400 uppercase mt-4">
+                            <div className="flex justify-between text-[10px] font-black text-gray-500 uppercase mt-2 px-2">
                                 <span>Jan</span>
                                 <span>Fev</span>
                                 <span>Mar</span>
                                 <span>Abr</span>
                                 <span>Mai</span>
-                                <span>Jun</span>
+                                <span className="text-[#0081FF]">Jun</span>
                             </div>
                         </div>
                     </div>
@@ -486,22 +500,25 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     <div className="space-y-3">
                         {overdueStudents.length > 0 ? (
                             overdueStudents.map(student => (
-                                <div key={student.id} onClick={() => openStudentDetails(student)} className="bg-white p-4 rounded-[24px] shadow-sm flex items-center justify-between group active:scale-[0.98] transition-all cursor-pointer">
+                                <div key={student.id} onClick={() => openStudentDetails(student)} className="bg-[#1A202C] p-4 rounded-[24px] border border-white/5 flex items-center justify-between group active:scale-[0.98] transition-all cursor-pointer hover:border-red-500/20">
                                     <div className="flex items-center gap-3">
                                         <div className="relative">
-                                            <img src={student.avatarUrl} className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm" alt="" />
-                                            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-white flex items-center justify-center text-white">
+                                            <img src={student.avatarUrl} className="w-12 h-12 rounded-full object-cover border-2 border-[#151A23]" alt="" />
+                                            {/* Warning Icon Badge */}
+                                            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-[#1A202C] flex items-center justify-center text-white">
                                                 <span className="material-symbols-rounded text-[10px] font-bold">!</span>
                                             </div>
                                         </div>
                                         <div>
-                                            <h5 className="text-sm font-bold text-[#101622]">{student.name}</h5>
-                                            <p className="text-[10px] text-red-500 font-bold">5 dias de atraso</p>
+                                            <h5 className="text-sm font-bold text-white">{student.name}</h5>
+                                            <p className="text-[10px] text-red-500 font-bold uppercase mt-0.5">5 dias de atraso</p>
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <p className="text-sm font-black text-[#101622]">R$ {student.amount || 97},00</p>
-                                        <span className="material-symbols-rounded text-red-500 text-lg opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0">arrow_forward</span>
+                                        <p className="text-sm font-black text-white">R$ {student.amount || 97},00</p>
+                                        <div className="flex justify-end mt-1">
+                                            <span className="material-symbols-rounded text-red-500 text-lg">warning</span>
+                                        </div>
                                     </div>
                                 </div>
                             ))
@@ -580,9 +597,9 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             const first = current.getDate() - (current.getDay() === 0 ? 6 : current.getDay() - 1); // Start from Monday
             const week = [];
             for (let i = 0; i < 7; i++) {
-                const day = new Date(current.setDate(first + i));
+                const day = new Date(new Date(current).setDate(first + i));
                 week.push({
-                    date: new Date(day),
+                    date: day,
                     dayName: WEEK_DAYS[i].charAt(0),
                     dayNum: day.getDate().toString().padStart(2, '0'),
                     fullDayName: WEEK_DAYS[i],
@@ -605,145 +622,183 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 date.setHours(parseInt(h), parseInt(m) + 60);
                 return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
             })() : '01:00',
-            type: `${s.level} • ${s.modality}`,
+            type: `${s.level || 'Iniciante'} • ${s.modality || 'Presencial'}`,
             paymentStatus: s.status,
             avatarUrl: s.avatarUrl,
-            phone: s.phone
+            phone: s.phone,
+            instrument: 'Canto' // Default or derived if available
         })).sort((a, b) => a.time.localeCompare(b.time));
 
-        const totalReceived = students.filter(s => s.status === 'active').reduce((acc, s) => acc + (s.amount || 0), 0);
         const studentsTodayCount = dayAppointments.length;
-        const pendingPaymentsCount = students.filter(s => s.status === 'overdue').length;
+        const pendingPaymentsCount = students.filter(s => s.status === 'overdue' || s.status === 'blocked').length;
+
+        // Formata data para ex: "24 de Outubro"
+        const formattedSelectedDate = selectedDate.toLocaleDateString('pt-BR', { day: 'numeric', month: 'long' });
+        const monthYear = selectedDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
 
         return (
             <div className="flex-1 overflow-y-auto hide-scrollbar pb-32">
-                <div className="grid grid-cols-3 gap-3 px-6 pt-6">
-                    <div className="bg-[#1A202C] rounded-[24px] p-4 border border-white/5 flex flex-col justify-between">
-                        <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Agenda</p>
-                        <h3 className="text-xl font-black text-white">{studentsTodayCount}</h3>
+                {/* Top Statistics Cards */}
+                <div className="grid grid-cols-2 gap-4 px-6 pt-6 mb-8">
+                    {/* Alunos Hoje */}
+                    <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5 relative overflow-hidden group hover:border-[#0081FF]/30 transition-colors">
+                        <div className="flex justify-between items-start mb-4">
+                            <h3 className="text-[#94A3B8] font-bold text-sm">Alunos Hoje</h3>
+                            <div className="w-8 h-8 rounded-xl bg-[#0081FF]/10 text-[#0081FF] flex items-center justify-center">
+                                <span className="material-symbols-rounded text-xl">groups</span>
+                            </div>
+                        </div>
+                        <div className="flex items-end gap-2">
+                            <span className="text-4xl font-black text-white tracking-tight">{studentsTodayCount}</span>
+                        </div>
                     </div>
-                    <div className="bg-[#1A202C] rounded-[24px] p-4 border border-white/5 flex flex-col justify-between">
-                        <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Recebido</p>
-                        <h3 className="text-xl font-black text-green-400">R$ {totalReceived}</h3>
-                    </div>
-                    <div className="bg-[#1A202C] rounded-[24px] p-4 border border-white/5 flex flex-col justify-between">
-                        <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Pendente</p>
-                        <h3 className="text-xl font-black text-red-400">{pendingPaymentsCount}</h3>
+
+                    {/* Pag. Pendentes */}
+                    <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5 relative overflow-hidden group hover:border-red-500/30 transition-colors">
+                        <div className="flex justify-between items-start mb-4">
+                            <h3 className="text-[#94A3B8] font-bold text-sm">Pag. Pendentes</h3>
+                            <div className="w-8 h-8 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center">
+                                <span className="material-symbols-rounded text-xl">warning</span>
+                            </div>
+                        </div>
+                        <div className="flex items-baseline gap-2">
+                            <span className="text-4xl font-black text-white tracking-tight">{pendingPaymentsCount}</span>
+                            <span className="text-[10px] font-black uppercase text-red-400 bg-red-500/10 px-2 py-1 rounded-lg tracking-wider">Atrasados</span>
+                        </div>
                     </div>
                 </div>
 
-                <div className="px-6 mt-6">
-                    <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5">
+                {/* Calendar Strip */}
+                <div className="px-6 mb-8">
+                    <div className="bg-[#1A202C] rounded-[32px] p-6 border border-white/5">
+                        {/* Month Header */}
                         <div className="flex justify-between items-center mb-6 px-2">
                             <button onClick={() => {
                                 const newDate = new Date(selectedDate);
                                 newDate.setDate(newDate.getDate() - 7);
                                 setSelectedDate(newDate);
-                            }} className="w-8 h-8 rounded-full hover:bg-white/5 flex items-center justify-center transition-colors">
-                                <span className="material-symbols-rounded text-gray-400 text-lg">chevron_left</span>
+                            }} className="w-8 h-8 rounded-full hover:bg-white/5 flex items-center justify-center transition-colors text-gray-400 hover:text-white">
+                                <span className="material-symbols-rounded">chevron_left</span>
                             </button>
-                            <p className="text-sm font-black text-white">
-                                {selectedDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }).toUpperCase()}
-                            </p>
+
+                            <h3 className="text-sm font-black text-white uppercase tracking-widest">{monthYear}</h3>
+
                             <button onClick={() => {
                                 const newDate = new Date(selectedDate);
                                 newDate.setDate(newDate.getDate() + 7);
                                 setSelectedDate(newDate);
-                            }} className="w-8 h-8 rounded-full hover:bg-white/5 flex items-center justify-center transition-colors">
-                                <span className="material-symbols-rounded text-gray-400 text-lg">chevron_right</span>
+                            }} className="w-8 h-8 rounded-full hover:bg-white/5 flex items-center justify-center transition-colors text-gray-400 hover:text-white">
+                                <span className="material-symbols-rounded">chevron_right</span>
                             </button>
                         </div>
-                        <div className="flex justify-between">
+
+                        {/* Days Grid */}
+                        <div className="flex justify-between items-center">
                             {weekDates.map((date, idx) => (
                                 <button
                                     key={idx}
                                     onClick={() => setSelectedDate(date.date)}
-                                    className="flex flex-col items-center gap-3"
+                                    className="group flex flex-col items-center gap-3 relative"
                                 >
-                                    <span className="text-[10px] text-gray-500 font-bold uppercase">{date.dayName}</span>
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all ${date.active ? 'bg-[#0081FF] text-white shadow-lg shadow-blue-500/20 scale-110' : 'text-white hover:bg-white/5'}`}>
+                                    <span className={`text-[10px] font-bold uppercase tracking-wider transition-colors ${date.active ? 'text-[#0081FF]' : 'text-gray-500 group-hover:text-gray-300'}`}>
+                                        {date.dayName}
+                                    </span>
+                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${date.active
+                                        ? 'bg-[#0081FF] text-white shadow-lg shadow-blue-500/30 scale-110'
+                                        : 'bg-transparent text-gray-400 hover:bg-white/5 group-hover:text-white'
+                                        }`}>
                                         {date.dayNum}
                                     </div>
+                                    {date.active && <div className="absolute -bottom-2 w-1 h-1 rounded-full bg-[#0081FF]"></div>}
                                 </button>
                             ))}
                         </div>
                     </div>
                 </div>
 
-                <div className="px-6 mt-8">
-                    <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-xl font-black text-white tracking-tight">Agenda - {selectedDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}</h3>
-                    </div>
+                {/* Agenda List Header */}
+                <div className="px-8 mt-4 mb-4 flex items-center gap-3">
+                    <div className="w-1 h-6 rounded-full bg-[#0081FF]"></div>
+                    <h3 className="text-lg font-black text-white tracking-tight">Agenda - {formattedSelectedDate}</h3>
+                </div>
 
-                    <div className="space-y-4">
-                        {dayAppointments.length > 0 ? (
-                            dayAppointments.map((apt: any) => (
-                                <div key={apt.id} className="bg-[#1A202C] rounded-[24px] p-4 border border-white/5 flex items-center gap-4 relative overflow-hidden">
-                                    {apt.paymentStatus === 'overdue' && <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500"></div>}
+                {/* Appointments List */}
+                <div className="px-6 space-y-3">
+                    {dayAppointments.length > 0 ? (
+                        dayAppointments.map((apt: any) => (
+                            <div key={apt.id} className="bg-[#1A202C] rounded-[24px] p-4 border border-white/5 flex items-center gap-4 group hover:border-white/10 transition-all active:scale-[0.99]">
+                                {/* Time Column */}
+                                <div className="flex flex-col items-center min-w-[50px] border-r border-white/5 pr-4">
+                                    <span className="text-sm font-black text-white">{apt.time}</span>
+                                    <span className="text-[10px] font-bold text-gray-500">{apt.endTime}</span>
+                                </div>
 
-                                    <div className="text-center min-w-[60px]">
-                                        <p className="text-sm font-black text-white">{apt.time}</p>
-                                        <p className="text-[10px] text-gray-500 font-bold">{apt.endTime}</p>
-                                    </div>
-
-                                    <div className="flex-1 flex items-center gap-3 min-w-0">
-                                        <img src={apt.avatarUrl} className="w-12 h-12 rounded-full object-cover border-2 border-[#1A202C]" alt="" />
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2 mb-0.5">
-                                                <h4 className="text-sm font-bold text-white truncate">{apt.studentName}</h4>
-                                            </div>
-                                            <p className="text-[10px] text-gray-500 truncate mb-1">{apt.type}</p>
-                                            <div className="flex items-center gap-1">
-                                                {apt.paymentStatus === 'overdue' ? (
-                                                    <div className="flex items-center gap-1 text-[9px] text-red-500 font-bold uppercase">
-                                                        <span className="material-symbols-rounded text-[12px]">error</span> Pendente
-                                                    </div>
-                                                ) : (
-                                                    <div className="flex items-center gap-1 text-[9px] text-green-500 font-bold uppercase">
-                                                        <span className="material-symbols-rounded text-[12px]">check_circle</span> Em dia
-                                                    </div>
-                                                )}
-                                            </div>
+                                {/* Student Info */}
+                                <div className="flex-1 flex items-center gap-3 min-w-0">
+                                    <div className="relative">
+                                        <img src={apt.avatarUrl} className="w-12 h-12 rounded-full object-cover border-2 border-[#151A23]" alt={apt.studentName} />
+                                        <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-[#1A202C] flex items-center justify-center overflow-hidden ${apt.paymentStatus === 'overdue' ? 'bg-red-500' : 'bg-green-500'
+                                            }`}>
+                                            {apt.paymentStatus === 'overdue' && <span className="material-symbols-rounded text-[10px] text-white font-bold">!</span>}
                                         </div>
                                     </div>
 
-                                    <div className="flex flex-col gap-2">
-                                        <button
-                                            onClick={() => {
-                                                const student = students.find(s => s.name === apt.studentName);
-                                                if (student) openStudentDetails(student);
-                                            }}
-                                            className="w-9 h-9 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center hover:bg-blue-500/20 transition-all"
-                                        >
-                                            <span className="material-symbols-rounded text-lg">edit</span>
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                const student = students.find(s => s.name === apt.studentName);
-                                                if (student && student.phone) openWhatsApp(student.phone);
-                                            }}
-                                            className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${apt.paymentStatus === 'overdue' ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' : 'bg-white/5 text-gray-400 hover:text-white'}`}
-                                        >
-                                            <span className="material-symbols-rounded text-lg">{apt.paymentStatus === 'overdue' ? 'notifications_active' : 'schedule'}</span>
-                                        </button>
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2">
+                                            <h4 className="text-sm font-bold text-white truncate">{apt.studentName}</h4>
+                                            {apt.paymentStatus === 'active' ? (
+                                                <span className="px-1.5 py-0.5 rounded text-[8px] font-black uppercase bg-green-500/10 text-green-500 tracking-wider">Ativo</span>
+                                            ) : (
+                                                <span className="px-1.5 py-0.5 rounded text-[8px] font-black uppercase bg-red-500/10 text-red-500 tracking-wider">Pendente</span>
+                                            )}
+                                        </div>
+                                        <p className="text-[11px] text-gray-400 truncate mt-0.5">{apt.type}</p>
+
+                                        {/* Optional: Check-in/Status text similar to image 'Em dia' */}
+                                        {apt.paymentStatus !== 'overdue' && (
+                                            <div className="flex items-center gap-1 mt-1">
+                                                <span className="material-symbols-rounded text-green-500 text-[10px]">check_circle</span>
+                                                <span className="text-[9px] text-green-500 font-bold">Em dia</span>
+                                            </div>
+                                        )}
+                                        {apt.paymentStatus === 'overdue' && (
+                                            <div className="flex items-center gap-1 mt-1">
+                                                <span className="material-symbols-rounded text-red-500 text-[10px]">error</span>
+                                                <span className="text-[9px] text-red-500 font-bold">Pagamento Pendente</span>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
-                            ))
-                        ) : (
-                            <div className="py-12 text-center bg-[#1A202C]/50 rounded-[32px] border border-dashed border-white/10 px-6">
-                                <span className="material-symbols-rounded text-4xl text-gray-600 mb-2">calendar_today</span>
-                                <p className="text-gray-500 text-sm font-medium">Nenhum aluno agendado para este dia.</p>
-                                <p className="text-[10px] text-gray-600 uppercase font-black mt-1 mb-4">Verifique outros dias ou adicione um novo</p>
-                                <button
-                                    onClick={() => setActiveTab('students')}
-                                    className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 rounded-xl text-[10px] font-black text-[#0081FF] uppercase tracking-wider hover:bg-white/10 transition-all"
-                                >
-                                    <span className="material-symbols-rounded text-sm">groups</span>
-                                    Ver todos os alunos cadastrados
-                                </button>
+
+                                {/* Actions */}
+                                <div className="flex flex-col gap-2 pl-2">
+                                    <button
+                                        onClick={() => {
+                                            const student = students.find(s => s.name === apt.studentName);
+                                            if (student) openStudentDetails(student);
+                                        }}
+                                        className="w-9 h-9 rounded-full bg-[#0081FF]/10 text-[#0081FF] flex items-center justify-center hover:bg-[#0081FF] hover:text-white transition-all shadow-sm"
+                                    >
+                                        <span className="material-symbols-rounded text-lg">edit</span>
+                                    </button>
+                                    <button
+                                        className="w-9 h-9 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:bg-white/10 hover:text-white transition-all"
+                                        title="Histórico / Agendamento"
+                                    >
+                                        <span className="material-symbols-rounded text-lg">history</span>
+                                    </button>
+                                </div>
                             </div>
-                        )}
-                    </div>
+                        ))
+                    ) : (
+                        <div className="py-16 text-center">
+                            <div className="w-16 h-16 rounded-3xl bg-[#1A202C] text-gray-600 flex items-center justify-center mx-auto mb-4 border border-white/5">
+                                <span className="material-symbols-rounded text-3xl">event_busy</span>
+                            </div>
+                            <h3 className="text-white font-bold mb-1">Dia Livre!</h3>
+                            <p className="text-gray-500 text-xs">Nenhum aluno agendado para hoje.</p>
+                        </div>
+                    )}
                 </div>
             </div>
         );
@@ -827,53 +882,73 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
     return (
         <div className="flex flex-col h-screen bg-[#101622] relative">
-            <header className="px-6 pt-12 pb-4 bg-[#101622] border-b border-white/5 flex justify-between items-center z-40">
-                <div className="flex items-center gap-4">
-                    <button className="text-white" onClick={() => onNavigate(Screen.LIBRARY)}>
-                        <span className="material-symbols-rounded text-2xl">menu</span>
+            {/* Header com Abas Integradas */}
+            <header className="bg-[#101622] border-b border-white/5 z-40 sticky top-0 pt-12">
+                {/* Top Bar */}
+                <div className="px-6 pb-4 flex justify-between items-center">
+                    <div className="flex items-center gap-4">
+                        <button className="text-white" onClick={() => onNavigate(Screen.LIBRARY)}>
+                            <span className="material-symbols-rounded text-2xl">menu</span>
+                        </button>
+                        <h2 className="text-xl font-black text-white tracking-tight">
+                            {activeTab === 'dashboard' ? 'Agenda' : activeTab === 'students' ? 'Alunos' : activeTab === 'reports' ? 'Financeiro' : 'Ajustes'}
+                        </h2>
+                    </div>
+                    <button onClick={() => setShowConfig(!showConfig)} className="relative">
+                        <div className={`absolute top-0 right-0 w-3 h-3 rounded-full border-2 border-[#101622] z-10 ${syncStatus === 'synced' ? 'bg-green-500' :
+                            syncStatus === 'error' ? 'bg-red-500 animate-pulse' : 'bg-yellow-500'
+                            }`}></div>
+                        <img src={user?.avatarUrl || 'https://picsum.photos/200'} alt="Profile" className="w-10 h-10 rounded-full border-2 border-[#1A202C]" />
+                        {showConfig && (
+                            <div className="absolute right-0 top-12 w-48 bg-[#1A202C] rounded-2xl border border-white/10 shadow-2xl z-50 overflow-hidden">
+                                <button onClick={() => fetchData(true)} className="w-full text-left px-3 py-3 hover:bg-white/5 text-sm flex items-center gap-2 text-blue-400 font-bold border-b border-white/5">
+                                    <span className="material-symbols-rounded text-lg">sync</span> Atualizar
+                                </button>
+                                <button onClick={onLogout} className="w-full text-left px-3 py-3 hover:bg-white/5 text-sm flex items-center gap-2 text-red-400 font-bold">
+                                    <span className="material-symbols-rounded text-lg">logout</span> Sair
+                                </button>
+                            </div>
+                        )}
                     </button>
-                    <h2 className="text-xl font-black text-white tracking-tight">
-                        {activeTab === 'dashboard' ? 'Agenda' : activeTab === 'students' ? 'Alunos' : activeTab === 'reports' ? 'Financeiro' : 'Ajustes'}
-                    </h2>
                 </div>
-                <button onClick={() => setShowConfig(!showConfig)} className="relative">
-                    <div className={`absolute top-0 right-0 w-3 h-3 rounded-full border-2 border-[#101622] z-10 ${syncStatus === 'synced' ? 'bg-green-500' :
-                        syncStatus === 'error' ? 'bg-red-500 animate-pulse' : 'bg-yellow-500'
-                        }`}></div>
-                    <img src={user?.avatarUrl || 'https://picsum.photos/200'} alt="Profile" className="w-10 h-10 rounded-full border-2 border-[#1A202C]" />
-                    {showConfig && (
-                        <div className="absolute right-0 top-12 w-48 bg-[#1A202C] rounded-2xl border border-white/10 shadow-2xl z-50 overflow-hidden">
-                            <button onClick={() => fetchData(true)} className="w-full text-left px-3 py-3 hover:bg-white/5 text-sm flex items-center gap-2 text-blue-400 font-bold border-b border-white/5">
-                                <span className="material-symbols-rounded text-lg">sync</span> Atualizar
-                            </button>
-                            <button onClick={onLogout} className="w-full text-left px-3 py-3 hover:bg-white/5 text-sm flex items-center gap-2 text-red-400 font-bold">
-                                <span className="material-symbols-rounded text-lg">logout</span> Sair
-                            </button>
-                        </div>
-                    )}
-                </button>
+
+                {/* Navigation Tabs (Novas Abas Superiores) */}
+                <div className="px-6 pb-0 overflow-x-auto hide-scrollbar flex gap-4">
+                    {[
+                        { id: 'dashboard', label: 'Início', icon: 'calendar_month' },
+                        { id: 'students', label: 'Alunos', icon: 'groups' },
+                        { id: 'reports', label: 'Financeiro', icon: 'payments' },
+                        { id: 'settings', label: 'Ajustes', icon: 'settings' }
+                    ].map(tab => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id as any)}
+                            className={`flex items-center gap-2 px-1 pb-3 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${activeTab === tab.id
+                                    ? 'text-[#0081FF] border-[#0081FF]'
+                                    : 'text-gray-500 border-transparent hover:text-gray-300'
+                                }`}
+                        >
+                            <span className={`material-symbols-rounded text-lg ${activeTab === tab.id ? 'filled' : ''}`}>{tab.icon}</span>
+                            {/* Mostrar label apenas se ativo ou em telas maiores, para economizar espaço se necessário, mas aqui deixamos sempre visível para clareza */}
+                            <span>{tab.label}</span>
+                        </button>
+                    ))}
+                </div>
             </header>
 
-            {renderContent()}
+            {/* Conteúdo Principal Ajustado (Padding para bottom nav global) */}
+            <div className="flex-1 overflow-hidden relative pb-[80px]"> {/* 80px para compensar a BottomNav Global */}
+                {renderContent()}
+            </div>
 
-            {/* Botão de Add - agora absolute para respeitar o max-w do container pai */}
-            <button onClick={() => setIsAddModalOpen(true)} className="absolute bottom-28 right-6 w-14 h-14 rounded-full bg-[#0081FF] text-white shadow-lg flex items-center justify-center z-20 hover:scale-110 active:scale-95 transition-all">
+            {/* Botão de Add - Posicionado acima da BottomNav Global */}
+            <button
+                onClick={() => setIsAddModalOpen(true)}
+                className="absolute bottom-24 right-6 w-14 h-14 rounded-full bg-[#0081FF] text-white shadow-lg flex items-center justify-center z-30 hover:scale-110 active:scale-95 transition-all shadow-blue-500/30"
+            >
                 <span className="material-symbols-rounded text-3xl">add</span>
             </button>
 
-            <div className="fixed bottom-0 inset-x-0 bg-[#101622] border-t border-white/5 px-6 py-3 flex justify-between items-center z-30 pb-8">
-                {[
-                    { id: 'dashboard', icon: 'calendar_month', label: 'Início' },
-                    { id: 'students', icon: 'groups', label: 'Alunos' },
-                    { id: 'reports', icon: 'payments', label: 'Financeiro' },
-                    { id: 'settings', icon: 'settings', label: 'Ajustes' }
-                ].map(tab => (
-                    <button key={tab.id} onClick={() => setActiveTab(tab.id as any)} className={`flex flex-col items-center gap-1 ${activeTab === tab.id ? 'text-[#0081FF]' : 'text-gray-400'}`}>
-                        <span className="material-symbols-rounded text-2xl">{tab.icon}</span>
-                        <span className="text-[9px] font-bold uppercase">{tab.label}</span>
-                    </button>
-                ))}
-            </div>
 
             {/* Modals */}
             {selectedStudent && (
