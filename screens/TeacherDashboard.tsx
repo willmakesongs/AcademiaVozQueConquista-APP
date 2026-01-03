@@ -7,16 +7,17 @@ import { supabase } from '../lib/supabaseClient';
 interface Props {
     onNavigate: (screen: Screen) => void;
     onLogout: () => void;
+    initialTab?: 'dashboard' | 'students' | 'history' | 'reports' | 'settings';
 }
 
 const WEEK_DAYS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 
-export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
+export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initialTab = 'students' }) => {
     const { user } = useAuth();
     const [showConfig, setShowConfig] = useState(false);
     const [students, setStudents] = useState<StudentSummary[]>([]);
     const [appointments, setAppointments] = useState<Appointment[]>([]);
-    const [activeTab, setActiveTab] = useState<'dashboard' | 'students' | 'history' | 'reports' | 'settings'>('dashboard');
+    const [activeTab, setActiveTab] = useState<'dashboard' | 'students' | 'history' | 'reports' | 'settings'>(initialTab);
 
     // States UI
     const [searchQuery, setSearchQuery] = useState('');

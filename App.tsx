@@ -25,6 +25,7 @@ const AppContent = () => {
   const [libraryResetKey, setLibraryResetKey] = useState(0);
   const [profileResetKey, setProfileResetKey] = useState(0);
   const [dashboardResetKey, setDashboardResetKey] = useState(0);
+  const [dashboardInitialTab, setDashboardInitialTab] = useState<'dashboard' | 'students'>('students');
 
   // Redirect based on auth state
   useEffect(() => {
@@ -65,10 +66,14 @@ const AppContent = () => {
   // Wrapper para navegação padrão para lidar com o histórico
   const handleNavigate = (targetScreen: Screen) => {
     // Se for navegar para telas secundárias manualmente, salva o histórico
-    if ([Screen.PLAYER, Screen.TWISTERS, Screen.BREATHING, Screen.CHAT].includes(targetScreen)) {
-      if (![Screen.PLAYER, Screen.TWISTERS, Screen.BREATHING, Screen.CHAT].includes(screen)) {
+    if (targetScreen === Screen.PLAYER || targetScreen === Screen.TWISTERS || targetScreen === Screen.BREATHING || targetScreen === Screen.CHAT) {
+      if (screen !== Screen.PLAYER && screen !== Screen.TWISTERS && screen !== Screen.BREATHING && screen !== Screen.CHAT) {
         setPreviousScreen(screen);
       }
+    }
+    if (targetScreen === Screen.TEACHER_DASHBOARD) {
+      setDashboardInitialTab('dashboard'); // Painel Administrativo via onNavigate
+      setDashboardResetKey(prev => prev + 1);
     }
     setScreen(targetScreen);
   };
@@ -103,6 +108,7 @@ const AppContent = () => {
     }
 
     if (targetScreen === Screen.TEACHER_DASHBOARD) {
+      setDashboardInitialTab('students'); // Início via BottomNav
       setDashboardResetKey(prev => prev + 1);
     }
 
@@ -124,7 +130,7 @@ const AppContent = () => {
       case Screen.STUDENT_DASHBOARD:
         return <StudentDashboard onNavigate={handleNavigate} onPlayVocalize={navigateToPlayer} />;
       case Screen.TEACHER_DASHBOARD:
-        return <TeacherDashboard key={dashboardResetKey} onNavigate={handleNavigate} onLogout={handleLogout} />;
+        return <TeacherDashboard key={dashboardResetKey} initialTab={dashboardInitialTab} onNavigate={handleNavigate} onLogout={handleLogout} />;
       case Screen.PLAYER:
         return (
           <PlayerScreen
