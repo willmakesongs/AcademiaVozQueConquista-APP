@@ -459,333 +459,353 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout }) => {
                 </div>
             </div>
         </div>
-    );
+    };
 
-    return (
-        <div className="flex flex-col h-screen bg-[#101622] relative">
-            {/* Header Mockup Style - DARK */}
-            <header className="px-6 pt-12 pb-4 bg-[#101622] border-b border-white/5 flex justify-between items-center">
-                <div className="flex items-center gap-4">
-                    <button className="text-white">
-                        <span className="material-symbols-rounded text-2xl">menu</span>
-                    </button>
-                    <h2 className="text-xl font-black text-white tracking-tight">Dashboard</h2>
-                </div>
-                <button onClick={() => setShowConfig(!showConfig)} className="relative">
-                    <img src={user?.avatarUrl || 'https://picsum.photos/200'} alt="Profile" className="w-10 h-10 rounded-full border-2 border-[#1A202C] shadow-lg" />
-                    {showConfig && (
-                        <div className="absolute right-0 top-12 w-48 bg-[#1A202C] rounded-2xl border border-white/10 shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                            <div className="p-1">
-                                <button onClick={onLogout} className="w-full text-left px-3 py-2 rounded-lg hover:bg-white/5 text-sm flex items-center gap-2 text-red-400 font-bold">
-                                    <span className="material-symbols-rounded text-lg">logout</span> Sair da Conta
+const renderPlaceholder = (title: string) => (
+    <div className="flex-1 flex flex-col items-center justify-center p-10 text-center">
+        <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center text-gray-600 mb-4">
+            <span className="material-symbols-rounded text-4xl">construction</span>
+        </div>
+        <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
+        <p className="text-sm text-gray-500 italic">Esta funcionalidade está em desenvolvimento para a próxima versão.</p>
+    </div>
+);
+
+const renderContent = () => {
+    switch (activeTab) {
+        case 'dashboard': return renderDashboard();
+        case 'students': return renderStudentList();
+        case 'reports': return renderPlaceholder('Relatórios Financeiros');
+        case 'settings': return renderPlaceholder('Configurações do Painel');
+        default: return renderDashboard();
+    }
+};
+
+return (
+    <div className="flex flex-col h-screen bg-[#101622] relative">
+        {/* Header Mockup Style - DARK */}
+        <header className="px-6 pt-12 pb-4 bg-[#101622] border-b border-white/5 flex justify-between items-center">
+            <div className="flex items-center gap-4">
+                <button className="text-white" onClick={() => onNavigate(Screen.LIBRARY)}>
+                    <span className="material-symbols-rounded text-2xl">menu</span>
+                </button>
+                <h2 className="text-xl font-black text-white tracking-tight">Dashboard</h2>
+            </div>
+            <button onClick={() => setShowConfig(!showConfig)} className="relative">
+                <img src={user?.avatarUrl || 'https://picsum.photos/200'} alt="Profile" className="w-10 h-10 rounded-full border-2 border-[#1A202C] shadow-lg" />
+                {showConfig && (
+                    <div className="absolute right-0 top-12 w-48 bg-[#1A202C] rounded-2xl border border-white/10 shadow-2xl z-50 overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                        <div className="p-1">
+                            <button onClick={onLogout} className="w-full text-left px-3 py-2 rounded-lg hover:bg-white/5 text-sm flex items-center gap-2 text-red-400 font-bold">
+                                <span className="material-symbols-rounded text-lg">logout</span> Sair da Conta
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </button>
+        </header>
+
+        {renderContent()}
+
+        {/* Floating Action Button */}
+        <button
+            onClick={() => setIsAddModalOpen(true)}
+            className="fixed bottom-28 right-6 w-14 h-14 rounded-full bg-[#0081FF] text-white shadow-lg shadow-[#0081FF]/20 flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-20"
+        >
+            <span className="material-symbols-rounded text-3xl">add</span>
+        </button>
+
+        {/* Bottom Navigation Like Mockup - DARK */}
+        <div className="fixed bottom-0 inset-x-0 bg-[#101622] border-t border-white/5 px-6 py-3 flex justify-between items-center z-30 pb-8">
+            <button
+                onClick={() => setActiveTab('dashboard')}
+                className={`flex flex-col items-center gap-1 ${activeTab === 'dashboard' ? 'text-[#0081FF]' : 'text-gray-400'}`}
+            >
+                <span className="material-symbols-rounded text-2xl">dashboard</span>
+                <span className="text-[9px] font-bold uppercase tracking-wider">Dashboard</span>
+            </button>
+            <button
+                onClick={() => setActiveTab('students')}
+                className={`flex flex-col items-center gap-1 ${activeTab === 'students' ? 'text-[#0081FF]' : 'text-gray-400'}`}
+            >
+                <span className="material-symbols-rounded text-2xl">school</span>
+                <span className="text-[9px] font-bold uppercase tracking-wider">Alunos</span>
+            </button>
+            <button
+                onClick={() => setActiveTab('reports')}
+                className={`flex flex-col items-center gap-1 ${activeTab === 'reports' ? 'text-[#0081FF]' : 'text-gray-400'}`}
+            >
+                <span className="material-symbols-rounded text-2xl">bar_chart</span>
+                <span className="text-[9px] font-bold uppercase tracking-wider">Relatórios</span>
+            </button>
+            <button
+                onClick={() => setActiveTab('settings')}
+                className={`flex flex-col items-center gap-1 ${activeTab === 'settings' ? 'text-[#0081FF]' : 'text-gray-400'}`}
+            >
+                <span className="material-symbols-rounded text-2xl">settings</span>
+                <span className="text-[9px] font-bold uppercase tracking-wider">Ajustes</span>
+            </button>
+        </div>
+
+        {/* Floating Action Button */}
+        <button onClick={() => setIsAddModalOpen(true)} className="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-[#0081FF] text-white shadow-lg shadow-blue-900/40 flex items-center justify-center hover:scale-110 transition-transform z-20">
+            <span className="material-symbols-rounded text-2xl">person_add</span>
+        </button>
+
+        {/* MODAL: Student Details & Observations (COM EDIT MODE E AGENDAMENTO) */}
+        {
+            selectedStudent && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="w-full max-w-md max-h-[90vh] bg-[#1A202C] rounded-2xl border border-white/10 shadow-2xl flex flex-col animate-in zoom-in-95 duration-200">
+                        {/* Header Modal */}
+                        <div className="p-6 pb-4 border-b border-white/5 flex items-start justify-between bg-[#151A23] rounded-t-2xl">
+                            <div className="flex items-center gap-4">
+                                <img src={selectedStudent.avatarUrl} alt={selectedStudent.name} className="w-16 h-16 rounded-full border-2 border-[#0081FF]" />
+                                <div className="flex-1 min-w-0">
+                                    <h3 className="text-xl font-bold text-white leading-none mb-1">{selectedStudent.name}</h3>
+                                    <p className="text-sm text-gray-400">{selectedStudent.level}</p>
+                                </div>
+                            </div>
+
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setIsEditing(!isEditing)}
+                                    className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isEditing ? 'bg-[#0081FF] text-white' : 'bg-white/5 text-gray-400 hover:text-white'}`}
+                                    title="Editar"
+                                >
+                                    <span className="material-symbols-rounded text-sm">edit</span>
+                                </button>
+                                <button onClick={() => setSelectedStudent(null)} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white">
+                                    <span className="material-symbols-rounded">close</span>
                                 </button>
                             </div>
                         </div>
-                    )}
-                </button>
-            </header>
 
-            {activeTab === 'dashboard' ? renderDashboard() : renderStudentList()}
-
-            {/* Floating Action Button */}
-            <button
-                onClick={() => setIsAddModalOpen(true)}
-                className="fixed bottom-28 right-6 w-14 h-14 rounded-full bg-[#0081FF] text-white shadow-lg shadow-[#0081FF]/20 flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-20"
-            >
-                <span className="material-symbols-rounded text-3xl">add</span>
-            </button>
-
-            {/* Bottom Navigation Like Mockup - DARK */}
-            <div className="fixed bottom-0 inset-x-0 bg-[#101622] border-t border-white/5 px-6 py-3 flex justify-between items-center z-30 pb-8">
-                <button
-                    onClick={() => setActiveTab('dashboard')}
-                    className={`flex flex-col items-center gap-1 ${activeTab === 'dashboard' ? 'text-[#0081FF]' : 'text-gray-500'}`}
-                >
-                    <span className="material-symbols-rounded text-2xl">dashboard</span>
-                    <span className="text-[9px] font-bold uppercase tracking-wider">Dashboard</span>
-                </button>
-                <button
-                    onClick={() => setActiveTab('students')}
-                    className={`flex flex-col items-center gap-1 ${activeTab === 'students' ? 'text-[#0081FF]' : 'text-gray-500'}`}
-                >
-                    <span className="material-symbols-rounded text-2xl">school</span>
-                    <span className="text-[9px] font-bold uppercase tracking-wider">Alunos</span>
-                </button>
-                <button
-                    onClick={() => setActiveTab('reports')}
-                    className={`flex flex-col items-center gap-1 ${activeTab === 'reports' ? 'text-[#0081FF]' : 'text-gray-500'}`}
-                >
-                    <span className="material-symbols-rounded text-2xl">bar_chart</span>
-                    <span className="text-[9px] font-bold uppercase tracking-wider">Relatórios</span>
-                </button>
-                <button
-                    onClick={() => setActiveTab('settings')}
-                    className={`flex flex-col items-center gap-1 ${activeTab === 'settings' ? 'text-[#0081FF]' : 'text-gray-500'}`}
-                >
-                    <span className="material-symbols-rounded text-2xl">settings</span>
-                    <span className="text-[9px] font-bold uppercase tracking-wider">Ajustes</span>
-                </button>
-            </div>
-
-            {/* Floating Action Button */}
-            <button onClick={() => setIsAddModalOpen(true)} className="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-[#0081FF] text-white shadow-lg shadow-blue-900/40 flex items-center justify-center hover:scale-110 transition-transform z-20">
-                <span className="material-symbols-rounded text-2xl">person_add</span>
-            </button>
-
-            {/* MODAL: Student Details & Observations (COM EDIT MODE E AGENDAMENTO) */}
-            {
-                selectedStudent && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-                        <div className="w-full max-w-md max-h-[90vh] bg-[#1A202C] rounded-2xl border border-white/10 shadow-2xl flex flex-col animate-in zoom-in-95 duration-200">
-                            {/* Header Modal */}
-                            <div className="p-6 pb-4 border-b border-white/5 flex items-start justify-between bg-[#151A23] rounded-t-2xl">
-                                <div className="flex items-center gap-4">
-                                    <img src={selectedStudent.avatarUrl} alt={selectedStudent.name} className="w-16 h-16 rounded-full border-2 border-[#0081FF]" />
-                                    <div className="flex-1 min-w-0">
-                                        <h3 className="text-xl font-bold text-white leading-none mb-1">{selectedStudent.name}</h3>
-                                        <p className="text-sm text-gray-400">{selectedStudent.level}</p>
-                                    </div>
-                                </div>
-
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => setIsEditing(!isEditing)}
-                                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${isEditing ? 'bg-[#0081FF] text-white' : 'bg-white/5 text-gray-400 hover:text-white'}`}
-                                        title="Editar"
-                                    >
-                                        <span className="material-symbols-rounded text-sm">edit</span>
-                                    </button>
-                                    <button onClick={() => setSelectedStudent(null)} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white">
-                                        <span className="material-symbols-rounded">close</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div className="p-6 overflow-y-auto hide-scrollbar flex-1">
-                                {/* Info Grid */}
-                                <div className="grid grid-cols-2 gap-3 mb-6">
-                                    {isEditing ? (
-                                        <>
-                                            {/* Editar Telefone */}
-                                            <div className="p-2 bg-[#101622] border border-[#0081FF] rounded-xl flex items-center gap-2 shadow-[0_0_10px_rgba(0,129,255,0.2)] col-span-2">
-                                                <span className="material-symbols-rounded text-[#0081FF]">phone</span>
-                                                <div className="flex-1">
-                                                    <p className="text-[9px] text-[#0081FF] uppercase font-bold">Editar Tel</p>
-                                                    <input
-                                                        type="tel"
-                                                        value={editPhone}
-                                                        onChange={(e) => setEditPhone(e.target.value)}
-                                                        className="w-full bg-transparent text-white text-xs font-medium focus:outline-none"
-                                                        placeholder="(00) 00000-0000"
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            {/* Editar Agenda */}
-                                            <div className="col-span-2 space-y-2 mt-2 pt-2 border-t border-white/5">
-                                                <p className="text-[10px] text-[#FF00BC] font-bold uppercase">Editar Agenda</p>
-                                                <div className="flex gap-2">
-                                                    <select
-                                                        value={editScheduleDay}
-                                                        onChange={(e) => setEditScheduleDay(e.target.value)}
-                                                        className="flex-1 h-10 bg-[#101622] rounded-lg border border-white/10 px-2 text-white text-xs focus:outline-none focus:border-[#0081FF]"
-                                                    >
-                                                        {WEEK_DAYS.map(d => <option key={d} value={d}>{d}</option>)}
-                                                    </select>
-                                                    <input
-                                                        type="time"
-                                                        value={editScheduleTime}
-                                                        onChange={(e) => setEditScheduleTime(e.target.value)}
-                                                        className="flex-1 h-10 bg-[#101622] rounded-lg border border-white/10 px-2 text-white text-xs focus:outline-none focus:border-[#0081FF]"
-                                                    />
-                                                </div>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <>
-                                            {/* Visualizar Contato e Agenda */}
-                                            <button
-                                                onClick={() => openWhatsApp(selectedStudent.phone || '')}
-                                                className="p-3 bg-green-500/10 border border-green-500/20 rounded-xl flex items-center gap-3 hover:bg-green-500/20 transition-colors text-left"
-                                            >
-                                                <span className="material-symbols-rounded text-green-500">chat</span>
-                                                <div>
-                                                    <p className="text-[10px] text-green-400 uppercase font-bold">WhatsApp</p>
-                                                    <p className="text-xs text-white font-medium">{selectedStudent.phone || 'N/A'}</p>
-                                                </div>
-                                            </button>
-
-                                            <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center gap-3">
-                                                <span className="material-symbols-rounded text-blue-400">calendar_month</span>
-                                                <div>
-                                                    <p className="text-[10px] text-blue-400 uppercase font-bold">Aula</p>
-                                                    <p className="text-xs text-white font-medium">
-                                                        {selectedStudent.scheduleDay} - {selectedStudent.scheduleTime}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </>
-                                    )}
-                                </div>
-
-                                {/* Observation Area */}
-                                <div className="space-y-2 h-full flex flex-col">
-                                    <label className="text-xs text-gray-400 font-bold uppercase ml-1 flex items-center gap-2">
-                                        <span className="material-symbols-rounded text-sm">edit_note</span>
-                                        Caderno de Observações
-                                    </label>
-                                    <div className="relative flex-1 min-h-[150px]">
-                                        <textarea
-                                            value={notesInput}
-                                            onChange={(e) => setNotesInput(e.target.value)}
-                                            placeholder="Registre o desenvolvimento..."
-                                            className="w-full h-full bg-[#101622] rounded-xl border border-white/10 p-4 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#0081FF] resize-none leading-relaxed"
-                                        ></textarea>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Footer Actions */}
-                            <div className="p-4 border-t border-white/5 bg-[#151A23] rounded-b-2xl">
-                                {user?.role === 'admin' && (
-                                    <div className="mb-4 space-y-2">
-                                        <p className="text-[10px] text-gray-500 font-bold uppercase ml-1">Status da Assinatura (ADM Only)</p>
-                                        <div className="flex gap-2">
-                                            {(['active', 'overdue', 'blocked'] as const).map((status) => (
-                                                <button
-                                                    key={status}
-                                                    onClick={async () => {
-                                                        setLoadingAction(true);
-                                                        try {
-                                                            const { error } = await supabase
-                                                                .from('profiles')
-                                                                .update({ status })
-                                                                .eq('id', selectedStudent.id);
-                                                            if (!error) {
-                                                                setStudents(prev => prev.map(s => s.id === selectedStudent.id ? { ...s, status: status as any } : s));
-                                                                setSelectedStudent(prev => prev ? { ...prev, status: status as any } : null);
-                                                            }
-                                                        } finally {
-                                                            setLoadingAction(false);
-                                                        }
-                                                    }}
-                                                    className={`flex-1 py-2 rounded-lg text-[10px] font-bold uppercase transition-all border ${selectedStudent.status === status
-                                                        ? (status === 'active' ? 'bg-green-500/20 border-green-500 text-green-500' : status === 'overdue' ? 'bg-amber-500/20 border-amber-500 text-amber-500' : 'bg-red-500/20 border-red-500 text-red-500')
-                                                        : 'bg-white/5 border-white/5 text-gray-400 hover:bg-white/10'
-                                                        }`}
-                                                >
-                                                    {status === 'active' ? 'Ativo' : status === 'overdue' ? 'Atrasado' : 'Bloqueado'}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-                                <div className="flex gap-3">
-                                    <button onClick={() => setSelectedStudent(null)} className="flex-1 h-12 rounded-xl border border-white/10 text-gray-400 font-bold text-sm hover:bg-white/5">Cancelar</button>
-                                    <button
-                                        onClick={handleSaveChanges}
-                                        disabled={loadingAction}
-                                        className="flex-1 h-12 rounded-xl bg-[#0081FF] text-white font-bold text-sm hover:bg-[#006bd1] shadow-lg flex items-center justify-center gap-2 disabled:opacity-50"
-                                    >
-                                        <span className="material-symbols-rounded">save</span>
-                                        {loadingAction ? 'Salvando...' : 'Salvar Alterações'}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )
-            }
-
-            {/* MODAL: Add Student (COM AGENDAMENTO) */}
-            {
-                isAddModalOpen && (
-                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-                        <div className="w-full max-w-sm max-h-[90vh] bg-[#1A202C] rounded-2xl border border-white/10 shadow-2xl flex flex-col animate-in zoom-in-95 duration-200">
-                            <div className="px-6 py-4 border-b border-white/5 flex justify-between items-center bg-[#151A23] rounded-t-2xl">
-                                <h3 className="font-bold text-white">Cadastrar Novo Aluno</h3>
-                                <button onClick={() => setIsAddModalOpen(false)} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white"><span className="material-symbols-rounded text-lg">close</span></button>
-                            </div>
-
-                            <div className="p-6 space-y-5 overflow-y-auto hide-scrollbar">
-                                <div className="flex justify-center">
-                                    <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(newStudentName || 'Novo')}&background=random&color=fff&size=128`} alt="Avatar" className="w-16 h-16 rounded-full border-2 border-[#0081FF] shadow-lg" />
-                                </div>
-
-                                <div className="space-y-3">
-                                    <p className="text-[10px] text-[#0081FF] font-bold uppercase tracking-wider border-b border-white/5 pb-1">Dados Pessoais</p>
-                                    <div className="grid grid-cols-4 gap-3">
-                                        <div className="col-span-3 space-y-1">
-                                            <label className="text-xs text-gray-400 font-bold uppercase ml-1">Nome</label>
-                                            <input type="text" value={newStudentName} onChange={(e) => setNewStudentName(e.target.value)} placeholder="Ex: Ana Silva" className="w-full h-10 bg-[#101622] rounded-lg border border-white/10 px-3 text-white text-sm focus:outline-none focus:border-[#0081FF]" />
-                                        </div>
-                                        <div className="col-span-1 space-y-1">
-                                            <label className="text-xs text-gray-400 font-bold uppercase ml-1">Idade</label>
-                                            <input type="number" value={newStudentAge} onChange={(e) => setNewStudentAge(e.target.value)} className="w-full h-10 bg-[#101622] rounded-lg border border-white/10 px-3 text-white text-sm focus:outline-none focus:border-[#0081FF]" />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Seção Agendamento */}
-                                <div className="space-y-3">
-                                    <p className="text-[10px] text-[#0081FF] font-bold uppercase tracking-wider border-b border-white/5 pb-1">Agendamento</p>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <div className="space-y-1">
-                                            <label className="text-xs text-gray-400 font-bold uppercase ml-1">Dia da Semana</label>
-                                            <div className="relative">
-                                                <select
-                                                    value={scheduleDay}
-                                                    onChange={(e) => setScheduleDay(e.target.value)}
-                                                    className="w-full h-10 bg-[#101622] rounded-lg border border-white/10 px-3 text-white text-sm focus:outline-none focus:border-[#0081FF] appearance-none"
-                                                >
-                                                    {WEEK_DAYS.map(d => <option key={d} value={d}>{d}</option>)}
-                                                </select>
-                                                <span className="material-symbols-rounded absolute right-3 top-2.5 text-gray-500 pointer-events-none text-sm">calendar_month</span>
-                                            </div>
-                                        </div>
-                                        <div className="space-y-1">
-                                            <label className="text-xs text-gray-400 font-bold uppercase ml-1">Horário</label>
-                                            <div className="relative">
+                        <div className="p-6 overflow-y-auto hide-scrollbar flex-1">
+                            {/* Info Grid */}
+                            <div className="grid grid-cols-2 gap-3 mb-6">
+                                {isEditing ? (
+                                    <>
+                                        {/* Editar Telefone */}
+                                        <div className="p-2 bg-[#101622] border border-[#0081FF] rounded-xl flex items-center gap-2 shadow-[0_0_10px_rgba(0,129,255,0.2)] col-span-2">
+                                            <span className="material-symbols-rounded text-[#0081FF]">phone</span>
+                                            <div className="flex-1">
+                                                <p className="text-[9px] text-[#0081FF] uppercase font-bold">Editar Tel</p>
                                                 <input
-                                                    type="time"
-                                                    value={scheduleTime}
-                                                    onChange={(e) => setScheduleTime(e.target.value)}
-                                                    className="w-full h-10 bg-[#101622] rounded-lg border border-white/10 px-3 text-white text-sm focus:outline-none focus:border-[#0081FF]"
+                                                    type="tel"
+                                                    value={editPhone}
+                                                    onChange={(e) => setEditPhone(e.target.value)}
+                                                    className="w-full bg-transparent text-white text-xs font-medium focus:outline-none"
+                                                    placeholder="(00) 00000-0000"
                                                 />
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
 
-                                <div className="space-y-3">
-                                    <p className="text-[10px] text-[#0081FF] font-bold uppercase tracking-wider border-b border-white/5 pb-1">Contato</p>
-                                    <div className="grid grid-cols-2 gap-3">
-                                        <div className="space-y-1">
-                                            <label className="text-xs text-gray-400 font-bold uppercase ml-1">WhatsApp</label>
-                                            <input type="tel" value={newStudentPhone} onChange={(e) => setNewStudentPhone(e.target.value)} placeholder="(00) 00000-0000" className="w-full h-10 bg-[#101622] rounded-lg border border-white/10 px-3 text-white text-sm focus:outline-none focus:border-[#0081FF]" />
+                                        {/* Editar Agenda */}
+                                        <div className="col-span-2 space-y-2 mt-2 pt-2 border-t border-white/5">
+                                            <p className="text-[10px] text-[#FF00BC] font-bold uppercase">Editar Agenda</p>
+                                            <div className="flex gap-2">
+                                                <select
+                                                    value={editScheduleDay}
+                                                    onChange={(e) => setEditScheduleDay(e.target.value)}
+                                                    className="flex-1 h-10 bg-[#101622] rounded-lg border border-white/10 px-2 text-white text-xs focus:outline-none focus:border-[#0081FF]"
+                                                >
+                                                    {WEEK_DAYS.map(d => <option key={d} value={d}>{d}</option>)}
+                                                </select>
+                                                <input
+                                                    type="time"
+                                                    value={editScheduleTime}
+                                                    onChange={(e) => setEditScheduleTime(e.target.value)}
+                                                    className="flex-1 h-10 bg-[#101622] rounded-lg border border-white/10 px-2 text-white text-xs focus:outline-none focus:border-[#0081FF]"
+                                                />
+                                            </div>
                                         </div>
-                                        <div className="space-y-1">
-                                            <label className="text-xs text-gray-400 font-bold uppercase ml-1">Insta</label>
-                                            <input type="text" value={newStudentInsta} onChange={(e) => setNewStudentInsta(e.target.value)} className="w-full h-10 bg-[#101622] rounded-lg border border-white/10 px-3 text-white text-sm focus:outline-none focus:border-[#0081FF]" />
-                                        </div>
-                                    </div>
-                                </div>
+                                    </>
+                                ) : (
+                                    <>
+                                        {/* Visualizar Contato e Agenda */}
+                                        <button
+                                            onClick={() => openWhatsApp(selectedStudent.phone || '')}
+                                            className="p-3 bg-green-500/10 border border-green-500/20 rounded-xl flex items-center gap-3 hover:bg-green-500/20 transition-colors text-left"
+                                        >
+                                            <span className="material-symbols-rounded text-green-500">chat</span>
+                                            <div>
+                                                <p className="text-[10px] text-green-400 uppercase font-bold">WhatsApp</p>
+                                                <p className="text-xs text-white font-medium">{selectedStudent.phone || 'N/A'}</p>
+                                            </div>
+                                        </button>
 
-                                <div className="pt-2">
-                                    <button
-                                        onClick={handleAddStudent}
-                                        disabled={!newStudentName.trim() || loadingAction}
-                                        className="w-full h-12 bg-[#0081FF] hover:bg-[#006bd1] text-white font-bold rounded-xl shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
-                                    >
-                                        <span className="material-symbols-rounded">save</span>
-                                        {loadingAction ? 'Salvando...' : 'Cadastrar Aluno'}
-                                    </button>
+                                        <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-xl flex items-center gap-3">
+                                            <span className="material-symbols-rounded text-blue-400">calendar_month</span>
+                                            <div>
+                                                <p className="text-[10px] text-blue-400 uppercase font-bold">Aula</p>
+                                                <p className="text-xs text-white font-medium">
+                                                    {selectedStudent.scheduleDay} - {selectedStudent.scheduleTime}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+
+                            {/* Observation Area */}
+                            <div className="space-y-2 h-full flex flex-col">
+                                <label className="text-xs text-gray-400 font-bold uppercase ml-1 flex items-center gap-2">
+                                    <span className="material-symbols-rounded text-sm">edit_note</span>
+                                    Caderno de Observações
+                                </label>
+                                <div className="relative flex-1 min-h-[150px]">
+                                    <textarea
+                                        value={notesInput}
+                                        onChange={(e) => setNotesInput(e.target.value)}
+                                        placeholder="Registre o desenvolvimento..."
+                                        className="w-full h-full bg-[#101622] rounded-xl border border-white/10 p-4 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-[#0081FF] resize-none leading-relaxed"
+                                    ></textarea>
                                 </div>
                             </div>
                         </div>
+
+                        {/* Footer Actions */}
+                        <div className="p-4 border-t border-white/5 bg-[#151A23] rounded-b-2xl">
+                            {user?.role === 'admin' && (
+                                <div className="mb-4 space-y-2">
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase ml-1">Status da Assinatura (ADM Only)</p>
+                                    <div className="flex gap-2">
+                                        {(['active', 'overdue', 'blocked'] as const).map((status) => (
+                                            <button
+                                                key={status}
+                                                onClick={async () => {
+                                                    setLoadingAction(true);
+                                                    try {
+                                                        const { error } = await supabase
+                                                            .from('profiles')
+                                                            .update({ status })
+                                                            .eq('id', selectedStudent.id);
+                                                        if (!error) {
+                                                            setStudents(prev => prev.map(s => s.id === selectedStudent.id ? { ...s, status: status as any } : s));
+                                                            setSelectedStudent(prev => prev ? { ...prev, status: status as any } : null);
+                                                        }
+                                                    } finally {
+                                                        setLoadingAction(false);
+                                                    }
+                                                }}
+                                                className={`flex-1 py-2 rounded-lg text-[10px] font-bold uppercase transition-all border ${selectedStudent.status === status
+                                                    ? (status === 'active' ? 'bg-green-500/20 border-green-500 text-green-500' : status === 'overdue' ? 'bg-amber-500/20 border-amber-500 text-amber-500' : 'bg-red-500/20 border-red-500 text-red-500')
+                                                    : 'bg-white/5 border-white/5 text-gray-400 hover:bg-white/10'
+                                                    }`}
+                                            >
+                                                {status === 'active' ? 'Ativo' : status === 'overdue' ? 'Atrasado' : 'Bloqueado'}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            <div className="flex gap-3">
+                                <button onClick={() => setSelectedStudent(null)} className="flex-1 h-12 rounded-xl border border-white/10 text-gray-400 font-bold text-sm hover:bg-white/5">Cancelar</button>
+                                <button
+                                    onClick={handleSaveChanges}
+                                    disabled={loadingAction}
+                                    className="flex-1 h-12 rounded-xl bg-[#0081FF] text-white font-bold text-sm hover:bg-[#006bd1] shadow-lg flex items-center justify-center gap-2 disabled:opacity-50"
+                                >
+                                    <span className="material-symbols-rounded">save</span>
+                                    {loadingAction ? 'Salvando...' : 'Salvar Alterações'}
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                )
-            }
-        </div >
-    );
+                </div>
+            )
+        }
+
+        {/* MODAL: Add Student (COM AGENDAMENTO) */}
+        {
+            isAddModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="w-full max-w-sm max-h-[90vh] bg-[#1A202C] rounded-2xl border border-white/10 shadow-2xl flex flex-col animate-in zoom-in-95 duration-200">
+                        <div className="px-6 py-4 border-b border-white/5 flex justify-between items-center bg-[#151A23] rounded-t-2xl">
+                            <h3 className="font-bold text-white">Cadastrar Novo Aluno</h3>
+                            <button onClick={() => setIsAddModalOpen(false)} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white"><span className="material-symbols-rounded text-lg">close</span></button>
+                        </div>
+
+                        <div className="p-6 space-y-5 overflow-y-auto hide-scrollbar">
+                            <div className="flex justify-center">
+                                <img src={`https://ui-avatars.com/api/?name=${encodeURIComponent(newStudentName || 'Novo')}&background=random&color=fff&size=128`} alt="Avatar" className="w-16 h-16 rounded-full border-2 border-[#0081FF] shadow-lg" />
+                            </div>
+
+                            <div className="space-y-3">
+                                <p className="text-[10px] text-[#0081FF] font-bold uppercase tracking-wider border-b border-white/5 pb-1">Dados Pessoais</p>
+                                <div className="grid grid-cols-4 gap-3">
+                                    <div className="col-span-3 space-y-1">
+                                        <label className="text-xs text-gray-400 font-bold uppercase ml-1">Nome</label>
+                                        <input type="text" value={newStudentName} onChange={(e) => setNewStudentName(e.target.value)} placeholder="Ex: Ana Silva" className="w-full h-10 bg-[#101622] rounded-lg border border-white/10 px-3 text-white text-sm focus:outline-none focus:border-[#0081FF]" />
+                                    </div>
+                                    <div className="col-span-1 space-y-1">
+                                        <label className="text-xs text-gray-400 font-bold uppercase ml-1">Idade</label>
+                                        <input type="number" value={newStudentAge} onChange={(e) => setNewStudentAge(e.target.value)} className="w-full h-10 bg-[#101622] rounded-lg border border-white/10 px-3 text-white text-sm focus:outline-none focus:border-[#0081FF]" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Seção Agendamento */}
+                            <div className="space-y-3">
+                                <p className="text-[10px] text-[#0081FF] font-bold uppercase tracking-wider border-b border-white/5 pb-1">Agendamento</p>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1">
+                                        <label className="text-xs text-gray-400 font-bold uppercase ml-1">Dia da Semana</label>
+                                        <div className="relative">
+                                            <select
+                                                value={scheduleDay}
+                                                onChange={(e) => setScheduleDay(e.target.value)}
+                                                className="w-full h-10 bg-[#101622] rounded-lg border border-white/10 px-3 text-white text-sm focus:outline-none focus:border-[#0081FF] appearance-none"
+                                            >
+                                                {WEEK_DAYS.map(d => <option key={d} value={d}>{d}</option>)}
+                                            </select>
+                                            <span className="material-symbols-rounded absolute right-3 top-2.5 text-gray-500 pointer-events-none text-sm">calendar_month</span>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-xs text-gray-400 font-bold uppercase ml-1">Horário</label>
+                                        <div className="relative">
+                                            <input
+                                                type="time"
+                                                value={scheduleTime}
+                                                onChange={(e) => setScheduleTime(e.target.value)}
+                                                className="w-full h-10 bg-[#101622] rounded-lg border border-white/10 px-3 text-white text-sm focus:outline-none focus:border-[#0081FF]"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="space-y-3">
+                                <p className="text-[10px] text-[#0081FF] font-bold uppercase tracking-wider border-b border-white/5 pb-1">Contato</p>
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div className="space-y-1">
+                                        <label className="text-xs text-gray-400 font-bold uppercase ml-1">WhatsApp</label>
+                                        <input type="tel" value={newStudentPhone} onChange={(e) => setNewStudentPhone(e.target.value)} placeholder="(00) 00000-0000" className="w-full h-10 bg-[#101622] rounded-lg border border-white/10 px-3 text-white text-sm focus:outline-none focus:border-[#0081FF]" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <label className="text-xs text-gray-400 font-bold uppercase ml-1">Insta</label>
+                                        <input type="text" value={newStudentInsta} onChange={(e) => setNewStudentInsta(e.target.value)} className="w-full h-10 bg-[#101622] rounded-lg border border-white/10 px-3 text-white text-sm focus:outline-none focus:border-[#0081FF]" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="pt-2">
+                                <button
+                                    onClick={handleAddStudent}
+                                    disabled={!newStudentName.trim() || loadingAction}
+                                    className="w-full h-12 bg-[#0081FF] hover:bg-[#006bd1] text-white font-bold rounded-xl shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+                                >
+                                    <span className="material-symbols-rounded">save</span>
+                                    {loadingAction ? 'Salvando...' : 'Cadastrar Aluno'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+        }
+    </div >
+);
 };

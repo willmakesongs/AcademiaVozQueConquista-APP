@@ -24,6 +24,7 @@ const AppContent = () => {
   const [currentVocalize, setCurrentVocalize] = useState<Vocalize | null>(null);
   const [libraryResetKey, setLibraryResetKey] = useState(0);
   const [profileResetKey, setProfileResetKey] = useState(0);
+  const [dashboardResetKey, setDashboardResetKey] = useState(0);
 
   // Redirect based on auth state
   useEffect(() => {
@@ -101,6 +102,10 @@ const AppContent = () => {
       setProfileResetKey(prev => prev + 1);
     }
 
+    if (targetScreen === Screen.TEACHER_DASHBOARD) {
+      setDashboardResetKey(prev => prev + 1);
+    }
+
     setScreen(targetScreen);
   };
 
@@ -119,7 +124,7 @@ const AppContent = () => {
       case Screen.STUDENT_DASHBOARD:
         return <StudentDashboard onNavigate={handleNavigate} onPlayVocalize={navigateToPlayer} />;
       case Screen.TEACHER_DASHBOARD:
-        return <TeacherDashboard onNavigate={handleNavigate} onLogout={handleLogout} />;
+        return <TeacherDashboard key={dashboardResetKey} onNavigate={handleNavigate} onLogout={handleLogout} />;
       case Screen.PLAYER:
         return (
           <PlayerScreen
