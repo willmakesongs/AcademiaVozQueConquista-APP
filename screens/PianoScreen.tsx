@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import * as Tone from 'tone';
 
@@ -10,7 +9,59 @@ const NOTE_FREQUENCIES: Record<string, number> = {
     'Pt-BR': 440, // Base reference
 };
 
-// Gerar frequências baseadas em A4 = 440Hz
+// --- AUDIO HELPERS ---
+
+const NOTE_STRINGS = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+
+function autoCorrelate(buf: Float32Array, sampleRate: number) {
+    let SIZE = buf.length;
+    let rms = 0;
+    for (let i = 0; i < SIZE; i++) {
+        const val = buf[i];
+        rms += val * val;
+    }
+    rms = Math.sqrt(rms / SIZE);
+    if (rms < 0.03) return -1; // Noise gate
+
+    let r1 = 0, r2 = SIZE - 1, thres = 0.2;
+    for (let i = 0; i < SIZE / 2; i++) {
+        if (Math.abs(buf[i]) < thres) { r1 = i; break; }
+    }
+    for (let i = 1; i < SIZE / 2; i++) {
+        if (Math.abs(buf[SIZE - i]) < thres) { r2 = SIZE - i; break; }
+    }
+
+    buf = buf.slice(r1, r2);
+    SIZE = buf.length;
+
+    let c = new Array(SIZE).fill(0);
+    for (let i = 0; i < SIZE; i++) {
+        for (let j = 0; j < SIZE - i; j++) {
+            c[i] = c[i] + buf[j] * buf[j + i];
+        }
+        if (SIZE - i > 0) {
+            c[i] = c[i] / (SIZE - i);
+        }
+    }
+
+    let d = 0; while (c[d] > c[d + 1]) d++;
+    let maxval = -1, maxpos = -1;
+    for (let i = d; i < SIZE; i++) {
+        if (c[i] > maxval) {
+            maxval = c[i];
+            maxpos = i;
+        }
+    }
+    let T0 = maxpos;
+
+    let x1 = c[T0 - 1], x2 = c[T0], x3 = c[T0 + 1];
+    let a = (x1 + x3 - 2 * x2) / 2;
+    let b = (x3 - x1) / 2;
+    if (a) T0 = T0 - b / (2 * a);
+
+    return sampleRate / T0;
+}
+
 const getFrequency = (note: string): number => {
     const notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
     const octave = parseInt(note.slice(-1));
@@ -23,27 +74,25 @@ const getFrequency = (note: string): number => {
 const OCTAVES = [2, 3, 4, 5, 6];
 const NOTES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
-// Mapeamento visual das teclas
-const KEY_CONFIG = [
-    { note: 'C', type: 'white' },
-    { note: 'C#', type: 'black', offset: 1.4 }, // Percent relative to previous white key width approx
-    { note: 'D', type: 'white' },
-    { note: 'D#', type: 'black', offset: 1.6 },
-    { note: 'E', type: 'white' },
-    { note: 'F', type: 'white' },
-    { note: 'F#', type: 'black', offset: 1.3 },
-    { note: 'G', type: 'white' },
-    { note: 'G#', type: 'black', offset: 1.5 },
-    { note: 'A', type: 'white' },
-    { note: 'A#', type: 'black', offset: 1.7 },
-    { note: 'B', type: 'white' },
-];
-
 export const PianoScreen: React.FC<Props> = ({ onBack }) => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [activeNote, setActiveNote] = useState<{ note: string, freq: number } | null>(null);
+
+    // Voice Mode State
+    const [isMicOn, setIsMicOn] = useState(false);
+    const [sungFreq, setSungFreq] = useState(0);
+    const [centsOff, setCentsOff] = useState(0);
+    const [feedbackStatus, setFeedbackStatus] = useState<'neutral' | 'success' | 'low' | 'high'>('neutral');
+    const [stabilityCounter, setStabilityCounter] = useState(0);
+
     const samplerRef = useRef<Tone.Sampler | null>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+    // Audio Analysis Refs
+    const audioContextRef = useRef<AudioContext | null>(null);
+    const analyserRef = useRef<AnalyserNode | null>(null);
+    const rafIdRef = useRef<number | null>(null);
+    const sourceRef = useRef<MediaStreamAudioSourceNode | null>(null);
 
     // Initialize Audio
     useEffect(() => {
@@ -84,11 +133,7 @@ export const PianoScreen: React.FC<Props> = ({ onBack }) => {
             baseUrl: "https://tonejs.github.io/audio/salamander/",
             onload: () => {
                 setIsLoaded(true);
-                // Center scroll to C4
                 if (scrollContainerRef.current) {
-                    // Approx C4 position calculation
-                    // C4 is start of 3rd octave shown (2, 3, 4) if array is [2,3,4,5,6]
-                    // Better: find element by ID later or just center roughly
                     const scrollWidth = scrollContainerRef.current.scrollWidth;
                     scrollContainerRef.current.scrollLeft = scrollWidth * 0.4;
                 }
@@ -99,26 +144,123 @@ export const PianoScreen: React.FC<Props> = ({ onBack }) => {
 
         return () => {
             sampler.dispose();
+            stopMic();
         };
     }, []);
+
+    // --- MIC LOGIC ---
+    const startMic = async () => {
+        try {
+            const AudioContextClass = (window.AudioContext || (window as any).webkitAudioContext);
+            const audioCtx = new AudioContextClass();
+            audioContextRef.current = audioCtx;
+
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const source = audioCtx.createMediaStreamSource(stream);
+            sourceRef.current = source;
+
+            const analyser = audioCtx.createAnalyser();
+            analyser.fftSize = 4096;
+            source.connect(analyser);
+            analyserRef.current = analyser;
+
+            setIsMicOn(true);
+            updatePitch();
+        } catch (err) {
+            console.error("Mic Error:", err);
+            alert("Erro ao acessar microfone. Verifique as permissões.");
+        }
+    };
+
+    const stopMic = () => {
+        if (rafIdRef.current) cancelAnimationFrame(rafIdRef.current);
+        if (sourceRef.current) {
+            sourceRef.current.mediaStream.getTracks().forEach(track => track.stop());
+            sourceRef.current.disconnect();
+        }
+        if (analyserRef.current) analyserRef.current.disconnect();
+        if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
+            audioContextRef.current.close();
+        }
+        setIsMicOn(false);
+        setSungFreq(0);
+        setCentsOff(0);
+        setFeedbackStatus('neutral');
+    };
+
+    const toggleMic = () => {
+        if (isMicOn) stopMic();
+        else startMic();
+    };
+
+    const updatePitch = () => {
+        if (!analyserRef.current || !audioContextRef.current) return;
+
+        const buf = new Float32Array(analyserRef.current.fftSize);
+        analyserRef.current.getFloatTimeDomainData(buf);
+        const freq = autoCorrelate(buf, audioContextRef.current.sampleRate);
+
+        // Only process if freq is valid and in reasonable singing range (50Hz - 1400Hz)
+        if (freq !== -1 && freq > 50 && freq < 1400) {
+            setSungFreq(freq);
+
+            // Compare with active note if exists
+            if (activeNote) {
+                const idealFreq = activeNote.freq;
+                // Calculate cents difference: 1200 * log2(f1 / f2)
+                const cents = 1200 * Math.log2(freq / idealFreq);
+                setCentsOff(cents);
+
+                // Pedagogical Logic
+                // Tolerance: +/- 30 cents (generous for learning)
+                // Stability check: Must hold for simple frame counter (roughly represents time)
+
+                if (Math.abs(cents) <= 30) {
+                    setStabilityCounter(prev => prev + 1);
+                    if (stabilityCounter > 10) { // Approx 0.2s of accumulated stabilty for instant feedback, real "Success" might need more
+                        setFeedbackStatus('success');
+                    }
+                } else if (cents < -30) {
+                    setStabilityCounter(0);
+                    setFeedbackStatus('low');
+                } else if (cents > 30) {
+                    setStabilityCounter(0);
+                    setFeedbackStatus('high');
+                }
+            } else {
+                setFeedbackStatus('neutral');
+                setStabilityCounter(0);
+            }
+        } else {
+            // No sound detected
+            // Don't reset immediately to avoid flickering, but maybe decay?
+            // setFeedbackStatus('neutral');
+        }
+
+        rafIdRef.current = requestAnimationFrame(updatePitch);
+    };
 
     const playNote = async (note: string) => {
         if (!samplerRef.current || !isLoaded) return;
 
-        // Ensure AudioContext is running
         await Tone.start();
         if (Tone.context.state !== 'running') await Tone.context.resume();
 
         samplerRef.current.triggerAttack(note);
-        setActiveNote({ note, freq: parseFloat(getFrequency(note).toFixed(2)) });
+        const newFreq = parseFloat(getFrequency(note).toFixed(2));
+        setActiveNote({ note, freq: newFreq });
+
+        // Reset comparisons when new note is played
+        setStabilityCounter(0);
+        setFeedbackStatus('neutral');
     };
 
     const stopNote = (note: string) => {
         if (samplerRef.current && isLoaded) {
             samplerRef.current.triggerRelease(note);
         }
-        // Only clear if it's the current note (handle multi-touch edge cases)
-        setActiveNote(prev => prev?.note === note ? null : prev);
+        // We do NOT clear activeNote immediately so the user can see the target while singing
+        // logic: Piano acts as reference setter.
     };
 
     // Generate Key List (Flat array for rendering)
@@ -126,30 +268,8 @@ export const PianoScreen: React.FC<Props> = ({ onBack }) => {
         const keys: JSX.Element[] = [];
 
         OCTAVES.forEach(octave => {
-            // We render White keys as the main flow, and Black keys as absolute children of the container wrapper
-            // Wait, standard HTML approach:
-            // Render a container for the octave?
-            // Let's render note by note.
-
-            // Actually, easiest CSS approach:
-            // Flex container.
-            // White keys are relative.
-            // Black keys are absolute, positioned between white keys.
-            // But to make it scrollable, we need a single long flex container of white keys, 
-            // and black keys interleaved?
-            // No, interleave structure:
-            // <div class="relative"> <WhiteKey C /> <BlackKey C# /> <WhiteKey D /> ... </div>
-            // But BlackKey C# needs to sit ON TOP of the border between C and D.
-            // So:
-            // <div class="flex">
-            //   <div class="relative"> <WhiteKey C /> <BlackKey C# absolute check_right /> </div>
-            //   <div class="relative"> <WhiteKey D /> <BlackKey D# absolute check_right /> </div>
-            //   <div class="relative"> <WhiteKey E /> </div>
-            //   ...
-            // </div>
-
             NOTES.forEach(noteName => {
-                if (noteName.includes('#')) return; // handled by previous white key
+                if (noteName.includes('#')) return;
 
                 const fullNote = `${noteName}${octave}`;
                 const hasSharp = ['C', 'D', 'F', 'G', 'A'].includes(noteName);
@@ -200,7 +320,6 @@ export const PianoScreen: React.FC<Props> = ({ onBack }) => {
                                 ${activeNote?.note === sharpNote ? '!bg-[#FF00BC] !shadow-none !translate-y-[2px]' : 'bg-gradient-to-b from-black to-gray-900'}
                             `}
                             >
-                                {/* <span className="absolute bottom-2 left-1/2 -translate-x-1/2 text-gray-500 text-[8px]">{sharpNote}</span> */}
                             </button>
                         )}
                     </div>
@@ -218,34 +337,47 @@ export const PianoScreen: React.FC<Props> = ({ onBack }) => {
             <div className="pt-8 px-6 pb-4 bg-[#101622] border-b border-white/5 flex items-center justify-between z-30">
                 <div className="flex items-center gap-3">
                     <button
-                        onClick={onBack}
+                        onClick={() => { stopMic(); onBack(); }}
                         className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-white/10 transition-colors"
                     >
                         <span className="material-symbols-rounded">arrow_back</span>
                     </button>
                     <h1 className="text-xl font-bold text-white">Piano Virtual</h1>
                 </div>
-                {!isLoaded && (
-                    <div className="flex items-center gap-2 text-xs font-bold text-[#FF00BC]">
-                        <span className="w-2 h-2 rounded-full bg-[#FF00BC] animate-ping"></span>
-                        CARREGANDO SONS...
-                    </div>
-                )}
+
+                <button
+                    onClick={toggleMic}
+                    className={`
+                px-4 py-2 rounded-full border flex items-center gap-2 transition-all
+                ${isMicOn
+                            ? 'bg-[#FF00BC]/20 border-[#FF00BC] text-[#FF00BC] shadow-[0_0_15px_rgba(255,0,188,0.3)]'
+                            : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'}
+            `}
+                >
+                    <span className="material-symbols-rounded text-lg">mic</span>
+                    <span className="text-xs font-bold uppercase">{isMicOn ? 'Escutando' : 'Ativar Voz'}</span>
+                </button>
             </div>
 
-            {/* Info Display */}
-            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-gradient-to-b from-[#151A23] to-[#101622]">
+            {/* Info Display Area */}
+            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-gradient-to-b from-[#151A23] to-[#101622] relative overflow-hidden">
+
+                {/* Background Feedback Color */}
+                <div className={`absolute inset-0 transition-opacity duration-1000 ${feedbackStatus === 'success' ? 'bg-green-500/10' : 'bg-transparent'}`}></div>
 
                 <div className={`
-             transition-all duration-200 transform
+             transition-all duration-200 transform z-10
              ${activeNote ? 'scale-100 opacity-100' : 'scale-95 opacity-50 grayscale'}
         `}>
                     {/* Note Name Big */}
-                    <div className="text-[120px] font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-400 leading-none drop-shadow-lg font-sans tracking-tighter">
+                    <div className={`
+                text-[100px] sm:text-[120px] font-black leading-none drop-shadow-lg font-sans tracking-tighter transition-colors duration-300
+                ${feedbackStatus === 'success' ? 'text-green-400' : 'text-transparent bg-clip-text bg-gradient-to-br from-white to-gray-400'}
+            `}>
                         {activeNote ? activeNote.note.replace(/[0-9]/g, '') : '-'}
                     </div>
 
-                    <div className="flex items-center justify-center gap-4 mt-2">
+                    <div className="flex flex-wrap items-center justify-center gap-3 mt-4">
                         {/* Octave Badge */}
                         <div className="px-4 py-1 rounded-full bg-white/10 border border-white/10 text-white font-bold text-xl backdrop-blur-md">
                             {activeNote ? activeNote.note.slice(-1) : '-'} <span className="text-xs text-gray-500 uppercase ml-1">Oitava</span>
@@ -257,16 +389,55 @@ export const PianoScreen: React.FC<Props> = ({ onBack }) => {
                         </div>
                     </div>
 
-                    {activeNote && (
-                        <p className="text-gray-400 text-xs mt-6 animate-pulse">Toque para ouvir a nota</p>
-                    )}
+                    {/* PEDAGOGICAL FEEDBACK AREA */}
+                    <div className="h-20 mt-8 flex flex-col items-center justify-center">
+                        {isMicOn && activeNote ? (
+                            <>
+                                {feedbackStatus === 'success' && (
+                                    <div className="animate-in fade-in slide-in-from-bottom duration-500">
+                                        <p className="text-green-400 font-bold text-lg mb-1 flex items-center gap-2">
+                                            <span className="material-symbols-rounded">check_circle</span>
+                                            Boa! Você afinou.
+                                        </p>
+                                        <p className="text-green-500/60 text-xs">Ótima estabilidade vocal.</p>
+                                    </div>
+                                )}
+                                {feedbackStatus === 'low' && (
+                                    <div className="animate-in fade-in slide-in-from-bottom duration-500">
+                                        <p className="text-yellow-400 font-bold text-sm mb-1 flex items-center gap-2">
+                                            <span className="material-symbols-rounded">arrow_upward</span>
+                                            Um pouco abaixo da nota
+                                        </p>
+                                        <p className="text-gray-400 text-xs">Experimente subir levemente o apoio.</p>
+                                    </div>
+                                )}
+                                {feedbackStatus === 'high' && (
+                                    <div className="animate-in fade-in slide-in-from-bottom duration-500">
+                                        <p className="text-yellow-400 font-bold text-sm mb-1 flex items-center gap-2">
+                                            <span className="material-symbols-rounded">arrow_downward</span>
+                                            Passou um pouco da altura
+                                        </p>
+                                        <p className="text-gray-400 text-xs">Relaxe e desça suavemente.</p>
+                                    </div>
+                                )}
+                                {feedbackStatus === 'neutral' && sungFreq > 0 && (
+                                    <p className="text-gray-500 text-xs animate-pulse">Analisando estabilidade...</p>
+                                )}
+                            </>
+                        ) : (
+                            activeNote && <p className="text-gray-500 text-xs mt-2">Toque para ouvir a nota</p>
+                        )}
+                    </div>
+
                 </div>
 
                 {/* Placeholder text if no note */}
                 {!activeNote && (
-                    <p className="text-gray-500 text-sm mt-8 animate-pulse">
-                        Toque em qualquer tecla...
-                    </p>
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
+                        <p className="text-gray-500 text-sm animate-pulse">
+                            Toque em qualquer tecla...
+                        </p>
+                    </div>
                 )}
 
             </div>
@@ -274,7 +445,7 @@ export const PianoScreen: React.FC<Props> = ({ onBack }) => {
             {/* Keyboard Area */}
             <div
                 ref={scrollContainerRef}
-                className="h-[320px] bg-[#0d121c] border-t-4 border-[#FF00BC] relative overflow-x-auto hide-scrollbar touch-pan-x shadow-[inset_0_10px_20px_rgba(0,0,0,0.5)]"
+                className="h-[280px] sm:h-[320px] bg-[#0d121c] border-t-4 border-[#FF00BC] relative overflow-x-auto hide-scrollbar touch-pan-x shadow-[inset_0_10px_20px_rgba(0,0,0,0.5)]"
             >
                 <div className="flex px-[50vw] h-full pt-10 pb-10 min-w-min">
                     {renderKeys()}
@@ -283,9 +454,6 @@ export const PianoScreen: React.FC<Props> = ({ onBack }) => {
                 {/* Shadow Gradients for scroll hint */}
                 <div className="fixed left-0 bottom-0 w-12 h-[320px] bg-gradient-to-r from-[#101622] to-transparent pointer-events-none z-30"></div>
                 <div className="fixed right-0 bottom-0 w-12 h-[320px] bg-gradient-to-l from-[#101622] to-transparent pointer-events-none z-30"></div>
-
-                {/* Center Marker */}
-                {/* <div className="absolute top-0 bottom-0 left-1/2 w-0.5 bg-red-500/20 pointer-events-none z-0"></div> */}
             </div>
 
         </div>
