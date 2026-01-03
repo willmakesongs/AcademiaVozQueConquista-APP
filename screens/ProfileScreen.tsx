@@ -95,6 +95,19 @@ function formatDateBR(dateString?: string) {
     }
 }
 
+function formatDayOfMonth(dateString?: string) {
+    if (!dateString) return '05';
+    try {
+        const parts = dateString.split(' ')[0].split('-');
+        if (parts.length === 3) {
+            return parts[2]; // Retorna apenas o DD
+        }
+        return dateString;
+    } catch (e) {
+        return '05';
+    }
+}
+
 export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
     const { user } = useAuth();
 
@@ -762,7 +775,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                         </div>
                         <div className="flex justify-between items-center border-t border-white/5 pt-3">
                             <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Vencimento</span>
-                            <span className="text-sm font-bold text-white">{formatDateBR(user?.nextDueDate)} de cada mês</span>
+                            <span className="text-sm font-bold text-white uppercase">Todo dia: {formatDayOfMonth(user?.nextDueDate)} do mês</span>
                         </div>
                     </div>
                 </div>
