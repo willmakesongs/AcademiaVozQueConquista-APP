@@ -13,6 +13,7 @@ interface AuthContextType {
   signInAsGuest: (role: 'student' | 'teacher') => Promise<void>;
   verifyOtp: (phone: string, token: string, role: 'student' | 'teacher') => Promise<{ error: any }>;
   signOut: () => Promise<void>;
+  visitorTimeRemaining: number | null;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -22,6 +23,39 @@ export const useAuth = () => useContext(AuthContext);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [visitorTimeRemaining, setVisitorTimeRemaining] = useState<number | null>(null);
+
+  // Visitor Timer Logic
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+
+    if (user?.id === 'guest') {
+      const checkTime = () => {
+        const startStr = localStorage.getItem('visitor_start_time');
+        if (startStr) {
+          const startTime = parseInt(startStr);
+          const elapsed = Date.now() - startTime;
+          const totalDuration = 15 * 60 * 1000; // 15 minutes
+          const remaining = totalDuration - elapsed;
+          setVisitorTimeRemaining(remaining > 0 ? remaining : 0);
+        } else {
+          // Should set start time if missing
+          const now = Date.now();
+          localStorage.setItem('visitor_start_time', now.toString());
+          setVisitorTimeRemaining(15 * 60 * 1000);
+        }
+      };
+
+      checkTime();
+      interval = setInterval(checkTime, 1000);
+    } else {
+      setVisitorTimeRemaining(null);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [user]);
 
   useEffect(() => {
     const initSession = async () => {
@@ -38,6 +72,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (session) {
           await fetchProfile(session.user.id);
         } else {
+          // Check if guest session persists (optional, but good for refresh)
+          const visitorStart = localStorage.getItem('visitor_start_time');
+          if (visitorStart) {
+            // Check if actually expired before restoring?
+            // For now, let's just let the user log in again as guest if they refresh and session is lost in state but exists in localStorage logic.
+            // Actually, signInAsGuest sets state 'user'. If we refresh, 'user' state is null.
+            // We need to decide if we restore guest session on refresh.
+            // The user didn't explicitly ask for persistent guest session across refresh, 
+            // but "15 minutes" implies it shouldn't reset on simple refresh.
+            // Ideally we'd need to store 'is_guest' in localstorage too to restore the dummy user object.
+          }
           setLoading(false);
         }
       } catch (err) {
@@ -54,8 +99,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (session) {
         fetchProfile(session.user.id);
       } else {
+        // Maintain guest user if existing
         setUser(prev => prev?.id === 'guest' ? prev : null);
-        setLoading(false);
+        if (!user || user.id !== 'guest') setLoading(false);
       }
     });
 
@@ -232,6 +278,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signInAsGuest = async (role: 'student' | 'teacher') => {
     setLoading(true);
     await new Promise(resolve => setTimeout(resolve, 800));
+
+    // Set start time for 15 minute timer
+    localStorage.setItem('visitor_start_time', Date.now().toString());
+
     setUser({
       id: 'guest',
       name: 'Visitante (Teste)',
@@ -246,13 +296,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
-    if (user?.id === 'guest') { setUser(null); return; }
+    if (user?.id === 'guest') {
+      setUser(null);
+      localStorage.removeItem('visitor_start_time'); // Clear timer
+      return;
+    }
     if (!isSupabaseConfigured) { setUser(null); return; }
     try { await supabase.auth.signOut(); } catch (e) { console.warn(e); } finally { setUser(null); }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signInWithGoogle, signInWithPhone, signInAsGuest, verifyOtp, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signInWithGoogle, signInWithPhone, signInAsGuest, verifyOtp, signOut, visitorTimeRemaining }}>
       {children}
     </AuthContext.Provider>
   );

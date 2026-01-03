@@ -12,12 +12,12 @@ interface Props {
 
 // --- DADOS E CONSTANTES DO TESTE VOCAL ---
 const VOCAL_RANGES_DATA = [
-    { name: 'Baixo', min: 40, max: 64, type: 'Masculina', desc: 'E2 - E4' },
-    { name: 'Barítono', min: 45, max: 69, type: 'Masculina', desc: 'A2 - A4' },
-    { name: 'Tenor', min: 48, max: 72, type: 'Masculina', desc: 'C3 - C5' },
-    { name: 'Contralto', min: 53, max: 77, type: 'Feminina', desc: 'F3 - F5' },
-    { name: 'Mezzo-soprano', min: 57, max: 81, type: 'Feminina', desc: 'A3 - A5' },
-    { name: 'Soprano', min: 60, max: 84, type: 'Feminina', desc: 'C4 - C6' }
+    { name: 'Baixo', min: 28, max: 52, type: 'Masculina', desc: 'E1 - E3' },
+    { name: 'Barítono', min: 33, max: 57, type: 'Masculina', desc: 'A1 - A3' },
+    { name: 'Tenor', min: 36, max: 60, type: 'Masculina', desc: 'C2 - C4' },
+    { name: 'Contralto', min: 41, max: 65, type: 'Feminina', desc: 'F2 - F4' },
+    { name: 'Mezzo-soprano', min: 45, max: 69, type: 'Feminina', desc: 'A2 - A4' },
+    { name: 'Soprano', min: 48, max: 72, type: 'Feminina', desc: 'C3 - C5' }
 ];
 
 const NOTE_STRINGS = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
@@ -125,10 +125,17 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
     const [editDueDateDay, setEditDueDateDay] = useState('02');
 
     // --- ESTADOS DO TESTE VOCAL & AFINADOR ---
-    const [rangeStep, setRangeStep] = useState<'intro' | 'low' | 'high' | 'result'>('intro');
+    // --- ESTADOS DO TESTE VOCAL & AFINADOR ---
+    const [rangeStep, setRangeStep] = useState<'intro' | 'gender_select' | 'low' | 'high' | 'questionnaire' | 'result'>('intro');
     const [vocalType, setVocalType] = useState<string>('Indefinido');
     const [userVocalRange, setUserVocalRange] = useState<string>('--');
     const [isMicOn, setIsMicOn] = useState(false);
+
+    // Novas variáveis para lógica aprimorada
+    const [vocalGender, setVocalGender] = useState<'Masculina' | 'Feminina'>('Masculina');
+    const [comfortZone, setComfortZone] = useState<'grave' | 'medio' | 'agudo'>('medio');
+    const [difficultyZone, setDifficultyZone] = useState<'grave' | 'medio' | 'agudo'>('agudo');
+
     const [pitchNote, setPitchNote] = useState('-');
     const [pitchOctave, setPitchOctave] = useState<number | null>(null);
     const [pitchMidi, setPitchMidi] = useState(0);
@@ -252,19 +259,73 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
     const calculateClassification = () => {
         stopMic();
         if (detectedLowMidi && detectedHighMidi) {
-            const centerUser = (detectedLowMidi + detectedHighMidi) / 2;
+
+            // 1. Filtrar por Gênero
+            const genderRanges = VOCAL_RANGES_DATA.filter(r => r.type === vocalGender);
+
             let bestMatch = 'Indefinido';
-            let minDiff = 999;
-            VOCAL_RANGES_DATA.forEach(range => {
-                const centerRange = (range.min + range.max) / 2;
-                const diff = Math.abs(centerUser - centerRange);
-                if (diff < minDiff) {
-                    minDiff = diff;
+            let maxScore = -999;
+
+            const userLow = detectedLowMidi;
+            const userHigh = detectedHighMidi;
+
+            genderRanges.forEach(range => {
+                let score = 0;
+
+                // Critério 1: Overlap com a região de referência (Core Range)
+                const rangeMin = range.min;
+                const rangeMax = range.max;
+                const rangeSpan = rangeMax - rangeMin;
+
+                // Calcular intersecção
+                const overlapStart = Math.max(userLow, rangeMin);
+                const overlapEnd = Math.min(userHigh, rangeMax);
+                const overlap = Math.max(0, overlapEnd - overlapStart);
+
+                // Pontuação por cobertura da região fundamental da voz
+                if (rangeSpan > 0) {
+                    score += (overlap / rangeSpan) * 20; // Peso alto para "ter as notas da classificação"
+                }
+
+                // Critério 2: Ajuste por Conforto Declarado (Peso: 5 pontos)
+                if (comfortZone === 'grave') {
+                    if (range.name === 'Baixo' || range.name === 'Contralto') score += 15;
+                    else if (range.name === 'Barítono' || range.name === 'Mezzo-soprano') score += 5;
+                }
+                if (comfortZone === 'medio') {
+                    if (range.name === 'Barítono' || range.name === 'Mezzo-soprano') score += 15;
+                    else if (range.name === 'Tenor' || range.name === 'Contralto') score += 5;
+                }
+                if (comfortZone === 'agudo') {
+                    if (range.name === 'Tenor' || range.name === 'Soprano') score += 15;
+                    else if (range.name === 'Mezzo-soprano') score += 5;
+                }
+
+                // Critério 3: Penalidade se a dificuldade for na região principal da voz
+                if (difficultyZone === 'grave') {
+                    if (range.name === 'Baixo' || range.name === 'Contralto') score -= 10;
+                }
+                if (difficultyZone === 'agudo') {
+                    if (range.name === 'Tenor' || range.name === 'Soprano') score -= 10;
+                }
+
+                // Critério 4: Penalidade se o range do usuário não alcança o mínino essencial da voz
+                // Ex: Se quer ser baixo mas não tem o E2 (40), perde ponto. (No caso E1-28)
+                if (userLow > rangeMin + 7) { // Se o grave do user é muito mais agudo que o minimo da voz
+                    score -= 20;
+                }
+
+                if (score > maxScore) {
+                    maxScore = score;
                     bestMatch = range.name;
                 }
             });
+
             setVocalType(bestMatch);
             setUserVocalRange(`${getNoteStringFromMidi(detectedLowMidi)} - ${getNoteStringFromMidi(detectedHighMidi)}`);
+            setRangeStep('result');
+        } else {
+            // Fallback
             setRangeStep('result');
         }
     };
@@ -279,12 +340,17 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
         stopMic();
     };
 
-    const playNote = (note: string) => {
+    const playNote = async (note: string) => {
         if (!synthRef.current) {
             synthRef.current = new Tone.Synth().toDestination();
         }
-        if (Tone.context.state !== 'running') Tone.context.resume();
-        synthRef.current.triggerAttackRelease(note, "8n");
+        try {
+            await Tone.start();
+            if (Tone.context.state !== 'running') await Tone.context.resume();
+            synthRef.current.triggerAttackRelease(note, "8n");
+        } catch (err) {
+            console.error("Audio playback error:", err);
+        }
     };
 
     const handleCopyPix = () => {
@@ -749,6 +815,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                         <button
                             key={note}
                             onMouseDown={() => playNote(note)}
+                            onTouchStart={(e) => { e.preventDefault(); playNote(note); }}
                             className="w-12 h-40 bg-white border border-gray-300 rounded-b-lg hover:bg-gray-100 active:bg-gray-200 transition-colors mx-0.5 relative z-10 shadow-sm"
                         >
                             <span className="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] font-bold text-gray-500">{note}</span>
@@ -758,21 +825,21 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                     {/* Teclas Pretas (Absolutas) */}
                     <div className="absolute top-6 left-6 flex pointer-events-none z-20">
                         <div className="w-[52px]"></div> {/* Spacer C */}
-                        <button onMouseDown={() => playNote('C#3')} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
+                        <button onMouseDown={() => playNote('C#3')} onTouchStart={(e) => { e.preventDefault(); playNote('C#3'); }} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
                         <div className="w-[52px]"></div> {/* Spacer D */}
-                        <button onMouseDown={() => playNote('D#3')} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
+                        <button onMouseDown={() => playNote('D#3')} onTouchStart={(e) => { e.preventDefault(); playNote('D#3'); }} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
                         <div className="w-[104px]"></div> {/* Spacer E, F */}
-                        <button onMouseDown={() => playNote('F#3')} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
+                        <button onMouseDown={() => playNote('F#3')} onTouchStart={(e) => { e.preventDefault(); playNote('F#3'); }} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
                         <div className="w-[52px]"></div> {/* Spacer G */}
-                        <button onMouseDown={() => playNote('G#3')} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
+                        <button onMouseDown={() => playNote('G#3')} onTouchStart={(e) => { e.preventDefault(); playNote('G#3'); }} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
                         <div className="w-[52px]"></div> {/* Spacer A */}
-                        <button onMouseDown={() => playNote('A#3')} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
+                        <button onMouseDown={() => playNote('A#3')} onTouchStart={(e) => { e.preventDefault(); playNote('A#3'); }} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
                         <div className="w-[104px]"></div> {/* Spacer B, C */}
-                        <button onMouseDown={() => playNote('C#4')} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
+                        <button onMouseDown={() => playNote('C#4')} onTouchStart={(e) => { e.preventDefault(); playNote('C#4'); }} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
                         <div className="w-[52px]"></div> {/* Spacer D */}
-                        <button onMouseDown={() => playNote('D#4')} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
+                        <button onMouseDown={() => playNote('D#4')} onTouchStart={(e) => { e.preventDefault(); playNote('D#4'); }} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
                         <div className="w-[104px]"></div> {/* Spacer E, F */}
-                        <button onMouseDown={() => playNote('F#4')} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
+                        <button onMouseDown={() => playNote('F#4')} onTouchStart={(e) => { e.preventDefault(); playNote('F#4'); }} className="w-8 h-24 bg-black rounded-b-lg pointer-events-auto hover:bg-gray-800 active:bg-gray-700 shadow-md ml-[-16px]"></button>
                     </div>
                 </div>
             </div>
@@ -1042,7 +1109,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
 
     const renderVocalTest = () => (
         <div className="flex-1 flex flex-col relative animate-in zoom-in-95 duration-300">
-            {/* Header Específico do Teste */}
+            {/* Header Específico do Teste with close capability */}
             <div className="pt-8 px-6 pb-2 flex items-center justify-between z-10">
                 <button
                     onClick={() => {
@@ -1069,34 +1136,76 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                             <span className="material-symbols-rounded text-5xl text-white">mic</span>
                         </div>
                         <h2 className="text-3xl font-bold text-white mb-3">Descubra sua Voz</h2>
-                        <p className="text-gray-400 text-sm mb-10 leading-relaxed px-4">
-                            Vamos identificar suas notas mais graves e agudas para definir sua classificação vocal exata.
+                        <p className="text-gray-400 text-sm mb-6 leading-relaxed px-4">
+                            Este teste identificará sua classificação vocal com base na sua extensão e tessitura confortável.
                         </p>
 
+                        <div className="bg-[#1A202C] p-4 rounded-xl border border-yellow-500/20 mb-8 mx-2">
+                            <p className="text-xs text-yellow-500 text-left">
+                                <span className="font-bold block mb-1">⚠  Importante</span>
+                                Este teste não substitui um professor de canto. A classificação vocal pode mudar conforme sua técnica evolui.
+                            </p>
+                        </div>
+
                         <button
-                            onClick={() => { setRangeStep('low'); startMic(); }}
-                            className="w-full py-4 rounded-2xl bg-[#white] text-black bg-white font-bold hover:bg-gray-200 transition-colors shadow-lg"
+                            onClick={() => { setRangeStep('gender_select'); }}
+                            className="w-full py-4 rounded-2xl bg-white text-black font-bold hover:bg-gray-200 transition-colors shadow-lg"
                         >
-                            Iniciar Teste
+                            Começar
                         </button>
-                        <p className="text-[10px] text-gray-500 mt-4 flex items-center justify-center gap-1">
-                            <span className="material-symbols-rounded text-xs">headphones</span> Recomendado usar fones
-                        </p>
                     </div>
                 )}
 
-                {/* STEP 2 & 3: DETECTION */}
+                {/* STEP 2: GENDER SELECTION */}
+                {rangeStep === 'gender_select' && (
+                    <div className="text-center w-full max-w-sm animate-in slide-in-from-right relative z-10">
+                        <h2 className="text-2xl font-bold text-white mb-6">Qual seu sexo vocal?</h2>
+                        <p className="text-gray-400 text-sm mb-8">
+                            Isso ajuda a calibrar os parâmetros de classificação base.
+                        </p>
+
+                        <div className="space-y-4">
+                            <button
+                                onClick={() => { setVocalGender('Feminina'); setRangeStep('low'); startMic(); }}
+                                className="w-full p-4 rounded-2xl bg-[#1A202C] border border-white/10 hover:border-[#FF00BC]/50 flex items-center gap-4 transition-all group"
+                            >
+                                <div className="w-12 h-12 rounded-full bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC]">
+                                    <span className="material-symbols-rounded">female</span>
+                                </div>
+                                <div className="text-left">
+                                    <h3 className="text-white font-bold">Voz Feminina</h3>
+                                    <p className="text-xs text-gray-500">Agudos naturais</p>
+                                </div>
+                            </button>
+
+                            <button
+                                onClick={() => { setVocalGender('Masculina'); setRangeStep('low'); startMic(); }}
+                                className="w-full p-4 rounded-2xl bg-[#1A202C] border border-white/10 hover:border-[#0081FF]/50 flex items-center gap-4 transition-all group"
+                            >
+                                <div className="w-12 h-12 rounded-full bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
+                                    <span className="material-symbols-rounded">male</span>
+                                </div>
+                                <div className="text-left">
+                                    <h3 className="text-white font-bold">Voz Masculina</h3>
+                                    <p className="text-xs text-gray-500">Graves naturais</p>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* STEP 3 & 4: DETECTION (LOW & HIGH) */}
                 {(rangeStep === 'low' || rangeStep === 'high') && (
                     <div className="text-center w-full max-w-sm animate-in slide-in-from-right relative z-10">
                         <span className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-6 ${rangeStep === 'low' ? 'bg-[#0081FF]/20 text-[#0081FF]' : 'bg-[#FF00BC]/20 text-[#FF00BC]'}`}>
-                            {rangeStep === 'low' ? 'Passo 1: Graves' : 'Passo 2: Agudos'}
+                            {rangeStep === 'low' ? 'Passo 2: Graves' : 'Passo 3: Agudos'}
                         </span>
 
                         <h2 className="text-2xl font-bold text-white mb-2">
                             {rangeStep === 'low' ? 'Desça o tom...' : 'Suba o tom...'}
                         </h2>
                         <p className="text-gray-400 text-sm mb-8">
-                            {rangeStep === 'low' ? 'Faça um "Uooo" bem grave e sustentado.' : 'Faça um "Iiiii" agudo e limpo.'}
+                            {rangeStep === 'low' ? 'Faça um "Uooo" bem grave (sem vocal fry).' : 'Faça um "Iiiii" agudo (confortável, sem gritar).'}
                         </p>
 
                         <div className="bg-[#1A202C]/80 backdrop-blur-md rounded-3xl p-8 mb-8 border border-white/10 relative overflow-hidden shadow-2xl">
@@ -1127,51 +1236,132 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                                 Ir para Agudos
                             </button>
                         ) : (
-                            <button
-                                onClick={calculateClassification}
-                                disabled={!detectedHighMidi}
-                                className="w-full py-4 rounded-xl bg-[#FF00BC] text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#d6009e] transition-colors"
-                            >
-                                Finalizar
-                            </button>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => { setRangeStep('low'); setDetectedLowMidi(null); setRangeAnalysisStatus('Reiniciando...'); }}
+                                    className="px-4 py-4 rounded-2xl bg-white/5 hover:bg-white/10 text-white font-bold"
+                                >
+                                    <span className="material-symbols-rounded">undo</span>
+                                </button>
+                                <button
+                                    onClick={() => { if (detectedHighMidi) { stopMic(); setRangeStep('questionnaire'); } }}
+                                    disabled={!detectedHighMidi}
+                                    className="flex-1 py-4 rounded-2xl bg-[#FF00BC] text-white font-bold disabled:opacity-50 disabled:bg-gray-700 transition-all font-mono"
+                                >
+                                    Confirmar
+                                </button>
+                            </div>
                         )}
+                        <p className="text-[10px] text-gray-500 mt-6 max-w-xs mx-auto">
+                            Mantenha a nota por alguns segundos para estabilizar a detecção.
+                        </p>
                     </div>
                 )}
 
-                {/* STEP 4: RESULT */}
-                {rangeStep === 'result' && (
-                    <div className="text-center w-full max-w-sm animate-in zoom-in duration-500 relative z-10">
-                        <div className="bg-gradient-to-b from-[#1A202C] to-[#151A23] rounded-3xl p-1 border border-white/10 shadow-2xl">
-                            <div className="bg-[#101622] rounded-[22px] p-8 overflow-hidden relative">
-                                <div className="absolute top-0 right-0 w-40 h-40 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+                {/* STEP 4: QUESTIONNAIRE (Tessitura) */}
+                {rangeStep === 'questionnaire' && (
+                    <div className="text-center w-full max-w-sm animate-in slide-in-from-right relative z-10 pb-10">
+                        <h2 className="text-xl font-bold text-white mb-2">Para finalizar...</h2>
+                        <p className="text-gray-400 text-xs mb-6">Isso refina o resultado além da extensão pura.</p>
 
-                                <p className="text-gray-400 text-xs uppercase tracking-wider mb-2">Sua Classificação</p>
-                                <h2 className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400 mb-6">{vocalType}</h2>
-
-                                <div className="bg-white/5 rounded-xl p-4 mb-6 border border-white/5 flex flex-col items-center">
-                                    <span className="text-[10px] text-gray-500 uppercase font-bold mb-1">Extensão Completa</span>
-                                    <p className="text-2xl font-mono font-bold text-[#0081FF]">{userVocalRange}</p>
-                                </div>
-
-                                <p className="text-xs text-gray-400 leading-relaxed mb-8">
-                                    Resultado salvo no seu perfil. Use essa informação para escolher o repertório adequado na biblioteca.
-                                </p>
-
-                                <div className="space-y-3">
-                                    <button
-                                        onClick={resetTest}
-                                        className="w-full py-3 rounded-xl bg-white/5 text-white border border-white/10 hover:bg-white/10 font-bold transition-colors"
-                                    >
-                                        Refazer Teste
-                                    </button>
-                                    <button
-                                        onClick={() => setActiveView('menu')}
-                                        className="w-full py-3 rounded-xl text-gray-400 hover:text-white transition-colors text-xs"
-                                    >
-                                        Voltar ao Menu
-                                    </button>
+                        <div className="space-y-6 text-left">
+                            <div>
+                                <label className="text-xs font-bold text-gray-400 uppercase mb-2 block">Onde sua voz é mais CONFORTÁVEL?</label>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {['grave', 'medio', 'agudo'].map((zone) => (
+                                        <button
+                                            key={zone}
+                                            onClick={() => setComfortZone(zone as any)}
+                                            className={`py-3 rounded-lg border text-sm font-bold capitalize ${comfortZone === zone ? 'bg-[#0081FF] border-[#0081FF] text-white' : 'bg-[#1A202C] border-white/10 text-gray-400'}`}
+                                        >
+                                            {zone}
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
+
+                            <div>
+                                <label className="text-xs font-bold text-gray-400 uppercase mb-2 block">Onde você tem mais DIFICULDADE (Quebras/Tensão)?</label>
+                                <div className="grid grid-cols-3 gap-2">
+                                    {['grave', 'medio', 'agudo'].map((zone) => (
+                                        <button
+                                            key={zone}
+                                            onClick={() => setDifficultyZone(zone as any)}
+                                            className={`py-3 rounded-lg border text-sm font-bold capitalize ${difficultyZone === zone ? 'bg-red-500/20 border-red-500 text-red-500' : 'bg-[#1A202C] border-white/10 text-gray-400'}`}
+                                        >
+                                            {zone}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <button
+                            onClick={calculateClassification}
+                            className="w-full mt-8 py-4 rounded-2xl bg-white text-black font-bold hover:bg-gray-200 transition-colors shadow-lg"
+                        >
+                            Ver Resultado
+                        </button>
+                    </div>
+                )}
+
+                {/* STEP 5: RESULT */}
+                {rangeStep === 'result' && (
+                    <div className="flex-1 w-full max-w-md animate-in zoom-in-50 duration-500 flex flex-col pb-8">
+                        {/* Result Card */}
+                        <div className="flex-1 bg-gradient-to-b from-[#1A202C] to-[#151A23] rounded-3xl border border-white/10 p-8 shadow-2xl relative overflow-hidden flex flex-col items-center justify-center mb-6">
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+
+                            <p className="text-gray-500 text-xs font-bold uppercase tracking-widest mb-4">Classificação Sugerida</p>
+
+                            <h2 className="text-4xl font-black text-white mb-2 bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400 drop-shadow-sm">
+                                {vocalType}
+                            </h2>
+                            <div className="h-1 w-16 bg-[#0081FF] rounded-full mb-6"></div>
+
+                            <div className="w-full bg-[#101622] rounded-xl p-4 border border-white/5 mb-6">
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="text-xs text-gray-500 font-bold uppercase">Extensão Detectada</span>
+                                    <span className="text-xs text-[#0081FF] font-mono">{userVocalRange}</span>
+                                </div>
+                                <div className="h-2 bg-gray-800 rounded-full overflow-hidden relative">
+                                    {/* Visual Bar representation - simplified */}
+                                    <div className="absolute left-[10%] right-[10%] top-0 bottom-0 bg-white/10"></div>
+                                    <div className="absolute left-[40%] right-[40%] top-0 bottom-0 bg-[#0081FF] shadow-[0_0_10px_#0081FF]"></div>
+                                </div>
+                                <div className="flex justify-between mt-1 text-[10px] text-gray-600">
+                                    <span>Grave (Conforto)</span>
+                                    <span>Agudo (Limite)</span>
+                                </div>
+                            </div>
+
+                            {/* Educational Info */}
+                            <div className="bg-[#0081FF]/10 rounded-lg p-4 border border-[#0081FF]/20 text-left w-full">
+                                <h4 className="text-[#0081FF] text-xs font-bold mb-1 flex items-center gap-1">
+                                    <span className="material-symbols-rounded text-sm">info</span>
+                                    Entenda seu resultado
+                                </h4>
+                                <p className="text-[10px] text-gray-300 leading-relaxed">
+                                    Sua classificação é baseada na tessitura (onde sua voz brilha) e não apenas na nota mais aguda.
+                                    <strong> Extensão</strong> é tudo que você canta; <strong>Tessitura</strong> é onde você canta com qualidade.
+                                    Não se prenda a rótulos: sua voz pode mudar com o treino!
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex gap-3">
+                            <button
+                                onClick={resetTest}
+                                className="flex-1 py-4 rounded-xl bg-white/5 text-white font-bold hover:bg-white/10 transition-colors border border-white/5"
+                            >
+                                Refazer Teste
+                            </button>
+                            <button
+                                onClick={() => { stopMic(); setActiveView('menu'); }}
+                                className="flex-1 py-4 rounded-xl bg-white text-black font-bold hover:bg-gray-200 transition-colors shadow-lg"
+                            >
+                                Concluir
+                            </button>
                         </div>
                     </div>
                 )}

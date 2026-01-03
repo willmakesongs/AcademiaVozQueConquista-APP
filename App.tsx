@@ -14,11 +14,12 @@ import { TwisterScreen } from './screens/TwisterScreen';
 import { BreathingScreen } from './screens/BreathingScreen';
 import { ChatScreen } from './screens/ChatScreen'; // Importação nova
 import { BlockedScreen } from './screens/BlockedScreen';
+import { VisitorConversionScreen } from './screens/VisitorConversionScreen';
 import { BottomNav } from './components/BottomNav';
 import { VOCALIZES } from './constants';
 
 const AppContent = () => {
-  const { user, loading, signOut } = useAuth();
+  const { user, loading, signOut, visitorTimeRemaining } = useAuth();
   const [screen, setScreen] = useState<Screen>(Screen.LOGIN);
   const [previousScreen, setPreviousScreen] = useState<Screen>(Screen.LIBRARY);
   const [currentVocalize, setCurrentVocalize] = useState<Vocalize | null>(null);
@@ -26,6 +27,9 @@ const AppContent = () => {
   const [profileResetKey, setProfileResetKey] = useState(0);
   const [dashboardResetKey, setDashboardResetKey] = useState(0);
   const [dashboardInitialTab, setDashboardInitialTab] = useState<'dashboard' | 'students'>('students');
+
+  // Visitor Warning State
+  const [showVisitorWarning, setShowVisitorWarning] = useState(false);
 
   // Redirect based on auth state
   useEffect(() => {
@@ -41,6 +45,18 @@ const AppContent = () => {
       }
     }
   }, [user, loading, screen]);
+
+  // Visitor Warning Logic (2 min warning)
+  useEffect(() => {
+    if (visitorTimeRemaining !== null) {
+      // Show warning when time is between 1m50s and 2m
+      if (visitorTimeRemaining <= 120000 && visitorTimeRemaining > 110000 && !showVisitorWarning) {
+        setShowVisitorWarning(true);
+        // Auto hide after 5 seconds
+        setTimeout(() => setShowVisitorWarning(false), 5000);
+      }
+    }
+  }, [visitorTimeRemaining]);
 
   if (loading) return <div className="min-h-screen bg-[#101622] flex items-center justify-center text-white">Carregando Vocalizes...</div>;
 
@@ -118,6 +134,16 @@ const AppContent = () => {
   const renderScreen = () => {
     // Force Login if no user (and not currently on login screen)
     if (!user && screen !== Screen.LOGIN) return <LoginScreen />;
+
+    // Visitor Expiration Check
+    if (visitorTimeRemaining === 0 && user?.id === 'guest') {
+      return (
+        <VisitorConversionScreen
+          onJoin={() => window.open('https://vozqueconquista.com.br', '_blank')}
+          onLearnMore={() => window.open('https://vozqueconquista.com.br/sobre', '_blank')}
+        />
+      );
+    }
 
     // Bloqueio Global por Inadimplência
     if (user?.status === 'blocked' && user.role === 'student' && screen !== Screen.LOGIN) {
@@ -214,10 +240,26 @@ const AppContent = () => {
 
   return (
     <div className="font-sans antialiased text-white bg-[#101622] min-h-screen max-w-md mx-auto relative shadow-2xl overflow-hidden">
+
+      {/* Visitor Warning Toast */}
+      {showVisitorWarning && (
+        <div className="absolute top-6 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-top-4 fade-in duration-300 w-[90%] max-w-sm pointer-events-none">
+          <div className="bg-[#151A23]/90 backdrop-blur-md border border-yellow-500/20 rounded-xl p-4 shadow-2xl flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center shrink-0">
+              <span className="material-symbols-rounded text-yellow-500">timer</span>
+            </div>
+            <div>
+              <h4 className="font-bold text-white text-sm">Faltam 2 minutos</h4>
+              <p className="text-gray-400 text-xs">Para o fim da sua experiência gratuita.</p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {renderScreen()}
 
       {/* Menu rodapé presente em quase todas as telas para navegação rápida */}
-      {user && screen !== Screen.LOGIN && screen !== Screen.CALENDAR && user.status !== 'blocked' && (
+      {user && screen !== Screen.LOGIN && screen !== Screen.CALENDAR && user.status !== 'blocked' && !(user.id === 'guest' && visitorTimeRemaining === 0) && (
         <BottomNav
           currentScreen={screen}
           onNavigate={handleBottomNav}
