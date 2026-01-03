@@ -7,7 +7,7 @@ export enum Screen {
   PLAYER = 'PLAYER',
   TWISTERS = 'TWISTERS',
   BREATHING = 'BREATHING',
-  CHAT = 'CHAT', // Nova tela da IA
+  CHAT = 'CHAT',
   ROUTINE = 'ROUTINE',
   PROFILE = 'PROFILE',
   CALENDAR = 'CALENDAR',
@@ -24,21 +24,21 @@ export interface Vocalize {
   bpm: number;
   key: string;
   description: string;
-  audioUrl?: string; // URL padrão (Geralmente agudo/feminino)
-  audioUrlMale?: string; // URL opcional para vozes graves/masculinas
-  exampleUrl?: string; // URL para exemplo/demonstração
+  audioUrl?: string;
+  audioUrlMale?: string;
+  exampleUrl?: string;
 }
 
 export interface TwisterExercise {
   id: string;
-  module: string; // 'A', 'B', 'C', 'D'
+  module: string;
   moduleTitle: string;
   focus: string;
   title: string;
   text: string;
   difficulty: 'Nível 1' | 'Nível 2' | 'Desafio';
   instructions: string;
-  targetBpm?: number; // Novo campo
+  targetBpm?: number;
 }
 
 export interface Module {
@@ -51,7 +51,7 @@ export interface Module {
     id: string;
     title: string;
     description: string;
-    content?: string; // Conteúdo HTML da aula teórica
+    content?: string;
   }[];
 }
 
@@ -63,7 +63,7 @@ export interface User {
   name: string;
   role: UserRole;
   avatarUrl: string;
-  status: 'active' | 'overdue' | 'blocked'; // Refatorado para o novo sistema
+  status: 'active' | 'overdue' | 'blocked';
   plan?: string;
   nextDueDate?: string;
   amount?: string;
@@ -76,7 +76,7 @@ export interface StudentSummary {
   level: string;
   lastPractice: string;
   progress: number;
-  status: 'active' | 'overdue' | 'blocked'; // Unificado com User
+  status: 'active' | 'overdue' | 'blocked';
   phone: string;
   age: string;
   paymentDay?: string;
@@ -84,7 +84,8 @@ export interface StudentSummary {
   modality?: 'Online' | 'Presencial';
   scheduleDay?: string;
   scheduleTime?: string;
-  amount?: number; // Para cálculo financeiro no Dashboard
+  amount?: number;
+  instrument?: string; // e.g., "Canto", "Piano"
 }
 
 export interface Appointment {
@@ -92,9 +93,11 @@ export interface Appointment {
   studentId: string;
   studentName: string;
   avatarUrl: string;
-  time: string;
-  type: string;
+  time: string; // e.g., "09:00"
+  endTime?: string; // e.g., "10:00"
+  type: string; // e.g., "Canto - Avançado"
   status: 'confirmed' | 'pending' | 'finished';
+  paymentStatus: 'active' | 'overdue'; // From mockup
 }
 
 export interface Task {
@@ -104,5 +107,5 @@ export interface Task {
   duration: string;
   status: 'pending' | 'completed' | 'locked';
   category: string;
-  date: string; // Dia do mês (ex: '14') para linkar com o calendário
+  date: string;
 }

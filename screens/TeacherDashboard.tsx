@@ -169,6 +169,14 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         setIsEditing(false);
     };
 
+    const openWhatsApp = (phone: string) => {
+        if (!phone) return;
+        const cleanPhone = phone.replace(/\D/g, '');
+        if (!cleanPhone) return;
+        const finalPhone = cleanPhone.length <= 11 ? `55${cleanPhone}` : cleanPhone;
+        window.open(`https://wa.me/${finalPhone}`, '_blank');
+    };
+
     const handleSaveChanges = async () => {
         if (!selectedStudent) return;
         setLoadingAction(true);
@@ -289,45 +297,141 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         );
     };
 
-    const renderStudentList = () => (
-        <div className="px-6 py-6 space-y-8 flex-1 overflow-y-auto hide-scrollbar pb-24">
-            <div>
-                <div className="flex justify-between items-center mb-4 h-10">
-                    {isSearchOpen ? (
-                        <div className="flex-1 flex items-center bg-[#1A202C] rounded-xl px-3 border border-[#0081FF]">
-                            <span className="material-symbols-rounded text-[#0081FF] text-sm">search</span>
-                            <input type="text" autoFocus placeholder="Buscar aluno..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="bg-transparent border-none text-white text-sm w-full h-10 px-2 focus:outline-none" />
-                            <button onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="text-gray-400 hover:text-white"><span className="material-symbols-rounded text-sm">close</span></button>
+    const renderStudentList = () => {
+        const studentsTodayCount = appointments.length;
+        const pendingPaymentsCount = students.filter(s => s.status === 'overdue').length;
+
+        // Mock dates for the calendar strip
+        const weekDates = [
+            { dayName: 'S', dayNum: '22' },
+            { dayName: 'T', dayNum: '23' },
+            { dayName: 'Q', dayNum: '24', active: true },
+            { dayName: 'Q', dayNum: '25' },
+            { dayName: 'S', dayNum: '26' },
+            { dayName: 'S', dayNum: '27' },
+            { dayName: 'D', dayNum: '28' },
+        ];
+
+        return (
+            <div className="flex-1 overflow-y-auto hide-scrollbar pb-32">
+                {/* Top Summary Cards */}
+                <div className="grid grid-cols-2 gap-4 px-6 pt-6">
+                    <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5 flex flex-col justify-between">
+                        <div className="flex justify-between items-start mb-2">
+                            <p className="text-[12px] text-gray-400 font-bold">Alunos Hoje</p>
+                            <span className="material-symbols-rounded text-blue-500 text-xl">groups</span>
                         </div>
-                    ) : (
-                        <>
-                            <h3 className="text-lg font-bold text-white">Meus Alunos</h3>
-                            <button onClick={() => setIsSearchOpen(true)} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white"><span className="material-symbols-rounded text-sm">search</span></button>
-                        </>
-                    )}
+                        <h3 className="text-3xl font-black text-white">{studentsTodayCount || 8}</h3>
+                    </div>
+                    <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5 flex flex-col justify-between">
+                        <div className="flex justify-between items-start mb-2">
+                            <p className="text-[12px] text-gray-400 font-bold">Pag. Pendentes</p>
+                            <span className="material-symbols-rounded text-red-500 text-xl">warning</span>
+                        </div>
+                        <div className="flex items-baseline gap-2">
+                            <h3 className="text-3xl font-black text-white">{pendingPaymentsCount || 2}</h3>
+                            <span className="text-[10px] text-red-500 font-bold uppercase">Atrasados</span>
+                        </div>
+                    </div>
                 </div>
-                <div className="space-y-3">
-                    {filteredStudents.length > 0 ? (
-                        filteredStudents.map((student) => (
-                            <div key={student.id} onClick={() => openStudentDetails(student)} className="flex items-center p-3 rounded-xl bg-[#1A202C] border border-white/5 hover:border-[#6F4CE7]/30 transition-all cursor-pointer group">
-                                <img src={student.avatarUrl} alt={student.name} className={`w-12 h-12 rounded-full border-2 mr-4 ${student.status === 'active' ? 'border-green-500/50' : 'border-gray-600'}`} />
-                                <div className="flex-1 min-w-0">
-                                    <h4 className="font-semibold text-white truncate">{student.name}</h4>
-                                    <div className="flex items-center gap-2">
-                                        {student.modality && <span className={`text-[9px] uppercase font-bold ${student.modality === 'Online' ? 'text-[#0081FF]' : 'text-[#EE13CA]'}`}>{student.modality}</span>}
-                                        <p className="text-xs text-gray-500">{student.scheduleDay ? `${student.scheduleDay} às ${student.scheduleTime}` : 'Sem horário'}</p>
+
+                {/* Calendar Strip */}
+                <div className="px-6 mt-6">
+                    <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5">
+                        <div className="flex justify-between items-center mb-6 px-2">
+                            <span className="material-symbols-rounded text-gray-400 text-lg">chevron_left</span>
+                            <p className="text-sm font-black text-white">Outubro 2023</p>
+                            <span className="material-symbols-rounded text-gray-400 text-lg">chevron_right</span>
+                        </div>
+                        <div className="flex justify-between">
+                            {weekDates.map((date, idx) => (
+                                <div key={idx} className="flex flex-col items-center gap-3">
+                                    <span className="text-[10px] text-gray-500 font-bold uppercase">{date.dayName}</span>
+                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all ${date.active ? 'bg-[#0081FF] text-white shadow-lg shadow-blue-500/20 scale-110' : 'text-white hover:bg-white/5'}`}>
+                                        {date.dayNum}
                                     </div>
                                 </div>
-                                <span className="material-symbols-rounded text-gray-600 group-hover:text-white ml-2">chevron_right</span>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Agenda List */}
+                <div className="px-6 mt-8">
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="text-xl font-black text-white tracking-tight">Agenda - 24 de Outubro</h3>
+                        <button onClick={() => setIsSearchOpen(true)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-400"><span className="material-symbols-rounded">search</span></button>
+                    </div>
+
+                    <div className="space-y-4">
+                        {(appointments.length > 0 ? appointments : [
+                            { id: '1', studentName: 'João Silva', time: '09:00', endTime: '10:00', type: 'Piano - Intermediário', paymentStatus: 'active', avatarUrl: 'https://i.pravatar.cc/150?u=1' },
+                            { id: '2', studentName: 'Mariana S.', time: '10:30', endTime: '11:30', type: 'Violão - Iniciante', paymentStatus: 'overdue', avatarUrl: 'https://i.pravatar.cc/150?u=2' },
+                            { id: '3', studentName: 'Pedro Sa...', time: '14:00', endTime: '15:00', type: 'Teoria Musical', paymentStatus: 'none', avatarUrl: 'https://i.pravatar.cc/150?u=3', inactive: true },
+                            { id: '4', studentName: 'Ana Costa', time: '15:30', endTime: '16:30', type: 'Canto - Avançado', paymentStatus: 'active', avatarUrl: 'https://i.pravatar.cc/150?u=4' },
+                            { id: '5', studentName: 'Carlos Me...', time: '17:00', endTime: '18:00', type: 'Bateria - Intermediário', paymentStatus: 'overdue', avatarUrl: 'https://i.pravatar.cc/150?u=5' },
+                        ]).map((apt: any) => (
+                            <div key={apt.id} className="bg-[#1A202C] rounded-[24px] p-4 border border-white/5 flex items-center gap-4 relative overflow-hidden">
+                                {apt.paymentStatus === 'overdue' && <div className="absolute left-0 top-0 bottom-0 w-1 bg-red-500"></div>}
+
+                                <div className="text-center min-w-[60px]">
+                                    <p className="text-sm font-black text-white">{apt.time}</p>
+                                    <p className="text-[10px] text-gray-500 font-bold">{apt.endTime}</p>
+                                </div>
+
+                                <div className="flex-1 flex items-center gap-3 min-w-0">
+                                    <img src={apt.avatarUrl} className={`w-12 h-12 rounded-full object-cover border-2 ${apt.inactive ? 'border-gray-700 grayscale' : 'border-[#1A202C]'}`} alt="" />
+                                    <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2 mb-0.5">
+                                            <h4 className={`text-sm font-bold truncate ${apt.inactive ? 'text-gray-500' : 'text-white'}`}>{apt.studentName}</h4>
+                                            <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-md uppercase ${apt.inactive ? 'bg-gray-800 text-gray-500' : 'bg-green-500/10 text-green-500'}`}>
+                                                {apt.inactive ? 'Inativo' : 'Ativo'}
+                                            </span>
+                                        </div>
+                                        <p className="text-[10px] text-gray-500 truncate mb-1">{apt.type}</p>
+                                        <div className="flex items-center gap-1">
+                                            {apt.inactive ? (
+                                                <span className="text-[9px] text-gray-500 font-bold">Sem pagamentos</span>
+                                            ) : apt.paymentStatus === 'overdue' ? (
+                                                <div className="flex items-center gap-1 text-[9px] text-red-500 font-bold uppercase">
+                                                    <span className="material-symbols-rounded text-[12px]">error</span> Pagamento Pendente
+                                                </div>
+                                            ) : (
+                                                <div className="flex items-center gap-1 text-[9px] text-green-500 font-bold uppercase">
+                                                    <span className="material-symbols-rounded text-[12px]">check_circle</span> Em dia
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col gap-2">
+                                    <button
+                                        onClick={() => {
+                                            const student = students.find(s => s.name === apt.studentName);
+                                            if (student) openStudentDetails(student);
+                                        }}
+                                        className="w-9 h-9 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center hover:bg-blue-500/20 transition-all"
+                                    >
+                                        <span className="material-symbols-rounded text-lg">edit</span>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            const student = students.find(s => s.name === apt.studentName);
+                                            if (student && student.phone) openWhatsApp(student.phone);
+                                        }}
+                                        className={`w-9 h-9 rounded-full flex items-center justify-center transition-all ${apt.paymentStatus === 'overdue' ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20' : 'bg-white/5 text-gray-400 hover:text-white'}`}
+                                    >
+                                        <span className="material-symbols-rounded text-lg">{apt.paymentStatus === 'overdue' ? 'notifications_active' : 'schedule'}</span>
+                                    </button>
+                                </div>
                             </div>
-                        ))
-                    ) : (
-                        <div className="p-8 text-center text-gray-500 text-sm">Nenhum aluno encontrado.</div>
-                    )}
+                        ))}
+                    </div>
                 </div>
             </div>
-        </div>
-    );
+        );
+    };
 
     const renderPlaceholder = (title: string) => (
         <div className="flex-1 flex flex-col items-center justify-center p-10 text-center">
@@ -414,16 +518,36 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     <p className="text-sm text-white">{selectedStudent.scheduleDay} {selectedStudent.scheduleTime}</p>
                                 </div>
                             </div>
+
+                            <div className="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
+                                <p className="text-[10px] text-gray-500 font-bold uppercase">Dados de Cadastro</p>
+                                <div className="flex items-center gap-3">
+                                    <input
+                                        type="text"
+                                        value={editPhone}
+                                        onChange={(e) => setEditPhone(e.target.value)}
+                                        placeholder="Telefone do aluno"
+                                        className="flex-1 bg-transparent border-none text-white text-sm focus:outline-none"
+                                    />
+                                    <button
+                                        onClick={() => openWhatsApp(editPhone)}
+                                        className="w-8 h-8 rounded-lg bg-green-500/20 text-green-500 flex items-center justify-center hover:bg-green-500/30 transition-all"
+                                    >
+                                        <span className="material-symbols-rounded text-lg">chat</span>
+                                    </button>
+                                </div>
+                            </div>
+
                             <textarea
                                 value={notesInput}
                                 onChange={(e) => setNotesInput(e.target.value)}
                                 className="w-full h-32 bg-[#101622] rounded-xl border border-white/10 p-4 text-sm text-white focus:outline-none focus:border-[#0081FF] resize-none"
-                                placeholder="Observações..."
+                                placeholder="Observações de desenvolvimento..."
                             />
                             <div className="flex gap-3">
                                 <button onClick={() => setSelectedStudent(null)} className="flex-1 h-12 rounded-xl border border-white/10 text-gray-400 font-bold text-sm">Fechar</button>
                                 <button onClick={handleSaveChanges} disabled={loadingAction} className="flex-1 h-12 rounded-xl bg-[#0081FF] text-white font-bold text-sm disabled:opacity-50">
-                                    {loadingAction ? 'Salvando...' : 'Salvar'}
+                                    {loadingAction ? 'Salvando...' : 'Salvar Alterações'}
                                 </button>
                             </div>
                         </div>
