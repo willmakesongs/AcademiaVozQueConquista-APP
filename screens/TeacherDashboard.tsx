@@ -289,7 +289,6 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                         </div>
                         <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Recebido (Mês)</p>
                         <h3 className="text-xl font-black text-white">R$ {totalReceived.toLocaleString('pt-BR')}</h3>
-                        <p className="text-[10px] text-green-400 font-bold mt-1">+12% vs mês anterior</p>
                     </div>
                     <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5">
                         <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-400 mb-3">
@@ -297,36 +296,10 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                         </div>
                         <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Pendente</p>
                         <h3 className="text-xl font-black text-white">R$ {totalPending.toLocaleString('pt-BR')}</h3>
-                        <p className="text-[10px] text-orange-400 font-bold mt-1">+5% inadimplência</p>
                     </div>
                 </div>
 
-                <div className="px-6 mt-6">
-                    <div className="bg-[#1A202C] rounded-[32px] p-6 border border-white/5">
-                        <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-1">Tendência de Receita</p>
-                        <div className="flex items-center gap-2 mb-4">
-                            <h3 className="text-2xl font-black text-white">R$ 152k</h3>
-                            <span className="bg-green-500/10 text-green-400 text-[10px] font-bold px-2 py-0.5 rounded-full">+8.5%</span>
-                        </div>
-                        <div className="h-32 w-full relative">
-                            <svg className="w-full h-full overflow-visible" preserveAspectRatio="none">
-                                <defs>
-                                    <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="0%" stopColor="#0081FF" stopOpacity="0.2" />
-                                        <stop offset="100%" stopColor="#0081FF" stopOpacity="0" />
-                                    </linearGradient>
-                                </defs>
-                                <path d="M0 80 Q 40 20, 80 50 T 160 40 T 240 60 T 320 30 T 400 50" fill="none" stroke="#0081FF" strokeWidth="3" strokeLinecap="round" />
-                                <path d="M0 80 Q 40 20, 80 50 T 160 40 T 240 60 T 320 30 T 400 50 L 400 120 L 0 120 Z" fill="url(#chartGradient)" />
-                            </svg>
-                        </div>
-                        <div className="flex justify-between mt-4">
-                            {['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN'].map(m => (
-                                <span key={m} className={`text-[9px] font-bold ${m === 'JUN' ? 'text-[#0081FF]' : 'text-gray-300'}`}>{m}</span>
-                            ))}
-                        </div>
-                    </div>
-                </div>
+
 
                 <div className="px-6 mt-8">
                     <div className="flex justify-between items-center mb-4">
@@ -383,7 +356,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                             <p className="text-[12px] text-gray-400 font-bold">Alunos Hoje</p>
                             <span className="material-symbols-rounded text-blue-500 text-xl">groups</span>
                         </div>
-                        <h3 className="text-3xl font-black text-white">{studentsTodayCount || 8}</h3>
+                        <h3 className="text-3xl font-black text-white">{studentsTodayCount}</h3>
                     </div>
                     <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5 flex flex-col justify-between">
                         <div className="flex justify-between items-start mb-2">
@@ -391,7 +364,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                             <span className="material-symbols-rounded text-red-500 text-xl">warning</span>
                         </div>
                         <div className="flex items-baseline gap-2">
-                            <h3 className="text-3xl font-black text-white">{pendingPaymentsCount || 2}</h3>
+                            <h3 className="text-3xl font-black text-white">{pendingPaymentsCount}</h3>
                             <span className="text-[10px] text-red-500 font-bold uppercase">Atrasados</span>
                         </div>
                     </div>
@@ -402,7 +375,9 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5">
                         <div className="flex justify-between items-center mb-6 px-2">
                             <span className="material-symbols-rounded text-gray-400 text-lg">chevron_left</span>
-                            <p className="text-sm font-black text-white">Outubro 2023</p>
+                            <p className="text-sm font-black text-white">
+                                {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }).toUpperCase()}
+                            </p>
                             <span className="material-symbols-rounded text-gray-400 text-lg">chevron_right</span>
                         </div>
                         <div className="flex justify-between">
@@ -421,7 +396,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 {/* Agenda List */}
                 <div className="px-6 mt-8">
                     <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-xl font-black text-white tracking-tight">Agenda - 24 de Outubro</h3>
+                        <h3 className="text-xl font-black text-white tracking-tight">Agenda - {new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })}</h3>
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={handleDownloadTXT}
