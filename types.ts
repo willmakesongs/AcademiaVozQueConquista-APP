@@ -13,7 +13,8 @@ export enum Screen {
   CALENDAR = 'CALENDAR',
   ADMIN_DASHBOARD = 'ADMIN_DASHBOARD',
   ADMIN_SETTINGS = 'ADMIN_SETTINGS',
-  CONTRACT = 'CONTRACT'
+  CONTRACT = 'CONTRACT',
+  ONBOARDING = 'ONBOARDING'
 }
 
 export interface Vocalize {
@@ -69,6 +70,7 @@ export interface User {
   plan?: string;
   nextDueDate?: string;
   amount?: string;
+  onboardingCompleted?: boolean;
 }
 
 export interface StudentSummary {

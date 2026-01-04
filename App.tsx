@@ -4,6 +4,7 @@ import { Screen, Vocalize } from './types';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { PlaybackProvider, usePlayback } from './contexts/PlaybackContext';
 import { LoginScreen } from './screens/LoginScreen';
+import { OnboardingScreen } from './screens/OnboardingScreen';
 import { StudentDashboard } from './screens/StudentDashboard';
 import { TeacherDashboard } from './screens/TeacherDashboard';
 import { PlayerScreen } from './screens/PlayerScreen';
@@ -38,9 +39,13 @@ const AppContent = () => {
     if (!loading) {
       if (user) {
         if (screen === Screen.LOGIN) {
-          const initialScreen = user.role === 'student' ? Screen.STUDENT_DASHBOARD : Screen.TEACHER_DASHBOARD;
-          setScreen(initialScreen);
-          setPreviousScreen(initialScreen);
+          if (user.role === 'student' && !user.onboardingCompleted) {
+            setScreen(Screen.ONBOARDING);
+          } else {
+            const initialScreen = user.role === 'student' ? Screen.STUDENT_DASHBOARD : Screen.TEACHER_DASHBOARD;
+            setScreen(initialScreen);
+            setPreviousScreen(initialScreen);
+          }
         }
       } else {
         setScreen(Screen.LOGIN);
@@ -241,6 +246,8 @@ const AppContent = () => {
             onBack={() => setScreen(previousScreen)}
           />
         );
+      case Screen.ONBOARDING:
+        return <OnboardingScreen onComplete={() => setScreen(Screen.STUDENT_DASHBOARD)} />;
       case Screen.LIBRARY:
         return (
           <LibraryScreen

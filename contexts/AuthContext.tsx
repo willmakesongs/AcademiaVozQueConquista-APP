@@ -154,16 +154,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (data) {
-        setUser({
+        const userData: User = {
           id: data.id,
           name: data.name,
-          role: data.role,
-          avatarUrl: data.avatar_url || 'https://picsum.photos/200',
-          status: data.status || 'trial',
+          role: data.role as 'student' | 'teacher',
+          avatarUrl: data.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name)}&background=random&color=fff`,
+          status: (data.status as any) || 'active',
+          onboardingCompleted: data.onboarding_completed,
           plan: data.plan || 'Plano Pro',
           nextDueDate: data.next_due_date || '2026-02-02',
           amount: data.amount || '97,00'
-        });
+        };
+        setUser(userData);
 
         // Initialize trial start time if not set
         if (data.status === 'trial' && !localStorage.getItem('visitor_start_time')) {
