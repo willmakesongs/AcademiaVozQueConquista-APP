@@ -16,6 +16,7 @@ interface PlaybackContextType {
     duration: number;
     seek: (time: number) => void;
     setPitch: (pitch: number) => void;
+    pitch: number;
     activeUrl: string | null;
     isOfflineMode: boolean;
     setOfflineMode: (enabled: boolean) => void;
@@ -362,6 +363,7 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             duration,
             seek,
             setPitch,
+            pitch: currentPitchRef.current,
             activeUrl,
             isOfflineMode,
             setOfflineMode,

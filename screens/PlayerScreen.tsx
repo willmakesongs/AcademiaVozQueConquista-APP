@@ -20,7 +20,8 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [activeAudioUrl, setActiveAudioUrl] = useState<string | undefined>(vocalize?.audioUrl);
-  const [pitch, setPitch] = useState(0);
+  const { pitch: globalPitch } = usePlayback();
+  const [pitch, setPitch] = useState(globalPitch);
 
   // Estados para animação das barras
   const [barHeights, setBarHeights] = useState<number[]>([70, 35, 25, 85, 45, 25]);
@@ -92,6 +93,13 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     setPlaybackPitch(pitch);
   }, [pitch, setPlaybackPitch]);
 
+  // Sincroniza visualizador se já estiver tocando ao abrir a tela
+  useEffect(() => {
+    if (isPlaying) {
+      startVisualizer();
+    }
+  }, [isPlaying]);
+
   const loadAudio = async (url: string) => {
     stopAudio();
     if (autoPlayRef.current) {
@@ -114,11 +122,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     stopAudio();
   };
 
-  const startPlayback = () => {
-    if (!activeAudioUrl) return;
-    play(activeAudioUrl, { pitch });
-
-    // Visualizer Loop
+  const startVisualizer = () => {
     if (animationIntervalRef.current) clearInterval(animationIntervalRef.current);
     animationIntervalRef.current = window.setInterval(() => {
       setBarHeights(prev => prev.map((h, i) => {
@@ -127,6 +131,12 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
         return Math.max(15, Math.min(140, base * randomScale));
       }));
     }, 80);
+  };
+
+  const startPlayback = () => {
+    if (!activeAudioUrl) return;
+    play(activeAudioUrl, { pitch });
+    startVisualizer();
   };
 
   const togglePlay = async () => {

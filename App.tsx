@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Screen, Vocalize } from './types';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { PlaybackProvider } from './contexts/PlaybackContext';
+import { PlaybackProvider, usePlayback } from './contexts/PlaybackContext';
 import { LoginScreen } from './screens/LoginScreen';
 import { StudentDashboard } from './screens/StudentDashboard';
 import { TeacherDashboard } from './screens/TeacherDashboard';
@@ -21,6 +21,7 @@ import { VOCALIZES } from './constants';
 
 const AppContent = () => {
   const { user, loading, signOut, visitorTimeRemaining } = useAuth();
+  const { isPlaying, activeUrl } = usePlayback();
   const [screen, setScreen] = useState<Screen>(Screen.LOGIN);
   const [previousScreen, setPreviousScreen] = useState<Screen>(Screen.LIBRARY);
   const [currentVocalize, setCurrentVocalize] = useState<Vocalize | null>(null);
@@ -114,7 +115,19 @@ const AppContent = () => {
   // Intercepta a navegação do rodapé
   const handleBottomNav = (targetScreen: Screen) => {
     if (targetScreen === Screen.LIBRARY) {
-      // Incrementa a chave para forçar remontagem do componente LibraryScreen
+      // SMART NAVIGATION: Se estiver tocando áudio, volta para o Player
+      if (isPlaying) {
+        // Tenta sincronizar o vocalize atual caso ele tenha sido mudado externamente (ex: lock screen)
+        if (activeUrl) {
+          const activeVocalize = VOCALIZES.find(v => v.audioUrl === activeUrl || v.audioUrlMale === activeUrl || v.exampleUrl === activeUrl);
+          if (activeVocalize) {
+            setCurrentVocalize(activeVocalize);
+          }
+        }
+        setScreen(Screen.PLAYER);
+        return;
+      }
+      // Se não estiver tocando, reseta e vai para a biblioteca
       setLibraryResetKey(prev => prev + 1);
     }
 
