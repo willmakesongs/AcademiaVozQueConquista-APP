@@ -533,7 +533,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                             onClick={() => fileInputRef.current?.click()}
                             className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-blue-600 border-2 border-[#151A23] flex items-center justify-center text-white shadow-lg active:scale-95 transition-transform"
                         >
-                            <span className="material-symbols-rounded text-sm">photo_camera</span>
+                            <span className="material-symbols-rounded text-sm">edit</span>
                         </button>
                     </div>
                     <h2 className="text-2xl font-bold text-white mb-1">{user?.name || 'Visitante'}</h2>
@@ -786,18 +786,6 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                             <span className="material-symbols-rounded text-sm">edit</span>
                         </button>
                     </div>
-                    <p className="text-xs text-gray-400">
-                        {isUploadingPhoto ? 'Enviando...' : 'Toque para usar sua câmera'}
-                    </p>
-
-                    {/* Hidden Input for camera or gallery */}
-                    <input
-                        type="file"
-                        ref={fileInputRef}
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handlePhotoCapture}
-                    />
                 </div>
 
                 <div className="space-y-5">
@@ -1558,6 +1546,15 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
             {activeView === 'vocal_test' && renderVocalTest()}
             {activeView === 'piano' && <PianoScreen onBack={() => setActiveView('menu')} />}
             {activeView === 'tuner' && renderTuner()}
+
+            {/* Hidden Input for camera or gallery - Global Access */}
+            <input
+                type="file"
+                ref={fileInputRef}
+                accept="image/*"
+                className="hidden"
+                onChange={handlePhotoCapture}
+            />
         </div>
     );
 };
