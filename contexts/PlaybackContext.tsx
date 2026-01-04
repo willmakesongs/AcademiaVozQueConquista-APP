@@ -302,6 +302,26 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             setIsPlaying(true);
             startProgressLoop();
 
+            // MEDIA SESSION API: Update Lock Screen Metadata
+            if ('mediaSession' in navigator) {
+                const vocalize = VOCALIZES.find(v => v.audioUrl === url || v.audioUrlMale === url || v.exampleUrl === url);
+                navigator.mediaSession.metadata = new MediaMetadata({
+                    title: vocalize?.title || 'Exercício Vocal',
+                    artist: 'Academia Voz Que Conquista',
+                    album: vocalize?.category || 'Treinamento',
+                    artwork: [
+                        { src: 'https://vocalizes.com.br/wp-content/uploads/2023/12/logo-academia-vocal.png', sizes: '512x512', type: 'image/png' }
+                    ]
+                });
+
+                // Control Handlers
+                navigator.mediaSession.setActionHandler('play', () => resume());
+                navigator.mediaSession.setActionHandler('pause', () => pause());
+                navigator.mediaSession.setActionHandler('stop', () => stop());
+                navigator.mediaSession.setActionHandler('seekbackward', () => seek(Math.max(0, Tone.Transport.seconds - 5)));
+                navigator.mediaSession.setActionHandler('seekforward', () => seek(Math.min(duration, Tone.Transport.seconds + 5)));
+            }
+
             playerRef.current.onstop = () => {
                 if (options?.onEnded) options.onEnded();
             };

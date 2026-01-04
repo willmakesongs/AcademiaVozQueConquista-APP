@@ -15,7 +15,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
   const {
     play, stop: stopPlayback, pause, resume: resumePlayback,
     isPlaying, isLoading: isPlaybackLoading, currentTime,
-    duration, seek, setPitch: setPlaybackPitch, preload
+    duration, seek, setPitch: setPlaybackPitch, preload, activeUrl
   } = usePlayback();
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -41,22 +41,23 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
   // Cálculo da taxa de reprodução baseada nos semitons
   const playbackRate = Math.pow(2, pitch / 12);
 
-  // Limpeza ao desmontar
+  // Limpeza ao desmontar - REMOVIDO para permitir background playback
   useEffect(() => {
+    // Não paramos mais o áudio no unmount
     return () => {
-      stopAudio();
+      if (animationIntervalRef.current) clearInterval(animationIntervalRef.current);
     };
   }, []);
 
   // Inicialização e Carregamento do Áudio
   useEffect(() => {
     if (vocalize) {
-      // Se o vocalize mudou mas a URL é a mesma, não recarrega (exceto troca H/L)
-      if (activeAudioUrl === vocalize.audioUrl) {
-        // Já carregado, apenas reseta
-        // resetPlayback(); // This function doesn't exist anymore, stopPlayback() is used
-        stopPlayback();
+      // Se já está tocando este áudio, não paramos nem resetamos
+      if (activeUrl === vocalize.audioUrl || activeUrl === vocalize.audioUrlMale || activeUrl === vocalize.exampleUrl) {
+        // Já está no contexto global, apenas sincronizamos o estado local
+        setActiveAudioUrl(activeUrl);
       } else {
+        stopPlayback();
         setActiveAudioUrl(vocalize.audioUrl);
         setPitch(0); // Reseta pitch ao mudar de exercício
       }
