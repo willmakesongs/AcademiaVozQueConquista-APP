@@ -38,6 +38,7 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const playerRef = useRef<Tone.Player | null>(null);
     const progressIntervalRef = useRef<number | null>(null);
     const currentPitchRef = useRef(0);
+    const durationRef = useRef(0); // CRITICAL: For progress loop sync
     const silentAudioRef = useRef<HTMLAudioElement | null>(null);
 
     // Save offline mode preference
@@ -231,11 +232,12 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             const currentSeconds = Tone.Transport.seconds;
             setCurrentTime(currentSeconds);
 
-            if (duration > 0 && currentSeconds >= duration) {
+            // Use the Ref to avoid stale closure issues with duration
+            if (durationRef.current > 0 && currentSeconds >= durationRef.current) {
                 stop();
             }
         }, 16);
-    }, [duration, stop]);
+    }, [stop]); // Removed duration dependency to avoid re-triggering and stale closure
 
     const play = useCallback(async (url: string, options?: { pitch?: number, onEnded?: () => void }) => {
         if (!url) return;
@@ -292,6 +294,7 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
             const bDuration = buffer.duration;
             setDuration(bDuration);
+            durationRef.current = bDuration;
 
             if (options?.pitch !== undefined) {
                 currentPitchRef.current = options.pitch;
