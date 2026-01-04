@@ -189,6 +189,27 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     <div className="min-h-screen bg-[#101622] flex flex-col relative overflow-hidden pb-24">
       <div className={`absolute top-[-20%] left-1/2 -translate-x-1/2 w-[120%] h-[60%] bg-[#6F4CE7] blur-[150px] pointer-events-none transition-opacity duration-1000 ${isPlaying ? 'opacity-30' : 'opacity-10'}`}></div>
 
+      <style>{`
+        input[type='range']::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 0;
+          height: 0;
+          background: transparent;
+          border: none;
+        }
+        input[type='range']::-moz-range-thumb {
+          width: 0;
+          height: 0;
+          background: transparent;
+          border: none;
+        }
+        /* Mobile Specific */
+        input[type='range']::-webkit-slider-runnable-track {
+          cursor: pointer;
+        }
+      `}</style>
+
       {/* Header */}
       <div className="flex items-center justify-between p-6 z-10">
         <button onClick={onBack} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-white/10">
@@ -267,12 +288,12 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
             value={currentTime}
             onChange={handleSeek}
             disabled={isPlaybackLoading}
-            className="w-full h-1.5 bg-gray-800 rounded-full appearance-none cursor-pointer accent-[#FF00BC] hover:accent-[#ff4bd0] disabled:opacity-50"
+            className="w-full h-2 bg-gray-800 rounded-full appearance-none cursor-pointer disabled:opacity-50"
             style={{
-              background: `linear-gradient(to right, #FF00BC 0%, #6F4CE7 ${(currentTime / (duration || 1)) * 100}%, #2D3748 ${(currentTime / (duration || 1)) * 100}%, #2D3748 100%)`
+              background: `linear-gradient(to right, #FF00BC 0%, #6F4CE7 ${(currentTime / (duration || 0.1)) * 100}%, #2D3748 ${(currentTime / (duration || 0.1)) * 100}%, #2D3748 100%)`
             }}
           />
-          <div className="flex justify-between text-xs text-gray-500 font-medium mt-2">
+          <div className="flex justify-between text-[10px] text-gray-500 font-bold uppercase tracking-wider mt-2 px-1">
             <span>{formatTime(currentTime)}</span>
             <span>{formatTime(duration)}</span>
           </div>
