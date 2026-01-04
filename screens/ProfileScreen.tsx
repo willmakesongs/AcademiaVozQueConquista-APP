@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Screen } from '../types';
 import { useAuth } from '../contexts/AuthContext';
+import { usePlayback } from '../contexts/PlaybackContext';
 import { Logo } from '../components/Logo';
 import { PianoScreen } from './PianoScreen';
 import * as Tone from 'tone';
@@ -117,6 +118,7 @@ function formatDayOfMonth(dateString?: string) {
 
 export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
     const { user } = useAuth();
+    const { isOfflineMode, setOfflineMode, downloadProgress, downloadAll } = usePlayback();
 
     // Navigation State
     const [activeView, setActiveView] = useState<'menu' | 'personal_data' | 'subscription' | 'contract' | 'vocal_test' | 'piano' | 'tuner'>('menu');
@@ -577,24 +579,75 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                             </button>
                         )}
 
-                        {/* Ajustes - Exclusivo para Admins/Professores por enquanto, pois leva ao TeacherDashboard */}
-                        {(user?.role === 'admin' || user?.role === 'teacher') && (
-                            <button
-                                onClick={() => onNavigate(Screen.ADMIN_SETTINGS)}
-                                className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
-                            >
-                                <div className="flex items-center gap-4">
-                                    <div className="w-8 h-8 rounded-lg bg-gray-500/10 flex items-center justify-center text-gray-400">
-                                        <span className="material-symbols-rounded text-lg">settings</span>
+                        {/* Seção Ajustes & Offline */}
+                        <div>
+                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 px-1">Configurações do App</h3>
+                            <div className="bg-[#1A202C] rounded-2xl border border-white/5 overflow-hidden divide-y divide-white/5">
+                                <div className="p-4 flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-400">
+                                            <span className="material-symbols-rounded text-lg">cloud_off</span>
+                                        </div>
+                                        <div className="text-left">
+                                            <span className="text-sm font-semibold text-white block">Modo Offline</span>
+                                            <span className="text-[10px] text-gray-500 block">Salvar áudios no dispositivo</span>
+                                        </div>
                                     </div>
-                                    <div className="text-left">
-                                        <span className="text-sm font-semibold text-white block">Ajustes</span>
-                                        <span className="text-[10px] text-gray-500 block">Configurações do App</span>
-                                    </div>
+                                    <button
+                                        onClick={() => setOfflineMode(!isOfflineMode)}
+                                        className={`w-12 h-6 rounded-full transition-colors relative ${isOfflineMode ? 'bg-[#0081FF]' : 'bg-gray-700'}`}
+                                    >
+                                        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${isOfflineMode ? 'right-1' : 'left-1'}`}></div>
+                                    </button>
                                 </div>
-                                <span className="material-symbols-rounded text-gray-600">chevron_right</span>
-                            </button>
-                        )}
+
+                                {isOfflineMode && (
+                                    <div className="p-4 bg-white/5 animate-in slide-in-from-top duration-300">
+                                        <div className="flex justify-between items-center mb-3">
+                                            <span className="text-xs text-gray-300">Sincronizar todos os áudios</span>
+                                            {downloadProgress > 0 && (
+                                                <span className="text-[10px] font-bold text-[#0081FF]">{downloadProgress}%</span>
+                                            )}
+                                        </div>
+
+                                        {downloadProgress > 0 ? (
+                                            <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden mb-2">
+                                                <div
+                                                    className="h-full bg-[#0081FF] transition-all duration-300"
+                                                    style={{ width: `${downloadProgress}%` }}
+                                                ></div>
+                                            </div>
+                                        ) : (
+                                            <button
+                                                onClick={downloadAll}
+                                                className="w-full py-2 rounded-lg bg-[#0081FF]/10 text-[#0081FF] text-xs font-bold border border-[#0081FF]/20 hover:bg-[#0081FF]/20 transition-colors"
+                                            >
+                                                Baixar Tudo (Modo Offline)
+                                            </button>
+                                        )}
+                                        <p className="text-[9px] text-gray-500 mt-2">
+                                            Isso fará o carregamento dos áudios ser instantâneo, mesmo sem internet.
+                                        </p>
+                                    </div>
+                                )}
+
+                                <button
+                                    onClick={() => onNavigate(Screen.ADMIN_SETTINGS)}
+                                    className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+                                >
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-8 h-8 rounded-lg bg-gray-500/10 flex items-center justify-center text-gray-400">
+                                            <span className="material-symbols-rounded text-lg">settings</span>
+                                        </div>
+                                        <div className="text-left">
+                                            <span className="text-sm font-semibold text-white block">Ajustes Avançados</span>
+                                            <span className="text-[10px] text-gray-500 block">Personalização técnica</span>
+                                        </div>
+                                    </div>
+                                    <span className="material-symbols-rounded text-gray-600">chevron_right</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

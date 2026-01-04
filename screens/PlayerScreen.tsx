@@ -136,6 +136,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
       if (animationIntervalRef.current) clearInterval(animationIntervalRef.current);
       setBarHeights(logoConfig.map(b => b.baseHeight));
     } else {
+      // Direct call within click handler
       startPlayback();
     }
   };
@@ -165,6 +166,10 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     if (targetUrl !== activeAudioUrl) {
       autoPlayRef.current = true;
       setActiveAudioUrl(targetUrl);
+      // Even if we set activeAudioUrl and wait for useEffect, 
+      // some iOS versions lose the gesture if there's any state-driven delay.
+      // Better to call play() directly if possible.
+      play(targetUrl, { pitch });
     } else {
       togglePlay();
     }
