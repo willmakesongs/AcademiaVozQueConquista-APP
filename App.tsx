@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Screen, Vocalize } from './types';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { PlaybackProvider } from './contexts/PlaybackContext';
 import { LoginScreen } from './screens/LoginScreen';
 import { StudentDashboard } from './screens/StudentDashboard';
 import { TeacherDashboard } from './screens/TeacherDashboard';
@@ -273,7 +274,9 @@ const AppContent = () => {
 export default function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <PlaybackProvider>
+        <AppContent />
+      </PlaybackProvider>
     </AuthProvider>
   );
 }

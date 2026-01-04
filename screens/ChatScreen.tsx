@@ -28,7 +28,8 @@ let cachedMessages: Message[] | null = null;
 let cachedUserId: string | null = null;
 
 export const ChatScreen: React.FC<Props> = ({ onBack }) => {
-    const { user } = useAuth();
+    const { user, visitorTimeRemaining } = useAuth();
+    const isTimeUp = visitorTimeRemaining !== null && visitorTimeRemaining <= 0;
 
     // State para a Chave de API
     const [apiKey, setApiKey] = useState<string | null>(null);
@@ -430,8 +431,27 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                 </div>
             )}
 
+            {/* Visitor/Trial Limit Overlay */}
+            {isTimeUp && (
+                <div className="absolute inset-0 bg-[#101622]/80 backdrop-blur-sm z-50 flex items-center justify-center p-8 text-center">
+                    <div className="bg-[#1A202C] border border-white/10 rounded-3xl p-8 max-w-sm shadow-2xl animate-in zoom-in-95 duration-300">
+                        <div className="w-20 h-20 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-6">
+                            <span className="material-symbols-rounded text-4xl text-red-500">lock_clock</span>
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-2">Tempo Expirado!</h3>
+                        <p className="text-sm text-gray-400 mb-6">Seu tempo de teste da Lorena IA acabou. Para continuar conversando e ter acesso a todos os módulos, torne-se um aluno oficial!</p>
+                        <button
+                            onClick={onBack}
+                            className="w-full h-12 bg-[#0081FF] hover:bg-[#006bd1] text-white font-bold rounded-xl transition-all"
+                        >
+                            Voltar ao Início
+                        </button>
+                    </div>
+                </div>
+            )}
+
             {/* Input Area */}
-            <div className="p-4 bg-[#101622] border-t border-white/5 pb-24">
+            <div className={`p-4 bg-[#101622] border-t border-white/5 pb-24 ${isTimeUp ? 'opacity-50 pointer-events-none' : ''}`}>
                 <div className="flex gap-2 items-end bg-[#1A202C] p-2 rounded-2xl border border-white/10 focus-within:border-[#6F4CE7] transition-colors shadow-lg">
                     <textarea
                         value={inputText}

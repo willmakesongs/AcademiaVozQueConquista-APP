@@ -29,20 +29,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
-    if (user?.id === 'guest') {
+    if (user?.id === 'guest' || user?.status === 'trial') {
       const checkTime = () => {
         const startStr = localStorage.getItem('visitor_start_time');
         if (startStr) {
           const startTime = parseInt(startStr);
           const elapsed = Date.now() - startTime;
-          const totalDuration = 15 * 60 * 1000; // 15 minutes
+          const totalDuration = user?.id === 'guest' ? 15 * 60 * 1000 : 10 * 60 * 1000; // 15 mins guest, 10 mins trial
           const remaining = totalDuration - elapsed;
           setVisitorTimeRemaining(remaining > 0 ? remaining : 0);
         } else {
           // Should set start time if missing
           const now = Date.now();
           localStorage.setItem('visitor_start_time', now.toString());
-          setVisitorTimeRemaining(15 * 60 * 1000);
+          setVisitorTimeRemaining(user?.id === 'guest' ? 15 * 60 * 1000 : 10 * 60 * 1000);
         }
       };
 
@@ -158,11 +158,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           name: data.name,
           role: data.role,
           avatarUrl: data.avatar_url || 'https://picsum.photos/200',
-          status: data.status || 'active',
+          status: data.status || 'trial',
           plan: data.plan || 'Plano Pro',
           nextDueDate: data.next_due_date || '2026-02-02',
           amount: data.amount || '97,00'
         });
+
+        // Initialize trial start time if not set
+        if (data.status === 'trial' && !localStorage.getItem('visitor_start_time')) {
+          localStorage.setItem('visitor_start_time', Date.now().toString());
+        }
       }
     } catch (error) {
       console.error('Erro crítico ao carregar perfil:', error);
@@ -206,10 +211,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { error: profileError } = await supabase
           .from('profiles')
           .upsert([{
-            id: authData.user.id,
             name: name,
             role: role,
             phone: phone,
+            status: role === 'student' ? 'trial' : 'active',
             avatar_url: `https://ui-avatars.com/api/?name=${name}&background=random`
           }], { onConflict: 'id' });
 

@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Screen, Module, Vocalize } from '../types';
 import { MODULES, VOCALIZES } from '../constants';
 import { useAuth } from '../contexts/AuthContext';
+import { usePlayback } from '../contexts/PlaybackContext';
 
 interface Props {
   onNavigate: (screen: Screen) => void;
@@ -22,9 +23,8 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
   const contentRef = useRef<HTMLDivElement>(null);
   const [checklistState, setChecklistState] = useState<Record<string, boolean>>({});
 
-  // Refs para controle de áudio inline
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const activeBtnRef = useRef<HTMLElement | null>(null);
+  const { play: playGlobal, stop: stopGlobal, isPlaying, activeUrl } = usePlayback();
+  const [activeInlineBtn, setActiveInlineBtn] = useState<HTMLElement | null>(null);
   const visualizerIntervalRef = useRef<number | null>(null);
 
   // Carrega estado salvo do checklist ao iniciar
@@ -46,37 +46,56 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
     }
   }, [defaultModuleId]);
 
-  // Função para limpar animações e áudio
-  const stopCurrentAudio = () => {
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
+  const { preload } = usePlayback();
 
+  // Preload audio when a module is expanded
+  useEffect(() => {
+    if (expandedModule) {
+      const moduleVocalizes = VOCALIZES.filter(v => v.moduleId === expandedModule);
+      const urlsToPreload = moduleVocalizes.flatMap(v => [v.audioUrl, v.audioUrlMale, v.exampleUrl].filter(Boolean) as string[]);
+
+      // Also preload topics examples
+      const module = MODULES.find(m => m.id === expandedModule);
+      if (module) {
+        module.topics.forEach(topic => {
+          if (topic.content) {
+            const matches = topic.content.matchAll(/data-src="([^"]+)"/g);
+            for (const match of matches) {
+              urlsToPreload.push(match[1]);
+            }
+          }
+        });
+      }
+
+      if (urlsToPreload.length > 0) {
+        preload(urlsToPreload);
+      }
+    }
+  }, [expandedModule, preload]);
+
+  // Função para limpar animações
+  const stopVisualizer = () => {
     if (visualizerIntervalRef.current) {
       clearInterval(visualizerIntervalRef.current);
       visualizerIntervalRef.current = null;
     }
 
     // Reset UI do botão anterior
-    if (activeBtnRef.current) {
-      const icon = activeBtnRef.current.querySelector('.material-symbols-rounded');
+    if (activeInlineBtn) {
+      const icon = activeInlineBtn.querySelector('.material-symbols-rounded');
       if (icon) {
         icon.textContent = 'play_arrow';
-        // Ajuste fino para centralizar o play visualmente
         icon.classList.add('ml-1');
       }
 
-      // Reset Visualizer Bars para a altura base (formato do logo estático)
-      const container = activeBtnRef.current.closest('div.player-container');
+      const container = activeInlineBtn.closest('div.player-container');
       if (container) {
         const viz = container.querySelector('.audio-viz');
         if (viz) {
           viz.classList.remove('opacity-100');
-          viz.classList.add('opacity-50'); // Mantém visível mas discreto
+          viz.classList.add('opacity-50');
           const bars = viz.querySelectorAll('div');
           bars.forEach(bar => {
-            // Reseta para a altura definida no HTML (data-base-height) ou padrão
             const baseHeight = bar.getAttribute('data-base-height');
             if (baseHeight) {
               bar.style.height = `${baseHeight}px`;
@@ -86,8 +105,13 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
           });
         }
       }
-      activeBtnRef.current = null;
+      setActiveInlineBtn(null);
     }
+  };
+
+  const stopCurrentAudio = () => {
+    stopGlobal();
+    stopVisualizer();
   };
 
   // Para o áudio se fechar o modal
@@ -142,42 +166,21 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
 
   const handleInlinePlay = async (url: string, btn: HTMLElement) => {
     // Se clicou no mesmo botão que estava tocando, apenas para
-    if (activeBtnRef.current === btn) {
+    if (activeUrl === url && isPlaying) {
       stopCurrentAudio();
       return;
     }
 
-    // Para qualquer áudio anterior
-    stopCurrentAudio();
+    // Para qualquer áudio anterior e reseta visualizer
+    stopVisualizer();
+    setActiveInlineBtn(btn);
 
-    let playUrl = url;
-
-    // 1. Tenta carregar do cache offline
-    try {
-      if ('caches' in window) {
-        const cache = await caches.open('vocalizes-offline-v1');
-        const cachedResponse = await cache.match(url);
-        if (cachedResponse) {
-          const blob = await cachedResponse.blob();
-          playUrl = URL.createObjectURL(blob);
-          console.log('Tocando exemplo do cache:', url);
-        }
+    // 1. Toca o áudio usando o contexto global
+    playGlobal(url, {
+      onEnded: () => {
+        stopVisualizer();
       }
-    } catch (e) {
-      console.warn('Erro ao verificar cache offline, usando rede', e);
-    }
-
-    // 2. Inicia novo áudio
-    const audio = new Audio(playUrl);
-    audioRef.current = audio;
-    activeBtnRef.current = btn;
-
-    // Atualiza UI do botão clicado para "Stop"
-    const icon = btn.querySelector('.material-symbols-rounded');
-    if (icon) {
-      icon.textContent = 'stop';
-      icon.classList.remove('ml-1'); // Remove ajuste de margem do play
-    }
+    });
 
     // Inicia Animação do Visualizer
     const container = btn.closest('div.player-container');
@@ -202,23 +205,12 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
       }
     }
 
-    // 3. Toca com tratamento de erro (AbortError)
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(e => {
-        // Ignora erro de interrupção pelo pause (comum ao trocar rápido de áudio ou interrupção de rede)
-        // Verifica tanto o nome do erro quanto a mensagem
-        if (e.name === 'AbortError' || e.message?.includes('interrupted by a call to pause')) return;
-
-        console.error("Erro ao tocar áudio inline:", e);
-        stopCurrentAudio();
-      });
+    // Atualiza UI do botão clicado para "Stop"
+    const icon = btn.querySelector('.material-symbols-rounded');
+    if (icon) {
+      icon.textContent = 'stop';
+      icon.classList.remove('ml-1'); // Remove ajuste de margem do play
     }
-
-    // 4. Ao terminar, reseta UI automaticamente
-    audio.onended = () => {
-      stopCurrentAudio();
-    };
   };
 
   const handleContentClick = (e: React.MouseEvent) => {
@@ -309,7 +301,8 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
           const isActive = expandedModule === module.id;
           const moduleExercises = getVocalizesForModule(module.id);
           const isGuest = user?.id === 'guest';
-          const isLocked = isGuest && index > 0; // Lock all modules except the first for guests
+          const isTrial = user?.status === 'trial';
+          const isLocked = (isGuest || isTrial) && index > 0; // Lock all modules except the first for guests and trial users
 
           if (searchTerm && !module.title.toLowerCase().includes(searchTerm.toLowerCase()) && !moduleExercises.some(v => v.title.toLowerCase().includes(searchTerm.toLowerCase()))) {
             return null;
@@ -319,8 +312,8 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
             <div
               key={module.id}
               className={`rounded-2xl border transition-all duration-300 overflow-hidden ${isActive
-                  ? 'bg-[#1A202C] border-[#6F4CE7]/50 shadow-[0_0_30px_rgba(111,76,231,0.1)]'
-                  : (isLocked ? 'bg-[#1A202C]/30 border-white/5 opacity-70' : 'bg-[#1A202C]/50 border-white/5 hover:bg-[#1A202C]')
+                ? 'bg-[#1A202C] border-[#6F4CE7]/50 shadow-[0_0_30px_rgba(111,76,231,0.1)]'
+                : (isLocked ? 'bg-[#1A202C]/30 border-white/5 opacity-70' : 'bg-[#1A202C]/50 border-white/5 hover:bg-[#1A202C]')
                 }`}
             >
               {/* Module Header */}
@@ -400,8 +393,8 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
                               <p className="text-sm font-medium text-white truncate">{exercise.title}</p>
                               <div className="flex items-center gap-2">
                                 <span className={`text-[9px] px-1.5 py-0.5 rounded ${exercise.difficulty === 'Iniciante' ? 'bg-green-500/10 text-green-500' :
-                                    exercise.difficulty === 'Intermediário' ? 'bg-yellow-500/10 text-yellow-500' :
-                                      'bg-red-500/10 text-red-500'
+                                  exercise.difficulty === 'Intermediário' ? 'bg-yellow-500/10 text-yellow-500' :
+                                    'bg-red-500/10 text-red-500'
                                   }`}>
                                   {exercise.difficulty}
                                 </span>
