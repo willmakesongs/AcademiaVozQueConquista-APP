@@ -114,11 +114,13 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
     stopVisualizer();
   };
 
-  // Para o áudio se fechar o modal
+  // Para o áudio apenas se um tópico estava aberto e foi fechado
+  const lastTopicRef = useRef<{ title: string; content: string } | null>(null);
   useEffect(() => {
-    if (!selectedTopic) {
+    if (lastTopicRef.current && !selectedTopic) {
       stopCurrentAudio();
     }
+    lastTopicRef.current = selectedTopic;
   }, [selectedTopic]);
 
   // Atualiza o visual do checklist sempre que o conteúdo ou o estado mudar
@@ -302,7 +304,7 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
           const moduleExercises = getVocalizesForModule(module.id);
           const isGuest = user?.id === 'guest';
           const isTrial = user?.status === 'trial';
-          const isLocked = (isGuest || isTrial) && index > 0; // Lock all modules except the first for guests and trial users
+          const isLocked = false; // TEMPORARY FOR TESTING: (isGuest || isTrial) && index > 0;
 
           if (searchTerm && !module.title.toLowerCase().includes(searchTerm.toLowerCase()) && !moduleExercises.some(v => v.title.toLowerCase().includes(searchTerm.toLowerCase()))) {
             return null;

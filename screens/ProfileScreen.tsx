@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Screen } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { usePlayback } from '../contexts/PlaybackContext';
+import { supabase } from '../lib/supabaseClient';
 import { Logo } from '../components/Logo';
 import { PianoScreen } from './PianoScreen';
 import * as Tone from 'tone';
@@ -117,8 +118,10 @@ function formatDayOfMonth(dateString?: string) {
 }
 
 export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
-    const { user } = useAuth();
+    const { user, updateProfileAvatar } = useAuth();
     const { isOfflineMode, setOfflineMode, downloadProgress, downloadAll } = usePlayback();
+    const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Navigation State
     const [activeView, setActiveView] = useState<'menu' | 'personal_data' | 'subscription' | 'contract' | 'vocal_test' | 'piano' | 'tuner'>('menu');
@@ -366,6 +369,81 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
         setTimeout(() => setPixCopyStatus('Copiar Chave'), 2000);
     };
 
+    const handlePhotoCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !user || user.id === 'guest') return;
+
+        setIsUploadingPhoto(true);
+
+        try {
+            // 1. Compress Image using Canvas
+            const compressedBlob = await new Promise<Blob>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_SIZE = 400; // Profile pic doesn't need to be huge
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_SIZE) {
+                                height *= MAX_SIZE / width;
+                                width = MAX_SIZE;
+                            }
+                        } else {
+                            if (height > MAX_SIZE) {
+                                width *= MAX_SIZE / height;
+                                height = MAX_SIZE;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx?.drawImage(img, 0, 0, width, height);
+                        canvas.toBlob((blob) => {
+                            if (blob) resolve(blob);
+                            else reject(new Error('Canvas toBlob failed'));
+                        }, 'image/jpeg', 0.8);
+                    };
+                    img.src = event.target?.result as string;
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // 2. Upload to Supabase Storage
+            const fileExt = 'jpg';
+            const fileName = `avatar_${Date.now()}.${fileExt}`;
+            const filePath = `${user.id}/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(filePath, compressedBlob, {
+                    contentType: 'image/jpeg',
+                    upsert: true
+                });
+
+            if (uploadError) throw uploadError;
+
+            // 3. Get Public URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('avatars')
+                .getPublicUrl(filePath);
+
+            // 4. Update Profile in context
+            await updateProfileAvatar(publicUrl);
+
+            alert('Foto atualizada com sucesso!');
+        } catch (err: any) {
+            console.error('Erro no upload:', err);
+            alert('Erro ao processar foto: ' + (err.message || 'Erro desconhecido'));
+        } finally {
+            setIsUploadingPhoto(false);
+        }
+    };
+
     // --- LÓGICA DE ASSINATURA ---
     const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
         const canvas = signatureCanvasRef.current;
@@ -437,14 +515,26 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                 <div className="absolute top-[-50px] left-1/2 -translate-x-1/2 w-[150%] h-[200px] bg-[#0081FF]/10 blur-[80px] rounded-full pointer-events-none"></div>
 
                 <div className="relative z-10">
-                    <div className="w-24 h-24 mx-auto rounded-full p-[3px] bg-brand-gradient mb-4 shadow-xl shadow-blue-900/20">
-                        <div className="w-full h-full rounded-full bg-[#151A23] p-1">
-                            <img
-                                src={user?.avatarUrl || 'https://picsum.photos/200'}
-                                alt="Profile"
-                                className="w-full h-full rounded-full object-cover"
-                            />
+                    <div className="w-24 h-24 mx-auto rounded-full p-[3px] bg-brand-gradient mb-4 shadow-xl shadow-blue-900/20 relative">
+                        <div className="w-full h-full rounded-full bg-[#151A23] p-1 overflow-hidden">
+                            {isUploadingPhoto ? (
+                                <div className="w-full h-full rounded-full flex items-center justify-center bg-black/50">
+                                    <div className="w-8 h-8 border-4 border-white/20 border-t-[#0081FF] rounded-full animate-spin"></div>
+                                </div>
+                            ) : (
+                                <img
+                                    src={user?.avatarUrl || 'https://picsum.photos/200'}
+                                    alt="Profile"
+                                    className="w-full h-full rounded-full object-cover"
+                                />
+                            )}
                         </div>
+                        <button
+                            onClick={() => fileInputRef.current?.click()}
+                            className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-blue-600 border-2 border-[#151A23] flex items-center justify-center text-white shadow-lg active:scale-95 transition-transform"
+                        >
+                            <span className="material-symbols-rounded text-sm">photo_camera</span>
+                        </button>
                     </div>
                     <h2 className="text-2xl font-bold text-white mb-1">{user?.name || 'Visitante'}</h2>
                     <div className="flex justify-center gap-2">
@@ -676,16 +766,38 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
             <div className="p-6 flex-1 overflow-y-auto hide-scrollbar">
                 <div className="bg-[#1A202C] p-6 rounded-2xl border border-white/5 mb-6 text-center">
                     <div className="relative inline-block mb-4">
-                        <img
-                            src={user?.avatarUrl}
-                            className="w-20 h-20 rounded-full border-2 border-white/10"
-                            alt="Avatar"
-                        />
-                        <button className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#0081FF] border-2 border-[#1A202C] flex items-center justify-center text-white">
+                        <div className="w-20 h-20 rounded-full border-2 border-white/10 overflow-hidden">
+                            {isUploadingPhoto ? (
+                                <div className="w-full h-full flex items-center justify-center bg-black/20">
+                                    <div className="w-6 h-6 border-3 border-white/20 border-t-[#0081FF] rounded-full animate-spin"></div>
+                                </div>
+                            ) : (
+                                <img
+                                    src={user?.avatarUrl}
+                                    className="w-full h-full object-cover"
+                                    alt="Avatar"
+                                />
+                            )}
+                        </div>
+                        <button
+                            onClick={() => fileInputRef.current?.click()}
+                            className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#0081FF] border-2 border-[#1A202C] flex items-center justify-center text-white active:scale-90 transition-transform shadow-lg"
+                        >
                             <span className="material-symbols-rounded text-sm">edit</span>
                         </button>
                     </div>
-                    <p className="text-xs text-gray-400">Toque para alterar a foto</p>
+                    <p className="text-xs text-gray-400">
+                        {isUploadingPhoto ? 'Enviando...' : 'Toque para usar sua câmera'}
+                    </p>
+
+                    {/* Hidden Input for camera or gallery */}
+                    <input
+                        type="file"
+                        ref={fileInputRef}
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handlePhotoCapture}
+                    />
                 </div>
 
                 <div className="space-y-5">

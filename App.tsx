@@ -40,7 +40,7 @@ const AppContent = () => {
         if (screen === Screen.LOGIN) {
           const initialScreen = user.role === 'student' ? Screen.STUDENT_DASHBOARD : Screen.TEACHER_DASHBOARD;
           setScreen(initialScreen);
-          setPreviousScreen(initialScreen); // Initialize previousScreen correctly
+          setPreviousScreen(initialScreen);
         }
       } else {
         setScreen(Screen.LOGIN);
@@ -51,14 +51,28 @@ const AppContent = () => {
   // Visitor Warning Logic (2 min warning)
   useEffect(() => {
     if (visitorTimeRemaining !== null) {
-      // Show warning when time is between 1m50s and 2m
       if (visitorTimeRemaining <= 120000 && visitorTimeRemaining > 110000 && !showVisitorWarning) {
         setShowVisitorWarning(true);
-        // Auto hide after 5 seconds
         setTimeout(() => setShowVisitorWarning(false), 5000);
       }
     }
   }, [visitorTimeRemaining]);
+
+  // AUTO-SYNC: Mantém currentVocalize sincronizado com o que está tocando no fundo
+  // Isso resolve o problema de retornar para a aba "Academia" e o player resetar
+  useEffect(() => {
+    if (activeUrl && isPlaying) {
+      const activeVocalize = VOCALIZES.find(v =>
+        v.audioUrl === activeUrl ||
+        v.audioUrlMale === activeUrl ||
+        v.exampleUrl === activeUrl
+      );
+
+      if (activeVocalize && (!currentVocalize || currentVocalize.id !== activeVocalize.id)) {
+        setCurrentVocalize(activeVocalize);
+      }
+    }
+  }, [activeUrl, isPlaying]);
 
   if (loading) return <div className="min-h-screen bg-[#101622] flex items-center justify-center text-white">Carregando Vocalizes...</div>;
 

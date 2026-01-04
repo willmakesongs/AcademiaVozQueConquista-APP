@@ -20,6 +20,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [activeAudioUrl, setActiveAudioUrl] = useState<string | undefined>(vocalize?.audioUrl);
+  const [activeSource, setActiveSource] = useState<'female' | 'male' | 'example'>('female');
   const { pitch: globalPitch } = usePlayback();
   const [pitch, setPitch] = useState(globalPitch);
 
@@ -50,35 +51,49 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     };
   }, []);
 
-  // Inicialização e Carregamento do Áudio
+  // Consolidamos a inicialização e o preload para evitar loops de efeitos
   useEffect(() => {
-    if (vocalize) {
-      // Se já está tocando este áudio, não paramos nem resetamos
-      if (activeUrl === vocalize.audioUrl || activeUrl === vocalize.audioUrlMale || activeUrl === vocalize.exampleUrl) {
-        // Já está no contexto global, apenas sincronizamos o estado local
+    if (!vocalize) return;
+
+    // Se o áudio ATIVO no contexto já é um dos áudios deste vocalize,
+    // apenas sincronizamos o estado local sem parar o som.
+    const isRelatedAudio = activeUrl && (
+      activeUrl === vocalize.audioUrl ||
+      activeUrl === vocalize.audioUrlMale ||
+      activeUrl === vocalize.exampleUrl
+    );
+
+    if (isRelatedAudio) {
+      if (activeAudioUrl !== activeUrl) {
         setActiveAudioUrl(activeUrl);
+      }
+      // Sincroniza o activeSource com base no URL atual de forma inequívoca
+      if (activeUrl === vocalize.exampleUrl) {
+        setActiveSource('example');
+      } else if (vocalize.audioUrlMale && activeUrl === vocalize.audioUrlMale) {
+        setActiveSource('male');
       } else {
-        stopPlayback();
-        setActiveAudioUrl(vocalize.audioUrl);
-        setPitch(0); // Reseta pitch ao mudar de exercício
+        // Se não for male nem example, e estamos tocando este vocalize,
+        // só pode ser female (padrao)
+        setActiveSource('female');
       }
+    } else if (!isPlaying) {
+      setActiveAudioUrl(vocalize.audioUrl);
+      setActiveSource('female');
+      setPitch(0);
     }
-  }, [vocalize]);
+    // Se isPlaying é true MAS activeUrl não bate com este vocalize, 
+    // NÃO paramos imediatamente. Isso evita que re-renderizações ou pequenos atrasos
+    // na sincronia do App.tsx causem um stop acidental. 
+    // O App.tsx se encarregará de atualizar o 'vocalize' prop via auto-sync.
 
-  useEffect(() => {
-    if (activeAudioUrl) {
-      loadAudio(activeAudioUrl);
-
-      // Preload next and previous
-      if (vocalize) {
-        const curIdx = VOCALIZES.findIndex(v => v.id === vocalize.id);
-        const toPreload = [];
-        if (curIdx > 0) toPreload.push(VOCALIZES[curIdx - 1].audioUrl);
-        if (curIdx < VOCALIZES.length - 1) toPreload.push(VOCALIZES[curIdx + 1].audioUrl);
-        preload(toPreload.filter(Boolean) as string[]);
-      }
-    }
-  }, [activeAudioUrl]);
+    // Preload de vizinhos
+    const curIdx = VOCALIZES.findIndex(v => v.id === vocalize.id);
+    const toPreload = [];
+    if (curIdx > 0) toPreload.push(VOCALIZES[curIdx - 1].audioUrl);
+    if (curIdx < VOCALIZES.length - 1) toPreload.push(VOCALIZES[curIdx + 1].audioUrl);
+    preload(toPreload.filter(Boolean) as string[]);
+  }, [vocalize, activeUrl, isPlaying]); // Adicionamos dependências para reagir a mudanças globais
 
   // Autoplay Effect
   useEffect(() => {
@@ -99,18 +114,6 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
       startVisualizer();
     }
   }, [isPlaying]);
-
-  const loadAudio = async (url: string) => {
-    stopAudio();
-    if (autoPlayRef.current) {
-      play(url, { pitch });
-      autoPlayRef.current = false;
-    } else {
-      // Just warm up/preload if not autoplaying? 
-      // In the context of PlayerScreen, we probably want to play if it's the active vocalize
-      // Actually, PlayerScreen usually starts paused unless handled by handleTrain
-    }
-  };
 
   const stopAudio = () => {
     stopPlayback();
@@ -177,11 +180,13 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     if (targetUrl !== activeAudioUrl) {
       autoPlayRef.current = true;
       setActiveAudioUrl(targetUrl);
+      setActiveSource(type); // Sincroniza a fonte visual
       // Even if we set activeAudioUrl and wait for useEffect, 
       // some iOS versions lose the gesture if there's any state-driven delay.
       // Better to call play() directly if possible.
       play(targetUrl, { pitch });
     } else {
+      setActiveSource(type); // Garante destaque mesmo se o URL for igual (bug de audios identicos)
       togglePlay();
     }
   };
@@ -255,6 +260,9 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
         <div className="w-full text-center mb-6">
           <h1 className="text-2xl font-bold mb-2">{currentTitle}</h1>
           <p className="text-gray-400 mb-6">{currentCategory} • {vocalize?.difficulty || 'Geral'}</p>
+
+          {/* Debug - Remover após confirmar fix */}
+          <div className="hidden" id="active-source-debug">{activeSource}</div>
 
           {errorMsg && (
             <div className="bg-red-500/10 border border-red-500/20 text-red-200 text-xs p-3 rounded-lg mb-4 inline-block">
@@ -365,7 +373,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
           <button
             onClick={() => handleTrain('example')}
             disabled={!vocalize?.exampleUrl}
-            className={`rounded-xl p-3 flex flex-col items-center justify-center border cursor-pointer transition-all group ${activeAudioUrl === vocalize?.exampleUrl
+            className={`rounded-xl p-3 flex flex-col items-center justify-center border cursor-pointer transition-all group ${activeSource === 'example'
               ? 'bg-[#1A202C] border-[#6F4CE7] shadow-[0_0_15px_rgba(111,76,231,0.2)]'
               : 'bg-[#1A202C] border-white/5 hover:border-[#6F4CE7]/50 hover:bg-[#6F4CE7]/10'
               } ${!vocalize?.exampleUrl ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
@@ -380,7 +388,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
           {/* FEMALE BUTTON */}
           <button
             onClick={() => handleTrain('female')}
-            className={`rounded-xl p-3 flex flex-col items-center justify-center border cursor-pointer transition-all group ${activeAudioUrl === vocalize?.audioUrl
+            className={`rounded-xl p-3 flex flex-col items-center justify-center border cursor-pointer transition-all group ${activeSource === 'female'
               ? 'bg-[#1A202C] border-[#FF00BC] shadow-[0_0_15px_rgba(255,0,188,0.2)]'
               : 'bg-[#1A202C] border-white/5 hover:border-[#FF00BC]/50 hover:bg-[#FF00BC]/10'
               }`}
@@ -396,7 +404,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
           <button
             onClick={() => handleTrain('male')}
             disabled={!vocalize?.audioUrlMale}
-            className={`rounded-xl p-3 flex flex-col items-center justify-center border cursor-pointer transition-all group ${activeAudioUrl === vocalize?.audioUrlMale
+            className={`rounded-xl p-3 flex flex-col items-center justify-center border cursor-pointer transition-all group ${activeSource === 'male'
               ? 'bg-[#1A202C] border-[#0081FF] shadow-[0_0_15px_rgba(0,129,255,0.2)]'
               : 'bg-[#1A202C] border-white/5 hover:border-[#0081FF]/50 hover:bg-[#0081FF]/10'
               } ${!vocalize?.audioUrlMale ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}

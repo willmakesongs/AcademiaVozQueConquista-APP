@@ -993,39 +993,40 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                 </div>
                             </div>
 
-                            {/* Status Control Toggle */}
-                            <div className="p-4 bg-[#101622] rounded-xl border border-white/5 flex items-center justify-between">
-                                <div>
-                                    <p className="text-xs font-bold text-white uppercase">Acesso ao App</p>
-                                    <p className="text-[10px] text-gray-500">Bloquear acesso em caso de pendência</p>
+                            {/* Status Control Toggle - Refined Layout */}
+                            <div className="p-5 bg-[#101622] rounded-2xl border border-white/5 space-y-4">
+                                <div className="text-center">
+                                    <p className="text-[10px] font-black text-[#0081FF] uppercase tracking-[0.15em] mb-1">Controle de Acesso</p>
+                                    <p className="text-[11px] text-gray-500 font-medium">Gerencie a liberação das funcionalidades para este aluno</p>
                                 </div>
-                                <div className="flex bg-[#1A202C] p-1 rounded-lg border border-white/5">
+
+                                <div className="flex bg-[#1A202C] p-1.5 rounded-xl border border-white/10 shadow-inner">
                                     <button
                                         onClick={() => setEditStatus('active')}
-                                        className={`px-3 py-1.5 rounded-md text-[10px] font-bold uppercase transition-all flex items-center gap-1 ${editStatus === 'active' || editStatus === 'overdue'
-                                            ? 'bg-green-500 text-white'
-                                            : 'text-gray-500 hover:text-white'
+                                        className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-1.5 ${editStatus === 'active' || editStatus === 'overdue'
+                                            ? 'bg-green-500 text-white shadow-lg shadow-green-500/20 scale-[1.02]'
+                                            : 'text-gray-500 hover:text-white hover:bg-white/5'
                                             }`}
                                     >
-                                        <span className="material-symbols-rounded text-[14px]">check</span> Liberado
+                                        <span className="material-symbols-rounded text-[16px]">check_circle</span> Liberado
                                     </button>
                                     <button
                                         onClick={() => setEditStatus('blocked')}
-                                        className={`px-3 py-1.5 rounded-md text-[10px] font-bold uppercase transition-all flex items-center gap-1 ${editStatus === 'blocked'
-                                            ? 'bg-red-500 text-white'
-                                            : 'text-gray-500 hover:text-white'
+                                        className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-1.5 ${editStatus === 'blocked'
+                                            ? 'bg-red-500 text-white shadow-lg shadow-red-500/20 scale-[1.02]'
+                                            : 'text-gray-500 hover:text-white hover:bg-white/5'
                                             }`}
                                     >
-                                        <span className="material-symbols-rounded text-[14px]">lock</span> Bloqueado
+                                        <span className="material-symbols-rounded text-[16px]">block</span> Bloqueado
                                     </button>
                                     <button
                                         onClick={() => setEditStatus('trial')}
-                                        className={`px-3 py-1.5 rounded-md text-[10px] font-bold uppercase transition-all flex items-center gap-1 ${editStatus === 'trial'
-                                            ? 'bg-[#FF00BC] text-white'
-                                            : 'text-gray-500 hover:text-white'
+                                        className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-1.5 ${editStatus === 'trial'
+                                            ? 'bg-[#FF00BC] text-white shadow-lg shadow-pink-500/20 scale-[1.02]'
+                                            : 'text-gray-500 hover:text-white hover:bg-white/5'
                                             }`}
                                     >
-                                        <span className="material-symbols-rounded text-[14px]">bolt</span> Teste
+                                        <span className="material-symbols-rounded text-[16px]">bolt</span> Teste
                                     </button>
                                 </div>
                             </div>

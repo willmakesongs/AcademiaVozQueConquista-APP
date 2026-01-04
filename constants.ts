@@ -1324,15 +1324,16 @@ export const VOCALIZES: Vocalize[] = [
     {
         id: 'v-rev5-m5',
         moduleId: 'm5',
-        title: 'Reverso 5 Repetindo',
+        title: 'Reverso Repetindo',
         category: 'Performance',
         difficulty: 'Avançado',
         duration: '04:15',
         bpm: 120,
         key: 'F Major',
         description: 'Desafio de agilidade e controle de fôlego.',
-        audioUrl: `${VOCALIZES_BASE_URL}Reverso%205%20Repetindo%20(H).mp3`,
-        exampleUrl: `${VOCALIZES_BASE_URL}Reverso%205%20Repetindo%20(H).mp3`
+        audioUrl: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(H).mp3',
+        audioUrlMale: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(L).mp3',
+        exampleUrl: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(H).mp3'
     },
 
     // Duplicatas para aparecer em módulos adicionais (opcional, mantendo coerência com módulos)
@@ -1391,8 +1392,8 @@ export const VOCALIZES: Vocalize[] = [
         key: 'C Major',
         description: 'Exercício de agilidade e controle de fôlego com padrão reverso.',
         audioUrl: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(H).mp3',
-        audioUrlMale: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(H).mp3',
-        exampleUrl: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/MA%20MA%20MA.mp3'
+        audioUrlMale: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(L).mp3',
+        exampleUrl: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(H).mp3'
     },
     {
         id: 'v-rep-oit-m7',

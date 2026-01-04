@@ -13,6 +13,7 @@ interface AuthContextType {
   signInAsGuest: (role: 'student' | 'teacher') => Promise<void>;
   verifyOtp: (phone: string, token: string, role: 'student' | 'teacher') => Promise<{ error: any }>;
   signOut: () => Promise<void>;
+  updateProfileAvatar: (url: string) => Promise<void>;
   visitorTimeRemaining: number | null;
 }
 
@@ -300,6 +301,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(false);
   };
 
+  const updateProfileAvatar = async (url: string) => {
+    if (!user || user.id === 'guest') return;
+
+    // Update state locally first for instant feedback
+    setUser(prev => prev ? { ...prev, avatarUrl: url } : null);
+
+    if (isSupabaseConfigured) {
+      try {
+        const { error } = await supabase
+          .from('profiles')
+          .update({ avatar_url: url })
+          .eq('id', user.id);
+
+        if (error) throw error;
+      } catch (err) {
+        console.error('Erro ao salvar nova foto:', err);
+      }
+    }
+  };
+
   const signOut = async () => {
     if (user?.id === 'guest') {
       setUser(null);
@@ -311,7 +332,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signInWithGoogle, signInWithPhone, signInAsGuest, verifyOtp, signOut, visitorTimeRemaining }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signInWithGoogle, signInWithPhone, signInAsGuest, verifyOtp, signOut, updateProfileAvatar, visitorTimeRemaining }}>
       {children}
     </AuthContext.Provider>
   );

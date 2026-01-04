@@ -91,8 +91,11 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         Tone.context.on('statechange', handleStateChange);
 
         const resume = async () => {
-            await unlockIOSAudio();
-            console.log('Context resumed via user interaction');
+            if (Tone.context.state !== 'running') {
+                await unlockIOSAudio();
+                await Tone.start();
+                console.log('Context resumed via user interaction');
+            }
         };
 
         window.addEventListener('click', resume, { once: true });
@@ -204,10 +207,13 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             playerRef.current.stop();
         }
         Tone.Transport.stop();
-        Tone.Transport.seconds = 0; // CRITICAL: Reset internal clock
+        Tone.Transport.cancel(); // CRITICAL: Cancel all scheduled events (sync() triggers)
+        Tone.Transport.seconds = 0;
 
         setIsPlaying(false);
         setCurrentTime(0);
+        durationRef.current = 0; // Reset duration ref to prevent stale checks
+
         if (progressIntervalRef.current) {
             clearInterval(progressIntervalRef.current);
             progressIntervalRef.current = null;
@@ -219,26 +225,20 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setIsPlaying(false);
     }, []);
 
+    const startProgressLoop = useCallback(() => {
+        if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+        progressIntervalRef.current = window.setInterval(() => {
+            setCurrentTime(Tone.Transport.seconds);
+        }, 32); // 30fps is enough for UI and less CPU intensive
+    }, []);
+
     const resume = useCallback(async () => {
         await unlockIOSAudio();
         await Tone.start();
         Tone.Transport.start();
         setIsPlaying(true);
-    }, [unlockIOSAudio]);
-
-    const startProgressLoop = useCallback(() => {
-        if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
-        // Using a higher frequency (approx 60fps) for smooth progress movement
-        progressIntervalRef.current = window.setInterval(() => {
-            const currentSeconds = Tone.Transport.seconds;
-            setCurrentTime(currentSeconds);
-
-            // Use the Ref to avoid stale closure issues with duration
-            if (durationRef.current > 0 && currentSeconds >= durationRef.current) {
-                stop();
-            }
-        }, 16);
-    }, [stop]); // Removed duration dependency to avoid re-triggering and stale closure
+        startProgressLoop(); // Ensure loop restarts on resume
+    }, [unlockIOSAudio, startProgressLoop]);
 
     const play = useCallback(async (url: string, options?: { pitch?: number, onEnded?: () => void }) => {
         if (!url) return;
@@ -301,6 +301,12 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
                 currentPitchRef.current = options.pitch;
                 playerRef.current.playbackRate = Math.pow(2, options.pitch / 12);
             }
+
+            // Precisely schedule the stop at the end of the audio
+            Tone.Transport.schedule(() => {
+                stop();
+                if (options?.onEnded) options.onEnded();
+            }, bDuration);
 
             Tone.Transport.start();
             setIsPlaying(true);
