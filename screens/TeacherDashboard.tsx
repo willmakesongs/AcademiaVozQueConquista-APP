@@ -45,6 +45,8 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     const [editAmount, setEditAmount] = useState(97);
     const [editPaymentDay, setEditPaymentDay] = useState('05');
     const [editStatus, setEditStatus] = useState<'active' | 'blocked' | 'overdue' | 'trial'>('active');
+    const [isUploadingStudentPhoto, setIsUploadingStudentPhoto] = useState(false);
+    const studentFileInputRef = useRef<HTMLInputElement>(null);
 
     // Form Novo Aluno
     const [newStudentName, setNewStudentName] = useState('');
@@ -127,6 +129,93 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         } finally {
             setLoadingAction(false);
             if (syncStatus === 'loading') setSyncStatus('synced'); // Default to synced if no error caught initially
+        }
+    };
+
+    const handleStudentPhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !selectedStudent) return;
+
+        setIsUploadingStudentPhoto(true);
+
+        try {
+            // 1. Compress Image using Canvas (Same logic as in ProfileScreen)
+            const compressedBlob = await new Promise<Blob>((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX_SIZE = 400;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_SIZE) {
+                                height *= MAX_SIZE / width;
+                                width = MAX_SIZE;
+                            }
+                        } else {
+                            if (height > MAX_SIZE) {
+                                width *= MAX_SIZE / height;
+                                height = MAX_SIZE;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx?.drawImage(img, 0, 0, width, height);
+                        canvas.toBlob((blob) => {
+                            if (blob) resolve(blob);
+                            else reject(new Error('Canvas toBlob failed'));
+                        }, 'image/jpeg', 0.8);
+                    };
+                    img.src = event.target?.result as string;
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // 2. Upload to Supabase Storage
+            const fileExt = 'jpg';
+            const fileName = `avatar_${Date.now()}.${fileExt}`;
+            const filePath = `${selectedStudent.id}/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('avatars')
+                .upload(filePath, compressedBlob, {
+                    contentType: 'image/jpeg',
+                    upsert: true
+                });
+
+            if (uploadError) throw uploadError;
+
+            // 3. Get Public URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('avatars')
+                .getPublicUrl(filePath);
+
+            // 4. Update Profile in DB
+            const { error: updateError } = await supabase
+                .from('profiles')
+                .update({ avatar_url: publicUrl })
+                .eq('id', selectedStudent.id);
+
+            if (updateError) throw updateError;
+
+            // 5. Update Local State
+            setStudents(prev => prev.map(s =>
+                s.id === selectedStudent.id ? { ...s, avatarUrl: publicUrl } : s
+            ));
+            setSelectedStudent(prev => prev ? { ...prev, avatarUrl: publicUrl } : null);
+
+            alert('Foto do aluno atualizada com sucesso!');
+        } catch (err: any) {
+            console.error('Erro no upload:', err);
+            alert('Erro ao processar foto: ' + (err.message || 'Erro desconhecido'));
+        } finally {
+            setIsUploadingStudentPhoto(false);
+            if (studentFileInputRef.current) studentFileInputRef.current.value = '';
         }
     };
 
@@ -975,8 +1064,24 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                         </div>
                         <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto hide-scrollbar">
                             <div className="flex gap-4 items-center">
-                                <img src={selectedStudent.avatarUrl} className="w-16 h-16 rounded-full border-2 border-[#0081FF]" alt="" />
-                                <div>
+                                <div className="relative">
+                                    <div className="w-16 h-16 rounded-full border-2 border-[#0081FF] overflow-hidden">
+                                        {isUploadingStudentPhoto ? (
+                                            <div className="w-full h-full flex items-center justify-center bg-black/50">
+                                                <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                                            </div>
+                                        ) : (
+                                            <img src={selectedStudent.avatarUrl} className="w-full h-full object-cover" alt="" />
+                                        )}
+                                    </div>
+                                    <button
+                                        onClick={() => studentFileInputRef.current?.click()}
+                                        className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-[#0081FF] border-2 border-[#1A202C] flex items-center justify-center text-white shadow-lg active:scale-90 transition-all"
+                                    >
+                                        <span className="material-symbols-rounded text-sm">photo_camera</span>
+                                    </button>
+                                </div>
+                                <div className="flex-1">
                                     <h4 className="text-lg font-bold text-white">{selectedStudent.name}</h4>
                                     <p className="text-xs text-gray-500 uppercase font-black">{selectedStudent.modality} • {selectedStudent.level}</p>
                                     <div className={`mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-md border ${selectedStudent.status === 'blocked'
@@ -1326,6 +1431,15 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     </div>
                 </div>
             )}
+
+            {/* Hidden Input for student photo upload */}
+            <input
+                type="file"
+                ref={studentFileInputRef}
+                accept="image/*"
+                className="hidden"
+                onChange={handleStudentPhotoUpload}
+            />
         </div>
     );
 };
