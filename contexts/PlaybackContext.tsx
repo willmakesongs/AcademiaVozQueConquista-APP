@@ -33,23 +33,27 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const currentPitchRef = useRef(0);
     const silentAudioRef = useRef<HTMLAudioElement | null>(null);
 
-    // iOS Audio Unlock Trick: Play a looping silent buffer via native <audio>
-    // This is the most reliable way to bypass the physical silent switch for Web Audio.
+    // iOS Audio Unlock Trick (v3): More aggressive bypass
     const unlockIOSAudio = useCallback(() => {
         if (!silentAudioRef.current) {
             const audio = new Audio();
-            // 1-second silent MP3 base64
+            // 1-second silent MP3
             audio.src = 'data:audio/mpeg;base64,SUQzBAAAAAABAFRYWFgAAAASAAADbWFqb3JfYnJhbmQAZGFzaABUWFhYAAAAEQAAA21pbm9yX3ZlcnNpb24AMABUWFhYAAAAHAAAAGNvbXBhdGlibGVfYnJhbmRzAGlzbzZtcDQxAFRTU0UAAAAPAAADTGF2ZjU3LjcxLjEwMAAAAAAAAAAAAAAA//uQZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZyAAAADBAAAADwAAAhYCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//uQZAAAK8f9AFAAAAByEAD+AAAAE0InQAAEAACvSCAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//uQZAAAK8f9AFAAAAByEAD+AAAAE0InQAAEAACvSCAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//uQZAAAK8f9AFAAAAByEAD+AAAAE0InQAAEAACvSCAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
             audio.setAttribute('playsinline', 'true');
             audio.loop = true;
+            audio.volume = 0.1; // Essential for some iOS versions to "count" as media
+
+            // Append to DOM to make it a "real" media session
+            audio.style.display = 'none';
+            document.body.appendChild(audio);
+
             silentAudioRef.current = audio;
         }
 
-        // Try to play silent audio to "bless" the audio session
         const playPromise = silentAudioRef.current.play();
         if (playPromise !== undefined) {
             playPromise.catch(() => {
-                // Ignore errors, may happen if no gesture yet
+                // Ignore initial failures
             });
         }
     }, []);
