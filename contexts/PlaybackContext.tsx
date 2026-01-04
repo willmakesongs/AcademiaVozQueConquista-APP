@@ -198,12 +198,12 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }, []);
 
     const stop = useCallback(() => {
-        if (Tone.Transport.state === 'started') {
-            Tone.Transport.stop();
-        }
         if (playerRef.current) {
             playerRef.current.stop();
         }
+        Tone.Transport.stop();
+        Tone.Transport.seconds = 0; // CRITICAL: Reset internal clock
+
         setIsPlaying(false);
         setCurrentTime(0);
         if (progressIntervalRef.current) {
@@ -226,12 +226,15 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
     const startProgressLoop = useCallback(() => {
         if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
+        // Using a higher frequency (approx 60fps) for smooth progress movement
         progressIntervalRef.current = window.setInterval(() => {
-            setCurrentTime(Tone.Transport.seconds);
-            if (duration > 0 && Tone.Transport.seconds >= duration) {
+            const currentSeconds = Tone.Transport.seconds;
+            setCurrentTime(currentSeconds);
+
+            if (duration > 0 && currentSeconds >= duration) {
                 stop();
             }
-        }, 100);
+        }, 16);
     }, [duration, stop]);
 
     const play = useCallback(async (url: string, options?: { pitch?: number, onEnded?: () => void }) => {
