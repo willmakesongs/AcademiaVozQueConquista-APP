@@ -169,7 +169,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           plan: data.plan || 'Plano Pro',
           nextDueDate: data.next_due_date || '2026-02-02',
           amount: data.amount || '97,00',
-          phone: data.phone || meta.phone || ''
+          phone: data.phone || meta.phone || authUser?.phone || ''
         };
         setUser(userData);
 

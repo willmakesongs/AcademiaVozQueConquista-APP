@@ -29,7 +29,7 @@ export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
     useEffect(() => {
         if (user) {
             setName(user.name || '');
-            if (user.phone) setPhone(user.phone);
+            setPhone(user.phone || '');
         }
     }, [user]);
 
