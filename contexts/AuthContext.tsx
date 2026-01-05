@@ -130,6 +130,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             name: meta.full_name || meta.name || authUser.email?.split('@')[0] || 'Usuário',
             role: (meta.role || localStorage.getItem('vocalizes_temp_role') || 'student') as 'student' | 'teacher',
             avatar_url: meta.avatar_url || meta.picture || '',
+            phone: meta.phone || ''
           };
 
           // Tenta inserir ignorando erro de duplicidade
