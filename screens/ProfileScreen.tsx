@@ -178,10 +178,10 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
     const [isEditing, setIsEditing] = useState(false);
 
     // --- ESTADO DO CONTRATO ---
-    const [contractAgreed, setContractAgreed] = useState(false);
+    const [contractAgreed, setContractAgreed] = useState(user?.contractAgreed || false);
     const [isSigning, setIsSigning] = useState(false);
     const signatureCanvasRef = useRef<HTMLCanvasElement | null>(null);
-    const [hasSignature, setHasSignature] = useState(false);
+    const [hasSignature, setHasSignature] = useState(!!user?.signatureUrl);
 
     // --- ESTADO DO BOTÃO PIX ---
     const [pixCopyStatus, setPixCopyStatus] = useState('Copiar Chave');
@@ -482,7 +482,58 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
         }
     };
 
-    // --- LÓGICA DE ASSINATURA ---
+    const handleSignContract = async () => {
+        if (!user || !contractAgreed) return;
+
+        const canvas = signatureCanvasRef.current;
+        if (!canvas) return;
+
+        try {
+            // 1. Convert Canvas to Blob
+            const blob = await new Promise<Blob>((resolve, reject) => {
+                canvas.toBlob((b) => {
+                    if (b) resolve(b);
+                    else reject(new Error('Falha ao gerar imagem da assinatura'));
+                }, 'image/png');
+            });
+
+            // 2. Upload to Supabase Storage
+            const fileName = `signature_${user.id}_${Date.now()}.png`;
+            const filePath = `${user.id}/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('signatures') // Create this bucket if it doesn't exist? Ideally should exist.
+                .upload(filePath, blob, { contentType: 'image/png', upsert: true });
+
+            if (uploadError) throw uploadError;
+
+            // 3. Get Public URL
+            const { data: { publicUrl } } = supabase.storage
+                .from('signatures')
+                .getPublicUrl(filePath);
+
+            // 4. Update Profile
+            const { error: updateError } = await supabase
+                .from('profiles')
+                .update({
+                    contract_agreed: true,
+                    contract_agreed_at: new Date().toISOString(),
+                    signature_url: publicUrl
+                })
+                .eq('id', user.id);
+
+            if (updateError) throw updateError;
+
+            await refreshUser();
+            alert("Contrato assinado e salvo com sucesso!");
+            setActiveView('menu');
+
+        } catch (error: any) {
+            console.error('Erro ao assinar contrato:', error);
+            alert('Erro ao salvar assinatura: ' + error.message);
+        }
+    };
+
     const startDrawing = (e: React.MouseEvent | React.TouchEvent) => {
         const canvas = signatureCanvasRef.current;
         if (!canvas) return;
@@ -1242,15 +1293,12 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                     </label>
 
                     <button
-                        disabled={!contractAgreed || !hasSignature}
-                        onClick={() => {
-                            alert("Contrato assinado com sucesso!");
-                            setActiveView('menu');
-                        }}
+                        disabled={!contractAgreed || (!hasSignature && !user?.signatureUrl)}
+                        onClick={handleSignContract}
                         className="w-full h-14 rounded-2xl bg-[#0081FF] text-white font-black flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 disabled:opacity-30 disabled:grayscale transition-all hover:scale-[1.02] active:scale-[0.98]"
                     >
                         <span className="material-symbols-rounded">edit_square</span>
-                        Assinar e Confirmar
+                        {user?.contractAgreed ? 'Atualizar Assinatura' : 'Assinar e Confirmar'}
                     </button>
                 </div>
             </div>

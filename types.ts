@@ -80,6 +80,9 @@ export interface User {
   level?: string;
   scheduleDay?: string;
   scheduleTime?: string;
+  contractAgreed?: boolean;
+  contractAgreedAt?: string;
+  signatureUrl?: string;
 }
 
 export interface StudentSummary {

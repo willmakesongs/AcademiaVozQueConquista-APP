@@ -101,7 +101,9 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     scheduleTime: s.schedule_time || '14:00',
                     amount: s.amount || 97,
                     address: s.address || '',
-                    instagram: s.instagram || ''
+                    contractAgreed: s.contract_agreed,
+                    contractAgreedAt: s.contract_agreed_at,
+                    signatureUrl: s.signature_url
                 }));
 
                 // Update local storage and state with fresh data from DB
@@ -1239,6 +1241,31 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                         <span className="material-symbols-rounded text-lg">chat</span>
                                     </button>
                                 </div>
+                            </div>
+
+                            <div className="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
+                                <p className="text-[10px] text-gray-500 font-bold uppercase">Status do Contrato</p>
+                                <div className="flex items-center gap-2">
+                                    <div className={`w-2 h-2 rounded-full ${selectedStudent?.contractAgreed ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                                    <span className={`text-xs font-bold ${selectedStudent?.contractAgreed ? 'text-green-500' : 'text-red-500'}`}>
+                                        {selectedStudent?.contractAgreed ? 'Contrato Assinado' : 'Pendente de Assinatura'}
+                                    </span>
+                                </div>
+                                {selectedStudent?.contractAgreed && (
+                                    <>
+                                        <p className="text-[10px] text-gray-400">
+                                            Assinado em: {selectedStudent.contractAgreedAt ? `${new Date(selectedStudent.contractAgreedAt).toLocaleDateString('pt-BR')} às ${new Date(selectedStudent.contractAgreedAt).toLocaleTimeString('pt-BR')}` : 'Data desconhecida'}
+                                        </p>
+                                        {selectedStudent.signatureUrl && (
+                                            <div className="mt-2">
+                                                <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Assinatura Digital</p>
+                                                <div className="bg-white rounded-lg p-2 h-24 w-full overflow-hidden flex items-center justify-center">
+                                                    <img src={selectedStudent.signatureUrl} alt="Assinatura do Aluno" className="h-full object-contain" />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
                             </div>
 
                             <div className="space-y-2">

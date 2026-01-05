@@ -178,7 +178,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           modality: data.modality,
           level: data.level,
           scheduleDay: data.schedule_day,
-          scheduleTime: data.schedule_time
+          scheduleTime: data.schedule_time,
+          contractAgreed: data.contract_agreed,
+          contractAgreedAt: data.contract_agreed_at,
+          signatureUrl: data.signature_url
         };
         setUser(userData);
 
