@@ -31,6 +31,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [syncStatus, setSyncStatus] = useState<'synced' | 'error' | 'loading'>('loading');
+    const [newReceiptNotice, setNewReceiptNotice] = useState<{ userName: string, amount: string } | null>(null);
 
     // States Detalhes
     const [selectedStudent, setSelectedStudent] = useState<StudentSummary | null>(null);
@@ -86,8 +87,16 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 },
                 (payload) => {
                     console.log('New receipt uploaded!', payload);
-                    fetchData(); // Refresh all data when a new receipt is uploaded
-                    // Optional: Play a sound or show a more intrusive alert if needed
+                    fetchData(); // Refresh all data
+
+                    // Show Popup Notification
+                    const newR = payload.new as any;
+                    if (newR && newR.status === 'pending') {
+                        // We need the name, so we fetch it or just use a generic "Novo Recibo"
+                        // Since we just called fetchData, we can try to find the student name later or just show a generic msg
+                        setNewReceiptNotice({ userName: 'Um aluno', amount: newR.amount });
+                        setTimeout(() => setNewReceiptNotice(null), 5000);
+                    }
                 }
             )
             .subscribe();
@@ -1360,6 +1369,19 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                         Confirmar Pagamento Recebido
                                     </button>
 
+                                    {/* Link para o Comprovante se existir pendente */}
+                                    {receipts.find(r => r.userId === selectedStudent.id && r.status === 'pending') && (
+                                        <a
+                                            href={receipts.find(r => r.userId === selectedStudent.id && r.status === 'pending')?.receiptUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="w-full bg-yellow-500/20 text-yellow-600 h-10 rounded-lg flex items-center justify-center gap-2 text-xs font-bold hover:bg-yellow-500/30 transition-all mb-3 border border-yellow-500/20"
+                                        >
+                                            <span className="material-symbols-rounded text-sm">visibility</span>
+                                            Ver Comprovante Enviado
+                                        </a>
+                                    )}
+
                                     <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Dia de Vencimento Preferencial</p>
                                     <select
                                         value={editPaymentDay}
@@ -1686,6 +1708,29 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 className="hidden"
                 onChange={handleStudentPhotoUpload}
             />
+            {/* Popup Notification for New Receipts */}
+            {newReceiptNotice && (
+                <div className="fixed top-20 left-4 right-4 z-[100] animate-in slide-in-from-top-4 duration-300">
+                    <div className="bg-[#1A202C] border-2 border-[#0081FF] rounded-2xl p-4 shadow-2xl flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-full bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] shrink-0">
+                            <span className="material-symbols-rounded text-2xl">payments</span>
+                        </div>
+                        <div className="flex-1">
+                            <h4 className="text-white font-bold text-sm">Novo Comprovante Recebido!</h4>
+                            <p className="text-gray-400 text-xs text-balance">Verifique o novo pagamento na aba financeira.</p>
+                        </div>
+                        <button
+                            onClick={() => {
+                                setNewReceiptNotice(null);
+                                setActiveTab('reports');
+                            }}
+                            className="bg-[#0081FF] text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider"
+                        >
+                            Ver Agora
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
