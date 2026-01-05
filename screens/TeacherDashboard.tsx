@@ -73,6 +73,28 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
     useEffect(() => {
         fetchData();
+
+        // 🟢 Realtime Subscription for Payment Receipts
+        const channel = supabase
+            .channel('receipts_changes')
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'payment_receipts'
+                },
+                (payload) => {
+                    console.log('New receipt uploaded!', payload);
+                    fetchData(); // Refresh all data when a new receipt is uploaded
+                    // Optional: Play a sound or show a more intrusive alert if needed
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
     }, []);
 
     const fetchData = async (force: boolean = false) => {
@@ -1199,13 +1221,18 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
-                            className={`flex items-center gap-2 px-1 pb-3 text-sm font-bold border-b-2 transition-all whitespace-nowrap ${activeTab === tab.id
+                            className={`flex items-center gap-2 px-1 pb-3 text-sm font-bold border-b-2 transition-all whitespace-nowrap relative ${activeTab === tab.id
                                 ? 'text-[#0081FF] border-[#0081FF]'
                                 : 'text-gray-500 border-transparent hover:text-gray-300'
                                 }`}
                         >
                             <span className={`material-symbols-rounded text-lg ${activeTab === tab.id ? 'filled' : ''}`}>{tab.icon}</span>
                             <span>{tab.label}</span>
+
+                            {/* Dashboard/Financial Badge */}
+                            {tab.id === 'reports' && receipts.some(r => r.status === 'pending') && (
+                                <span className="absolute top-0 -right-1 w-2 h-2 bg-red-500 rounded-full border border-[#101622] animate-pulse"></span>
+                            )}
                         </button>
                     ))}
                 </div>
