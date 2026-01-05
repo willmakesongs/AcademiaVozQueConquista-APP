@@ -26,10 +26,10 @@ export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
 
     const [loading, setLoading] = useState(false);
 
-    // Initial sync with guest/partial data if exists
     useEffect(() => {
         if (user) {
             setName(user.name || '');
+            if (user.phone) setPhone(user.phone);
         }
     }, [user]);
 

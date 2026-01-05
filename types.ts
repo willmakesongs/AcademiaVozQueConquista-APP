@@ -71,6 +71,7 @@ export interface User {
   nextDueDate?: string;
   amount?: string;
   onboardingCompleted?: boolean;
+  phone?: string;
 }
 
 export interface StudentSummary {
