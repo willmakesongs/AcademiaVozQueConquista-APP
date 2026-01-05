@@ -18,7 +18,7 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
   // Estado inicial null garante que todos comecem fechados
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedTopic, setSelectedTopic] = useState<{ title: string; content: string } | null>(null);
+  const [selectedTopic, setSelectedTopic] = useState<{ id: string; title: string; content: string } | null>(null);
 
   // Refs e Estados para o Checklist e Audio Inline
   const contentRef = useRef<HTMLDivElement>(null);
@@ -362,22 +362,24 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
                     {module.topics.map(topic => (
                       <div
                         key={topic.id}
-                        className={`relative p-2 rounded-lg transition-colors ${topic.content ? 'hover:bg-white/5 cursor-pointer group' : ''}`}
+                        className={`relative p-2 rounded-lg transition-colors ${topic.content || topic.id.startsWith('10.1') ? 'hover:bg-white/5 cursor-pointer group' : ''}`}
                         onClick={() => {
-                          if (topic.content) {
-                            setSelectedTopic({ title: topic.title, content: topic.content });
+                          if (topic.content || topic.id.startsWith('10.1')) {
+                            setSelectedTopic({ id: topic.id, title: topic.title, content: topic.content });
                           }
                         }}
                       >
                         <div className="flex justify-between items-start">
                           <div>
-                            <p className={`text-sm font-semibold ${topic.content ? 'text-[#0081FF] group-hover:text-white' : 'text-white'}`}>
+                            <p className={`text-sm font-semibold ${topic.content || topic.id.startsWith('10.1') ? 'text-[#0081FF] group-hover:text-white' : 'text-white'}`}>
                               {topic.title}
                             </p>
                             <p className="text-[10px] text-gray-500">{topic.description}</p>
                           </div>
-                          {topic.content && (
-                            <span className="material-symbols-rounded text-gray-600 text-sm group-hover:text-white">article</span>
+                          {(topic.content || topic.id.startsWith('10.1')) && (
+                            <span className="material-symbols-rounded text-gray-600 text-sm group-hover:text-white">
+                              {topic.id.startsWith('10.1') ? 'play_circle' : 'article'}
+                            </span>
                           )}
                         </div>
                       </div>
@@ -419,7 +421,7 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
                     </div>
                   )}
 
-                  {moduleExercises.length === 0 && (
+                  {moduleExercises.length === 0 && module.id !== 'm10' && (
                     <div className="p-4 rounded-xl bg-white/5 text-center">
                       <p className="text-xs text-gray-400">Exercícios deste módulo serão liberados em breve.</p>
                     </div>
