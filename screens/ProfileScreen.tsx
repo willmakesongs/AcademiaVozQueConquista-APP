@@ -583,7 +583,15 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
 
             if (dbError) throw dbError;
 
-            alert('Comprovante enviado com sucesso! O professor será notificado.');
+            // 5. Redirecionar para WhatsApp (Nova Estratégia)
+            const teacherPhone = '5535997565329';
+            const message = `Segue o recibo de pagamento referente às minhas aulas de canto.\n\nComprovante: ${publicUrl}`;
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/${teacherPhone}?text=${encodedMessage}`;
+
+            // Abrir WhatsApp e avisar o usuário
+            window.open(whatsappUrl, '_blank');
+            alert('Comprovante enviado! Abrindo o WhatsApp para avisar o professor.');
 
         } catch (error: any) {
             console.error('Erro ao enviar comprovante:', error);
