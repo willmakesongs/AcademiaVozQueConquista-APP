@@ -1310,123 +1310,125 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             )}
 
             {isAddModalOpen && (
-                <div className="fixed inset-0 z-[60] flex flex-col bg-[#101622] animate-in slide-in-from-bottom duration-300">
-                    <div className="w-full h-full flex flex-col">
-                        {/* Header Fixado */}
-                        <div className="px-6 pt-12 pb-4 flex justify-between items-center border-b border-white/5 bg-[#151A23] shrink-0">
-                            <button onClick={() => setIsAddModalOpen(false)} className="w-10 h-10 rounded-full flex items-center justify-center text-gray-400 hover:bg-white/5 transition-colors">
-                                <span className="material-symbols-rounded text-2xl">close</span>
-                            </button>
-                            <h3 className="text-lg font-black text-white">Novo Aluno</h3>
-                            <button
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    handleAddStudent();
-                                }}
-                                disabled={loadingAction}
-                                className="text-[#0081FF] font-black text-sm uppercase tracking-wider disabled:opacity-30 px-2"
-                            >
-                                {loadingAction ? '...' : 'Salvar'}
-                            </button>
-                        </div>
+                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-300 p-4">
+                    <div className="w-full max-w-md h-full max-h-[90dvh] flex flex-col bg-[#101622] rounded-[32px] overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-300">
+                        <div className="w-full h-full flex flex-col">
+                            {/* Header Fixado */}
+                            <div className="px-6 pt-12 pb-4 flex justify-between items-center border-b border-white/5 bg-[#151A23] shrink-0">
+                                <button onClick={() => setIsAddModalOpen(false)} className="w-10 h-10 rounded-full flex items-center justify-center text-gray-400 hover:bg-white/5 transition-colors">
+                                    <span className="material-symbols-rounded text-2xl">close</span>
+                                </button>
+                                <h3 className="text-lg font-black text-white">Novo Aluno</h3>
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handleAddStudent();
+                                    }}
+                                    disabled={loadingAction}
+                                    className="text-[#0081FF] font-black text-sm uppercase tracking-wider disabled:opacity-30 px-2"
+                                >
+                                    {loadingAction ? '...' : 'Salvar'}
+                                </button>
+                            </div>
 
-                        {/* Form Content Scrollable */}
-                        <div className="flex-1 overflow-y-auto px-6 py-8 space-y-8 hide-scrollbar pb-32">
-                            {/* ... (Existing Form Fields) ... */}
-                            {/* Re-using existing render logic for the form fields to ensure no functionality lost */}
-                            {/* Pessoal */}
-                            <section className="space-y-4">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span className="material-symbols-rounded text-[#0081FF] text-lg">person</span>
-                                    <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Dados Pessoais</h4>
-                                </div>
-                                <div className="space-y-4">
-                                    <div>
-                                        <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Nome Completo</p>
-                                        <input type="text" value={newStudentName} onChange={(e) => setNewStudentName(e.target.value)} placeholder="Ex: Maria Silva" className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white focus:outline-none focus:border-[#0081FF] transition-all" />
+                            {/* Form Content Scrollable */}
+                            <div className="flex-1 overflow-y-auto px-6 py-8 space-y-8 hide-scrollbar pb-32">
+                                {/* ... (Existing Form Fields) ... */}
+                                {/* Re-using existing render logic for the form fields to ensure no functionality lost */}
+                                {/* Pessoal */}
+                                <section className="space-y-4">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <span className="material-symbols-rounded text-[#0081FF] text-lg">person</span>
+                                        <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Dados Pessoais</h4>
                                     </div>
-                                    <div className="grid grid-cols-3 gap-4">
-                                        <div className="col-span-1">
-                                            <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Idade</p>
-                                            <input type="number" value={newStudentAge} onChange={(e) => setNewStudentAge(e.target.value)} placeholder="25" className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white focus:outline-none focus:border-[#0081FF] transition-all text-center" />
+                                    <div className="space-y-4">
+                                        <div>
+                                            <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Nome Completo</p>
+                                            <input type="text" value={newStudentName} onChange={(e) => setNewStudentName(e.target.value)} placeholder="Ex: Maria Silva" className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white focus:outline-none focus:border-[#0081FF] transition-all" />
                                         </div>
-                                        <div className="col-span-2">
-                                            <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Endereço</p>
-                                            <input type="text" value={newStudentAddress} onChange={(e) => setNewStudentAddress(e.target.value)} placeholder="Rua, Número, Bairro" className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white focus:outline-none focus:border-[#0081FF] transition-all" />
+                                        <div className="grid grid-cols-3 gap-4">
+                                            <div className="col-span-1">
+                                                <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Idade</p>
+                                                <input type="number" value={newStudentAge} onChange={(e) => setNewStudentAge(e.target.value)} placeholder="25" className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white focus:outline-none focus:border-[#0081FF] transition-all text-center" />
+                                            </div>
+                                            <div className="col-span-2">
+                                                <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Endereço</p>
+                                                <input type="text" value={newStudentAddress} onChange={(e) => setNewStudentAddress(e.target.value)} placeholder="Rua, Número, Bairro" className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white focus:outline-none focus:border-[#0081FF] transition-all" />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </section>
+                                </section>
 
-                            <section className="space-y-4">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span className="material-symbols-rounded text-[#0081FF] text-lg">contact_mail</span>
-                                    <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Contato</h4>
-                                </div>
-                                <div className="space-y-4">
-                                    <div className="relative">
-                                        <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Telefone / WhatsApp</p>
+                                <section className="space-y-4">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <span className="material-symbols-rounded text-[#0081FF] text-lg">contact_mail</span>
+                                        <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Contato</h4>
+                                    </div>
+                                    <div className="space-y-4">
                                         <div className="relative">
-                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-500 text-lg">call</span>
-                                            <input type="text" value={newStudentPhone} onChange={(e) => setNewStudentPhone(e.target.value)} placeholder="(00) 00000-0000" className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 pl-12 pr-4 text-white focus:outline-none focus:border-[#0081FF] transition-all" />
+                                            <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Telefone / WhatsApp</p>
+                                            <div className="relative">
+                                                <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-500 text-lg">call</span>
+                                                <input type="text" value={newStudentPhone} onChange={(e) => setNewStudentPhone(e.target.value)} placeholder="(00) 00000-0000" className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 pl-12 pr-4 text-white focus:outline-none focus:border-[#0081FF] transition-all" />
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div className="relative">
-                                        <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Instagram</p>
                                         <div className="relative">
-                                            <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-500 text-lg">alternate_email</span>
-                                            <input type="text" value={newStudentInstagram} onChange={(e) => setNewStudentInstagram(e.target.value)} placeholder="usuario_insta" className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 pl-12 pr-4 text-white focus:outline-none focus:border-[#0081FF] transition-all" />
+                                            <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Instagram</p>
+                                            <div className="relative">
+                                                <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-500 text-lg">alternate_email</span>
+                                                <input type="text" value={newStudentInstagram} onChange={(e) => setNewStudentInstagram(e.target.value)} placeholder="usuario_insta" className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 pl-12 pr-4 text-white focus:outline-none focus:border-[#0081FF] transition-all" />
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
-                            </section>
+                                </section>
 
-                            <section className="space-y-4">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span className="material-symbols-rounded text-[#0081FF] text-lg">school</span>
-                                    <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Detalhes da Aula</h4>
-                                </div>
-                                <div className="space-y-4">
+                                <section className="space-y-4">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <span className="material-symbols-rounded text-[#0081FF] text-lg">school</span>
+                                        <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Detalhes da Aula</h4>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Tipo de Aula</p>
+                                            <div className="grid grid-cols-2 gap-2 bg-white/5 p-1.5 rounded-2xl border border-white/5">
+                                                <button onClick={() => setNewStudentModality('Presencial')} className={`flex items-center justify-center gap-2 h-11 rounded-xl text-sm font-bold transition-all ${newStudentModality === 'Presencial' ? 'bg-[#0081FF] text-white shadow-lg' : 'text-gray-400'}`}> <span className="material-symbols-rounded text-lg">location_on</span> Presencial </button>
+                                                <button onClick={() => setNewStudentModality('Online')} className={`flex items-center justify-center gap-2 h-11 rounded-xl text-sm font-bold transition-all ${newStudentModality === 'Online' ? 'bg-[#0081FF] text-white shadow-lg' : 'text-gray-400'}`}> <span className="material-symbols-rounded text-lg">videocam</span> Online </button>
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Classificação</p>
+                                                <select value={newStudentLevel} onChange={(e) => setNewStudentLevel(e.target.value)} className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white outline-none"> {['Iniciante', 'Intermediário', 'Avançado'].map(l => <option key={l} value={l} className="bg-[#1A202C]">{l}</option>)} </select>
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Valor (R$)</p>
+                                                <input type="number" value={newStudentAmount} onChange={(e) => setNewStudentAmount(e.target.value)} className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white outline-none" />
+                                            </div>
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Dia da Aula</p>
+                                                <select value={scheduleDay} onChange={(e) => setScheduleDay(e.target.value)} className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white outline-none"> {WEEK_DAYS.map(d => <option key={d} value={d} className="bg-[#1A202C]">{d}</option>)} </select>
+                                            </div>
+                                            <div>
+                                                <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Horário</p>
+                                                <input type="time" value={scheduleTime} onChange={(e) => setScheduleTime(e.target.value)} className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white outline-none" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                                <section className="space-y-4">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <span className="material-symbols-rounded text-[#0081FF] text-lg">description</span>
+                                        <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Outros</h4>
+                                    </div>
                                     <div>
-                                        <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Tipo de Aula</p>
-                                        <div className="grid grid-cols-2 gap-2 bg-white/5 p-1.5 rounded-2xl border border-white/5">
-                                            <button onClick={() => setNewStudentModality('Presencial')} className={`flex items-center justify-center gap-2 h-11 rounded-xl text-sm font-bold transition-all ${newStudentModality === 'Presencial' ? 'bg-[#0081FF] text-white shadow-lg' : 'text-gray-400'}`}> <span className="material-symbols-rounded text-lg">location_on</span> Presencial </button>
-                                            <button onClick={() => setNewStudentModality('Online')} className={`flex items-center justify-center gap-2 h-11 rounded-xl text-sm font-bold transition-all ${newStudentModality === 'Online' ? 'bg-[#0081FF] text-white shadow-lg' : 'text-gray-400'}`}> <span className="material-symbols-rounded text-lg">videocam</span> Online </button>
-                                        </div>
+                                        <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Anotações</p>
+                                        <textarea value={newStudentNotes} onChange={(e) => setNewStudentNotes(e.target.value)} placeholder="Observações..." className="w-full h-32 bg-white/5 rounded-2xl border border-white/5 p-4 text-white focus:outline-none focus:border-[#0081FF] resize-none transition-all" />
                                     </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Classificação</p>
-                                            <select value={newStudentLevel} onChange={(e) => setNewStudentLevel(e.target.value)} className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white outline-none"> {['Iniciante', 'Intermediário', 'Avançado'].map(l => <option key={l} value={l} className="bg-[#1A202C]">{l}</option>)} </select>
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Valor (R$)</p>
-                                            <input type="number" value={newStudentAmount} onChange={(e) => setNewStudentAmount(e.target.value)} className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white outline-none" />
-                                        </div>
-                                    </div>
-                                    <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Dia da Aula</p>
-                                            <select value={scheduleDay} onChange={(e) => setScheduleDay(e.target.value)} className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white outline-none"> {WEEK_DAYS.map(d => <option key={d} value={d} className="bg-[#1A202C]">{d}</option>)} </select>
-                                        </div>
-                                        <div>
-                                            <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Horário</p>
-                                            <input type="time" value={scheduleTime} onChange={(e) => setScheduleTime(e.target.value)} className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white outline-none" />
-                                        </div>
-                                    </div>
-                                </div>
-                            </section>
-                            <section className="space-y-4">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span className="material-symbols-rounded text-[#0081FF] text-lg">description</span>
-                                    <h4 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Outros</h4>
-                                </div>
-                                <div>
-                                    <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Anotações</p>
-                                    <textarea value={newStudentNotes} onChange={(e) => setNewStudentNotes(e.target.value)} placeholder="Observações..." className="w-full h-32 bg-white/5 rounded-2xl border border-white/5 p-4 text-white focus:outline-none focus:border-[#0081FF] resize-none transition-all" />
-                                </div>
-                            </section>
+                                </section>
 
+                            </div>
                         </div>
                     </div>
                 </div>
