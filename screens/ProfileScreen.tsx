@@ -166,7 +166,14 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
         name: user?.name || '',
         email: 'usuario@email.com', // Mock, já que user não tem email no tipo atual
         phone: user?.phone || '',
-        bio: user?.bio || ''
+        bio: user?.bio || '',
+        address: user?.address || '',
+        age: user?.age || '',
+        instagram: user?.instagram || '',
+        modality: user?.modality || 'Online',
+        level: user?.level || 'Iniciante',
+        scheduleDay: user?.scheduleDay || 'Segunda',
+        scheduleTime: user?.scheduleTime || '09:00'
     });
     const [isEditing, setIsEditing] = useState(false);
 
@@ -453,7 +460,14 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                 .update({
                     name: formData.name,
                     phone: formData.phone,
-                    bio: formData.bio
+                    bio: formData.bio,
+                    address: formData.address,
+                    age: parseInt(formData.age) || null,
+                    instagram: formData.instagram,
+                    modality: formData.modality,
+                    level: formData.level,
+                    schedule_day: formData.scheduleDay,
+                    schedule_time: formData.scheduleTime
                 })
                 .eq('id', user.id);
 
@@ -854,6 +868,67 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                             onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                             className="w-full h-24 bg-[#1A202C] rounded-xl border border-white/10 p-4 text-white text-sm focus:border-[#0081FF] disabled:opacity-50 resize-none"
                         />
+                    </div>
+
+                    <div className="space-y-1">
+                        <label className="text-xs font-bold text-gray-500 uppercase ml-1">Idade</label>
+                        <input
+                            type="number"
+                            value={formData.age}
+                            disabled={!isEditing}
+                            onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+                            className="w-full h-12 bg-[#1A202C] rounded-xl border border-white/10 px-4 text-white text-sm focus:border-[#0081FF] disabled:opacity-50"
+                        />
+                    </div>
+
+                    <div className="space-y-1">
+                        <label className="text-xs font-bold text-gray-500 uppercase ml-1">Endereço</label>
+                        <input
+                            type="text"
+                            value={formData.address}
+                            disabled={!isEditing}
+                            onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                            className="w-full h-12 bg-[#1A202C] rounded-xl border border-white/10 px-4 text-white text-sm focus:border-[#0081FF] disabled:opacity-50"
+                        />
+                    </div>
+
+                    <div className="space-y-1">
+                        <label className="text-xs font-bold text-gray-500 uppercase ml-1">Instagram</label>
+                        <input
+                            type="text"
+                            value={formData.instagram}
+                            disabled={!isEditing}
+                            onChange={(e) => setFormData({ ...formData, instagram: e.target.value })}
+                            className="w-full h-12 bg-[#1A202C] rounded-xl border border-white/10 px-4 text-white text-sm focus:border-[#0081FF] disabled:opacity-50"
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                            <label className="text-xs font-bold text-gray-500 uppercase ml-1">Modalidade</label>
+                            <select
+                                value={formData.modality}
+                                disabled={!isEditing}
+                                onChange={(e) => setFormData({ ...formData, modality: e.target.value as any })}
+                                className="w-full h-12 bg-[#1A202C] rounded-xl border border-white/10 px-4 text-white text-sm focus:border-[#0081FF] disabled:opacity-50"
+                            >
+                                <option value="Online">Online</option>
+                                <option value="Presencial">Presencial</option>
+                            </select>
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-xs font-bold text-gray-500 uppercase ml-1">Nível</label>
+                            <select
+                                value={formData.level}
+                                disabled={!isEditing}
+                                onChange={(e) => setFormData({ ...formData, level: e.target.value })}
+                                className="w-full h-12 bg-[#1A202C] rounded-xl border border-white/10 px-4 text-white text-sm focus:border-[#0081FF] disabled:opacity-50"
+                            >
+                                <option value="Iniciante">Iniciante</option>
+                                <option value="Intermediário">Intermediário</option>
+                                <option value="Avançado">Avançado</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>

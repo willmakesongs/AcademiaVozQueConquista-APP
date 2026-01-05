@@ -73,6 +73,13 @@ export interface User {
   onboardingCompleted?: boolean;
   phone?: string;
   bio?: string;
+  address?: string;
+  age?: string;
+  instagram?: string;
+  modality?: 'Online' | 'Presencial';
+  level?: string;
+  scheduleDay?: string;
+  scheduleTime?: string;
 }
 
 export interface StudentSummary {

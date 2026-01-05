@@ -171,7 +171,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           nextDueDate: data.next_due_date || '2026-02-02',
           amount: data.amount || '97,00',
           phone: data.phone || meta.phone || authUser?.phone || '',
-          bio: data.bio || ''
+          bio: data.bio || '',
+          address: data.address,
+          age: data.age?.toString(),
+          instagram: data.instagram,
+          modality: data.modality,
+          level: data.level,
+          scheduleDay: data.schedule_day,
+          scheduleTime: data.schedule_time
         };
         setUser(userData);
 
