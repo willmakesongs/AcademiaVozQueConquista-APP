@@ -1057,21 +1057,9 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
 
                     <div>
                         <h3 className="text-white font-bold mb-3">Histórico</h3>
-                        <div className="space-y-2">
-                            {[1, 2, 3].map((i) => (
-                                <div key={i} className="flex justify-between items-center p-3 rounded-xl hover:bg-white/5 transition-colors cursor-pointer">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center text-green-500">
-                                            <span className="material-symbols-rounded text-sm">check</span>
-                                        </div>
-                                        <div>
-                                            <p className="text-sm text-white font-medium">Pagamento Efetuado</p>
-                                            <p className="text-[10px] text-gray-500">02 de {['Janeiro', 'Dezembro', 'Novembro'][i - 1]}</p>
-                                        </div>
-                                    </div>
-                                    <span className="text-sm text-gray-300">R$ 97,00</span>
-                                </div>
-                            ))}
+                        <div className="bg-[#1A202C] rounded-xl border border-white/5 p-8 flex flex-col items-center justify-center text-center opacity-50">
+                            <span className="material-symbols-rounded text-3xl text-gray-500 mb-2">receipt_long</span>
+                            <p className="text-xs text-gray-400">Nenhum pagamento registrado ainda.</p>
                         </div>
                     </div>
                 </div>
