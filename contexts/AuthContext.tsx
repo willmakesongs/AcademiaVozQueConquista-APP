@@ -15,6 +15,7 @@ interface AuthContextType {
   signOut: () => Promise<void>;
   updateProfileAvatar: (url: string) => Promise<void>;
   visitorTimeRemaining: number | null;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -331,17 +332,38 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
-    if (user?.id === 'guest') {
-      setUser(null);
-      localStorage.removeItem('visitor_start_time'); // Clear timer
-      return;
+    localStorage.removeItem('visitor_start_time');
+    localStorage.removeItem('vocalizes_temp_role');
+    // Only attempt Supabase signOut if not a guest and Supabase is configured
+    if (user?.id !== 'guest' && isSupabaseConfigured) {
+      const { error } = await supabase.auth.signOut();
+      if (error) console.error("Erro ao sair:", error);
     }
-    if (!isSupabaseConfigured) { setUser(null); return; }
-    try { await supabase.auth.signOut(); } catch (e) { console.warn(e); } finally { setUser(null); }
+    setUser(null);
+  };
+
+  const refreshUser = async () => {
+    if (user?.id) {
+      await fetchProfile(user.id);
+    }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signInWithGoogle, signInWithPhone, signInAsGuest, verifyOtp, signOut, updateProfileAvatar, visitorTimeRemaining }}>
+    <AuthContext.Provider value={{
+      user,
+      loading,
+      signIn,
+      signUp,
+      signInWithGoogle,
+      signInWithPhone,
+      signInAsGuest,
+      verifyOtp,
+      signOut,
+      updateProfileAvatar,
+      visitorTimeRemaining,
+      refreshUser,
+      setUser
+    }}>
       {children}
     </AuthContext.Provider>
   );

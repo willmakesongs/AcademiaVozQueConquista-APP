@@ -11,7 +11,7 @@ interface Props {
 const WEEK_DAYS = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
 
 export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
-    const { user, signOut } = useAuth();
+    const { user, signOut, setUser } = useAuth() as any; // Cast to any temporarily if type update lag
 
     // Form States
     const [name, setName] = useState('');
@@ -69,13 +69,19 @@ export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
             } catch (extendedError) {
                 console.warn('Campos estendidos falharam (provavelmente colunas faltando no DB):', extendedError);
             }
-
+            // Force local update so App.tsx redirects immediately
+            if (user) {
+                setUser({ ...user, onboardingCompleted: true });
+            }
             onComplete();
         } catch (err: any) {
             console.error('Erro ao salvar onboarding:', err);
             // Se for erro de schema, tentamos prosseguir apenas com o básico se não tiver ido antes
             if (err.message?.includes('column') || err.message?.includes('schema')) {
                 alert('Aviso: Alguns dados extras não puderam ser salvos por atualização pendente no sistema, mas seu cadastro básico foi concluído.');
+                if (user) {
+                    setUser({ ...user, onboardingCompleted: true });
+                }
                 onComplete();
             } else {
                 alert('Erro ao salvar: ' + (err.message || String(err)));
