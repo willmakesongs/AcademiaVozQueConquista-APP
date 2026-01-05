@@ -119,6 +119,34 @@ export const INLINE_PLAYER_TEMPLATE = (url: string) => `
         <div class="w-1.5 rounded-full transition-all duration-150 shadow-[0_0_10px_rgba(255,0,188,0.3)]" style="background-color: #FF00BC; height: 8px;" data-base-height="8"></div>
     </div>
 </div>
+</div>
+`;
+
+// -----------------------------------------------------------
+// HTML DO PLAYER YOUTUBE EMBED (Reutilizável)
+// -----------------------------------------------------------
+export const YOUTUBE_EMBED_TEMPLATE = (videoId: string, title: string) => `
+<div class="mb-6 rounded-2xl overflow-hidden border border-white/10 shadow-2xl relative group">
+    <div class="aspect-video w-full bg-black relative">
+        <iframe 
+            width="100%" 
+            height="100%" 
+            src="https://www.youtube.com/embed/${videoId}" 
+            title="${title}" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+            allowfullscreen
+            class="absolute top-0 left-0 w-full h-full"
+        ></iframe>
+    </div>
+    <div class="bg-[#1A202C] p-3 flex justify-between items-center">
+        <span class="text-sm font-bold text-white truncate max-w-[80%]">${title}</span>
+        <div class="px-2 py-1 bg-red-600/20 rounded border border-red-600/50 flex items-center gap-1">
+             <span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
+             <span class="text-[10px] text-red-400 font-bold uppercase tracking-wider">Karaoke</span>
+        </div>
+    </div>
+</div>
 `;
 
 // Base URL for vocalizes
@@ -1247,6 +1275,59 @@ export const MODULES: Module[] = [
              </div>
           </div>
         `
+            }
+        ]
+    },
+    // MÓDULO 10 - REPERTÓRIO (KARAOKE)
+    {
+        id: 'm10',
+        number: '10',
+        title: 'Repertório & Aplicação',
+        subtitle: 'Biblioteca de Karaokê',
+        description: 'Coloque a técnica em prática com nossa curadoria de Playbacks.',
+        topics: [
+            {
+                id: '10.1',
+                title: 'Biblioteca de Karaokê (Acervo)',
+                description: 'Playbacks profissionais para treino.',
+                content: `
+              <div class="space-y-8 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
+                   <div class="absolute top-0 right-0 w-32 h-32 bg-red-600 blur-[80px] opacity-20"></div>
+                   <div class="relative z-10">
+                       <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                           <span class="material-symbols-rounded text-red-500">queue_music</span>
+                           Acervo Academia
+                       </h3>
+                       <p class="text-sm text-gray-300 mb-4">
+                           Use estes playbacks para aplicar os conceitos de <strong>Appoggio</strong>, <strong>Ressonância</strong> e <strong>Articulação</strong> estudados nos módulos anteriores.
+                       </p>
+                       <div class="p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex gap-3 items-center">
+                           <span class="material-symbols-rounded text-red-400 text-xl">monitor_heart</span>
+                           <p class="text-xs text-brand-gray-100">
+                               <strong>Dica de Mestre:</strong> Não tente imitar o cantor original. Use a sua voz, com a sua técnica.
+                           </p>
+                       </div>
+                   </div>
+                </div>
+
+                <!-- CATEGORIA: CLÁSSICOS BRASILEIROS -->
+                <div class="space-y-4">
+                    <h4 class="text-brand-purple-light font-bold text-sm uppercase tracking-wider flex items-center gap-2">
+                        <span class="w-6 h-1 bg-brand-purple-light rounded-full"></span>
+                        Clássicos Brasileiros
+                    </h4>
+                    
+                    ${YOUTUBE_EMBED_TEMPLATE('UDhe726GhFs', 'Evidências - Chitãozinho & Xororó (Tom Original)')}
+                    ${YOUTUBE_EMBED_TEMPLATE('yWjXqN7Q9o4', 'Como Nossos Pais - Elis Regina (Tom Original)')}
+                </div>
+
+                <!-- CATEGORIA: SERTANEJO / POP -->
+                <div class="space-y-4 pt-6 text-center">
+                    <p class="text-xs text-gray-500 italic">Mais músicas serão adicionadas semanalmente.</p>
+                </div>
+              </div>
+            `
             }
         ]
     }

@@ -4,6 +4,7 @@ import { Screen, Module, Vocalize } from '../types';
 import { MODULES, VOCALIZES } from '../constants';
 import { useAuth } from '../contexts/AuthContext';
 import { usePlayback } from '../contexts/PlaybackContext';
+import { RepertoireView } from '../components/RepertoireView';
 
 interface Props {
   onNavigate: (screen: Screen) => void;
@@ -256,28 +257,37 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
   return (
     <div className="min-h-screen bg-[#101622] pb-24 flex flex-col relative">
       {/* Topic Content Modal (Lesson View) */}
+
       {selectedTopic && (
         <div className="fixed inset-0 z-50 bg-[#101622] flex flex-col animate-in slide-in-from-bottom duration-300 max-w-md mx-auto left-0 right-0 shadow-2xl">
-          <div className="pt-8 px-6 pb-4 bg-[#101622]/95 border-b border-white/5 flex items-center gap-3 sticky top-0">
-            <button
-              onClick={() => setSelectedTopic(null)}
-              className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-white/10"
-            >
-              <span className="material-symbols-rounded">close</span>
-            </button>
-            <h2 className="text-lg font-bold text-white flex-1 truncate">{selectedTopic.title}</h2>
-          </div>
-          <div
-            className="flex-1 overflow-y-auto p-6 hide-scrollbar"
-            ref={contentRef}
-            onClick={handleContentClick}
-          >
-            <div
-              className="prose prose-invert prose-sm max-w-none"
-              dangerouslySetInnerHTML={{ __html: selectedTopic.content }}
-            />
-            <div className="h-12"></div>
-          </div>
+          {selectedTopic.id === '10.1' ? (
+            <div className="flex-1 bg-[#101622] p-4">
+              <RepertoireView onBack={() => setSelectedTopic(null)} />
+            </div>
+          ) : (
+            <>
+              <div className="pt-8 px-6 pb-4 bg-[#101622]/95 border-b border-white/5 flex items-center gap-3 sticky top-0">
+                <button
+                  onClick={() => setSelectedTopic(null)}
+                  className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-white/10"
+                >
+                  <span className="material-symbols-rounded">close</span>
+                </button>
+                <h2 className="text-lg font-bold text-white flex-1 truncate">{selectedTopic.title}</h2>
+              </div>
+              <div
+                className="flex-1 overflow-y-auto p-6 hide-scrollbar"
+                ref={contentRef}
+                onClick={handleContentClick}
+              >
+                <div
+                  className="prose prose-invert prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: selectedTopic.content }}
+                />
+                <div className="h-12"></div>
+              </div>
+            </>
+          )}
         </div>
       )}
 
