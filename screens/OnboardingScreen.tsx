@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Logo } from '../components/Logo';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../contexts/AuthContext';
@@ -11,25 +11,38 @@ interface Props {
 const WEEK_DAYS = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
 
 export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
-    const { user, signOut, setUser } = useAuth() as any; // Cast to any temporarily if type update lag
+    const { user, signOut, setUser } = useAuth() as any;
 
-    // Form States
-    const [name, setName] = useState('');
-    const [age, setAge] = useState('');
-    const [address, setAddress] = useState('');
-    const [phone, setPhone] = useState('');
-    const [instagram, setInstagram] = useState('');
+    // Refs for performance (Uncontrolled Components) to avoid re-renders on typing
+    const nameRef = useRef<HTMLInputElement>(null);
+    const ageRef = useRef<HTMLInputElement>(null);
+    const addressRef = useRef<HTMLInputElement>(null);
+    const phoneRef = useRef<HTMLInputElement>(null);
+    const instagramRef = useRef<HTMLInputElement>(null);
+    const scheduleTimeRef = useRef<HTMLInputElement>(null);
+
+    // States only for selection UI
     const [modality, setModality] = useState<'Presencial' | 'Online'>('Presencial');
     const [level, setLevel] = useState('Iniciante');
     const [scheduleDay, setScheduleDay] = useState('Segunda');
-    const [scheduleTime, setScheduleTime] = useState('09:00');
 
+    // Controlled state only for loading
     const [loading, setLoading] = useState(false);
 
+    // Pre-fill data without causing re-renders loop
     useEffect(() => {
         if (user) {
-            setName(user.name || '');
-            setPhone(user.phone || '');
+            if (nameRef.current) nameRef.current.value = user.name || '';
+            if (phoneRef.current) phoneRef.current.value = user.phone || '';
+            if (addressRef.current) addressRef.current.value = user.address || '';
+            if (ageRef.current) ageRef.current.value = user.age ? String(user.age) : '';
+            if (instagramRef.current) instagramRef.current.value = user.instagram || '';
+            if (scheduleTimeRef.current) scheduleTimeRef.current.value = user.scheduleTime || '09:00';
+
+            // Update selections if they exist
+            if (user.modality) setModality(user.modality);
+            if (user.level) setLevel(user.level);
+            if (user.scheduleDay) setScheduleDay(user.scheduleDay);
         }
     }, [user]);
 
@@ -37,51 +50,54 @@ export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
         if (e) e.preventDefault();
         if (!user) return;
 
+        const nameValue = nameRef.current?.value || '';
+        if (!nameValue) {
+            alert('Por favor, preencha seu nome.');
+            return;
+        }
+
         setLoading(true);
         try {
             // 1. Atualização Garantida (Campos que já existem)
             const { error: coreError } = await supabase
                 .from('profiles')
                 .update({
-                    name: name,
-                    phone: phone,
+                    name: nameValue,
+                    phone: phoneRef.current?.value || '',
                     onboarding_completed: true
                 })
                 .eq('id', user.id);
 
             if (coreError) throw coreError;
 
-            // 2. Atualização "Best Effort" (Campos novos que podem não existir no banco ainda)
-            // Se falhar, o usuário prossegue, mas os dados extras não salvam (melhor que travar)
+            // 2. Atualização "Best Effort"
             try {
                 await supabase
                     .from('profiles')
                     .update({
-                        age: parseInt(age) || null,
-                        address: address,
-                        instagram: instagram,
+                        age: parseInt(ageRef.current?.value || '0') || null,
+                        address: addressRef.current?.value || '',
+                        instagram: instagramRef.current?.value || '',
                         modality: modality,
                         level: level,
                         schedule_day: scheduleDay,
-                        schedule_time: scheduleTime,
+                        schedule_time: scheduleTimeRef.current?.value || '09:00',
                     })
                     .eq('id', user.id);
             } catch (extendedError) {
-                console.warn('Campos estendidos falharam (provavelmente colunas faltando no DB):', extendedError);
+                console.warn('Campos estendidos falharam:', extendedError);
             }
-            // Force local update so App.tsx redirects immediately
+
+            // Force local update
             if (user) {
                 setUser({ ...user, onboardingCompleted: true });
             }
             onComplete();
         } catch (err: any) {
             console.error('Erro ao salvar onboarding:', err);
-            // Se for erro de schema, tentamos prosseguir apenas com o básico se não tiver ido antes
             if (err.message?.includes('column') || err.message?.includes('schema')) {
-                alert('Aviso: Alguns dados extras não puderam ser salvos por atualização pendente no sistema, mas seu cadastro básico foi concluído.');
-                if (user) {
-                    setUser({ ...user, onboardingCompleted: true });
-                }
+                alert('Cadastro básico salvo. Alguns detalhes extras podem não ter sido persistidos.');
+                if (user) setUser({ ...user, onboardingCompleted: true });
                 onComplete();
             } else {
                 alert('Erro ao salvar: ' + (err.message || String(err)));
@@ -93,12 +109,12 @@ export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#101622] p-4 overflow-hidden">
-            {/* Background Ambient Lights */}
-            <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-[#0081FF]/10 blur-[120px] rounded-full pointer-events-none" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-[#FF00BC]/10 blur-[120px] rounded-full pointer-events-none" />
+            {/* Background Ambient Lights - Optimized with translate3d for GPU acceleration */}
+            <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-[#0081FF]/10 blur-[120px] rounded-full pointer-events-none" style={{ transform: 'translate3d(0,0,0)' }} />
+            <div className="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-[#FF00BC]/10 blur-[120px] rounded-full pointer-events-none" style={{ transform: 'translate3d(0,0,0)' }} />
 
             <div className="w-full max-w-md h-full max-h-[90dvh] flex flex-col bg-[#101622] rounded-[32px] overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-500 border border-white/5">
-                {/* Header Fixado conforme mockup */}
+                {/* Header */}
                 <div className="px-6 pt-12 pb-4 flex justify-between items-center border-b border-white/5 bg-[#151A23] shrink-0">
                     <button
                         onClick={() => signOut()}
@@ -109,14 +125,14 @@ export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
                     <h3 className="text-lg font-black text-white">Novo Aluno</h3>
                     <button
                         onClick={() => handleSubmit()}
-                        disabled={loading || !name}
+                        disabled={loading}
                         className="text-[#0081FF] font-black text-sm uppercase tracking-wider disabled:opacity-30 px-2"
                     >
                         {loading ? '...' : 'Salvar'}
                     </button>
                 </div>
 
-                {/* Form Content Scrollable */}
+                {/* Form Content */}
                 <div className="flex-1 overflow-y-auto px-6 py-8 space-y-8 hide-scrollbar pb-32">
 
                     {/* Pessoal */}
@@ -129,32 +145,29 @@ export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
                             <div>
                                 <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Nome Completo</p>
                                 <input
+                                    ref={nameRef}
                                     type="text"
-                                    value={name}
-                                    onChange={(e) => setName(e.target.value)}
                                     placeholder="Ex: Maria Silva"
-                                    className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white focus:outline-none focus:border-[#0081FF] transition-all"
+                                    className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white focus:outline-none focus:border-[#0081FF] transition-colors"
                                 />
                             </div>
                             <div className="grid grid-cols-3 gap-4">
                                 <div className="col-span-1">
                                     <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Idade</p>
                                     <input
+                                        ref={ageRef}
                                         type="number"
-                                        value={age}
-                                        onChange={(e) => setAge(e.target.value)}
                                         placeholder="25"
-                                        className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white focus:outline-none focus:border-[#0081FF] transition-all text-center"
+                                        className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white focus:outline-none focus:border-[#0081FF] transition-colors text-center"
                                     />
                                 </div>
                                 <div className="col-span-2">
                                     <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Endereço</p>
                                     <input
+                                        ref={addressRef}
                                         type="text"
-                                        value={address}
-                                        onChange={(e) => setAddress(e.target.value)}
                                         placeholder="Rua, Número, Bairro"
-                                        className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white focus:outline-none focus:border-[#0081FF] transition-all"
+                                        className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white focus:outline-none focus:border-[#0081FF] transition-colors"
                                     />
                                 </div>
                             </div>
@@ -173,11 +186,10 @@ export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
                                 <div className="relative">
                                     <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-500 text-lg">call</span>
                                     <input
+                                        ref={phoneRef}
                                         type="text"
-                                        value={phone}
-                                        onChange={(e) => setPhone(e.target.value)}
                                         placeholder="(00) 00000-0000"
-                                        className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 pl-12 pr-4 text-white focus:outline-none focus:border-[#0081FF] transition-all"
+                                        className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 pl-12 pr-4 text-white focus:outline-none focus:border-[#0081FF] transition-colors"
                                     />
                                 </div>
                             </div>
@@ -186,11 +198,10 @@ export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
                                 <div className="relative">
                                     <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-500 text-lg">alternate_email</span>
                                     <input
+                                        ref={instagramRef}
                                         type="text"
-                                        value={instagram}
-                                        onChange={(e) => setInstagram(e.target.value)}
                                         placeholder="usuario_insta"
-                                        className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 pl-12 pr-4 text-white focus:outline-none focus:border-[#0081FF] transition-all"
+                                        className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 pl-12 pr-4 text-white focus:outline-none focus:border-[#0081FF] transition-colors"
                                     />
                                 </div>
                             </div>
@@ -253,10 +264,9 @@ export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
                                 <div>
                                     <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Horário</p>
                                     <input
+                                        ref={scheduleTimeRef}
                                         type="time"
-                                        value={scheduleTime}
-                                        onChange={(e) => setScheduleTime(e.target.value)}
-                                        className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white outline-none"
+                                        className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white outline-none transition-colors"
                                     />
                                 </div>
                             </div>
