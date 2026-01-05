@@ -37,14 +37,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (startStr) {
           const startTime = parseInt(startStr);
           const elapsed = Date.now() - startTime;
-          const totalDuration = user?.id === 'guest' ? 15 * 60 * 1000 : 10 * 60 * 1000; // 15 mins guest, 10 mins trial
+          const totalDuration = user?.id === 'guest' ? 15 * 60 * 1000 : 5 * 60 * 1000; // 15 mins guest, 5 mins trial
           const remaining = totalDuration - elapsed;
           setVisitorTimeRemaining(remaining > 0 ? remaining : 0);
         } else {
           // Should set start time if missing
           const now = Date.now();
           localStorage.setItem('visitor_start_time', now.toString());
-          setVisitorTimeRemaining(user?.id === 'guest' ? 15 * 60 * 1000 : 10 * 60 * 1000);
+          setVisitorTimeRemaining(user?.id === 'guest' ? 15 * 60 * 1000 : 5 * 60 * 1000);
         }
       };
 

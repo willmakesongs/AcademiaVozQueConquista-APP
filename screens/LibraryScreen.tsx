@@ -304,7 +304,7 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
           const moduleExercises = getVocalizesForModule(module.id);
           const isGuest = user?.id === 'guest';
           const isTrial = user?.status === 'trial';
-          const isLocked = false; // TEMPORARY FOR TESTING: (isGuest || isTrial) && index > 0;
+          const isLocked = (isGuest || isTrial) && index > 0;
 
           if (searchTerm && !module.title.toLowerCase().includes(searchTerm.toLowerCase()) && !moduleExercises.some(v => v.title.toLowerCase().includes(searchTerm.toLowerCase()))) {
             return null;
