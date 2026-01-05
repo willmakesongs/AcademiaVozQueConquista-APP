@@ -141,9 +141,9 @@ export const YOUTUBE_EMBED_TEMPLATE = (videoId: string, title: string) => `
     </div>
     <div class="bg-[#1A202C] p-3 flex justify-between items-center">
         <span class="text-sm font-bold text-white truncate max-w-[80%]">${title}</span>
-        <div class="px-2 py-1 bg-red-600/20 rounded border border-red-600/50 flex items-center gap-1">
-             <span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
-             <span class="text-[10px] text-red-400 font-bold uppercase tracking-wider">Karaoke</span>
+        <div class="px-2 py-1 bg-[#FF00BC]/20 rounded border border-[#FF00BC]/50 flex items-center gap-1">
+             <span class="w-1.5 h-1.5 bg-[#FF00BC] rounded-full animate-pulse"></span>
+             <span class="text-[10px] text-[#FF00BC] font-bold uppercase tracking-wider">Karaoke</span>
         </div>
     </div>
 </div>
@@ -223,7 +223,7 @@ export const MODULES: Module[] = [
                     <div class="pl-4 border-l-2 border-[#6F4CE7]/30">
                         <strong class="text-[#6F4CE7] text-sm uppercase tracking-wide block mb-1">B. Os Joelhos (Amortecimento)</strong>
                         <ul class="list-disc list-inside text-sm text-gray-300 space-y-1">
-                            <li><span class="text-red-400 font-bold">Proibido:</span> Travar os joelhos para trás (hiperextensão). Isso gera tensão na lombar.</li>
+                            <li><span class="text-[#FF00BC] font-bold">Proibido:</span> Travar os joelhos para trás (hiperextensão). Isso gera tensão na lombar.</li>
                             <li>Mantenha-os "destravados", com uma microflexão quase imperceptível.</li>
                         </ul>
                     </div>
@@ -291,10 +291,10 @@ export const MODULES: Module[] = [
                         </div>
                     </div>
 
-                    <div class="bg-red-500/10 border border-red-500/20 p-4 rounded-xl flex gap-3 items-start">
-                        <span class="material-symbols-rounded text-red-400 shrink-0">warning</span>
+                    <div class="bg-[#FF00BC]/10 border border-[#FF00BC]/20 p-4 rounded-xl flex gap-3 items-start">
+                        <span class="material-symbols-rounded text-[#FF00BC] shrink-0">warning</span>
                         <div>
-                            <strong class="text-red-400 text-sm block mb-1">Diagnóstico de Erro</strong>
+                            <strong class="text-[#FF00BC] text-sm block mb-1">Diagnóstico de Erro</strong>
                             <p class="text-xs text-gray-300">Se ao cantar você sente uma veia saltar no pescoço ou dor na nuca, seu eixo cervical está quebrado. Volte para a parede.</p>
                         </div>
                     </div>
@@ -371,7 +371,7 @@ export const MODULES: Module[] = [
                     <div class="pl-4 border-l-2 border-[#FF00BC]/30">
                         <strong class="text-[#FF00BC] text-sm uppercase tracking-wide block mb-1">Fase 1 (Sopro Constante)</strong>
                         <p class="text-sm text-gray-300">Inspire em 4 tempos expandindo a cintura. Solte o ar em "S" (pneu esvaziando) o mais constante possível.</p>
-                        <p class="text-xs text-red-400 mt-1">⚠️ O som não pode oscilar. Deve ser reto.</p>
+                        <p class="text-xs text-[#FF00BC] mt-1">⚠️ O som não pode oscilar. Deve ser reto.</p>
                         ${INLINE_PLAYER_TEMPLATE('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3')}
                     </div>
                     <div class="pl-4 border-l-2 border-[#FF00BC]/30">
@@ -444,8 +444,8 @@ export const MODULES: Module[] = [
                    <p class="text-sm text-gray-300 leading-relaxed mb-4">
                        A fáscia é uma membrana que envolve todos os seus músculos. Quando você está estressado ou pratica com má postura, essa membrana "encurta" e endurece.
                    </p>
-                   <div class="p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
-                      <p class="text-xs text-red-200">
+                   <div class="p-3 bg-[#FF00BC]/10 border border-[#FF00BC]/20 rounded-xl">
+                      <p class="text-xs text-pink-200">
                          <strong>⚠️ Perigo Vocal:</strong> No canto, as tensões mais perigosas estão no Masseter (mandíbula) e nos Esternocleidomastóideos (laterais do pescoço).
                       </p>
                    </div>
@@ -638,15 +638,15 @@ export const MODULES: Module[] = [
                     </ul>
                 </div>
 
-                <div class="border border-red-500/30 bg-red-500/5 rounded-2xl p-5 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-20 h-20 bg-red-500 blur-[60px] opacity-10"></div>
-                    <h3 class="text-lg font-bold text-red-200 mb-4 flex items-center gap-2 relative z-10">
-                        <span class="material-symbols-rounded text-red-400">warning</span>
+                <div class="border border-[#FF00BC]/30 bg-[#FF00BC]/5 rounded-2xl p-5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-[#FF00BC] blur-[60px] opacity-10"></div>
+                    <h3 class="text-lg font-bold text-pink-200 mb-4 flex items-center gap-2 relative z-10">
+                        <span class="material-symbols-rounded text-[#FF00BC]">warning</span>
                         Perspectiva Crítica
                     </h3>
                     <div class="relative z-10 text-sm text-gray-300 leading-relaxed">
                         <p class="mb-2">Muitos professores tratam o aquecimento como um "ritual" mecânico. No entanto, para a <strong>Voz que Conquista</strong>, o foco deve ser a <strong>propriocepção</strong>.</p>
-                        <p className="italic text-red-200">
+                        <p className="italic text-pink-200">
                             "Se você faz o tubo, mas continua tensionando o pescoço ou a língua, o exercício perde 80% da eficácia."
                         </p>
                         <p className="mt-2 text-xs">O objetivo não é apenas "aquecer" o músculo, mas calibrar a coordenação entre respiração e prega vocal.</p>
@@ -672,7 +672,7 @@ export const MODULES: Module[] = [
                     <div class="bg-black/20 p-4 rounded-xl border border-white/5 space-y-2">
                         <p class="text-xs text-gray-300"><strong>Objetivo:</strong> Relaxar a musculatura perioral e equilibrar o fluxo de ar.</p>
                         <p class="text-xs text-gray-300"><strong>Como fazer:</strong> Emita um som contínuo e confortável. Se tiver dificuldade, pressione levemente os cantos da boca.</p>
-                        <p class="text-xs text-red-400 italic">Atenção: Se a vibração parar, você está ou segurando o ar demais ou soltando-o sem controle.</p>
+                        <p class="text-xs text-[#FF00BC] italic">Atenção: Se a vibração parar, você está ou segurando o ar demais ou soltando-o sem controle.</p>
                     </div>
                     ${INLINE_PLAYER_TEMPLATE('https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/Long%20Scale%20(H)%20-%20Synthetic-1650753786.mp3')}
                 </div>
@@ -791,7 +791,7 @@ export const MODULES: Module[] = [
                                 <li><strong>Inspire:</strong> Tente "empurrar" o livro para o teto apenas com a barriga.</li>
                                 <li><strong>Expire:</strong> Deixe o livro descer lentamente.</li>
                             </ol>
-                            <div class="p-3 bg-red-500/10 rounded-lg border border-red-500/20 text-xs text-red-200">
+                            <div class="p-3 bg-[#FF00BC]/10 rounded-lg border border-[#FF00BC]/20 text-xs text-pink-200">
                                 <strong>⚠️ Atenção:</strong> Se o peito subir junto com o livro, você está "roubando". Isole o movimento abdominal.
                             </div>
                         </div>
@@ -1040,23 +1040,23 @@ export const MODULES: Module[] = [
                 description: 'Leia antes de iniciar qualquer exercício deste módulo.',
                 content: `
           <div class="space-y-6 font-sans">
-             <div class="bg-red-500/10 border border-red-500/30 p-6 rounded-2xl relative overflow-hidden">
-                <div class="absolute -right-4 -top-4 text-red-500/10 text-9xl font-bold">!</div>
+             <div class="bg-[#FF00BC]/10 border border-[#FF00BC]/30 p-6 rounded-2xl relative overflow-hidden">
+                <div class="absolute -right-4 -top-4 text-[#FF00BC]/10 text-9xl font-bold">!</div>
                 <div class="relative z-10">
-                   <h3 class="text-xl font-bold text-red-400 mb-2 flex items-center gap-2">
+                   <h3 class="text-xl font-bold text-[#FF00BC] mb-2 flex items-center gap-2">
                       <span class="material-symbols-rounded">block</span>
                       Controle de Segurança Vocal: Pare Agora!
                    </h3>
-                   <p class="text-sm text-red-100 mb-4 font-semibold">
+                   <p class="text-sm text-pink-100 mb-4 font-semibold">
                       O acesso aos exercícios de notas agudas só é permitido após a confirmação do aquecimento técnico.
                    </p>
                    <div class="bg-black/30 p-4 rounded-xl space-y-3">
                       <div class="flex gap-3 items-start">
-                         <span class="material-symbols-rounded text-red-400 shrink-0 mt-0.5">timer</span>
+                         <span class="material-symbols-rounded text-[#FF00BC] shrink-0 mt-0.5">timer</span>
                          <p class="text-xs text-gray-300">Você já realizou pelo menos <strong>15 minutos</strong> de aquecimento hoje? (Módulo 2)</p>
                       </div>
                       <div class="flex gap-3 items-start">
-                         <span class="material-symbols-rounded text-red-400 shrink-0 mt-0.5">graphic_eq</span>
+                         <span class="material-symbols-rounded text-[#FF00BC] shrink-0 mt-0.5">graphic_eq</span>
                          <p class="text-xs text-gray-300">Fez exercícios de SOVT (Vibração labial ou canudo) para descomprimir a laringe?</p>
                       </div>
                    </div>
@@ -1293,17 +1293,17 @@ export const MODULES: Module[] = [
                 content: `
               <div class="space-y-8 font-sans">
                 <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
-                   <div class="absolute top-0 right-0 w-32 h-32 bg-red-600 blur-[80px] opacity-20"></div>
+                   <div class="absolute top-0 right-0 w-32 h-32 bg-[#FF00BC] blur-[80px] opacity-20"></div>
                    <div class="relative z-10">
                        <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
-                           <span class="material-symbols-rounded text-red-500">queue_music</span>
+                           <span class="material-symbols-rounded text-[#FF00BC]">queue_music</span>
                            Acervo Academia
                        </h3>
                        <p class="text-sm text-gray-300 mb-4">
                            Use estes playbacks para aplicar os conceitos de <strong>Appoggio</strong>, <strong>Ressonância</strong> e <strong>Articulação</strong> estudados nos módulos anteriores.
                        </p>
-                       <div class="p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex gap-3 items-center">
-                           <span class="material-symbols-rounded text-red-400 text-xl">monitor_heart</span>
+                       <div class="p-3 bg-[#FF00BC]/10 border border-[#FF00BC]/20 rounded-xl flex gap-3 items-center">
+                           <span class="material-symbols-rounded text-[#FF00BC] text-xl">monitor_heart</span>
                            <p class="text-xs text-brand-gray-100">
                                <strong>Dica de Mestre:</strong> Não tente imitar o cantor original. Use a sua voz, com a sua técnica.
                            </p>
