@@ -11,7 +11,7 @@ interface Props {
 const WEEK_DAYS = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
 
 export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
-    const { user } = useAuth();
+    const { user, signOut } = useAuth();
 
     // Form States
     const [name, setName] = useState('');
@@ -57,9 +57,9 @@ export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
 
             if (error) throw error;
             onComplete();
-        } catch (err) {
-            console.error('Erro ao salvar cadastro:', err);
-            alert('Erro ao salvar seus dados. Tente novamente.');
+        } catch (err: any) {
+            console.error('Erro ao salvar onboarding:', err);
+            alert('Erro ao salvar: ' + (err.message || String(err)));
         } finally {
             setLoading(false);
         }
@@ -74,7 +74,12 @@ export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
             <div className="w-full max-w-md h-full max-h-[90dvh] flex flex-col bg-[#101622] rounded-[32px] overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-500 border border-white/5">
                 {/* Header Fixado conforme mockup */}
                 <div className="px-6 pt-12 pb-4 flex justify-between items-center border-b border-white/5 bg-[#151A23] shrink-0">
-                    <div className="w-10" /> {/* Spacer */}
+                    <button
+                        onClick={() => signOut()}
+                        className="text-red-500 font-bold text-xs uppercase tracking-wider hover:text-red-400 transition-colors"
+                    >
+                        Sair
+                    </button>
                     <h3 className="text-lg font-black text-white">Novo Aluno</h3>
                     <button
                         onClick={() => handleSubmit()}
