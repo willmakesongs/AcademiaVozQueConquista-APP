@@ -309,7 +309,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             modality: newStudentModality,
             scheduleDay: scheduleDay,
             scheduleTime: scheduleTime,
-            amount: parseInt(String(newStudentAmount)) || 97,
+            amount: parseFloat(String(newStudentAmount).replace(',', '.')) || 97,
             address: newStudentAddress,
             instagram: newStudentInstagram
         };
@@ -328,7 +328,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 instagram: newStudentInstagram || null,
                 address: newStudentAddress || null,
                 notes: newStudentNotes || null,
-                amount: parseInt(String(newStudentAmount)) || 97,
+                amount: parseFloat(String(newStudentAmount).replace(',', '.')) || 97,
                 payment_day: paymentDay
             }]).select();
 
@@ -350,7 +350,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 modality: newStudentModality,
                 scheduleDay: scheduleDay,
                 scheduleTime: scheduleTime,
-                amount: parseInt(String(newStudentAmount)) || 97,
+                amount: parseFloat(String(newStudentAmount).replace(',', '.')) || 97,
                 address: newStudentAddress,
                 instagram: newStudentInstagram
             };
@@ -428,7 +428,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 age: editAge ? parseInt(editAge) : null,
                 address: editAddress,
                 instagram: editInstagram,
-                amount: editAmount,
+                amount: typeof editAmount === 'string' ? parseFloat(editAmount.replace(',', '.')) : editAmount,
                 payment_day: editPaymentDay,
                 status: editStatus
             }).eq('id', selectedStudent.id).select();

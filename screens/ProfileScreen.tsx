@@ -568,11 +568,15 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                 .getPublicUrl(filePath);
 
             // 4. Inserir no Banco de Dados
+            // Sanitizar o valor numérico (removendo vírgulas que causam erro no Postgres)
+            const rawAmount = String(user.amount || '97');
+            const numericAmount = parseFloat(rawAmount.replace(',', '.'));
+
             const { error: dbError } = await supabase
                 .from('payment_receipts')
                 .insert({
                     user_id: user.id,
-                    amount: user.amount || 97, // Valor padrão se não tiver
+                    amount: isNaN(numericAmount) ? 97 : numericAmount,
                     receipt_url: publicUrl,
                     status: 'pending'
                 });
