@@ -381,7 +381,8 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             localStorage.setItem('vocalizes_local_students', JSON.stringify(localList));
 
             setStudents(prev => prev.map(s => s.id === selectedStudent.id ? updatedStudent : s));
-            setSelectedStudent(updatedStudent);
+            // Fechar o modal após salvar
+            setSelectedStudent(null);
             setIsEditing(false);
         } catch (err) {
             console.error(err);
