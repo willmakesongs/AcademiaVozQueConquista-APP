@@ -132,7 +132,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     modality: s.modality || 'Online',
                     scheduleDay: s.schedule_day || 'Seg',
                     scheduleTime: s.schedule_time || '14:00',
-                    amount: s.amount || 97,
+                    amount: (s.amount !== null && s.amount !== undefined) ? s.amount : 97,
                     address: s.address || '',
                     contractAgreed: s.contract_agreed,
                     contractAgreedAt: s.contract_agreed_at,
@@ -309,7 +309,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             modality: newStudentModality,
             scheduleDay: scheduleDay,
             scheduleTime: scheduleTime,
-            amount: parseFloat(String(newStudentAmount).replace(',', '.')) || 97,
+            amount: (val => isNaN(val) ? 97 : val)(parseFloat(String(newStudentAmount).replace(',', '.'))),
             address: newStudentAddress,
             instagram: newStudentInstagram
         };
@@ -328,7 +328,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 instagram: newStudentInstagram || null,
                 address: newStudentAddress || null,
                 notes: newStudentNotes || null,
-                amount: parseFloat(String(newStudentAmount).replace(',', '.')) || 97,
+                amount: (val => isNaN(val) ? 97 : val)(parseFloat(String(newStudentAmount).replace(',', '.'))),
                 payment_day: paymentDay
             }]).select();
 
@@ -350,7 +350,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 modality: newStudentModality,
                 scheduleDay: scheduleDay,
                 scheduleTime: scheduleTime,
-                amount: parseFloat(String(newStudentAmount).replace(',', '.')) || 97,
+                amount: (val => isNaN(val) ? 97 : val)(parseFloat(String(newStudentAmount).replace(',', '.'))),
                 address: newStudentAddress,
                 instagram: newStudentInstagram
             };
@@ -387,8 +387,8 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         setEditAge(student.age || '');
         setEditAddress(student.address || '');
         setEditInstagram(student.instagram || '');
-        setEditAmount(student.amount || 97);
-        setEditAmount(student.amount || 97);
+        setEditAmount((student.amount !== null && student.amount !== undefined) ? student.amount : 97);
+        // Deleting duplicate line 391 automatically in next chunk logic if applicable or just replacing both
         setEditPaymentDay(student.paymentDay || '05');
         setEditStatus(student.status as any || 'active');
         setIsEditing(false);
