@@ -72,6 +72,7 @@ export interface User {
   amount?: string;
   onboardingCompleted?: boolean;
   phone?: string;
+  bio?: string;
 }
 
 export interface StudentSummary {

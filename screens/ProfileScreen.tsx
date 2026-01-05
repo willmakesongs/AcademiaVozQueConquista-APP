@@ -118,7 +118,7 @@ function formatDayOfMonth(dateString?: string) {
 }
 
 export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
-    const { user, updateProfileAvatar } = useAuth();
+    const { user, updateProfileAvatar, refreshUser } = useAuth();
     const { isOfflineMode, setOfflineMode, downloadProgress, downloadAll } = usePlayback();
     const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -165,8 +165,8 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
     const [formData, setFormData] = useState({
         name: user?.name || '',
         email: 'usuario@email.com', // Mock, já que user não tem email no tipo atual
-        phone: '(11) 99999-9999',
-        bio: 'Apaixonado por música e buscando evoluir minha técnica vocal.'
+        phone: user?.phone || '',
+        bio: user?.bio || ''
     });
     const [isEditing, setIsEditing] = useState(false);
 
@@ -441,6 +441,30 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
             alert('Erro ao processar foto: ' + (err.message || 'Erro desconhecido'));
         } finally {
             setIsUploadingPhoto(false);
+        }
+    };
+
+    const handleSaveProfile = async () => {
+        if (!user) return;
+
+        try {
+            const { error } = await supabase
+                .from('profiles')
+                .update({
+                    name: formData.name,
+                    phone: formData.phone,
+                    bio: formData.bio
+                })
+                .eq('id', user.id);
+
+            if (error) throw error;
+
+            await refreshUser();
+            setIsEditing(false);
+            alert('Perfil atualizado com sucesso!');
+        } catch (error: any) {
+            console.error('Erro ao atualizar perfil:', error);
+            alert('Erro ao atualizar perfil: ' + error.message);
         }
     };
 
@@ -837,7 +861,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
             <div className="p-6 border-t border-white/5 bg-[#151A23]">
                 {isEditing ? (
                     <button
-                        onClick={() => setIsEditing(false)}
+                        onClick={handleSaveProfile}
                         className="w-full h-12 rounded-xl bg-[#0081FF] text-white font-bold hover:bg-[#006bd1] transition-colors"
                     >
                         Salvar Alterações
