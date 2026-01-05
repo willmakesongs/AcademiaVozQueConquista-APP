@@ -1192,7 +1192,9 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                         { id: 'settings', label: 'Ajustes', icon: 'settings' }
                     ] : [
                         { id: 'dashboard', label: 'Início', icon: 'calendar_month' },
-                        { id: 'students', label: 'Alunos', icon: 'groups' }
+                        { id: 'students', label: 'Alunos', icon: 'groups' },
+                        { id: 'reports', label: 'Financeiro', icon: 'payments' },
+                        { id: 'settings', label: 'Ajustes', icon: 'settings' }
                     ]).map(tab => (
                         <button
                             key={tab.id}

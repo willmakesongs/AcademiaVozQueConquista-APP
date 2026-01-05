@@ -114,7 +114,10 @@ const AppContent = () => {
       }
     }
     if (targetScreen === Screen.TEACHER_DASHBOARD || targetScreen === Screen.ADMIN_DASHBOARD || targetScreen === Screen.ADMIN_SETTINGS) {
-      setDashboardInitialTab(targetScreen === Screen.ADMIN_DASHBOARD ? 'dashboard' : targetScreen === Screen.ADMIN_SETTINGS ? 'settings' : 'students');
+      if (targetScreen === Screen.ADMIN_DASHBOARD) setDashboardInitialTab('dashboard');
+      else if (targetScreen === Screen.ADMIN_SETTINGS) setDashboardInitialTab('settings');
+      else if (dashboardInitialTab !== 'reports') setDashboardInitialTab('students');
+
       setDashboardResetKey(prev => prev + 1);
     }
     setScreen(targetScreen);
@@ -197,7 +200,7 @@ const AppContent = () => {
         return (
           <TeacherDashboard
             key={dashboardResetKey}
-            initialTab="dashboard"
+            initialTab={dashboardInitialTab}
             isAdminView={false}
             onNavigate={handleNavigate}
             onLogout={handleLogout}
@@ -271,6 +274,7 @@ const AppContent = () => {
             onLogout={handleLogout}
             onFinancialClick={() => {
               setDashboardInitialTab('reports');
+              setDashboardResetKey(prev => prev + 1);
               setScreen(Screen.TEACHER_DASHBOARD);
             }}
           />
