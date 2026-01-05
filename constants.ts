@@ -1287,47 +1287,10 @@ export const MODULES: Module[] = [
         description: 'Coloque a técnica em prática com nossa curadoria de Playbacks.',
         topics: [
             {
-                id: '10.1',
+                id: '10.1_new',
                 title: 'Biblioteca de Karaokê (Acervo)',
                 description: 'Playbacks profissionais para treino.',
-                content: `
-              <div class="space-y-8 font-sans">
-                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
-                   <div class="absolute top-0 right-0 w-32 h-32 bg-[#FF00BC] blur-[80px] opacity-20"></div>
-                   <div class="relative z-10">
-                       <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
-                           <span class="material-symbols-rounded text-[#FF00BC]">queue_music</span>
-                           Acervo Academia
-                       </h3>
-                       <p class="text-sm text-gray-300 mb-4">
-                           Use estes playbacks para aplicar os conceitos de <strong>Appoggio</strong>, <strong>Ressonância</strong> e <strong>Articulação</strong> estudados nos módulos anteriores.
-                       </p>
-                       <div class="p-3 bg-[#FF00BC]/10 border border-[#FF00BC]/20 rounded-xl flex gap-3 items-center">
-                           <span class="material-symbols-rounded text-[#FF00BC] text-xl">monitor_heart</span>
-                           <p class="text-xs text-brand-gray-100">
-                               <strong>Dica de Mestre:</strong> Não tente imitar o cantor original. Use a sua voz, com a sua técnica.
-                           </p>
-                       </div>
-                   </div>
-                </div>
-
-                <!-- CATEGORIA: CLÁSSICOS BRASILEIROS -->
-                <div class="space-y-4">
-                    <h4 class="text-brand-purple-light font-bold text-sm uppercase tracking-wider flex items-center gap-2">
-                        <span class="w-6 h-1 bg-brand-purple-light rounded-full"></span>
-                        Clássicos Brasileiros
-                    </h4>
-                    
-                    ${YOUTUBE_EMBED_TEMPLATE('UDhe726GhFs', 'Evidências - Chitãozinho & Xororó (Tom Original)')}
-                    ${YOUTUBE_EMBED_TEMPLATE('yWjXqN7Q9o4', 'Como Nossos Pais - Elis Regina (Tom Original)')}
-                </div>
-
-                <!-- CATEGORIA: SERTANEJO / POP -->
-                <div class="space-y-4 pt-6 text-center">
-                    <p class="text-xs text-gray-500 italic">Mais músicas serão adicionadas semanalmente.</p>
-                </div>
-              </div>
-            `
+                content: ''
             }
         ]
     }

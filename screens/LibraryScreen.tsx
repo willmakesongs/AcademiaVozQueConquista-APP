@@ -260,7 +260,7 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
 
       {selectedTopic && (
         <div className="fixed inset-0 z-50 bg-[#101622] flex flex-col animate-in slide-in-from-bottom duration-300 max-w-md mx-auto left-0 right-0 shadow-2xl">
-          {selectedTopic.id === '10.1' ? (
+          {selectedTopic.id.startsWith('10.1') ? (
             <div className="flex-1 bg-[#101622] p-4">
               <RepertoireView onBack={() => setSelectedTopic(null)} />
             </div>
