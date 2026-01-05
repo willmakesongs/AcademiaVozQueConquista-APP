@@ -29,7 +29,7 @@ const AppContent = () => {
   const [libraryResetKey, setLibraryResetKey] = useState(0);
   const [profileResetKey, setProfileResetKey] = useState(0);
   const [dashboardResetKey, setDashboardResetKey] = useState(0);
-  const [dashboardInitialTab, setDashboardInitialTab] = useState<'dashboard' | 'students'>('students');
+  const [dashboardInitialTab, setDashboardInitialTab] = useState<'dashboard' | 'students' | 'reports'>('students');
 
   // Visitor Warning State
   const [showVisitorWarning, setShowVisitorWarning] = useState(false);
@@ -269,6 +269,10 @@ const AppContent = () => {
             key={profileResetKey}
             onNavigate={handleNavigate}
             onLogout={handleLogout}
+            onFinancialClick={() => {
+              setDashboardInitialTab('reports');
+              setScreen(Screen.TEACHER_DASHBOARD);
+            }}
           />
         );
       case Screen.CALENDAR:

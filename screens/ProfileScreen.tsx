@@ -11,6 +11,7 @@ import * as Tone from 'tone';
 interface Props {
     onNavigate: (screen: Screen) => void;
     onLogout: () => void;
+    onFinancialClick?: () => void;
 }
 
 // --- DADOS E CONSTANTES DO TESTE VOCAL ---
@@ -93,16 +94,20 @@ function getNoteStringFromMidi(midi: number) {
 function formatDateBR(dateString?: string) {
     if (!dateString) return '---';
     try {
-        // Se a data vier no formato ISO 2026-02-02...
-        const parts = dateString.split(' ')[0].split('-');
-        if (parts.length === 3) {
-            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        const date = new Date(dateString);
+        // Verifica se é data válida
+        if (isNaN(date.getTime())) {
+            // Fallback simples para strings antigas se houver
+            const parts = dateString.split(' ')[0].split('-');
+            if (parts.length === 3) return `${parts[2]}/${parts[1]}/${parts[0]}`;
+            return dateString;
         }
-        return dateString;
+        return date.toLocaleDateString('pt-BR');
     } catch (e) {
         return dateString;
     }
 }
+
 
 function formatDayOfMonth(dateString?: string) {
     if (!dateString) return '05';
@@ -117,7 +122,7 @@ function formatDayOfMonth(dateString?: string) {
     }
 }
 
-export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
+export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinancialClick }) => {
     const { user, updateProfileAvatar, refreshUser } = useAuth();
     const { isOfflineMode, setOfflineMode, downloadProgress, downloadAll } = usePlayback();
     const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
@@ -735,6 +740,30 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                         </button>
                     </div>
                 </div>
+
+                {/* Seção Professor */}
+                {user?.role === 'teacher' && (
+                    <div className="mb-8">
+                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 px-1">Área do Professor</h3>
+                        <div className="bg-[#1A202C] rounded-2xl border border-white/5 overflow-hidden">
+                            <button
+                                onClick={onFinancialClick}
+                                className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors border-b border-white/5 last:border-none"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className="w-8 h-8 rounded-lg bg-[#FF00BC]/10 flex items-center justify-center text-[#FF00BC]">
+                                        <span className="material-symbols-rounded text-lg">attach_money</span>
+                                    </div>
+                                    <div className="text-left">
+                                        <span className="text-sm font-semibold text-white block">Painel Financeiro</span>
+                                        <span className="text-[10px] text-gray-500 block">Gerenciar pagamentos e alunos</span>
+                                    </div>
+                                </div>
+                                <span className="material-symbols-rounded text-gray-600">chevron_right</span>
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {/* Seção Minha Conta */}
                 <div>
