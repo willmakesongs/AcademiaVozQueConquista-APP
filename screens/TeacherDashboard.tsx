@@ -47,7 +47,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     const [editInstagram, setEditInstagram] = useState('');
     const [editAmount, setEditAmount] = useState(97);
     const [editPaymentDay, setEditPaymentDay] = useState('05');
-    const [editStatus, setEditStatus] = useState<'active' | 'blocked' | 'overdue' | 'trial'>('active');
+    const [editStatus, setEditStatus] = useState<'active' | 'blocked' | 'overdue' | 'trial' | 'inactive'>('active');
     const [isUploadingStudentPhoto, setIsUploadingStudentPhoto] = useState(false);
     const studentFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -1140,7 +1140,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                 <div className="flex items-center gap-4">
                                     <div className="relative">
                                         <img src={student.avatarUrl} className="w-12 h-12 rounded-full object-cover border-2 border-[#101622]" alt="" />
-                                        <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-[#101622] ${student.status === 'active' ? 'bg-green-500' : student.status === 'trial' ? 'bg-[#FF00BC]' : 'bg-red-500'}`}>
+                                        <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-[#101622] ${student.status === 'active' ? 'bg-green-500' : student.status === 'trial' ? 'bg-[#FF00BC]' : student.status === 'inactive' ? 'bg-gray-500' : 'bg-red-500'}`}>
                                             {student.status === 'trial' && <span className="material-symbols-rounded text-[8px] text-white absolute inset-0 flex items-center justify-center font-bold">bolt</span>}
                                         </div>
                                     </div>
@@ -1297,13 +1297,15 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     <p className="text-xs text-gray-500 uppercase font-black">{selectedStudent.modality} • {selectedStudent.level}</p>
                                     <div className={`mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-md border ${selectedStudent.status === 'blocked'
                                         ? 'bg-red-500/20 border-red-500/30 text-red-400'
-                                        : 'bg-green-500/20 border-green-500/30 text-green-400'
+                                        : selectedStudent.status === 'inactive'
+                                            ? 'bg-gray-500/20 border-gray-500/30 text-gray-400'
+                                            : 'bg-green-500/20 border-green-500/30 text-green-400'
                                         }`}>
                                         <span className="material-symbols-rounded text-[14px]">
-                                            {selectedStudent.status === 'blocked' ? 'lock' : 'check_circle'}
+                                            {selectedStudent.status === 'blocked' ? 'lock' : selectedStudent.status === 'inactive' ? 'pause_circle' : 'check_circle'}
                                         </span>
                                         <span className="text-[10px] font-bold uppercase">
-                                            {selectedStudent.status === 'blocked' ? 'Bloqueado' : 'Ativo'}
+                                            {selectedStudent.status === 'blocked' ? 'Bloqueado' : selectedStudent.status === 'inactive' ? 'Inativo' : 'Ativo'}
                                         </span>
                                     </div>
                                 </div>
@@ -1343,6 +1345,15 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                             }`}
                                     >
                                         <span className="material-symbols-rounded text-[16px]">bolt</span> Teste
+                                    </button>
+                                    <button
+                                        onClick={() => setEditStatus('inactive')}
+                                        className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-1.5 ${editStatus === 'inactive'
+                                            ? 'bg-gray-500 text-white shadow-lg shadow-gray-500/20 scale-[1.02]'
+                                            : 'text-gray-500 hover:text-white hover:bg-white/5'
+                                            }`}
+                                    >
+                                        <span className="material-symbols-rounded text-[16px]">pause_circle</span> Pausa
                                     </button>
                                 </div>
                             </div>

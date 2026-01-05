@@ -58,7 +58,7 @@ export interface Module {
   }[];
 }
 
-export type SubscriptionStatus = 'active' | 'overdue' | 'blocked' | 'trial';
+export type SubscriptionStatus = 'active' | 'overdue' | 'blocked' | 'trial' | 'inactive';
 export type UserRole = 'student' | 'teacher' | 'admin';
 
 export interface User {
@@ -66,7 +66,7 @@ export interface User {
   name: string;
   role: UserRole;
   avatarUrl: string;
-  status: 'active' | 'overdue' | 'blocked' | 'trial';
+  status: 'active' | 'overdue' | 'blocked' | 'trial' | 'inactive';
   plan?: string;
   nextDueDate?: string;
   amount?: string;
@@ -104,7 +104,7 @@ export interface StudentSummary {
   level: string;
   lastPractice: string;
   progress: number;
-  status: 'active' | 'overdue' | 'blocked' | 'trial';
+  status: 'active' | 'overdue' | 'blocked' | 'trial' | 'inactive';
   phone: string;
   age: string;
   paymentDay?: string;

@@ -52,8 +52,8 @@ const AppContent = () => {
       }
     }
 
-    // Force redirect for Blocked Users
-    if (user?.status === 'blocked' && screen !== Screen.PROFILE && screen !== Screen.LOGIN && screen !== Screen.ONBOARDING) {
+    // Force redirect for Blocked/Inactive Users
+    if ((user?.status === 'blocked' || user?.status === 'inactive') && screen !== Screen.PROFILE && screen !== Screen.LOGIN && screen !== Screen.ONBOARDING) {
       setScreen(Screen.PROFILE);
     }
   }, [user, loading, screen]);

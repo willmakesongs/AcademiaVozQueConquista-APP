@@ -16,10 +16,11 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentScreen, onNavigate,
 
   const isBlocked = status === 'blocked';
   const isOverdue = status === 'overdue';
+  const isInactive = status === 'inactive';
 
   const handleNavClick = (target: Screen) => {
-    if (isBlocked && target !== Screen.PROFILE) {
-      alert("Acesso bloqueado. Regularize sua assinatura no Perfil.");
+    if ((isBlocked || isInactive) && target !== Screen.PROFILE) {
+      alert("Acesso pausado ou bloqueado. Regularize sua assinatura no Perfil.");
       return;
     }
     if (isOverdue && (target === Screen.ROUTINE || target === Screen.CHAT)) {
@@ -35,7 +36,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentScreen, onNavigate,
       <div className="flex justify-between items-center h-16 max-w-md mx-auto">
         <button
           onClick={() => handleNavClick(role === 'student' ? Screen.STUDENT_DASHBOARD : Screen.TEACHER_DASHBOARD)}
-          className={`flex flex-col items-center gap-1 w-16 ${(isBlocked) ? 'opacity-30' : ''}`}
+          className={`flex flex-col items-center gap-1 w-16 ${(isBlocked || isInactive) ? 'opacity-30 grayscale' : ''}`}
         >
           <span className={`material-symbols-rounded text-2xl ${getIconColor(role === 'student' ? Screen.STUDENT_DASHBOARD : Screen.TEACHER_DASHBOARD)}`}>
             dashboard
@@ -47,7 +48,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentScreen, onNavigate,
 
         <button
           onClick={() => handleNavClick(Screen.LIBRARY)}
-          className={`flex flex-col items-center gap-1 w-16 ${isBlocked ? 'opacity-30 grayscale' : ''}`}
+          className={`flex flex-col items-center gap-1 w-16 ${(isBlocked || isInactive) ? 'opacity-30 grayscale' : ''}`}
         >
           <span className={`material-symbols-rounded text-2xl ${getIconColor(Screen.LIBRARY)}`}>
             library_music
@@ -57,9 +58,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentScreen, onNavigate,
           </span>
         </button>
 
-        {/* BOTÃO CENTRAL - LORENA IA */}
         <div
-          className={`relative flex flex-col items-center gap-1 w-16 group cursor-pointer ${isBlocked || isOverdue ? 'opacity-30 pointer-events-none grayscale' : ''}`}
+          className={`relative flex flex-col items-center gap-1 w-16 group cursor-pointer ${isBlocked || isOverdue || isInactive ? 'opacity-30 pointer-events-none grayscale' : ''}`}
           onClick={() => handleNavClick(Screen.CHAT)}
         >
           {/* CAMADA 1: Botão Flutuante (Fundo) */}
@@ -89,7 +89,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentScreen, onNavigate,
 
         <button
           onClick={() => handleNavClick(Screen.ROUTINE)}
-          className={`flex flex-col items-center gap-1 w-16 ${isBlocked || isOverdue ? 'opacity-30 grayscale' : ''}`}
+          className={`flex flex-col items-center gap-1 w-16 ${(isBlocked || isOverdue || isInactive) ? 'opacity-30 grayscale' : ''}`}
         >
           <span className={`material-symbols-rounded text-2xl ${getIconColor(Screen.ROUTINE)}`}>
             calendar_today
