@@ -67,10 +67,15 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     const [newStudentModality, setNewStudentModality] = useState<'Online' | 'Presencial'>('Presencial');
     const [paymentDay, setPaymentDay] = useState('05');
     const [newStudentAmount, setNewStudentAmount] = useState('97');
+    const [studentFilter, setStudentFilter] = useState<'active' | 'inactive'>('active');
 
-    const filteredStudents = students.filter(student =>
-        student.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filteredStudents = students.filter(student => {
+        const matchesSearch = student.name.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesStatus = studentFilter === 'active'
+            ? student.status !== 'inactive'
+            : student.status === 'inactive';
+        return matchesSearch && matchesStatus;
+    });
 
     useEffect(() => {
         fetchData();
@@ -498,14 +503,19 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     };
 
     const handleDownloadTXT = () => {
-        if (students.length === 0) return;
+        if (filteredStudents.length === 0) return;
 
-        const header = `LISTA DE ALUNOS - ACADEMIA VOZ QUE CONQUISTA\nData de Exportação: ${new Date().toLocaleDateString('pt-BR')}\n${'='.repeat(50)}\n\n`;
-        const content = students.map((s, idx) => {
+        const header = `LISTA DE ALUNOS (${studentFilter === 'active' ? 'ATIVOS' : 'INATIVOS'}) - ACADEMIA VOZ QUE CONQUISTA\nData de Exportação: ${new Date().toLocaleDateString('pt-BR')}\n${'='.repeat(50)}\n\n`;
+        const content = filteredStudents.map((s, idx) => {
+            const statusLabel = s.status === 'active' ? 'ATIVO' :
+                s.status === 'overdue' ? 'EM ATRASO' :
+                    s.status === 'trial' ? 'TESTE' :
+                        s.status === 'blocked' ? 'BLOQUEADO' : 'INATIVO';
             return `${idx + 1}. ${s.name.toUpperCase()}\n` +
-                `   Status: ${s.status === 'active' ? 'ATIVO' : s.status === 'overdue' ? 'PENDENTE' : 'INATIVO'}\n` +
+                `   Status: ${statusLabel}\n` +
                 `   Plano: ${s.plan || 'Pro'}\n` +
                 `   Vencimento: Dia ${s.paymentDay || '05'}\n` +
+                `   Valor: R$ ${s.amount || 0}\n` +
                 `   Telefone: ${s.phone || 'Não informado'}\n` +
                 `   Agendamento: ${s.scheduleDay || '---'} às ${s.scheduleTime || '--:--'}\n` +
                 `   Obs: ${s.notes || 'Nenhuma'}\n` +
@@ -1109,7 +1119,25 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     const renderStudentList = () => {
         return (
             <div className="flex-1 flex flex-col bg-[#101622] overflow-hidden">
-                <div className="px-6 pt-6 pb-2">
+                <div className="px-6 pt-6">
+                    <div className="flex bg-[#1A202C] p-1 rounded-2xl border border-white/5 mb-6 shadow-inner relative">
+                        <div
+                            className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-[#0081FF] rounded-xl shadow-lg shadow-[#0081FF]/20 transition-all duration-300 ease-out ${studentFilter === 'inactive' ? 'translate-x-full' : 'translate-x-0'}`}
+                        />
+                        <button
+                            onClick={() => setStudentFilter('active')}
+                            className={`flex-1 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider relative z-10 transition-colors duration-300 ${studentFilter === 'active' ? 'text-white' : 'text-gray-500 hover:text-gray-400'}`}
+                        >
+                            Ativos
+                        </button>
+                        <button
+                            onClick={() => setStudentFilter('inactive')}
+                            className={`flex-1 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider relative z-10 transition-colors duration-300 ${studentFilter === 'inactive' ? 'text-white' : 'text-gray-500 hover:text-gray-400'}`}
+                        >
+                            Inativos
+                        </button>
+                    </div>
+
                     <div className="relative">
                         <span className="absolute left-4 top-1/2 -translate-y-1/2 material-symbols-rounded text-gray-500">search</span>
                         <input
@@ -1117,14 +1145,14 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                             placeholder="Buscar aluno por nome..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full h-12 bg-[#1A202C] rounded-2xl border border-white/5 pl-12 pr-4 text-white text-sm focus:outline-none focus:border-[#0081FF] transition-all"
+                            className="w-full h-12 bg-[#1A202C] rounded-2xl border border-white/5 pl-12 pr-4 text-white text-sm focus:outline-none focus:border-[#0081FF] transition-all shadow-inner"
                         />
                     </div>
                 </div>
 
                 <div className="flex-1 overflow-y-auto hide-scrollbar px-6 py-4 space-y-4 pb-32">
                     <div className="flex justify-between items-center mb-2 px-1">
-                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Total: {students.length} alunos cadastrados</p>
+                        <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Total: {filteredStudents.length} alunos {studentFilter === 'active' ? 'ativos' : 'inativos'}</p>
                         <button onClick={handleDownloadTXT} className="text-[10px] font-black text-[#0081FF] uppercase flex items-center gap-1 hover:underline">
                             <span className="material-symbols-rounded text-sm">download</span> Exportar .TXT
                         </button>
@@ -1157,8 +1185,12 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                         ))
                     ) : (
                         <div className="py-20 text-center bg-[#1A202C]/30 rounded-3xl border border-dashed border-white/5">
-                            <span className="material-symbols-rounded text-5xl text-gray-700 mb-4">person_search</span>
-                            <p className="text-gray-500 text-sm font-medium">Nenhum aluno encontrado.</p>
+                            <span className="material-symbols-rounded text-5xl text-gray-700 mb-4">{studentFilter === 'active' ? 'person_search' : 'person_off'}</span>
+                            <p className="text-gray-500 text-sm font-medium">
+                                {studentFilter === 'active'
+                                    ? 'Nenhum aluno ativo encontrado.'
+                                    : 'Nenhum aluno inativo por enquanto.'}
+                            </p>
                         </div>
                     )}
                 </div>
@@ -1318,42 +1350,45 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     <p className="text-[11px] text-gray-500 font-medium">Gerencie a liberação das funcionalidades para este aluno</p>
                                 </div>
 
-                                <div className="flex bg-[#1A202C] p-1.5 rounded-xl border border-white/10 shadow-inner">
+                                <div className="flex bg-[#1A202C] p-1 rounded-2xl border border-white/5 relative h-12 shadow-inner">
+                                    <div
+                                        className={`absolute top-1 bottom-1 transition-all duration-300 ease-out rounded-xl shadow-lg z-0 ${editStatus === 'active' || editStatus === 'overdue' ? 'left-1 w-[calc(25%-2px)] bg-green-500 shadow-green-500/20' :
+                                            editStatus === 'blocked' ? 'left-[calc(25%+1px)] w-[calc(25%-2px)] bg-red-500 shadow-red-500/20' :
+                                                editStatus === 'trial' ? 'left-[calc(50%+1px)] w-[calc(25%-2px)] bg-[#FF00BC] shadow-pink-500/20' :
+                                                    'left-[calc(75%+1px)] w-[calc(25%-2px)] bg-gray-600 shadow-gray-500/20'
+                                            }`}
+                                    />
+
                                     <button
                                         onClick={() => setEditStatus('active')}
-                                        className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-1.5 ${editStatus === 'active' || editStatus === 'overdue'
-                                            ? 'bg-green-500 text-white shadow-lg shadow-green-500/20 scale-[1.02]'
-                                            : 'text-gray-500 hover:text-white hover:bg-white/5'
-                                            }`}
+                                        className={`flex-1 flex flex-col items-center justify-center gap-0.5 relative z-10 transition-colors duration-300 ${editStatus === 'active' || editStatus === 'overdue' ? 'text-white' : 'text-gray-500 hover:text-gray-400'}`}
                                     >
-                                        <span className="material-symbols-rounded text-[16px]">check_circle</span> Liberado
+                                        <span className="material-symbols-rounded text-[18px]">check_circle</span>
+                                        <span className="text-[8px] font-black uppercase tracking-tighter">Ativo</span>
                                     </button>
+
                                     <button
                                         onClick={() => setEditStatus('blocked')}
-                                        className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-1.5 ${editStatus === 'blocked'
-                                            ? 'bg-red-500 text-white shadow-lg shadow-red-500/20 scale-[1.02]'
-                                            : 'text-gray-500 hover:text-white hover:bg-white/5'
-                                            }`}
+                                        className={`flex-1 flex flex-col items-center justify-center gap-0.5 relative z-10 transition-colors duration-300 ${editStatus === 'blocked' ? 'text-white' : 'text-gray-500 hover:text-gray-400'}`}
                                     >
-                                        <span className="material-symbols-rounded text-[16px]">block</span> Bloqueado
+                                        <span className="material-symbols-rounded text-[18px]">block</span>
+                                        <span className="text-[8px] font-black uppercase tracking-tighter">Bloqueado</span>
                                     </button>
+
                                     <button
                                         onClick={() => setEditStatus('trial')}
-                                        className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-1.5 ${editStatus === 'trial'
-                                            ? 'bg-[#FF00BC] text-white shadow-lg shadow-pink-500/20 scale-[1.02]'
-                                            : 'text-gray-500 hover:text-white hover:bg-white/5'
-                                            }`}
+                                        className={`flex-1 flex flex-col items-center justify-center gap-0.5 relative z-10 transition-colors duration-300 ${editStatus === 'trial' ? 'text-white' : 'text-gray-500 hover:text-gray-400'}`}
                                     >
-                                        <span className="material-symbols-rounded text-[16px]">bolt</span> Teste
+                                        <span className="material-symbols-rounded text-[18px]">bolt</span>
+                                        <span className="text-[8px] font-black uppercase tracking-tighter">Teste</span>
                                     </button>
+
                                     <button
                                         onClick={() => setEditStatus('inactive')}
-                                        className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all duration-300 flex items-center justify-center gap-1.5 ${editStatus === 'inactive'
-                                            ? 'bg-gray-500 text-white shadow-lg shadow-gray-500/20 scale-[1.02]'
-                                            : 'text-gray-500 hover:text-white hover:bg-white/5'
-                                            }`}
+                                        className={`flex-1 flex flex-col items-center justify-center gap-0.5 relative z-10 transition-colors duration-300 ${editStatus === 'inactive' ? 'text-white' : 'text-gray-500 hover:text-gray-400'}`}
                                     >
-                                        <span className="material-symbols-rounded text-[16px]">pause_circle</span> Pausa
+                                        <span className="material-symbols-rounded text-[18px]">pause_circle</span>
+                                        <span className="text-[8px] font-black uppercase tracking-tighter">Inativo</span>
                                     </button>
                                 </div>
                             </div>
