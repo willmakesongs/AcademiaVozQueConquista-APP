@@ -481,6 +481,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
 
             await refreshUser();
             setIsEditing(false);
+            setActiveView('menu');
             alert('Perfil atualizado com sucesso!');
         } catch (error: any) {
             console.error('Erro ao atualizar perfil:', error);
@@ -592,6 +593,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
             // Abrir WhatsApp e avisar o usuário
             window.open(whatsappUrl, '_blank');
             alert('Comprovante enviado! Abrindo o WhatsApp para avisar o professor.');
+            setActiveView('menu');
 
         } catch (error: any) {
             console.error('Erro ao enviar comprovante:', error);

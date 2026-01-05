@@ -918,7 +918,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         const weekDates = getWeekDates(selectedDate);
         const selectedDayLabel = WEEK_DAYS[selectedDate.getDay() === 0 ? 6 : selectedDate.getDay() - 1];
 
-        const dayAppointments = students.filter(s => s.scheduleDay === selectedDayLabel).map(s => ({
+        const dayAppointments = students.filter(s => s.scheduleDay === selectedDayLabel && s.status !== 'inactive').map(s => ({
             id: s.id,
             studentName: s.name,
             time: s.scheduleTime || '00:00',
@@ -1056,13 +1056,22 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     </div>
 
                                     <div className="flex-1 min-w-0">
-                                        <div className="flex items-center gap-2">
-                                            <h4 className="text-sm font-bold text-white truncate">{apt.studentName}</h4>
-                                            {apt.paymentStatus === 'active' ? (
-                                                <span className="px-1.5 py-0.5 rounded text-[8px] font-black uppercase bg-green-500/10 text-green-500 tracking-wider">Ativo</span>
-                                            ) : (
-                                                <span className="px-1.5 py-0.5 rounded text-[8px] font-black uppercase bg-red-500/10 text-red-500 tracking-wider">Pendente</span>
-                                            )}
+                                        <div className="flex flex-col">
+                                            <div className="flex items-center gap-2">
+                                                <h4 className="text-sm font-bold text-white truncate">{apt.studentName}</h4>
+                                                {apt.paymentStatus === 'overdue' || apt.paymentStatus === 'blocked' ? (
+                                                    <span className="px-1.5 py-0.5 rounded text-[8px] font-black uppercase bg-red-500/10 text-red-500 tracking-wider">Pendente</span>
+                                                ) : (
+                                                    <span className="px-1.5 py-0.5 rounded text-[8px] font-black uppercase bg-green-500/10 text-green-500 tracking-wider">Ativo</span>
+                                                )}
+                                            </div>
+                                            <span className={`text-[9px] font-black uppercase tracking-tighter mt-0.5 ${apt.paymentStatus === 'active' || apt.paymentStatus === 'overdue' ? 'text-green-500/70' :
+                                                apt.paymentStatus === 'trial' ? 'text-[#FF00BC]/70' :
+                                                    'text-red-500/70'
+                                                }`}>
+                                                {apt.paymentStatus === 'active' || apt.paymentStatus === 'overdue' ? 'ALUNO ATIVO' :
+                                                    apt.paymentStatus === 'trial' ? 'ALUNO TESTE' : 'ALUNO BLOQUEADO'}
+                                            </span>
                                         </div>
                                         <p className="text-[11px] text-gray-400 truncate mt-0.5">{apt.type}</p>
 
@@ -1080,25 +1089,25 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                             </div>
                                         )}
                                     </div>
-                                </div>
 
-                                {/* Actions */}
-                                <div className="flex flex-col gap-2 pl-2">
-                                    <button
-                                        onClick={() => {
-                                            const student = students.find(s => s.name === apt.studentName);
-                                            if (student) openStudentDetails(student);
-                                        }}
-                                        className="w-9 h-9 rounded-full bg-[#0081FF]/10 text-[#0081FF] flex items-center justify-center hover:bg-[#0081FF] hover:text-white transition-all shadow-sm"
-                                    >
-                                        <span className="material-symbols-rounded text-lg">edit</span>
-                                    </button>
-                                    <button
-                                        className="w-9 h-9 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:bg-white/10 hover:text-white transition-all"
-                                        title="Histórico / Agendamento"
-                                    >
-                                        <span className="material-symbols-rounded text-lg">history</span>
-                                    </button>
+                                    {/* Actions */}
+                                    <div className="flex flex-col gap-2 pl-2">
+                                        <button
+                                            onClick={() => {
+                                                const student = students.find(s => s.name === apt.studentName);
+                                                if (student) openStudentDetails(student);
+                                            }}
+                                            className="w-9 h-9 rounded-full bg-[#0081FF]/10 text-[#0081FF] flex items-center justify-center hover:bg-[#0081FF] hover:text-white transition-all shadow-sm"
+                                        >
+                                            <span className="material-symbols-rounded text-lg">edit</span>
+                                        </button>
+                                        <button
+                                            className="w-9 h-9 rounded-full bg-white/5 text-gray-400 flex items-center justify-center hover:bg-white/10 hover:text-white transition-all"
+                                            title="Histórico / Agendamento"
+                                        >
+                                            <span className="material-symbols-rounded text-lg">history</span>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))
