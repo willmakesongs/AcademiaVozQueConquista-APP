@@ -155,17 +155,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (data) {
+        // Fallback for fields that might be in auth meta but not in profile yet
+        const { data: { user: authUser } } = await supabase.auth.getUser();
+        const meta = authUser?.user_metadata || {};
+
         const userData: User = {
           id: data.id,
-          name: data.name,
+          name: data.name || meta.full_name || meta.name || '',
           role: data.role as 'student' | 'teacher',
-          avatarUrl: data.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name)}&background=random&color=fff`,
+          avatarUrl: data.avatar_url || meta.avatar_url || meta.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || meta.full_name || 'U')}&background=random&color=fff`,
           status: (data.status as any) || 'active',
           onboardingCompleted: data.onboarding_completed,
           plan: data.plan || 'Plano Pro',
           nextDueDate: data.next_due_date || '2026-02-02',
           amount: data.amount || '97,00',
-          phone: data.phone
+          phone: data.phone || meta.phone || ''
         };
         setUser(userData);
 
@@ -216,6 +220,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const { error: profileError } = await supabase
           .from('profiles')
           .upsert([{
+            id: authData.user.id,
             name: name,
             role: role,
             phone: phone,
