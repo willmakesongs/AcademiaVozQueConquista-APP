@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Screen, StudentSummary, Appointment } from '../types';
+import { Screen, StudentSummary, Appointment, PaymentReceipt } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 
@@ -19,6 +19,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     const [students, setStudents] = useState<StudentSummary[]>([]);
     const [appointments, setAppointments] = useState<Appointment[]>([]);
     const [activeTab, setActiveTab] = useState<'dashboard' | 'students' | 'history' | 'reports' | 'settings'>(initialTab);
+    const [receipts, setReceipts] = useState<any[]>([]);
 
     // States UI
     const [searchQuery, setSearchQuery] = useState('');
@@ -110,6 +111,26 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 // SERVER IS SOURCE OF TRUTH
                 localStorage.setItem('vocalizes_local_students', JSON.stringify(dbStudents));
                 setStudents(dbStudents);
+
+                // Fetch Receipts
+                const { data: rData } = await supabase
+                    .from('payment_receipts')
+                    .select('*, profiles:user_id(name, avatar_url)')
+                    .order('created_at', { ascending: false });
+
+                if (rData) {
+                    const mappedReceipts = rData.map((r: any) => ({
+                        id: r.id,
+                        userId: r.user_id,
+                        userName: r.profiles?.name || 'Aluno',
+                        userAvatar: r.profiles?.avatar_url,
+                        amount: r.amount,
+                        receiptUrl: r.receipt_url,
+                        status: r.status,
+                        createdAt: r.created_at
+                    }));
+                    setReceipts(mappedReceipts);
+                }
 
                 if (force) alert('Dados atualizados com sucesso da nuvem! ☁️');
                 setSyncStatus('synced');
@@ -459,174 +480,173 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         URL.revokeObjectURL(url);
     };
 
+    const handleApproveReceipt = async (receiptId: string) => {
+        if (!confirm('Confirmar recebimento deste pagamento?')) return;
+        setLoadingAction(true);
+        try {
+            const { error } = await supabase
+                .from('payment_receipts')
+                .update({ status: 'approved' })
+                .eq('id', receiptId);
+
+            if (error) throw error;
+            await fetchData();
+            alert('Pagamento confirmado com sucesso!');
+        } catch (error) {
+            console.error(error);
+            alert('Erro ao confirmar pagamento.');
+        } finally {
+            setLoadingAction(false);
+        }
+    };
+
+    const handleRejectReceipt = async (receiptId: string) => {
+        if (!confirm('Rejeitar este comprovante?')) return;
+        setLoadingAction(true);
+        try {
+            const { error } = await supabase
+                .from('payment_receipts')
+                .update({ status: 'rejected' })
+                .eq('id', receiptId);
+
+            if (error) throw error;
+            await fetchData();
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoadingAction(false);
+        }
+    };
+
     const renderFinancial = () => {
-        const totalReceived = students.filter(s => s.status === 'active').reduce((acc, s) => acc + (s.amount || 0), 0);
-        const totalPending = students.filter(s => s.status === 'overdue' || s.status === 'blocked').reduce((acc, s) => acc + (s.amount || 0), 0);
-        const overdueStudents = students.filter(s => s.status === 'overdue' || s.status === 'blocked');
-
-        // Mock data for chart to match reference image style
-        // Chart values: [10, 40, 25, 50, 45, 80] (approximate curve)
-        const chartData = [15, 65, 30, 55, 20, 90];
-        const maxVal = 100;
-        const points = chartData.map((val, idx) => {
-            const x = (idx / (chartData.length - 1)) * 100;
-            const y = 100 - ((val / maxVal) * 80); // Leave some space at top
-            return `${x},${y}`;
-        }).join(' ');
-
-        // Bezier curve for smooth lines
-        const getSmoothPath = (data: number[]) => {
-            if (data.length === 0) return '';
-            const points = data.map((val, idx) => {
-                const x = (idx / (data.length - 1)) * 100;
-                const y = 100 - ((val / maxVal) * 80);
-                return [x, y];
-            });
-
-            let d = `M${points[0][0]},${points[0][1]}`;
-            for (let i = 1; i < points.length; i++) {
-                const [x0, y0] = points[i - 1];
-                const [x1, y1] = points[i];
-                const cX = (x0 + x1) / 2;
-                d += ` C${cX},${y0} ${cX},${y1} ${x1},${y1}`;
-            }
-            return d;
-        };
-        const smoothPath = getSmoothPath(chartData);
+        const pendingReceipts = receipts.filter(r => r.status === 'pending');
+        const approvedReceipts = receipts.filter(r => r.status === 'approved');
 
         return (
-            <div className="flex-1 overflow-y-auto hide-scrollbar pb-24">
-                {/* Summary Cards */}
-                <div className="grid grid-cols-2 gap-4 px-6 pt-6">
-                    {/* Recebido Card */}
-                    <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5 relative overflow-hidden group">
-                        <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 hover:scale-110 transition-transform">
-                                <span className="material-symbols-rounded">arrow_upward</span>
-                            </div>
-                            <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Recebido (Mês)</span>
+            <div className="flex-1 flex flex-col bg-[#101622] overflow-hidden">
+                <div className="p-6 space-y-6 overflow-y-auto hide-scrollbar pb-32">
+                    {/* Resumo */}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-[#1A202C] p-4 rounded-2xl border border-white/5">
+                            <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Receita Confirmada</p>
+                            <h3 className="text-2xl font-black text-white">R$ {approvedReceipts.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0).toFixed(2)}</h3>
                         </div>
-                        <h3 className="text-2xl font-black text-white mb-1">R$ {totalReceived.toLocaleString('pt-BR')}</h3>
-                        <p className="text-[10px] text-green-400 font-bold">+12% vs mês anterior</p>
-                    </div>
-
-                    {/* Pendente Card */}
-                    <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5 relative overflow-hidden group">
-                        <div className="flex items-center gap-3 mb-3">
-                            <div className="w-10 h-10 rounded-full bg-orange-500/10 flex items-center justify-center text-orange-500 hover:scale-110 transition-transform">
-                                <span className="material-symbols-rounded">priority_high</span>
-                            </div>
-                            <span className="text-xs text-gray-400 font-bold uppercase tracking-wider">Pendente</span>
-                        </div>
-                        <h3 className="text-2xl font-black text-white mb-1">R$ {totalPending.toLocaleString('pt-BR')}</h3>
-                        <p className="text-[10px] text-orange-400 font-bold">+5% inadimplência</p>
-                    </div>
-                </div>
-
-                {/* Revenue Chart Section */}
-                <div className="px-6 mt-6">
-                    <div className="bg-[#1A202C] rounded-[32px] p-6 border border-white/5">
-                        <div className="flex justify-between items-start mb-6">
-                            <div>
-                                <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wider mb-2">Tendência de Receita</p>
-                                <div className="flex items-center gap-3">
-                                    <h3 className="text-3xl font-black text-white">R$ 152k</h3>
-                                    <span className="bg-green-500/10 text-green-500 text-xs font-bold px-2 py-1 rounded-lg">+8.5%</span>
-                                </div>
-                                <p className="text-xs text-gray-500 mt-1">Últimos 6 meses</p>
-                            </div>
-                        </div>
-
-                        <div className="h-40 w-full relative">
-                            {/* Smooth SVG Chart */}
-                            <svg viewBox="0 0 100 100" className="w-full h-full overflow-visible" preserveAspectRatio="none">
-                                <defs>
-                                    <linearGradient id="chartGradient" x1="0" x2="0" y1="0" y2="1">
-                                        <stop offset="0%" stopColor="#0081FF" stopOpacity="0.3" />
-                                        <stop offset="100%" stopColor="#0081FF" stopOpacity="0" />
-                                    </linearGradient>
-                                </defs>
-
-                                {/* Area */}
-                                <path
-                                    d={`${smoothPath} L100,100 L0,100 Z`}
-                                    fill="url(#chartGradient)"
-                                />
-
-                                {/* Line */}
-                                <path
-                                    d={smoothPath}
-                                    fill="none"
-                                    stroke="#0081FF"
-                                    strokeWidth="3"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    vectorEffect="non-scaling-stroke"
-                                />
-                            </svg>
-
-                            {/* X Axis Labels */}
-                            <div className="flex justify-between text-[10px] font-black text-gray-500 uppercase mt-2 px-2">
-                                <span>Jan</span>
-                                <span>Fev</span>
-                                <span>Mar</span>
-                                <span>Abr</span>
-                                <span>Mai</span>
-                                <span className="text-[#0081FF]">Jun</span>
-                            </div>
+                        <div className="bg-[#1A202C] p-4 rounded-2xl border border-white/5">
+                            <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Pendente</p>
+                            <h3 className="text-2xl font-black text-yellow-500">R$ {pendingReceipts.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0).toFixed(2)}</h3>
                         </div>
                     </div>
-                </div>
 
-                {/* Overdue List */}
-                <div className="px-6 mt-8">
-                    <div className="flex justify-between items-center mb-4">
-                        <h4 className="text-lg font-black text-white tracking-tight">Pagamentos Atrasados</h4>
-                        <button
-                            onClick={() => {
-                                setSearchQuery('');
-                                setActiveTab('students');
-                            }}
-                            className="text-xs text-[#0081FF] font-bold hover:underline"
-                        >
-                            Ver todos
-                        </button>
-                    </div>
-                    <div className="space-y-3">
-                        {overdueStudents.length > 0 ? (
-                            overdueStudents.map(student => (
-                                <div key={student.id} onClick={() => openStudentDetails(student)} className="bg-[#1A202C] p-4 rounded-[24px] border border-white/5 flex items-center justify-between group active:scale-[0.98] transition-all cursor-pointer hover:border-red-500/20">
-                                    <div className="flex items-center gap-3">
-                                        <div className="relative">
-                                            <img src={student.avatarUrl} className="w-12 h-12 rounded-full object-cover border-2 border-[#151A23]" alt="" />
-                                            {/* Warning Icon Badge */}
-                                            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-[#1A202C] flex items-center justify-center text-white">
-                                                <span className="material-symbols-rounded text-[10px] font-bold">!</span>
+                    <div>
+                        <h3 className="text-lg font-bold text-white mb-4">Comprovantes Pendentes</h3>
+                        {pendingReceipts.length === 0 ? (
+                            <div className="p-8 text-center bg-[#1A202C] rounded-2xl border border-white/5 border-dashed">
+                                <p className="text-sm text-gray-500">Nenhum comprovante pendente.</p>
+                            </div>
+                        ) : (
+                            <div className="space-y-3">
+                                {pendingReceipts.map(receipt => (
+                                    <div key={receipt.id} className="bg-[#1A202C] p-4 rounded-2xl border border-white/5 space-y-3">
+                                        <div className="flex items-center gap-3">
+                                            <img src={receipt.userAvatar || 'https://ui-avatars.com/api/?name=User'} className="w-10 h-10 rounded-full" />
+                                            <div>
+                                                <h4 className="text-sm font-bold text-white">{receipt.userName}</h4>
+                                                <p className="text-xs text-gray-400">{new Date(receipt.createdAt).toLocaleDateString('pt-BR')} às {new Date(receipt.createdAt).toLocaleTimeString('pt-BR')}</p>
+                                            </div>
+                                            <div className="ml-auto text-right">
+                                                <span className="block text-sm font-black text-[#0081FF]">R$ {receipt.amount}</span>
+                                                <a href={receipt.receiptUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] text-blue-400 underline">Ver Comprovante</a>
                                             </div>
                                         </div>
-                                        <div>
-                                            <h5 className="text-sm font-bold text-white">{student.name}</h5>
-                                            <p className="text-[10px] text-red-500 font-bold uppercase mt-0.5">5 dias de atraso</p>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => handleApproveReceipt(receipt.id)}
+                                                disabled={loadingAction}
+                                                className="flex-1 h-10 bg-green-500/10 text-green-500 rounded-xl font-bold text-xs flex items-center justify-center gap-1 hover:bg-green-500/20"
+                                            >
+                                                <span className="material-symbols-rounded text-base">check</span> Confirmar
+                                            </button>
+                                            <button
+                                                onClick={() => handleRejectReceipt(receipt.id)}
+                                                disabled={loadingAction}
+                                                className="flex-1 h-10 bg-red-500/10 text-red-500 rounded-xl font-bold text-xs flex items-center justify-center gap-1 hover:bg-red-500/20"
+                                            >
+                                                <span className="material-symbols-rounded text-base">close</span> Rejeitar
+                                            </button>
                                         </div>
                                     </div>
-                                    <div className="text-right">
-                                        <p className="text-sm font-black text-white">R$ {student.amount || 97},00</p>
-                                        <div className="flex justify-end mt-1">
-                                            <span className="material-symbols-rounded text-red-500 text-lg">warning</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <div className="py-8 text-center bg-[#1A202C]/50 rounded-[24px] border border-dashed border-white/10 text-gray-500 text-xs">
-                                <span className="material-symbols-rounded text-2xl mb-1 block opacity-50">task_alt</span>
-                                Nenhum pagamento atrasado ✨
+                                ))}
                             </div>
                         )}
+                    </div>
+
+                    <div>
+                        <h3 className="text-lg font-bold text-white mb-4">Histórico Recente</h3>
+                        <div className="space-y-2 opacity-60">
+                            {approvedReceipts.slice(0, 5).map(receipt => (
+                                <div key={receipt.id} className="flex justify-between items-center p-3 bg-[#1A202C] rounded-xl border border-white/5">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                                        <span className="text-sm text-white">{receipt.userName}</span>
+                                    </div>
+                                    <span className="text-xs text-gray-400">R$ {receipt.amount}</span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>
         );
+    };
+
+    const handleConfirmPayment = async () => {
+        if (!selectedStudent) return;
+        if (!confirm(`Confirmar recebimento de R$ ${editAmount},00 de ${selectedStudent.name}? Isso renovará o acesso por 30 dias.`)) return;
+
+        setLoadingAction(true);
+        try {
+            const now = new Date();
+            const nextDue = new Date();
+            nextDue.setDate(now.getDate() + 30);
+
+            // 1. Update Profile
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .update({
+                    status: 'active',
+                    last_payment_date: now.toISOString(),
+                    next_due_date: nextDue.toISOString(),
+                    amount: editAmount
+                })
+                .eq('id', selectedStudent.id);
+
+            if (profileError) throw profileError;
+
+            // 2. Log History
+            const { error: historyError } = await supabase
+                .from('payment_history')
+                .insert({
+                    student_id: selectedStudent.id,
+                    teacher_id: user?.id,
+                    amount: editAmount,
+                    payment_date: now.toISOString(),
+                    method: 'manual'
+                });
+
+            if (historyError) {
+                console.error("History error (non-fatal):", historyError);
+                // Don't throw, just log, as priority is access renewal
+            }
+
+            await fetchData();
+            setSelectedStudent(prev => prev ? { ...prev, status: 'active', nextDueDate: nextDue.toISOString() } : null);
+            alert('Pagamento confirmado e acesso renovado!');
+        } catch (error: any) {
+            console.error(error);
+            alert('Erro ao confirmar: ' + error.message);
+        } finally {
+            setLoadingAction(false);
+        }
     };
 
     const renderSettings = () => {
@@ -1144,7 +1164,24 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="p-3 bg-white/5 rounded-xl border border-white/5">
-                                    <p className="text-[10px] text-gray-500 font-bold uppercase">Pagamento</p>
+                                    <div className="flex justify-between items-center mb-2">
+                                        <p className="text-[10px] text-gray-500 font-bold uppercase">Pagamento & Ciclo</p>
+                                        {selectedStudent?.nextDueDate && (
+                                            <p className={`text-[10px] font-bold ${new Date(selectedStudent.nextDueDate) < new Date() ? 'text-red-400' : 'text-green-400'}`}>
+                                                Vence: {new Date(selectedStudent.nextDueDate).toLocaleDateString('pt-BR')}
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <button
+                                        onClick={handleConfirmPayment}
+                                        className="w-full bg-[#0081FF]/20 text-[#0081FF] h-10 rounded-lg flex items-center justify-center gap-2 text-xs font-bold hover:bg-[#0081FF]/30 transition-all mb-3"
+                                    >
+                                        <span className="material-symbols-rounded text-sm">payments</span>
+                                        Confirmar Pagamento Recebido
+                                    </button>
+
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Dia de Vencimento Preferencial</p>
                                     <select
                                         value={editPaymentDay}
                                         onChange={(e) => setEditPaymentDay(e.target.value)}

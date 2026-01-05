@@ -83,6 +83,18 @@ export interface User {
   contractAgreed?: boolean;
   contractAgreedAt?: string;
   signatureUrl?: string;
+  lastPaymentDate?: string;
+}
+
+export interface PaymentReceipt {
+  id: string;
+  userId: string;
+  userName?: string;
+  userAvatar?: string;
+  amount: number;
+  receiptUrl: string;
+  status: 'pending' | 'approved' | 'rejected';
+  createdAt: string;
 }
 
 export interface StudentSummary {

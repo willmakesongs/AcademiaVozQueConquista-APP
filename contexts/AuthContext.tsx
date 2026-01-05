@@ -110,6 +110,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => subscription.unsubscribe();
   }, []);
 
+  const enforceSubscriptionStatus = async (user: User) => {
+    if (!user.nextDueDate || user.role === 'teacher' || user.role === 'admin') return user;
+
+    const dueDate = new Date(user.nextDueDate);
+    const today = new Date();
+    // Normalize to compare dates only
+    dueDate.setHours(23, 59, 59, 999);
+    today.setHours(0, 0, 0, 0);
+
+    if (today > dueDate) {
+      const diffTime = Math.abs(today.getTime() - dueDate.getTime());
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      let newStatus: 'overdue' | 'blocked' = 'overdue';
+      if (diffDays > 7) {
+        newStatus = 'blocked';
+      }
+
+      // Automatically update if status mismatch
+      // We respect 'blocked' if manually set, but if date says blocked, it stays blocked.
+      if (user.status !== newStatus) {
+        console.log(`[Auto-Status] Updating ${user.name} from ${user.status} to ${newStatus}`);
+
+        await supabase
+          .from('profiles')
+          .update({ status: newStatus })
+          .eq('id', user.id);
+
+        return { ...user, status: newStatus };
+      }
+    } else {
+      // If date is valid (paid), ensuring status is active could be logical, 
+      // BUT manual 'blocked' might exist. 
+      // User requirements: "When data_fim expira... status muda". 
+      // Doesn't say "When data_fim is valid, status must be active".
+      // HOWEVER, confirming payment sets it to active. So we assume safe defaults.
+    }
+    return user;
+  };
+
   const fetchProfile = async (userId: string) => {
     if (!isSupabaseConfigured) return;
 
@@ -181,9 +221,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           scheduleTime: data.schedule_time,
           contractAgreed: data.contract_agreed,
           contractAgreedAt: data.contract_agreed_at,
-          signatureUrl: data.signature_url
+          signatureUrl: data.signature_url,
+          lastPaymentDate: data.last_payment_date
         };
-        setUser(userData);
+
+        const updatedUser = await enforceSubscriptionStatus(userData);
+        setUser(updatedUser);
 
         // Initialize trial start time if not set
         if (data.status === 'trial' && !localStorage.getItem('visitor_start_time')) {

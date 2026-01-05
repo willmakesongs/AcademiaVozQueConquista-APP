@@ -51,6 +51,11 @@ const AppContent = () => {
         setScreen(Screen.LOGIN);
       }
     }
+
+    // Force redirect for Blocked Users
+    if (user?.status === 'blocked' && screen !== Screen.PROFILE && screen !== Screen.LOGIN && screen !== Screen.ONBOARDING) {
+      setScreen(Screen.PROFILE);
+    }
   }, [user, loading, screen]);
 
   // Visitor Warning Logic (2 min warning)
@@ -297,8 +302,9 @@ const AppContent = () => {
       {user && screen !== Screen.LOGIN && screen !== Screen.CALENDAR && user.status !== 'blocked' && !(user.id === 'guest' && visitorTimeRemaining === 0) && (
         <BottomNav
           currentScreen={screen}
-          onNavigate={handleBottomNav}
-          role={user.role}
+          onNavigate={handleNavigate}
+          role={user?.role || 'student'}
+          status={user?.status}
         />
       )}
     </div>

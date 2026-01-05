@@ -122,6 +122,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
     const { isOfflineMode, setOfflineMode, downloadProgress, downloadAll } = usePlayback();
     const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const receiptFileInputRef = useRef<HTMLInputElement>(null);
 
     // Navigation State
     const [activeView, setActiveView] = useState<'menu' | 'personal_data' | 'subscription' | 'contract' | 'vocal_test' | 'piano' | 'tuner'>('menu');
@@ -531,6 +532,57 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
         } catch (error: any) {
             console.error('Erro ao assinar contrato:', error);
             alert('Erro ao salvar assinatura: ' + error.message);
+        }
+    };
+
+    const handleReceiptUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file || !user) return;
+
+        try {
+            // 1. Validar tamanho/tipo se necessário
+            if (file.size > 5 * 1024 * 1024) { // 5MB
+                alert('O arquivo deve ter no máximo 5MB.');
+                return;
+            }
+
+            // 2. Upload para Storage
+            const fileExt = file.name.split('.').pop();
+            const fileName = `receipt_${user.id}_${Date.now()}.${fileExt}`;
+            const filePath = `${user.id}/${fileName}`;
+
+            const { error: uploadError } = await supabase.storage
+                .from('receipts')
+                .upload(filePath, file);
+
+            if (uploadError) throw uploadError;
+
+            // 3. Pegar URL Pública
+            const { data: { publicUrl } } = supabase.storage
+                .from('receipts')
+                .getPublicUrl(filePath);
+
+            // 4. Inserir no Banco de Dados
+            const { error: dbError } = await supabase
+                .from('payment_receipts')
+                .insert({
+                    user_id: user.id,
+                    amount: user.amount || 97, // Valor padrão se não tiver
+                    receipt_url: publicUrl,
+                    status: 'pending'
+                });
+
+            if (dbError) throw dbError;
+
+            alert('Comprovante enviado com sucesso! O professor será notificado.');
+
+        } catch (error: any) {
+            console.error('Erro ao enviar comprovante:', error);
+            alert('Erro ao enviar comprovante: ' + error.message);
+        } finally {
+            if (receiptFileInputRef.current) {
+                receiptFileInputRef.current.value = '';
+            }
         }
     };
 
@@ -1053,6 +1105,23 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <div className="mb-8">
+                        <button
+                            onClick={() => receiptFileInputRef.current?.click()}
+                            className="w-full h-14 bg-[#0081FF] rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-blue-500/20 active:scale-95 transition-all text-white font-bold hover:scale-[1.02]"
+                        >
+                            <span className="material-symbols-rounded">upload_file</span>
+                            Enviar Comprovante de Pagamento
+                        </button>
+                        <input
+                            type="file"
+                            ref={receiptFileInputRef}
+                            className="hidden"
+                            accept="image/*,application/pdf"
+                            onChange={handleReceiptUpload}
+                        />
                     </div>
 
                     <div>
