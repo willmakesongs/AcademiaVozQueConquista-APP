@@ -29,7 +29,7 @@ const AppContent = () => {
   const [libraryResetKey, setLibraryResetKey] = useState(0);
   const [profileResetKey, setProfileResetKey] = useState(0);
   const [dashboardResetKey, setDashboardResetKey] = useState(0);
-  const [dashboardInitialTab, setDashboardInitialTab] = useState<'dashboard' | 'students' | 'reports'>('students');
+  const [dashboardInitialTab, setDashboardInitialTab] = useState<'dashboard' | 'students' | 'reports'>('dashboard');
 
   // Visitor Warning State
   const [showVisitorWarning, setShowVisitorWarning] = useState(false);
