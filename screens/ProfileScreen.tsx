@@ -788,7 +788,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout }) => {
                 </button>
 
                 <div className="text-center pb-8 pt-4">
-                    <p className="text-[10px] text-gray-600">Versão 2.1.0 • Build 2405</p>
+                    <p className="text-[10px] text-gray-600">Versão 2026.01.04@0002406</p>
                     <div className="flex justify-center mt-2 opacity-30">
                         <Logo size="sm" />
                     </div>
