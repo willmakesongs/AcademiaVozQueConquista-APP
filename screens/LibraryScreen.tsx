@@ -257,7 +257,7 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
     <div className="min-h-screen bg-[#101622] pb-24 flex flex-col relative">
       {/* Topic Content Modal (Lesson View) */}
       {selectedTopic && (
-        <div className="fixed inset-0 z-50 bg-[#101622] flex flex-col animate-in slide-in-from-bottom duration-300">
+        <div className="fixed inset-0 z-50 bg-[#101622] flex flex-col animate-in slide-in-from-bottom duration-300 max-w-md mx-auto left-0 right-0 shadow-2xl">
           <div className="pt-8 px-6 pb-4 bg-[#101622]/95 border-b border-white/5 flex items-center gap-3 sticky top-0">
             <button
               onClick={() => setSelectedTopic(null)}
