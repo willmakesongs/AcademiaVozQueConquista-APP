@@ -989,7 +989,7 @@ export const MODULES: Module[] = [
     {
         id: 'm5',
         number: '06',
-        title: 'Mudança de Registro Vocal (O Passaggio)',
+        title: 'Mudança de Registro Vocal',
         subtitle: 'A Arte da Conexão',
         description: 'Coordenação neuromuscular para transitar entre registros sem quebras.',
         topics: [
