@@ -24,6 +24,12 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     const [paymentHistory, setPaymentHistory] = useState<any[]>([]);
     const [courses, setCourses] = useState<Course[]>([]);
     const [selectedCourseId, setSelectedCourseId] = useState<string>('all');
+    const [financeTab, setFinanceTab] = useState<'overview' | 'by_course' | 'status' | 'repasse'>('overview');
+    const [financePeriod, setFinancePeriod] = useState({
+        month: new Date().getMonth(),
+        year: new Date().getFullYear()
+    });
+    const [teachers, setTeachers] = useState<any[]>([]);
 
     // States UI
     const [searchQuery, setSearchQuery] = useState('');
@@ -132,6 +138,9 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 // Fetch Courses and Student-Course relations
                 const { data: coursesData } = await supabase.from('courses').select('*').eq('ativo', true);
                 if (coursesData) setCourses(coursesData);
+
+                const { data: teachersData } = await supabase.from('profiles').select('*').eq('role', 'teacher');
+                if (teachersData) setTeachers(teachersData);
 
                 const { data: relationsData } = await supabase.from('student_courses').select('*');
 
@@ -646,217 +655,298 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     const renderFinancial = () => {
         const pendingReceipts = receipts.filter(r => r.status === 'pending');
 
-        // 1. Calculate Received (Current Month)
-        const currentMonth = new Date().getMonth();
-        const currentYear = new Date().getFullYear();
-        const receivedThisMonth = paymentHistory
-            .filter(p => {
-                const d = new Date(p.payment_date || p.created_at); // fallback
-                return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
-            })
-            .reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
+        // Helper para filtrar por período
+        const isInPeriod = (dateStr: string) => {
+            const d = new Date(dateStr);
+            return d.getMonth() === financePeriod.month && d.getFullYear() === financePeriod.year;
+        };
 
-        // 2. Calculate Pending (Overdue Students Total Amount)
-        // Assuming monthly fee is roughly constant or using last payment amount as proxy
-        const overdueStudents = students.filter(s => s.status === 'overdue');
-        const pendingAmount = overdueStudents.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
+        // Lógica de Rateio Proporcional
+        // Se aluno tem 2 cursos, cada curso conta como 50% do valor mensal dele
+        const calculateMetrics = (courseId: string | 'all') => {
+            let totalFaturado = 0;
+            let totalRecebido = 0;
+            let totalAtraso = 0;
+            let totalPendente = 0;
+            let activeStudentsCount = 0;
 
-        // 3. Chart Data (Last 6 Months)
-        const chartData = [];
-        const months = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
+            students.forEach(student => {
+                const enrolledCourses = student.courses || [];
+                const isAll = courseId === 'all';
+                const isMatchingCourse = isAll || enrolledCourses.some(c => c.course_id === courseId);
 
-        for (let i = 5; i >= 0; i--) {
-            const d = new Date();
-            d.setMonth(currentMonth - i);
-            const mon = d.getMonth();
-            const yr = d.getFullYear();
+                if (isMatchingCourse) {
+                    const divisor = enrolledCourses.length || 1;
+                    const proportionalAmount = student.amount / (isAll ? 1 : divisor);
 
-            const total = paymentHistory
-                .filter(p => {
-                    const pd = new Date(p.payment_date || p.created_at);
-                    return pd.getMonth() === mon && pd.getFullYear() === yr;
-                })
-                .reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
+                    if (student.status !== 'inactive') {
+                        activeStudentsCount++;
+                        if (student.status === 'overdue') totalAtraso += proportionalAmount;
+                        if (student.status === 'blocked') totalPendente += proportionalAmount;
+                    }
+                }
+            });
 
-            chartData.push({ label: months[mon], value: total });
-        }
+            // Recebido no período selecionado
+            paymentHistory.forEach(p => {
+                if (isInPeriod(p.payment_date || p.created_at)) {
+                    const student = students.find(s => s.id === p.student_id);
+                    if (student) {
+                        const enrolledCourses = student.courses || [];
+                        const isAll = courseId === 'all';
+                        if (isAll || enrolledCourses.some(c => c.course_id === courseId)) {
+                            const divisor = enrolledCourses.length || 1;
+                            totalRecebido += Number(p.amount) / (isAll ? 1 : divisor);
+                        }
+                    }
+                }
+            });
 
-        // Simple SVG Line Chart Logic
-        const maxVal = Math.max(...chartData.map(d => d.value), 100); // min 100 to avoid div/0
-        const chartPoints = chartData.map((d, i) => {
-            const x = (i / (chartData.length - 1)) * 100;
-            const y = 100 - (d.value / maxVal) * 80; // keep some padding top/bottom
-            return `${x},${y}`;
-        }).join(' ');
+            totalFaturado = totalRecebido + totalAtraso + totalPendente;
 
-        // Smooth curve approximation (Beziers would be better, but polyline is okay for simple trend)
-        // Let's try to make it slightly curved by using C commands or just simple L for now to ensure robustness without heavy math lib
-        // Actually, let's use a simple cubic bezier smoothing if possible, or just straight lines. 
-        // For "smoothness" like the image, standard SVG smoothing is needed.
-        // Let's stick to polyline for safety, it's "close enough" for a quick implementation.
-        // Update: Let's do a simple Catmull-Rom to Bezier or just standard polyline.
-        // To keep it simple and robust: Polyline.
+            return { totalFaturado, totalRecebido, totalAtraso, totalPendente, activeStudentsCount };
+        };
+
+        const metrics = calculateMetrics(selectedCourseId);
+
+        const renderTabContent = () => {
+            switch (financeTab) {
+                case 'overview':
+                    return (
+                        <div className="space-y-6">
+                            {/* Cards de Resumo */}
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="bg-[#1A202C] p-5 rounded-3xl border border-white/5">
+                                    <p className="text-[10px] text-gray-500 font-black uppercase mb-1">Total Faturado</p>
+                                    <h3 className="text-xl font-bold text-white">R$ {metrics.totalFaturado.toLocaleString()}</h3>
+                                </div>
+                                <div className="bg-[#1A202C] p-5 rounded-3xl border border-white/5">
+                                    <p className="text-[10px] text-green-500 font-black uppercase mb-1">Total Recebido</p>
+                                    <h3 className="text-xl font-bold text-white">R$ {metrics.totalRecebido.toLocaleString()}</h3>
+                                </div>
+                                <div className="bg-[#1A202C] p-5 rounded-3xl border border-white/5">
+                                    <p className="text-[10px] text-red-500 font-black uppercase mb-1">Em Atraso</p>
+                                    <h3 className="text-xl font-bold text-white">R$ {metrics.totalAtraso.toLocaleString()}</h3>
+                                </div>
+                                <div className="bg-[#1A202C] p-5 rounded-3xl border border-white/5">
+                                    <p className="text-[10px] text-orange-500 font-black uppercase mb-1">Pendentes</p>
+                                    <h3 className="text-xl font-bold text-white">R$ {metrics.totalPendente.toLocaleString()}</h3>
+                                </div>
+                            </div>
+
+                            {/* Alunos Ativos */}
+                            <div className="bg-[#1A202C] p-6 rounded-3xl border border-white/5 flex items-center justify-between">
+                                <div>
+                                    <h4 className="text-white font-bold">Alunos Ativos</h4>
+                                    <p className="text-xs text-gray-500">Total de matrículas ativas no sistema</p>
+                                </div>
+                                <div className="text-3xl font-black text-[#0081FF]">{metrics.activeStudentsCount}</div>
+                            </div>
+
+                            {/* Pendências de Comprovantes */}
+                            {pendingReceipts.length > 0 && (
+                                <div className="bg-yellow-500/10 p-5 rounded-3xl border border-yellow-500/20">
+                                    <h3 className="text-yellow-500 font-bold mb-3 flex items-center gap-2">
+                                        <span className="material-symbols-rounded">warning</span>
+                                        Comprovantes Pendentes ({pendingReceipts.length})
+                                    </h3>
+                                    <div className="space-y-2">
+                                        {pendingReceipts.slice(0, 3).map(r => (
+                                            <div key={r.id} className="flex justify-between items-center text-xs">
+                                                <span className="text-white">{r.userName}</span>
+                                                <span className="text-gray-400">R$ {r.amount}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    );
+
+                case 'by_course':
+                    return (
+                        <div className="space-y-4">
+                            <div className="flex gap-2 mb-4 overflow-x-auto pb-2 hide-scrollbar">
+                                <button
+                                    onClick={() => setSelectedCourseId('all')}
+                                    className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase shrink-0 ${selectedCourseId === 'all' ? 'bg-[#0081FF] text-white' : 'bg-white/5 text-gray-500'}`}
+                                >
+                                    Todos
+                                </button>
+                                {courses.map(c => (
+                                    <button
+                                        key={c.id}
+                                        onClick={() => setSelectedCourseId(c.id)}
+                                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase shrink-0 ${selectedCourseId === c.id ? 'bg-[#0081FF] text-white' : 'bg-white/5 text-gray-500'}`}
+                                    >
+                                        {c.nome}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div className="bg-[#1A202C] rounded-3xl border border-white/5 overflow-hidden">
+                                <table className="w-full text-left text-xs">
+                                    <thead className="bg-black/20 text-gray-500 uppercase">
+                                        <tr>
+                                            <th className="p-4 font-black">Curso</th>
+                                            <th className="p-4 font-black">Recebido</th>
+                                            <th className="p-4 font-black">Alunos</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-white/5">
+                                        {(selectedCourseId === 'all' ? courses : courses.filter(c => c.id === selectedCourseId)).map(course => {
+                                            const courseMetrics = calculateMetrics(course.id);
+                                            return (
+                                                <tr key={course.id}>
+                                                    <td className="p-4 text-white font-bold">{course.nome}</td>
+                                                    <td className="p-4 text-green-500 font-black">R$ {courseMetrics.totalRecebido.toFixed(2)}</td>
+                                                    <td className="p-4 text-gray-400">{courseMetrics.activeStudentsCount}</td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    );
+
+                case 'status':
+                    const statusFiltered = students.filter(s => {
+                        const matchesCourse = selectedCourseId === 'all' || s.courses?.some(c => c.course_id === selectedCourseId);
+                        return matchesCourse;
+                    });
+
+                    return (
+                        <div className="space-y-3">
+                            {statusFiltered.map(student => (
+                                <div key={student.id} onClick={() => setSelectedStudent(student)} className="bg-[#1A202C] p-4 rounded-2xl border border-white/5 flex items-center justify-between cursor-pointer hover:bg-white/5">
+                                    <div className="flex items-center gap-3">
+                                        <img src={student.avatarUrl} className="w-10 h-10 rounded-full object-cover" />
+                                        <div>
+                                            <h4 className="text-sm font-bold text-white">{student.name}</h4>
+                                            <div className="flex gap-1">
+                                                {student.courses?.map((sc: any) => (
+                                                    <span key={sc.course_id} className="text-[8px] bg-white/5 px-1.5 py-0.5 rounded text-gray-500 uppercase">
+                                                        {courses.find(c => c.id === sc.course_id)?.nome}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="text-right">
+                                        <span className={`text-[10px] font-black uppercase px-2 py-1 rounded-lg ${student.status === 'active' ? 'bg-green-500/10 text-green-500' :
+                                                student.status === 'overdue' ? 'bg-red-500/10 text-red-500' :
+                                                    'bg-orange-500/10 text-orange-500'
+                                            }`}>
+                                            {student.status === 'active' ? 'Em Dia' : student.status === 'overdue' ? 'Atraso' : 'Pendente'}
+                                        </span>
+                                        <p className="text-[10px] text-gray-500 mt-1">Venc: {student.paymentDay}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    );
+
+                case 'repasse':
+                    return (
+                        <div className="space-y-4">
+                            <div className="bg-[#1A202C] rounded-3xl border border-white/5 overflow-hidden">
+                                <table className="w-full text-left text-xs">
+                                    <thead className="bg-black/20 text-gray-500 uppercase">
+                                        <tr>
+                                            <th className="p-4 font-black">Professor</th>
+                                            <th className="p-4 font-black">Alunos</th>
+                                            <th className="p-4 font-black">Repasse</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-white/5">
+                                        {teachers.map(teacher => {
+                                            let teacherTotalRepasse = 0;
+                                            let teacherActiveStudents = 0;
+
+                                            courses.filter(c => c.teacher_id === teacher.id).forEach(course => {
+                                                const courseMetrics = calculateMetrics(course.id);
+                                                const repassePercent = (course as any).repasse_percent || 50;
+                                                teacherTotalRepasse += (courseMetrics.totalRecebido * (repassePercent / 100));
+                                                teacherActiveStudents += courseMetrics.activeStudentsCount;
+                                            });
+
+                                            return (
+                                                <tr key={teacher.id}>
+                                                    <td className="p-4">
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="w-6 h-6 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center font-bold text-[10px]">
+                                                                {teacher.name.charAt(0)}
+                                                            </div>
+                                                            <span className="text-white font-bold">{teacher.name}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td className="p-4 text-gray-400">{teacherActiveStudents}</td>
+                                                    <td className="p-4 text-green-500 font-black">R$ {teacherTotalRepasse.toLocaleString()}</td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <p className="text-[10px] text-gray-500 italic px-4">
+                                * O valor do repasse é calculado sobre o total recebido no período selecionado, considerando o rateio proporcional para alunos em múltiplos cursos.
+                            </p>
+                        </div>
+                    );
+            }
+        };
 
         return (
             <div className="flex-1 flex flex-col bg-[#101622] overflow-hidden">
-                <div className="p-6 space-y-6 overflow-y-auto hide-scrollbar pb-32">
-                    <div className="flex items-center justify-between mb-2">
-                        <h2 className="text-2xl font-bold text-white">Dashboard Financeiro</h2>
-                        <div className="w-10 h-10 rounded-full bg-[#1A202C] border border-white/10 flex items-center justify-center overflow-hidden">
-                            <img src={user?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.email || 'Admin')}`} className="w-full h-full object-cover" />
-                        </div>
-                    </div>
-
-                    {/* Cards Top */}
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-[#1A202C] p-5 rounded-3xl border border-white/5 relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                                <span className="material-symbols-rounded text-6xl text-green-500">arrow_upward</span>
-                            </div>
-                            <div className="flex items-center gap-2 mb-3">
-                                <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-500">
-                                    <span className="material-symbols-rounded text-lg">arrow_upward</span>
-                                </div>
-                                <span className="text-sm text-gray-400">Recebido (Mês)</span>
-                            </div>
-                            <h3 className="text-2xl font-bold text-white mb-1">R$ {receivedThisMonth.toFixed(2)}</h3>
-                            <span className="text-xs text-green-500 font-bold">+12% vs mês anterior</span>
-                        </div>
-
-                        <div className="bg-[#1A202C] p-5 rounded-3xl border border-white/5 relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-                                <span className="material-symbols-rounded text-6xl text-orange-500">priority_high</span>
-                            </div>
-                            <div className="flex items-center gap-2 mb-3">
-                                <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-500">
-                                    <span className="material-symbols-rounded text-lg">priority_high</span>
-                                </div>
-                                <span className="text-sm text-gray-400">Pendente</span>
-                            </div>
-                            <h3 className="text-2xl font-bold text-white mb-1">R$ {pendingAmount.toFixed(2)}</h3>
-                            <span className="text-xs text-orange-500 font-bold">+5% inadimplência</span>
-                        </div>
-                    </div>
-
-                    {/* Chart Section */}
-                    <div className="bg-[#1A202C] p-6 rounded-3xl border border-white/5">
-                        <div className="flex justify-between items-start mb-6">
-                            <div>
-                                <h3 className="text-sm text-gray-400 mb-1">Tendência de Receita</h3>
-                                <div className="flex items-center gap-3">
-                                    <h2 className="text-3xl font-bold text-white">R$ {chartData.reduce((a, b) => a + b.value, 0).toLocaleString()}</h2>
-                                    <span className="bg-green-500/10 text-green-500 text-xs font-bold px-2 py-1 rounded-full">+8.5%</span>
-                                </div>
-                                <p className="text-xs text-gray-500 mt-1">Últimos 6 meses</p>
-                            </div>
-                        </div>
-
-                        <div className="h-40 w-full relative">
-                            {/* SVG Chart */}
-                            <svg className="w-full h-full overflow-visible" preserveAspectRatio="none" viewBox="0 0 100 100">
-                                {/* Gradient Defs */}
-                                <defs>
-                                    <linearGradient id="gradient" x1="0" x2="0" y1="0" y2="1">
-                                        <stop offset="0%" stopColor="#0081FF" stopOpacity="0.5" />
-                                        <stop offset="100%" stopColor="#0081FF" stopOpacity="0" />
-                                    </linearGradient>
-                                </defs>
-                                {/* Fill Area */}
-                                <path
-                                    d={`M0,100 ${chartPoints.split(' ').map(p => 'L' + p).join(' ')} L100,100 Z`}
-                                    fill="url(#gradient)"
-                                />
-                                {/* Line */}
-                                <polyline
-                                    fill="none"
-                                    stroke="#3B82F6"
-                                    strokeWidth="3"
-                                    points={chartPoints}
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                />
-                                {/* Dots */}
-                                {chartData.map((d, i) => {
-                                    const x = (i / (chartData.length - 1)) * 100;
-                                    const y = 100 - (d.value / maxVal) * 80;
-                                    return (
-                                        <circle key={i} cx={x} cy={y} r="2" fill="white" stroke="#3B82F6" strokeWidth="2" />
-                                    );
-                                })}
-                            </svg>
-
-                            {/* X Axis Labels */}
-                            <div className="flex justify-between mt-4">
-                                {chartData.map((d, i) => (
-                                    <span key={i} className="text-[10px] sm:text-xs text-gray-500 font-bold uppercase">{d.label}</span>
+                <div className="p-6 pb-2 space-y-4">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-2xl font-bold text-white tracking-tighter uppercase">Financeiro</h2>
+                        <div className="flex items-center gap-2 bg-[#1A202C] p-1 rounded-xl border border-white/5">
+                            <select
+                                value={financePeriod.month}
+                                onChange={(e) => setFinancePeriod(prev => ({ ...prev, month: Number(e.target.value) }))}
+                                className="bg-transparent text-white text-[10px] font-bold outline-none px-2 py-1"
+                            >
+                                {['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'].map((m, i) => (
+                                    <option key={i} value={i} className="bg-[#1A202C]">{m}</option>
                                 ))}
-                            </div>
+                            </select>
+                            <div className="w-[1px] h-4 bg-white/10"></div>
+                            <select
+                                value={financePeriod.year}
+                                onChange={(e) => setFinancePeriod(prev => ({ ...prev, year: Number(e.target.value) }))}
+                                className="bg-transparent text-white text-[10px] font-bold outline-none px-2 py-1"
+                            >
+                                {[2025, 2026].map(y => (
+                                    <option key={y} value={y} className="bg-[#1A202C]">{y}</option>
+                                ))}
+                            </select>
                         </div>
                     </div>
 
-                    {/* Pending Receipts Section (Critical Action Items) */}
-                    {pendingReceipts.length > 0 && (
-                        <div className="bg-[#1A202C] p-5 rounded-3xl border border-white/5 border-l-4 border-l-yellow-500">
-                            <h3 className="text-white font-bold mb-3 flex items-center gap-2">
-                                <span className="material-symbols-rounded text-yellow-500">warning</span>
-                                Comprovantes para Análise ({pendingReceipts.length})
-                            </h3>
-                            <div className="space-y-3">
-                                {pendingReceipts.map(receipt => (
-                                    <div key={receipt.id} className="bg-[#101622] p-3 rounded-xl flex items-center justify-between">
-                                        <div>
-                                            <p className="text-white text-sm font-bold">{receipt.userName}</p>
-                                            <p className="text-xs text-gray-500">Enviou R$ {receipt.amount}</p>
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <button onClick={() => handleApproveReceipt(receipt.id)} className="p-2 bg-green-500/10 text-green-500 rounded-lg hover:bg-green-500/20"><span className="material-symbols-rounded text-sm">check</span></button>
-                                            <button onClick={() => handleRejectReceipt(receipt.id)} className="p-2 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500/20"><span className="material-symbols-rounded text-sm">close</span></button>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Overdue Payments List */}
-                    <div>
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-bold text-white">Pagamentos Atrasados</h3>
-                            <button className="text-blue-500 text-xs font-bold hover:underline">Ver todos</button>
-                        </div>
-
-                        {overdueStudents.length === 0 ? (
-                            <div className="p-8 text-center bg-[#1A202C] rounded-3xl border border-white/5 border-dashed">
-                                <span className="material-symbols-rounded text-4xl text-green-500/50 mb-2">check_circle</span>
-                                <p className="text-gray-500 text-sm">Nenhum pagamento atrasado!</p>
-                            </div>
-                        ) : (
-                            <div className="space-y-3">
-                                {overdueStudents.slice(0, 5).map(student => (
-                                    <div key={student.id} className="bg-[#1A202C] p-4 rounded-3xl border border-white/5 flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <img src={student.avatarUrl} className="w-12 h-12 rounded-full object-cover border-2 border-[#101622]" />
-                                            <div>
-                                                <h4 className="text-sm font-bold text-white">{student.name}</h4>
-                                                <p className="text-xs text-red-400 font-medium">Venceu em {new Date(student.nextDueDate || Date.now()).toLocaleDateString('pt-BR')}</p>
-                                            </div>
-                                        </div>
-                                        <div className="text-right">
-                                            <span className="block text-sm font-black text-white">R$ {student.amount},00</span>
-                                            <div className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-500/10 text-red-500 mt-1">
-                                                <span className="material-symbols-rounded text-sm">warning</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
+                    {/* Menu de Abas */}
+                    <div className="flex gap-1 bg-black/20 p-1 rounded-2xl overflow-x-auto hide-scrollbar">
+                        {[
+                            { id: 'overview', label: 'Geral', icon: 'payments' },
+                            { id: 'by_course', label: 'Cursos', icon: 'analytics' },
+                            { id: 'status', label: 'Alunos', icon: 'group' },
+                            { id: 'repasse', label: 'Repasse', icon: 'handshake' }
+                        ].map((tab: any) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setFinanceTab(tab.id)}
+                                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 px-4 ${financeTab === tab.id ? 'bg-[#1A202C] text-white shadow-lg' : 'text-gray-500'}`}
+                            >
+                                <span className="material-symbols-rounded text-sm">{tab.icon}</span>
+                                {tab.label}
+                            </button>
+                        ))}
                     </div>
+                </div>
 
-                    {/* Add Button Floating (from design) - Optional or reuse existing functionality */}
-                    {/* The list usually has a + button to add manual payment? */}
-                    {/* We already have "Confirm Payment" inside student details. Let's keep it simple. */}
-
+                <div className="flex-1 overflow-y-auto px-6 py-4 pb-32 hide-scrollbar">
+                    {renderTabContent()}
                 </div>
             </div>
         );

@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import { usePlayback } from '../contexts/PlaybackContext';
 import { RepertoireView } from '../components/RepertoireView';
+import { RoutineView } from '../components/RoutineView';
 
 interface Props {
   onNavigate: (screen: Screen) => void;
@@ -25,10 +26,14 @@ export const LibraryScreen: React.FC<Props> = ({
   const { user } = useAuth(); // Auth context for guest check
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedTopic, setSelectedTopic] = useState<{ id: string; title: string; content: string } | null>(null);
+  const [selectedTopic, setSelectedTopic] = useState<{ id: string; title: string; content?: string } | null>(null);
   const [courses, setCourses] = useState<Course[]>([]);
   const [userCourses, setUserCourses] = useState<StudentCourse[]>([]);
+  const [activeCourseSlug, setActiveCourseSlug] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'modules' | 'routine'>('modules');
+  const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [lastLesson, setLastLesson] = useState<{ moduleId: string; topicId: string; title: string } | null>(null);
 
   // Refs e Estados para o Checklist e Audio Inline
   const contentRef = useRef<HTMLDivElement>(null);
@@ -90,7 +95,19 @@ export const LibraryScreen: React.FC<Props> = ({
         ]);
 
         if (cRes.data) setCourses(cRes.data);
-        if (scRes.data) setUserCourses(scRes.data);
+        if (scRes.data) {
+          setUserCourses(scRes.data);
+
+          // Lógica de Redirecionamento Automático (Regra 1 e 2)
+          const enrolled = scRes.data.filter(uc => uc.status === 'ativo');
+          if (enrolled.length === 1) {
+            const course = cRes.data?.find(c => c.id === enrolled[0].course_id);
+            if (course) setActiveCourseSlug(course.slug);
+          } else if (enrolled.length > 1) {
+            // Se tiver mais de um, e nenhum selecionado, abre o seletor
+            if (!activeCourseSlug) setIsSelectorOpen(true);
+          }
+        }
       } catch (err) {
         console.error("Erro ao carregar cursos:", err);
       } finally {
@@ -99,6 +116,12 @@ export const LibraryScreen: React.FC<Props> = ({
     };
 
     fetchData();
+
+    // Carregar última aula
+    const last = localStorage.getItem('last_accessed_lesson');
+    if (last) {
+      try { setLastLesson(JSON.parse(last)); } catch (e) { }
+    }
   }, [user]);
 
   const { preload } = usePlayback();
@@ -312,12 +335,60 @@ export const LibraryScreen: React.FC<Props> = ({
     return VOCALIZES.filter(v => v.moduleId === moduleId);
   };
 
+  const activeCourse = courses.find(c => c.slug === activeCourseSlug);
+  const courseModules = MODULES.filter(m => (m.courseId || 'canto') === activeCourseSlug);
+
+  // Calcular progresso do curso
+  const calculateCourseProgress = () => {
+    if (courseModules.length === 0) return 0;
+    let totalTopics = 0;
+    let completedTopics = 0;
+    courseModules.forEach(m => {
+      m.topics.forEach(t => {
+        totalTopics++;
+        if (checklistState[t.id]) completedTopics++;
+      });
+    });
+    return totalTopics > 0 ? Math.round((completedTopics / totalTopics) * 100) : 0;
+  };
+
+  const progress = calculateCourseProgress();
+
+  const handleLessonOpen = (topic: { id: string; title: string; content?: string }, moduleId: string) => {
+    setSelectedTopic(topic);
+    const lessonData = { moduleId, topicId: topic.id, title: topic.title };
+    setLastLesson(lessonData);
+    localStorage.setItem('last_accessed_lesson', JSON.stringify(lessonData));
+  };
+
+  if (loading) {
+    return <div className="min-h-screen bg-[#101622] flex items-center justify-center text-white">Carregando Academia...</div>;
+  }
+
+  // Se não houver curso ativo e não estiver carregando, mostra o seletor forçado
+  if (!activeCourseSlug && !isSelectorOpen) {
+    return (
+      <div className="min-h-screen bg-[#101622] flex flex-col items-center justify-center p-8 text-center">
+        <div className="w-20 h-20 rounded-full bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] mb-6">
+          <span className="material-symbols-rounded text-4xl">school</span>
+        </div>
+        <h2 className="text-xl font-bold text-white mb-2">Bem-vindo à Academia</h2>
+        <p className="text-gray-400 text-sm mb-8">Selecione um dos seus cursos para começar a estudar.</p>
+        <button
+          onClick={() => setIsSelectorOpen(true)}
+          className="px-8 py-4 bg-brand-gradient rounded-2xl text-white font-bold shadow-lg"
+        >
+          Escolher Curso
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#101622] pb-24 flex flex-col relative">
-      {/* Topic Content Modal (Lesson View) */}
-
+      {/* Topic Content Modal */}
       {selectedTopic && (
-        <div className="fixed inset-0 z-50 bg-[#101622] flex flex-col animate-in slide-in-from-bottom duration-300 max-w-md mx-auto left-0 right-0 shadow-2xl">
+        <div className="fixed inset-0 z-[60] bg-[#101622] flex flex-col animate-in slide-in-from-bottom duration-300 max-w-md mx-auto left-0 right-0 shadow-2xl">
           {selectedTopic.id.startsWith('10.1') ? (
             <div className="flex-1 bg-[#101622] p-4">
               <RepertoireView onBack={() => setSelectedTopic(null)} />
@@ -349,20 +420,46 @@ export const LibraryScreen: React.FC<Props> = ({
         </div>
       )}
 
-      <header className="pt-8 pb-4 px-6 sticky top-0 bg-[#101622]/95 backdrop-blur-sm z-20 border-b border-white/5 shadow-lg">
-        <h1 className="text-xl font-bold text-white mb-1">Academia</h1>
-        <p className="text-xs text-[#0081FF] font-medium tracking-wide uppercase mb-4">Módulos do Curso</p>
+      {/* HEADER DO CURSO (CONTEXTO FIXO) */}
+      <header className="pt-8 pb-4 px-6 sticky top-0 bg-[#101622]/95 backdrop-blur-md z-20 border-b border-white/5 shadow-lg">
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">🎓</span>
+            <div>
+              <h1 className="text-lg font-black text-white uppercase tracking-tighter">
+                {activeCourse?.nome || 'Academia'}
+              </h1>
+              <div className="flex items-center gap-2">
+                <div className="w-24 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                  <div className="h-full bg-[#0081FF] transition-all duration-1000" style={{ width: `${progress}%` }}></div>
+                </div>
+                <span className="text-[10px] font-bold text-gray-500">{progress}%</span>
+              </div>
+            </div>
+          </div>
 
-        {/* Search */}
-        <div className="relative">
-          <span className="material-symbols-rounded absolute left-4 top-3.5 text-gray-500">search</span>
-          <input
-            type="text"
-            placeholder="Buscar exercícios ou módulos..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full h-12 bg-[#1A202C] rounded-xl pl-12 pr-4 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#6F4CE7] border border-white/5"
-          />
+          <button
+            onClick={() => setIsSelectorOpen(true)}
+            className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white hover:bg-white/10"
+          >
+            <span className="material-symbols-rounded">swap_horiz</span>
+          </button>
+        </div>
+
+        {/* ABAS INTERNAS DO CURSO */}
+        <div className="flex gap-2 p-1 bg-black/20 rounded-xl">
+          <button
+            onClick={() => setActiveTab('modules')}
+            className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'modules' ? 'bg-[#1A202C] text-white shadow-sm' : 'text-gray-500'}`}
+          >
+            Módulos
+          </button>
+          <button
+            onClick={() => setActiveTab('routine')}
+            className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'routine' ? 'bg-[#1A202C] text-white shadow-sm' : 'text-gray-500'}`}
+          >
+            Rotina
+          </button>
         </div>
       </header>
 
@@ -370,172 +467,212 @@ export const LibraryScreen: React.FC<Props> = ({
         ref={scrollContainerRef}
         className="px-6 py-6 space-y-4 overflow-y-auto hide-scrollbar flex-1"
       >
-        {courses.map(course => {
-          const isEnrolled = userCourses.some(uc => uc.course_id === course.id && uc.status === 'ativo');
-          const courseModules = MODULES.filter(m => (m.courseId || 'canto') === course.slug);
-
-          if (courseModules.length === 0 && !isEnrolled) return null;
-
-          return (
-            <div key={course.id} className="space-y-4 mb-8">
-              <div className="flex items-center gap-3 px-2">
-                <div className={`w-1 h-6 rounded-full ${isEnrolled ? 'bg-[#0081FF]' : 'bg-gray-700'}`}></div>
-                <h2 className={`font-black text-xs uppercase tracking-[0.2em] ${isEnrolled ? 'text-white' : 'text-gray-500'}`}>
-                  Curso: {course.nome}
-                </h2>
-                {!isEnrolled && (
-                  <span className="bg-gray-800 text-gray-500 text-[8px] px-2 py-0.5 rounded-full font-bold">BLOQUEADO</span>
-                )}
+        {activeTab === 'modules' ? (
+          <>
+            {/* CONTINUAR DE ONDE PAREI */}
+            {lastLesson && lastLesson.moduleId && (
+              <div
+                onClick={() => {
+                  const mod = MODULES.find(m => m.id === lastLesson.moduleId);
+                  const top = mod?.topics.find(t => t.id === lastLesson.topicId);
+                  if (top) handleLessonOpen(top, lastLesson.moduleId);
+                }}
+                className="bg-brand-gradient p-5 rounded-2xl shadow-[0_10px_30px_rgba(111,76,231,0.2)] mb-4 cursor-pointer group hover:scale-[1.02] transition-all"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">AULA EM ANDAMENTO</span>
+                  <span className="material-symbols-rounded text-white animate-pulse">play_circle</span>
+                </div>
+                <h4 className="text-white font-bold leading-tight mb-1">{lastLesson.title}</h4>
+                <div className="flex items-center gap-2">
+                  <div className="px-3 py-1 bg-white/20 rounded-lg text-white font-black text-[9px] uppercase tracking-widest">
+                    Continuar de onde parei
+                  </div>
+                </div>
               </div>
+            )}
 
-              {isEnrolled ? (
-                courseModules.map((module, index) => {
-                  const isActive = expandedModule === module.id;
-                  const moduleExercises = getVocalizesForModule(module.id);
-                  const isTrial = user?.status === 'trial';
-                  const isLocked = isTrial && index > 0;
+            <div className="space-y-4">
+              {courseModules.map((module, index) => {
+                const isActive = expandedModule === module.id;
+                const moduleExercises = getVocalizesForModule(module.id);
+                const isTrial = user?.status === 'trial';
+                const isLocked = isTrial && index > 0;
 
-                  if (searchTerm && !module.title.toLowerCase().includes(searchTerm.toLowerCase()) && !moduleExercises.some(v => v.title.toLowerCase().includes(searchTerm.toLowerCase()))) {
-                    return null;
-                  }
+                // Calcular status do módulo
+                const moduleTopics = module.topics;
+                const completedCount = moduleTopics.filter(t => checklistState[t.id]).length;
+                const status = completedCount === 0 ? 'not_started' : (completedCount === moduleTopics.length ? 'completed' : 'in_progress');
 
-                  return (
-                    <div
-                      key={module.id}
-                      className={`rounded-2xl border transition-all duration-300 overflow-hidden ${isActive
-                        ? 'bg-[#1A202C] border-[#6F4CE7]/50 shadow-[0_0_30px_rgba(111,76,231,0.1)]'
-                        : (isLocked ? 'bg-[#1A202C]/30 border-white/5 opacity-70' : 'bg-[#1A202C]/50 border-white/5 hover:bg-[#1A202C]')
-                        }`}
+                return (
+                  <div
+                    key={module.id}
+                    className={`rounded-2xl border transition-all duration-300 overflow-hidden ${isActive
+                      ? 'bg-[#1A202C] border-[#6F4CE7]/50 shadow-[0_0_30px_rgba(111,76,231,0.1)]'
+                      : (isLocked ? 'bg-[#1A202C]/30 border-white/5 opacity-70' : 'bg-[#1A202C]/50 border-white/5')
+                      }`}
+                  >
+                    <button
+                      onClick={() => toggleModule(module.id, isLocked)}
+                      className="w-full flex items-start p-5 text-left relative"
                     >
-                      {/* Module Header */}
-                      <button
-                        onClick={() => toggleModule(module.id, isLocked)}
-                        className="w-full flex items-start p-5 text-left relative"
-                      >
-                        <div className={`mr-4 w-12 h-12 rounded-xl flex items-center justify-center shrink-0 font-bold text-lg transition-colors ${isActive ? 'bg-brand-gradient text-white' : (isLocked ? 'bg-white/5 text-gray-600' : 'bg-white/5 text-gray-500')
-                          }`}>
-                          {isLocked ? <span className="material-symbols-rounded text-xl">lock</span> : module.number}
-                        </div>
+                      <div className={`mr-4 w-12 h-12 rounded-xl flex items-center justify-center shrink-0 font-bold text-lg transition-colors ${isActive ? 'bg-brand-gradient text-white' : (status === 'completed' ? 'bg-green-500/20 text-green-500' : 'bg-white/5 text-gray-500')
+                        }`}>
+                        {isLocked ? <span className="material-symbols-rounded text-xl">lock</span> : (status === 'completed' ? <span className="material-symbols-rounded">check</span> : module.number)}
+                      </div>
 
-                        <div className="flex-1">
-                          <h3 className={`font-bold text-lg leading-tight mb-1 ${isActive ? 'text-white' : (isLocked ? 'text-gray-400' : 'text-gray-300')}`}>
-                            {module.title}
-                          </h3>
-                          <p className={`text-xs font-medium uppercase tracking-wider mb-1 ${isLocked ? 'text-gray-600' : 'text-[#0081FF]'}`}>
-                            {isLocked ? 'Assine para liberar todos os módulos' : module.subtitle}
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-1">
+                          {status === 'in_progress' && <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>}
+                          <p className={`text-[9px] font-black uppercase tracking-widest ${status === 'completed' ? 'text-green-500' : (status === 'in_progress' ? 'text-blue-500' : 'text-gray-600')}`}>
+                            {status === 'completed' ? 'CONCLUÍDO' : (status === 'in_progress' ? 'EM ANDAMENTO' : 'NÃO INICIADO')}
                           </p>
-                          <p className="text-xs text-gray-500 line-clamp-2">{module.description}</p>
+                        </div>
+                        <h3 className={`font-bold text-lg leading-tight mb-1 ${isActive ? 'text-white' : (isLocked ? 'text-gray-400' : 'text-gray-300')}`}>
+                          {module.title}
+                        </h3>
+                        <p className="text-xs text-gray-500 line-clamp-2">{module.description}</p>
+                      </div>
+
+                      <div className={`ml-2 mt-1 transition-transform duration-300 ${isActive ? 'rotate-180 text-[#6F4CE7]' : 'text-gray-600'}`}>
+                        {isLocked ? null : <span className="material-symbols-rounded">expand_more</span>}
+                      </div>
+                    </button>
+
+                    <div className={`transition-all duration-500 ease-in-out ${isActive ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                      <div className="px-5 pb-5 pt-0">
+                        <div className="mb-6 pl-4 border-l border-white/10 space-y-3">
+                          {module.topics.map(topic => (
+                            <div
+                              key={topic.id}
+                              className={`relative p-2 rounded-lg transition-colors flex items-center justify-between ${topic.content || topic.id.startsWith('10.1') ? 'hover:bg-white/5 cursor-pointer group' : ''}`}
+                              onClick={() => {
+                                if (topic.content || topic.id.startsWith('10.1')) {
+                                  handleLessonOpen(topic, module.id);
+                                }
+                              }}
+                            >
+                              <div className="flex-1">
+                                <p className={`text-sm font-semibold ${checklistState[topic.id] ? 'text-gray-500 line-through' : (topic.content || topic.id.startsWith('10.1') ? 'text-[#0081FF] group-hover:text-white' : 'text-white')}`}>
+                                  {topic.title}
+                                </p>
+                                <p className="text-[10px] text-gray-600">{topic.description}</p>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                {checklistState[topic.id] && <span className="material-symbols-rounded text-green-500 text-sm">check_circle</span>}
+                                {(topic.content || topic.id.startsWith('10.1')) && (
+                                  <span className="material-symbols-rounded text-gray-600 text-sm group-hover:text-white">
+                                    {topic.id.startsWith('10.1') ? 'play_circle' : 'article'}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          ))}
                         </div>
 
-                        <div className={`ml-2 mt-1 transition-transform duration-300 ${isActive ? 'rotate-180 text-[#6F4CE7]' : 'text-gray-600'}`}>
-                          {isLocked ? null : <span className="material-symbols-rounded">expand_more</span>}
-                        </div>
-                      </button>
-
-                      {/* Module Content */}
-                      <div className={`transition-all duration-500 ease-in-out ${isActive ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                        <div className="px-5 pb-5 pt-0">
-                          {/* Topics List */}
-                          <div className="mb-6 pl-4 border-l border-white/10 space-y-3">
-                            {module.topics.map(topic => (
+                        {moduleExercises.length > 0 && (
+                          <div className="space-y-2">
+                            <h4 className="text-[10px] text-gray-600 font-black uppercase tracking-widest mb-2">Exercícios Práticos</h4>
+                            {moduleExercises.map(exercise => (
                               <div
-                                key={topic.id}
-                                className={`relative p-2 rounded-lg transition-colors ${topic.content || topic.id.startsWith('10.1') ? 'hover:bg-white/5 cursor-pointer group' : ''}`}
+                                key={exercise.id}
                                 onClick={() => {
-                                  if (topic.content || topic.id.startsWith('10.1')) {
-                                    setSelectedTopic({ id: topic.id, title: topic.title, content: topic.content });
+                                  if (DISABLE_ALL_PLAYERS && !isAdmin) {
+                                    alert("Ativo para assinantes");
+                                    return;
                                   }
+                                  onPlayVocalize(exercise);
                                 }}
+                                className="flex items-center gap-3 p-3 rounded-xl bg-black/20 hover:bg-white/5 border border-white/5 cursor-pointer group transition-colors"
                               >
-                                <div className="flex justify-between items-start">
-                                  <div>
-                                    <p className={`text-sm font-semibold ${topic.content || topic.id.startsWith('10.1') ? 'text-[#0081FF] group-hover:text-white' : 'text-white'}`}>
-                                      {topic.title}
-                                    </p>
-                                    <p className="text-[10px] text-gray-500">{topic.description}</p>
+                                <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 group-hover:text-[#FF00BC] group-hover:bg-[#FF00BC]/10 transition-colors">
+                                  <span className="material-symbols-rounded text-lg">play_arrow</span>
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-sm font-medium text-white truncate">{exercise.title}</p>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[9px] text-gray-500">{exercise.difficulty} • {exercise.duration}</span>
                                   </div>
-                                  {(topic.content || topic.id.startsWith('10.1')) && (
-                                    <span className="material-symbols-rounded text-gray-600 text-sm group-hover:text-white">
-                                      {topic.id.startsWith('10.1') ? 'play_circle' : 'article'}
-                                    </span>
-                                  )}
                                 </div>
                               </div>
                             ))}
                           </div>
-
-                          {/* Exercises List */}
-                          {moduleExercises.length > 0 && (
-                            <div>
-                              <h4 className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-3 flex items-center gap-2">
-                                <span className="material-symbols-rounded text-sm">piano</span>
-                                TREINE COM O PIANO
-                              </h4>
-                              <div className="space-y-2">
-                                {moduleExercises.map(exercise => (
-                                  <div
-                                    key={exercise.id}
-                                    onClick={() => {
-                                      if (DISABLE_ALL_PLAYERS && !isAdmin) {
-                                        alert("Ativo para assinantes");
-                                        return;
-                                      }
-                                      onPlayVocalize(exercise);
-                                    }}
-                                    className="flex items-center gap-3 p-3 rounded-xl bg-black/20 hover:bg-white/5 border border-white/5 cursor-pointer group transition-colors"
-                                  >
-                                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 group-hover:text-[#FF00BC] group-hover:bg-[#FF00BC]/10 transition-colors">
-                                      <span className="material-symbols-rounded text-lg">play_arrow</span>
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <p className="text-sm font-medium text-white truncate">{exercise.title}</p>
-                                      <div className="flex items-center gap-2">
-                                        <span className={`text-[9px] px-1.5 py-0.5 rounded ${exercise.difficulty === 'Iniciante' ? 'bg-green-500/10 text-green-500' :
-                                          exercise.difficulty === 'Intermediário' ? 'bg-yellow-500/10 text-yellow-500' :
-                                            'bg-red-500/10 text-red-500'
-                                          }`}>
-                                          {exercise.difficulty}
-                                        </span>
-                                        <span className="text-[10px] text-gray-500">• {exercise.duration}</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-
-                          {moduleExercises.length === 0 && module.id !== 'm10' && (
-                            <div className="p-4 rounded-xl bg-white/5 text-center">
-                              <p className="text-xs text-gray-400">Exercícios deste módulo serão liberados em breve.</p>
-                            </div>
-                          )}
-                        </div>
+                        )}
                       </div>
                     </div>
-                  );
-                })
-              ) : (
-                <div className="p-8 rounded-[2rem] bg-[#1A202C]/50 border border-white/5 flex flex-col items-center text-center">
-                  <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-gray-600 mb-4">
-                    <span className="material-symbols-rounded text-3xl">lock</span>
                   </div>
-                  <h4 className="text-white font-bold mb-2">Acesso Restrito</h4>
-                  <p className="text-xs text-gray-400 mb-6 max-w-[240px]">
-                    Você ainda não possui acesso ao curso de <strong className="text-white">{course.nome}</strong>. Entre em contato com seu professor para liberar.
-                  </p>
-                  <button className="px-6 py-3 rounded-xl bg-white/5 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-colors flex items-center gap-2">
-                    <span className="material-symbols-rounded text-sm">chat</span>
-                    Solicitar Acesso
-                  </button>
-                </div>
-              )}
+                );
+              })}
             </div>
-          );
-        })}
-
+          </>
+        ) : (
+          <RoutineView onNavigate={onNavigate} />
+        )}
         <div className="h-4"></div>
       </div>
+
+      {/* SELETOR DE CURSOS (BOTTOM SHEET) */}
+      {isSelectorOpen && (
+        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex flex-col justify-end animate-in fade-in duration-300">
+          <div
+            className="w-full max-w-md mx-auto bg-[#1A202C] rounded-t-[2.5rem] border-t border-white/10 p-8 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] animate-in slide-in-from-bottom duration-500 overflow-y-auto max-h-[80vh]"
+          >
+            <div className="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-8"></div>
+
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-black text-white uppercase tracking-tighter">Escolha seu Curso</h2>
+              <button
+                onClick={() => activeCourseSlug && setIsSelectorOpen(false)}
+                className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400"
+              >
+                <span className="material-symbols-rounded">close</span>
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {courses.map(course => {
+                const isEnrolled = userCourses.some(uc => uc.course_id === course.id && uc.status === 'ativo');
+                const isActive = activeCourseSlug === course.slug;
+
+                return (
+                  <div
+                    key={course.id}
+                    onClick={() => {
+                      if (isEnrolled) {
+                        setActiveCourseSlug(course.slug);
+                        setIsSelectorOpen(false);
+                      }
+                    }}
+                    className={`relative p-5 rounded-3xl border transition-all flex items-center gap-4 ${isActive ? 'bg-[#0081FF]/10 border-[#0081FF] shadow-lg shadow-[#0081FF]/10' : (isEnrolled ? 'bg-white/5 border-white/5' : 'bg-black/20 border-white/5 opacity-50')}`}
+                  >
+                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl ${isActive ? 'bg-[#0081FF] text-white' : 'bg-white/5'}`}>
+                      {course.slug === 'canto' ? '🎤' : (course.slug === 'violao' ? '🎸' : '🎹')}
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-white">{course.nome}</h3>
+                      <p className={`text-[10px] font-black uppercase tracking-widest ${isEnrolled ? 'text-green-500' : 'text-gray-500'}`}>
+                        {isEnrolled ? 'ATIVO NO SEU PLANO' : 'BLOQUEADO'}
+                      </p>
+                    </div>
+                    {!isEnrolled && (
+                      <button className="px-4 py-2 bg-white/5 rounded-xl text-[9px] font-black uppercase tracking-widest text-[#FF00BC]">
+                        Contratar
+                      </button>
+                    )}
+                    {isActive && <span className="material-symbols-rounded text-[#0081FF]">check_circle</span>}
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="mt-8 text-center">
+              <p className="text-xs text-gray-500 leading-relaxed mb-4">
+                Quer aprender um instrumento novo? Entre em contato com nossa equipe para adicionar novos conteúdos à sua trilha.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
