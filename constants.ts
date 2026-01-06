@@ -1950,9 +1950,54 @@ export const MODULES: Module[] = [
                         </div>
                     </div>
                 </div>
-                <div class="bg-black/40 p-5 rounded-2xl border border-white/5 text-center">
-                    <h4 class="text-white font-bold text-sm mb-2 uppercase">🛠️ Prática</h4>
-                    <p class="text-xs text-gray-500">Exercícios de trava-línguas com projeção frontal enquanto está de pé.</p>
+
+                <div class="bg-black/40 p-6 rounded-3xl border border-white/5 space-y-6">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="material-symbols-rounded text-[#0081FF]">fitness_center</span>
+                        <h4 class="text-white font-bold text-base uppercase tracking-tight">Sessão de Prática</h4>
+                    </div>
+                    
+                    <p class="text-xs text-gray-400 leading-relaxed">
+                        Para enriquecer sua Arquitetura Corporal, realize estes trava-línguas focando em diferentes grupos musculares:
+                    </p>
+
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
+                            <h5 class="text-[#0081FF] font-bold text-[10px] uppercase mb-2">Explosão Labial (Clareza)</h5>
+                            <p class="text-xs text-white italic leading-relaxed">"O peito do pé de Pedro é preto. Quem disser que o peito do pé de Pedro é preto, tem o peito do pé mais preto que o peito do pé de Pedro."</p>
+                        </div>
+
+                        <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
+                            <h5 class="text-[#EE13CA] font-bold text-[10px] uppercase mb-2">Agilidade de Língua (Articulação)</h5>
+                            <p class="text-xs text-white italic leading-relaxed">"Num ninho de mafagafos, cinco mafagafinhos há! Quem os desmafagafizar, bom desmafagafizador será."</p>
+                        </div>
+
+                        <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
+                            <h5 class="text-yellow-500 font-bold text-[10px] uppercase mb-2">Projeção de Ar (Fôlego)</h5>
+                            <p class="text-xs text-white italic leading-relaxed">"Três pratos de trigo para três tigres tristes."</p>
+                        </div>
+
+                        <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
+                            <h5 class="text-green-500 font-bold text-[10px] uppercase mb-2">Vibração e Ressonância</h5>
+                            <p class="text-xs text-white italic leading-relaxed">"A aranha arranha a rã. A rã arranha a aranha. Nem a aranha arranha a rã, nem a rã arranha a aranha."</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#0081FF]/10 p-5 rounded-2xl border border-[#0081FF]/20 mt-4">
+                        <h5 class="text-white font-bold text-xs mb-2 flex items-center gap-2">
+                             <span class="material-symbols-rounded text-sm">stars</span>
+                             Modo Profissional (Ação Estratégica)
+                        </h5>
+                        <p class="text-[11px] text-gray-300 leading-relaxed">
+                            Realize cada exercício <b>três vezes</b>. Na primeira, priorize a <b>Articulação Exagerada</b>. Na última, foque na <b>Base firme e alinhada</b> projetando a voz para o fundo da sala.
+                        </p>
+                    </div>
+
+                    <div class="p-4 bg-black/40 rounded-xl border border-white/5 text-center">
+                        <p class="text-[10px] text-gray-500 italic">
+                            ⚠️ "Falar bem não é forçar a garganta, é organizar a musculatura".
+                        </p>
+                    </div>
                 </div>
             </div>
           `
