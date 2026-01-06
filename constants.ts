@@ -989,13 +989,178 @@ export const MODULES: Module[] = [
     {
         id: 'm5',
         number: '06',
-        title: 'Técnicas Avançadas',
-        subtitle: 'Estética e Performance',
-        description: 'Diferenciação artística e interpretação.',
+        title: 'Mudança de Registro Vocal (O Passaggio)',
+        subtitle: 'A Arte da Conexão',
+        description: 'Coordenação neuromuscular para transitar entre registros sem quebras.',
         topics: [
-            { id: '5.1', title: 'Dinâmicas (Messa di Voce)', description: 'Controle de intensidade.' },
-            { id: '5.2', title: 'Ornamentos', description: 'Vibrato, melismas e drives.' },
-            { id: '5.3', title: 'Interpretação', description: 'Conexão emocional.' }
+            {
+                id: '5.1',
+                title: '1. Aula Teórica: A Ciência da Transição',
+                description: 'Entendendo a mecânica da voz mista.',
+                content: `
+          <div class="space-y-8 font-sans">
+             <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-[#FF00BC] blur-[80px] opacity-10"></div>
+                <div class="relative z-10">
+                   <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                      <span class="material-symbols-rounded text-[#FF00BC]">psychology</span>
+                      O que é esta técnica?
+                   </h3>
+                   <p class="text-sm text-gray-300 leading-relaxed mb-4">
+                      A Mudança de Registro é a coordenação neuromuscular que permite ao cantor transitar entre diferentes ajustes laríngeos sem quebras, fendas ou tensões. Assita dominar a "Terceira Via".
+                   </p>
+                   <div class="bg-black/20 p-4 rounded-xl border border-white/5">
+                      <strong class="text-[#FF00BC] text-xs uppercase tracking-wide block mb-2">Fisiologia</strong>
+                      <p class="text-sm text-gray-300">
+                         Trata-se da transição de dominância entre o músculo <strong>TA</strong> (Tireoaritenoideo - voz de peito) e o músculo <strong>CT</strong> (Cricotireoideo - voz de cabeça).
+                      </p>
+                      <p class="text-sm text-gray-300 mt-2">
+                         O domínio resulta na <strong>Voz Mista (Mixed Voice)</strong>, onde corpo (massa) e brilho (alongamento) se fundem.
+                      </p>
+                   </div>
+                </div>
+             </div>
+
+             <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                <h3 class="text-lg font-bold text-white mb-4">Conceitos Fundamentais</h3>
+                <div class="space-y-4">
+                   <div class="relative pl-4 border-l-2 border-[#6F4CE7]/30">
+                      <strong class="text-[#6F4CE7] text-sm block mb-1">Mecanismos Vocais (M1 e M2)</strong>
+                      <p class="text-xs text-gray-400">Como as pregas vocais mudam de forma: de curtas e espessas (M1) para longas e finas (M2).</p>
+                   </div>
+                   <div class="relative pl-4 border-l-2 border-[#6F4CE7]/30">
+                      <strong class="text-[#6F4CE7] text-sm block mb-1">O Ponto de Quebra</strong>
+                      <p class="text-xs text-gray-400">Por que a voz "falha"? Tentativa de levar peso excessivo (massa) para o agudo sem alongamento.</p>
+                   </div>
+                   <div class="relative pl-4 border-l-2 border-[#6F4CE7]/30">
+                      <strong class="text-[#6F4CE7] text-sm block mb-1">Apoio e Pressão Subglótica</strong>
+                      <p class="text-xs text-gray-400">O fluxo de ar constante dá à laringe a "permissão" para mudar de registro sem travar.</p>
+                   </div>
+                   <div class="relative pl-4 border-l-2 border-[#6F4CE7]/30">
+                      <strong class="text-[#6F4CE7] text-sm block mb-1">Vowel Modification</strong>
+                      <p class="text-xs text-gray-400">A técnica de "escurecer" ou fechar levemente as vogais no passaggio para evitar o grito.</p>
+                   </div>
+                </div>
+             </div>
+          </div>
+        `
+            },
+            {
+                id: '5.2',
+                title: '2. Prática Guiada',
+                description: 'Exercícios de conexão e mix.',
+                content: `
+          <div class="space-y-8 font-sans">
+             <!-- VÍDEO 1 -->
+             <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                <div class="flex items-center gap-3 mb-4">
+                   <div class="w-10 h-10 rounded-lg bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
+                      <span class="material-symbols-rounded">play_circle</span>
+                   </div>
+                   <div>
+                      <h3 class="text-lg font-bold text-white">Vídeo 1: Conexão e Fluxo</h3>
+                      <p class="text-xs text-gray-400">Exercícios de Trato Vocal Semi-Ocluído</p>
+                   </div>
+                </div>
+                
+                <div class="bg-black/40 border border-white/5 rounded-xl h-32 flex flex-col items-center justify-center gap-2 mb-4">
+                   <span class="material-symbols-rounded text-gray-500 text-3xl">lock</span>
+                   <span class="text-gray-400 text-sm font-medium">Ativo somente para assinantes</span>
+                </div>
+
+                <div class="bg-black/20 p-4 rounded-xl border border-white/5">
+                   <strong class="text-white text-xs block mb-1">Exercício: Lip/Tongue Trill</strong>
+                   <p class="text-xs text-gray-300">Vibração de lábios ou língua em glissando. Observe a ausência de "pulos" no som.</p>
+                </div>
+             </div>
+
+             <!-- ÁUDIO A -->
+             <div class="bg-gradient-to-r from-[#1A202C] to-[#151a24] p-6 rounded-2xl border border-white/5">
+                <h3 class="text-lg font-bold text-white mb-2">Áudio de Treino A: O "Nga"</h3>
+                <p class="text-xs text-gray-400 mb-4">Ressonância Nasofaringea para facilitar o mix.</p>
+                
+                <div class="bg-black/40 border border-white/5 rounded-xl h-20 flex items-center justify-center gap-2 mb-3">
+                   <span class="material-symbols-rounded text-gray-500 text-xl">lock</span>
+                   <span class="text-gray-400 text-xs font-medium">Ativo somente para assinantes</span>
+                </div>
+
+                <p class="text-xs text-gray-400 italic">
+                   Foco: O som anasalado isola a musculatura alta, facilitando o agudo sem perder o fechamento.
+                </p>
+             </div>
+
+             <!-- VÍDEO 2 -->
+             <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                <div class="flex items-center gap-3 mb-4">
+                   <div class="w-10 h-10 rounded-lg bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC]">
+                      <span class="material-symbols-rounded">play_circle</span>
+                   </div>
+                   <div>
+                      <h3 class="text-lg font-bold text-white">Vídeo 2: O Registro Misto</h3>
+                      <p class="text-xs text-gray-400">A "Terceira Via"</p>
+                   </div>
+                </div>
+                
+                <div class="bg-black/40 border border-white/5 rounded-xl h-32 flex flex-col items-center justify-center gap-2 mb-4">
+                   <span class="material-symbols-rounded text-gray-500 text-3xl">lock</span>
+                   <span class="text-gray-400 text-sm font-medium">Ativo somente para assinantes</span>
+                </div>
+
+                <div class="bg-black/20 p-4 rounded-xl border border-white/5">
+                   <strong class="text-white text-xs block mb-1">Exercício: "Gee" ou "Goo"</strong>
+                   <p class="text-xs text-gray-300">O "G" ajuda no fechamento, as vogais fechadas estabilizam a laringe.</p>
+                </div>
+             </div>
+
+             <!-- ÁUDIO B -->
+             <div class="bg-gradient-to-r from-[#1A202C] to-[#151a24] p-6 rounded-2xl border border-white/5">
+                <h3 class="text-lg font-bold text-white mb-2">Áudio de Treino B: Semitonalidades</h3>
+                <p class="text-xs text-gray-400 mb-4">Focando na zona de passagem (D4-G4 Homens / D5-G5 Mulheres).</p>
+                
+                <div class="bg-black/40 border border-white/5 rounded-xl h-20 flex items-center justify-center gap-2 mb-3">
+                   <span class="material-symbols-rounded text-gray-500 text-xl">lock</span>
+                   <span class="text-gray-400 text-xs font-medium">Ativo somente para assinantes</span>
+                </div>
+             </div>
+          </div>
+        `
+            },
+            {
+                id: '5.3',
+                title: '3. Diagnóstico de Erros Comuns',
+                description: 'O que evitar na prática.',
+                content: `
+          <div class="space-y-6 font-sans">
+             <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                   <span class="material-symbols-rounded text-red-500">error</span>
+                   Armadilhas do Passaggio
+                </h3>
+                
+                <div class="space-y-3">
+                   <div class="p-3 border border-red-500/20 bg-red-500/5 rounded-xl">
+                      <strong class="text-red-400 text-sm block mb-1">Soprosidade Excessiva</strong>
+                      <p class="text-xs text-gray-300">
+                         Quando o aluno "desiste" da conexão e cai em um falsete puro, sem corpo. Mantenha a adução!
+                      </p>
+                   </div>
+                   <div class="p-3 border border-red-500/20 bg-red-500/5 rounded-xl">
+                      <strong class="text-red-400 text-sm block mb-1">"Grito" (Pulling Chest)</strong>
+                      <p class="text-xs text-gray-300">
+                         Tentar levar o peso do peito para onde a musculatura CT deveria dominar. Resultado: Quebra abrupta.
+                      </p>
+                   </div>
+                   <div class="p-3 border border-red-500/20 bg-red-500/5 rounded-xl">
+                      <strong class="text-red-400 text-sm block mb-1">Laringe Elevada</strong>
+                      <p class="text-xs text-gray-300">
+                         O "estrangulamento" do som. Relaxe a base da língua; se ela subir, a laringe sobe junto e fecha a passagem.
+                      </p>
+                   </div>
+                </div>
+             </div>
+          </div>
+        `
+            }
         ]
     },
     {
