@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Screen, Module, Vocalize, Course, StudentCourse } from '../types';
-import { MODULES, VOCALIZES, DISABLE_ALL_PLAYERS, MINIMALIST_LOGO_URL } from '../constants';
+import { MODULES, VOCALIZES, DISABLE_ALL_PLAYERS, MINIMALIST_LOGO_URL, LORENA_AVATAR_URL } from '../constants';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import { usePlayback } from '../contexts/PlaybackContext';
@@ -39,6 +39,8 @@ export const LibraryScreen: React.FC<Props> = ({
   const contentRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [checklistState, setChecklistState] = useState<Record<string, boolean>>({});
+  const [showCritiqueModal, setShowCritiqueModal] = useState(false);
+  const [critiqueType, setCritiqueType] = useState<'oratoria' | 'canto'>('oratoria');
 
   // Restore scroll position on mount with a slight delay to ensure layout stability
   // This is crucial because module expansion (CSS transitions) might affect scroll height
@@ -320,6 +322,16 @@ export const LibraryScreen: React.FC<Props> = ({
       if (audioUrl) {
         handleInlinePlay(audioUrl, playBtn as HTMLElement);
       }
+      return;
+    }
+
+    // 3. Lógica do Botão de Concluir Prática (Gatilho da Lorena IA)
+    const completeBtn = target.closest('.complete-practice-btn');
+    if (completeBtn) {
+      e.preventDefault();
+      setCritiqueType('oratoria');
+      setShowCritiqueModal(true);
+      return;
     }
   };
 
@@ -670,6 +682,60 @@ export const LibraryScreen: React.FC<Props> = ({
               <p className="text-xs text-gray-500 leading-relaxed mb-4">
                 Quer aprender um instrumento novo? Entre em contato com nossa equipe para adicionar novos conteúdos à sua trilha.
               </p>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* CRITIQUE MODAL (LORENA IA REINFORCEMENT) */}
+      {showCritiqueModal && (
+        <div className="fixed inset-0 z-[110] bg-[#101622]/90 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
+          <div className="w-full max-w-sm bg-[#1A202C] rounded-[2.5rem] border border-white/10 overflow-hidden shadow-2xl animate-in zoom-in-95 duration-500">
+            {/* Header com Avatar */}
+            <div className="bg-gradient-to-br from-[#2D3748] to-[#1A202C] p-8 text-center relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#FF00BC] blur-[60px] opacity-10"></div>
+              <div className="w-20 h-20 rounded-full bg-brand-gradient p-1 mx-auto mb-4 relative z-10 shadow-xl shadow-purple-900/40">
+                <div className="w-full h-full bg-[#1A202C] rounded-full overflow-hidden flex items-center justify-center">
+                  <img src={LORENA_AVATAR_URL} className="w-full h-full object-cover" alt="Lorena IA" />
+                </div>
+              </div>
+              <h3 className="text-xl font-black text-white uppercase tracking-tighter relative z-10">Análise da Mentora</h3>
+              <p className="text-[10px] text-[#FF00BC] font-bold uppercase tracking-widest mt-1 relative z-10">Lorena IA • Feedback de Performance</p>
+            </div>
+
+            {/* Content */}
+            <div className="p-8 space-y-6">
+              <div className="space-y-4">
+                <div className="flex gap-4">
+                  <span className="material-symbols-rounded text-[#0081FF] text-xl shrink-0">task_alt</span>
+                  <div>
+                    <h4 className="text-white text-xs font-bold uppercase mb-1">Checklist de Clareza</h4>
+                    <p className="text-[11px] text-gray-400">As consoantes foram o ponto focal. A agilidade muscular é o que separa o amador do profissional.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <span className="material-symbols-rounded text-yellow-500 text-xl shrink-0">bolt</span>
+                  <div>
+                    <h4 className="text-white text-xs font-bold uppercase mb-1">Gestão de Tensão</h4>
+                    <p className="text-[11px] text-gray-400">Fique atento à Arquitetura Corporal. Se sentir peso na garganta, reorganize seus ombros e queixo imediatamente.</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <span className="material-symbols-rounded text-[#EE13CA] text-xl shrink-0">shield</span>
+                  <div>
+                    <h4 className="text-white text-xs font-bold uppercase mb-1">Reforço de Autoridade</h4>
+                    <p className="text-[11px] text-gray-300 font-medium italic">"Nunca peça desculpas por ocupar o espaço com sua voz. Sua intenção deve ser absoluta."</p>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setShowCritiqueModal(false)}
+                className="w-full py-4 bg-[#0081FF] hover:bg-[#006bd1] text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-lg transition-all active:scale-95"
+              >
+                Entendido, Mentora
+              </button>
             </div>
           </div>
         </div>

@@ -2069,6 +2069,11 @@ export const MODULES: Module[] = [
                             ⚠️ "Não use a garganta; use a musculatura e o suporte do ar."
                         </p>
                     </div>
+
+                    <button class="complete-practice-btn w-full py-4 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-purple-900/20 active:scale-95 transition-all flex items-center justify-center gap-2 group">
+                        <span class="material-symbols-rounded text-sm group-hover:animate-bounce">workspace_premium</span>
+                        Concluir Prática e Receber Feedback
+                    </button>
                 </div>
             </div>
           `
