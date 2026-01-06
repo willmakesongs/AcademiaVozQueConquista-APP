@@ -1,11 +1,11 @@
 import { Vocalize, User, StudentSummary, Appointment, Module, TwisterExercise } from './types';
 
 // CONFIGURAÇÃO GLOBAL: Desativar todos os players para manutenção/assinantes
-export const DISABLE_ALL_PLAYERS = true;
+export const DISABLE_ALL_PLAYERS = false;
 
 // URL BASE PARA ARMAZENAMENTO (Áudio e Vídeo)
 // Quando migrar para o Backblaze, basta trocar esta URL pela nova URL do Bucket
-export const STORAGE_BASE_URL = 'https://academiavqc-app.s3.us-east-005.backblazeb2.com';
+export const STORAGE_BASE_URL = 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com';
 
 // URL da foto da Lorena (IA).
 export const LORENA_AVATAR_URL = 'https://academiavqc-app.s3.us-east-005.backblazeb2.com/PNGs-JPEG/LorenaIA.png';
@@ -387,13 +387,13 @@ export const MODULES: Module[] = [
                         <strong class="text-[#FF00BC] text-sm uppercase tracking-wide block mb-1">Fase 1 (Sopro Constante)</strong>
                         <p class="text-sm text-gray-300">Inspire em 4 tempos expandindo a cintura. Solte o ar em "S" (pneu esvaziando) o mais constante possível.</p>
                         <p class="text-xs text-[#FF00BC] mt-1">⚠️ O som não pode oscilar. Deve ser reto.</p>
-                        ${INLINE_PLAYER_TEMPLATE('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3')}
+                        ${INLINE_PLAYER_TEMPLATE(`${VOCALIZES_BASE_URL}BRRR_1.mp3`)}
                     </div>
                     <div class="pl-4 border-l-2 border-[#FF00BC]/30">
                         <strong class="text-[#FF00BC] text-sm uppercase tracking-wide block mb-1">Fase 2 (Pulsação)</strong>
                         <p class="text-sm text-gray-300">Inspire. Solte o ar com golpes rápidos de "S! S! S!".</p>
                         <p class="text-xs text-gray-400 mt-1">Sinta o abdome "pulando" para fora. Isso é o músculo agindo.</p>
-                        ${INLINE_PLAYER_TEMPLATE('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3')}
+                        ${INLINE_PLAYER_TEMPLATE(`${VOCALIZES_BASE_URL}PAPAPA%203x.mp3`)}
                     </div>
                 </div>
             </div>
@@ -537,7 +537,7 @@ export const MODULES: Module[] = [
                             <p class="text-sm text-gray-300">No topo do bocejo, solte um suspiro sonoro: <span class="text-white font-serif italic">"Ahhhhhh"</span>.</p>
                         </li>
                     </ol>
-                    ${INLINE_PLAYER_TEMPLATE('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3')}
+                    ${INLINE_PLAYER_TEMPLATE(`${VOCALIZES_BASE_URL}BRRR%20DOWN.mp3`)}
                     
                     <div class="mt-6 text-center">
                        <p class="text-xs text-[#0081FF] font-bold uppercase tracking-widest mb-1">Objetivo</p>
@@ -705,7 +705,7 @@ export const MODULES: Module[] = [
                         <p class="text-xs text-gray-300"><strong>Como fazer:</strong> Os dentes não devem se encostar. Sinta the vibração nos lábios e nos ossos da face.</p>
                         <p class="text-xs text-yellow-500 italic">Teste: Se você sentir a garganta "apertar", o som está muito recuado.</p>
                     </div>
-                    ${INLINE_PLAYER_TEMPLATE('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3')}
+                    ${INLINE_PLAYER_TEMPLATE(`${VOCALIZES_BASE_URL}BRRR_1.mp3`)}
                 </div>
 
                 <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative">
@@ -739,7 +739,7 @@ export const MODULES: Module[] = [
                             </div>
                         </li>
                     </ul>
-                    ${INLINE_PLAYER_TEMPLATE('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3')}
+                    ${INLINE_PLAYER_TEMPLATE(`${VOCALIZES_BASE_URL}BRRR%20DOWN.mp3`)}
                 </div>
             </div>
         `
@@ -1115,13 +1115,13 @@ export const MODULES: Module[] = [
                    <div class="bg-black/20 p-4 rounded-xl border border-white/5">
                       <strong class="text-[#FF00BC] text-xs uppercase tracking-wide block mb-1">1. Os Ingredientes (Registros)</strong>
                       <p class="text-sm text-gray-300">São suas matérias-primas: Peito (força), Cabeça (leveza) e Mix.</p>
-                      ${INLINE_PLAYER_TEMPLATE('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3')}
+                      ${INLINE_PLAYER_TEMPLATE(`${VOCALIZES_BASE_URL}PAPAPA%203x.mp3`)}
                    </div>
                    
                    <div class="bg-black/20 p-4 rounded-xl border border-white/5">
                       <strong class="text-[#6F4CE7] text-xs uppercase tracking-wide block mb-1">2. O Liquidificador (Passaggio)</strong>
                       <p class="text-sm text-gray-300">O segredo não é ter os ingredientes, é misturá-los. O Passaggio deve ser invisível, sem quebras.</p>
-                      ${INLINE_PLAYER_TEMPLATE('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3')}
+                      ${INLINE_PLAYER_TEMPLATE(`${VOCALIZES_BASE_URL}BRRR%20DOWN.mp3`)}
                    </div>
 
                    <div class="bg-black/20 p-4 rounded-xl border border-white/5">
