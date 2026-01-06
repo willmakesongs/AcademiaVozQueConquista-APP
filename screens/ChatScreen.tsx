@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { useAuth } from '../contexts/AuthContext';
 import { MODULES, LORENA_AVATAR_URL } from '../constants';
+import { supabase } from '../lib/supabaseClient';
 
 interface Props {
     onBack: () => void;
@@ -231,7 +232,22 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
         setMessages(prev => [...prev, botPlaceholder]);
 
         try {
-            if (chatSessionRef.current) {
+            // Se for Administrador e a pergunta for sobre gestão/estratégia, usa a Edge Function "Cérebro"
+            const isAdmin = user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase());
+            const strategyKeywords = ['financeiro', 'faturamento', 'agenda', 'semana', 'previsão', 'marketing', 'postagem', 'instagram', 'lavras'];
+            const isStrategicQuery = strategyKeywords.some(key => userMsg.text.toLowerCase().includes(key));
+
+            if (isAdmin && isStrategicQuery) {
+                const { data, error } = await supabase.functions.invoke('lorena-ai-brain', {
+                    body: { query: userMsg.text, user_id: user.id }
+                });
+
+                if (error) throw error;
+
+                setMessages(prev => prev.map(m =>
+                    m.id === botMsgId ? { ...m, text: data.answer, isLoading: false } : m
+                ));
+            } else if (chatSessionRef.current) {
                 const result = await chatSessionRef.current.sendMessageStream(userMsg.text);
 
                 let accumulatedText = '';
