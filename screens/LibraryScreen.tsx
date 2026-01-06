@@ -631,7 +631,8 @@ export const LibraryScreen: React.FC<Props> = ({
 
             <div className="space-y-4">
               {courses.map(course => {
-                const isEnrolled = userCourses.some(uc => uc.course_id === course.id && uc.status === 'ativo');
+                const isAdminOrTeacher = user?.role === 'admin' || user?.role === 'teacher';
+                const isEnrolled = userCourses.some(uc => uc.course_id === course.id && uc.status === 'ativo') || isAdminOrTeacher;
                 const isActive = activeCourseSlug === course.slug;
 
                 return (
@@ -651,7 +652,7 @@ export const LibraryScreen: React.FC<Props> = ({
                     <div className="flex-1">
                       <h3 className="font-bold text-white">{course.nome}</h3>
                       <p className={`text-[10px] font-black uppercase tracking-widest ${isEnrolled ? 'text-green-500' : 'text-gray-500'}`}>
-                        {isEnrolled ? 'ATIVO NO SEU PLANO' : 'BLOQUEADO'}
+                        {isAdminOrTeacher ? 'ACESSO TOTAL (ADM)' : (isEnrolled ? 'ATIVO NO SEU PLANO' : 'BLOQUEADO')}
                       </p>
                     </div>
                     {!isEnrolled && (
