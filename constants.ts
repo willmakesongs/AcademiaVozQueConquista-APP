@@ -1934,68 +1934,139 @@ export const MODULES: Module[] = [
                 description: "O corpo sustenta a voz.",
                 content: `
             <div class="space-y-8 font-sans">
-                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
-                    <h3 class="text-xl font-bold text-white mb-4">Arquitetura Corporal</h3>
-                    <p class="text-sm text-gray-300 leading-relaxed mb-6">
-                        Postura desalinhada gera voz fraca. Dicção clara depende de articulação consciente. Falar bem não é forçar, é organizar.
-                    </p>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="p-4 bg-white/5 rounded-xl text-center">
-                            <span class="text-xs text-[#0081FF] font-bold block mb-1 uppercase">Postura</span>
-                            <span class="text-[10px] text-gray-400">Base firme e alinhada</span>
-                        </div>
-                        <div class="p-4 bg-white/5 rounded-xl text-center">
-                            <span class="text-xs text-[#EE13CA] font-bold block mb-1 uppercase">Dicção</span>
-                            <span class="text-[10px] text-gray-400">Articulação exagerada</span>
-                        </div>
+                <!-- Header Card -->
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
+                    <div class="relative z-10">
+                        <h3 class="text-xl font-bold text-white mb-1">Arquitetura Corporal</h3>
+                        <p class="text-[11px] text-yellow-500 font-bold italic mb-4 uppercase tracking-widest">"Falar bem não é forçar, é organizar."</p>
+                        <p class="text-xs text-gray-400 leading-relaxed">
+                            Postura desalinhada gera voz fraca. Dicção clara depende de articulação consciente. Seu corpo é o instrumento que amplifica sua mensagem.
+                        </p>
                     </div>
                 </div>
 
+                <!-- Technical Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-[#1A202C] p-5 rounded-2xl border border-white/5">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-[#0081FF] font-bold text-sm uppercase">Postura</h4>
+                            <span class="text-[10px] text-gray-500 font-medium tracking-tighter">Checklist Técnico</span>
+                        </div>
+                        <ul class="space-y-2">
+                            <li class="flex items-center gap-2 text-xs text-gray-300">
+                                <span class="material-symbols-rounded text-[#0081FF] text-sm">check_circle</span>
+                                Pés na largura dos ombros
+                            </li>
+                            <li class="flex items-center gap-2 text-xs text-gray-300">
+                                <span class="material-symbols-rounded text-[#0081FF] text-sm">check_circle</span>
+                                Ombros relaxados e abertos
+                            </li>
+                            <li class="flex items-center gap-2 text-xs text-gray-300">
+                                <span class="material-symbols-rounded text-[#0081FF] text-sm">check_circle</span>
+                                Queixo paralelo ao chão
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-[#1A202C] p-5 rounded-2xl border border-white/5">
+                        <div class="flex items-center justify-between mb-4">
+                            <h4 class="text-[#EE13CA] font-bold text-sm uppercase">Dicção</h4>
+                            <span class="text-[10px] text-gray-500 font-medium tracking-tighter">Checklist Técnico</span>
+                        </div>
+                        <ul class="space-y-2">
+                            <li class="flex items-center gap-2 text-xs text-gray-300">
+                                <span class="material-symbols-rounded text-[#EE13CA] text-sm">check_circle</span>
+                                Sentir a vibração nos lábios
+                            </li>
+                            <li class="flex items-center gap-2 text-xs text-gray-300">
+                                <span class="material-symbols-rounded text-[#EE13CA] text-sm">check_circle</span>
+                                Abrir bem a cavidade bucal
+                            </li>
+                            <li class="flex items-center gap-2 text-xs text-gray-300">
+                                <span class="material-symbols-rounded text-[#EE13CA] text-sm">check_circle</span>
+                                Pronunciar cada sílaba
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Practice Section -->
                 <div class="bg-black/40 p-6 rounded-3xl border border-white/5 space-y-6">
                     <div class="flex items-center gap-3 mb-2">
-                        <span class="material-symbols-rounded text-[#0081FF]">fitness_center</span>
-                        <h4 class="text-white font-bold text-base uppercase tracking-tight">Sessão de Prática</h4>
+                        <span class="material-symbols-rounded text-yellow-500">bolt</span>
+                        <h4 class="text-white font-bold text-base uppercase tracking-tight">⚡ PRÁTICA (Níveis de Desafio)</h4>
                     </div>
                     
-                    <p class="text-xs text-gray-400 leading-relaxed">
-                        Para enriquecer sua Arquitetura Corporal, realize estes trava-línguas focando em diferentes grupos musculares:
-                    </p>
-
                     <div class="grid grid-cols-1 gap-4">
-                        <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
-                            <h5 class="text-[#0081FF] font-bold text-[10px] uppercase mb-2">Explosão Labial (Clareza)</h5>
+                        <div class="p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[9px] px-2 py-0.5 bg-[#0081FF]/20 text-[#0081FF] rounded-full font-bold uppercase tracking-tight">Nível 1</span>
+                                <span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Explosão Labial</span>
+                            </div>
                             <p class="text-xs text-white italic leading-relaxed">"O peito do pé de Pedro é preto. Quem disser que o peito do pé de Pedro é preto, tem o peito do pé mais preto que o peito do pé de Pedro."</p>
                         </div>
 
-                        <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
-                            <h5 class="text-[#EE13CA] font-bold text-[10px] uppercase mb-2">Agilidade de Língua (Articulação)</h5>
+                        <div class="p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
+                             <div class="flex items-center justify-between mb-2">
+                                <span class="text-[9px] px-2 py-0.5 bg-[#EE13CA]/20 text-[#EE13CA] rounded-full font-bold uppercase tracking-tight">Nível 2</span>
+                                <span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Agilidade</span>
+                            </div>
                             <p class="text-xs text-white italic leading-relaxed">"Num ninho de mafagafos, cinco mafagafinhos há! Quem os desmafagafizar, bom desmafagafizador será."</p>
                         </div>
 
-                        <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
-                            <h5 class="text-yellow-500 font-bold text-[10px] uppercase mb-2">Projeção de Ar (Fôlego)</h5>
+                        <div class="p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
+                             <div class="flex items-center justify-between mb-2">
+                                <span class="text-[9px] px-2 py-0.5 bg-yellow-500/20 text-yellow-500 rounded-full font-bold uppercase tracking-tight">Nível 3</span>
+                                <span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Projeção de Ar</span>
+                            </div>
                             <p class="text-xs text-white italic leading-relaxed">"Três pratos de trigo para três tigres tristes."</p>
                         </div>
 
-                        <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
-                            <h5 class="text-green-500 font-bold text-[10px] uppercase mb-2">Vibração e Ressonância</h5>
-                            <p class="text-xs text-white italic leading-relaxed">"A aranha arranha a rã. A rã arranha a aranha. Nem a aranha arranha a rã, nem a rã arranha a aranha."</p>
+                        <div class="p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
+                             <div class="flex items-center justify-between mb-2">
+                                <span class="text-[9px] px-2 py-0.5 bg-green-500/20 text-green-500 rounded-full font-bold uppercase tracking-tight">Nível 4</span>
+                                <span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">P e T</span>
+                            </div>
+                            <p class="text-xs text-white italic leading-relaxed">"O pinto pia, a pipa pinga. Pinga a pipa e o pinto pia. Quanto mais o pinto pia, mais a pipa pinga."</p>
+                        </div>
+
+                        <div class="p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
+                             <div class="flex items-center justify-between mb-2">
+                                <span class="text-[9px] px-2 py-0.5 bg-red-500/20 text-red-500 rounded-full font-bold uppercase tracking-tight">Nível 5</span>
+                                <span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">O Terror (S e Z)</span>
+                            </div>
+                            <p class="text-xs text-white italic leading-relaxed">"Casa suja, chão sujo. Se a casa é suja, o chão é sujo. Chão sujo, casa suja."</p>
                         </div>
                     </div>
 
-                    <div class="bg-[#0081FF]/10 p-5 rounded-2xl border border-[#0081FF]/20 mt-4">
-                        <h5 class="text-white font-bold text-xs mb-2 flex items-center gap-2">
-                             <span class="material-symbols-rounded text-sm">stars</span>
+                    <div class="bg-[#0081FF]/10 p-5 rounded-2xl border border-[#0081FF]/20 mt-4 relative overflow-hidden">
+                        <div class="absolute -right-4 -bottom-4 opacity-10">
+                            <span class="material-symbols-rounded text-6xl text-[#0081FF]">psychology</span>
+                        </div>
+                        <h5 class="text-white font-bold text-xs mb-4 flex items-center gap-2">
+                             <span class="material-symbols-rounded text-sm text-yellow-500">stars</span>
                              Modo Profissional (Ação Estratégica)
                         </h5>
-                        <p class="text-[11px] text-gray-300 leading-relaxed">
-                            Realize cada exercício <b>três vezes</b>. Na primeira, priorize a <b>Articulação Exagerada</b>. Na última, foque na <b>Base firme e alinhada</b> projetando a voz para o fundo da sala.
-                        </p>
+                        <div class="space-y-4 relative z-10 font-medium">
+                            <div class="flex items-start gap-3">
+                                <span class="w-5 h-5 rounded-lg bg-[#0081FF] flex items-center justify-center text-[10px] text-white font-black shrink-0">1</span>
+                                <p class="text-[11px] text-gray-300 leading-relaxed"><b>Articulação Exagerada:</b> Foco total no movimento muscular e abertura de boca.</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="w-5 h-5 rounded-lg bg-[#0081FF] flex items-center justify-center text-[10px] text-white font-black shrink-0">2</span>
+                                <p class="text-[11px] text-gray-300 leading-relaxed"><b>Fluidez:</b> Realize a leitura em velocidade média com foco na clareza e ritmo.</p>
+                            </div>
+                            <div class="flex items-start gap-3">
+                                <span class="w-5 h-5 rounded-lg bg-[#0081FF] flex items-center justify-center text-[10px] text-white font-black shrink-0">3</span>
+                                <p class="text-[11px] text-gray-300 leading-relaxed"><b>Direção Vocal:</b> Direcione sua intenção para o ponto mais distante do ambiente, mantendo a coluna de ar estável.</p>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="p-4 bg-black/40 rounded-xl border border-white/5 text-center">
                         <p class="text-[10px] text-gray-500 italic">
-                            ⚠️ "Falar bem não é forçar a garganta, é organizar a musculatura".
+                            ⚠️ "Não use a garganta; use a musculatura e o suporte do ar."
                         </p>
                     </div>
                 </div>
