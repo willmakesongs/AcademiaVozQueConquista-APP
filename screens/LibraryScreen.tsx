@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Screen, Module, Vocalize, Course, StudentCourse } from '../types';
-import { MODULES, VOCALIZES, DISABLE_ALL_PLAYERS } from '../constants';
+import { MODULES, VOCALIZES, DISABLE_ALL_PLAYERS, MINIMALIST_LOGO_URL } from '../constants';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import { usePlayback } from '../contexts/PlaybackContext';
@@ -369,8 +369,8 @@ export const LibraryScreen: React.FC<Props> = ({
   if (!activeCourseSlug && !isSelectorOpen) {
     return (
       <div className="min-h-screen bg-[#101622] flex flex-col items-center justify-center p-8 text-center">
-        <div className="w-20 h-20 rounded-full bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] mb-6">
-          <span className="material-symbols-rounded text-4xl">school</span>
+        <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-6">
+          <img src={MINIMALIST_LOGO_URL} className="w-12 h-12 object-contain" alt="Logo" />
         </div>
         <h2 className="text-xl font-bold text-white mb-2">Bem-vindo à Academia</h2>
         <p className="text-gray-400 text-sm mb-8">Selecione um dos seus cursos para começar a estudar.</p>
