@@ -1,7 +1,8 @@
 
 import React, { createContext, useContext, useRef, useState, useCallback, useEffect } from 'react';
 import * as Tone from 'tone';
-import { VOCALIZES, MODULES } from '../constants';
+import { VOCALIZES, MODULES, DISABLE_ALL_PLAYERS } from '../constants';
+import { useAuth } from './AuthContext';
 
 interface PlaybackContextType {
     preload: (urls: string[]) => Promise<void>;
@@ -34,6 +35,15 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const [activeUrl, setActiveUrl] = useState<string | null>(null);
     const [isOfflineMode, setOfflineMode] = useState(() => localStorage.getItem('offline_mode') === 'true');
     const [downloadProgress, setDownloadProgress] = useState(0);
+    const { user } = useAuth();
+
+    const isAudioBlocked = useCallback(() => {
+        if (!DISABLE_ALL_PLAYERS) return false;
+        if (!user || !user.email) return true;
+
+        const adminEmails = ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'];
+        return !adminEmails.includes(user.email.toLowerCase());
+    }, [user]);
 
     const buffersRef = useRef<Tone.ToneAudioBuffers>(new Tone.ToneAudioBuffers());
     const playerRef = useRef<Tone.Player | null>(null);
@@ -233,6 +243,7 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }, []);
 
     const resume = useCallback(async () => {
+        if (isAudioBlocked()) return;
         await unlockIOSAudio();
         await Tone.start();
         Tone.Transport.start();
@@ -241,7 +252,7 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }, [unlockIOSAudio, startProgressLoop]);
 
     const play = useCallback(async (url: string, options?: { pitch?: number, onEnded?: () => void }) => {
-        if (!url) return;
+        if (!url || isAudioBlocked()) return;
 
         // If same URL and paused, just resume
         if (activeUrl === url && !isPlaying && playerRef.current) {

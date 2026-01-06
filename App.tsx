@@ -30,6 +30,8 @@ const AppContent = () => {
   const [profileResetKey, setProfileResetKey] = useState(0);
   const [dashboardResetKey, setDashboardResetKey] = useState(0);
   const [dashboardInitialTab, setDashboardInitialTab] = useState<'dashboard' | 'students' | 'reports'>('dashboard');
+  const [libraryExpandedModule, setLibraryExpandedModule] = useState<string | null>(null);
+  const [libraryScrollY, setLibraryScrollY] = useState(0);
 
   // Visitor Warning State
   const [showVisitorWarning, setShowVisitorWarning] = useState(false);
@@ -262,6 +264,10 @@ const AppContent = () => {
             key={libraryResetKey}
             onNavigate={handleNavigate}
             onPlayVocalize={navigateToPlayer}
+            expandedModule={libraryExpandedModule}
+            onExpandedModuleChange={setLibraryExpandedModule}
+            initialScrollY={libraryScrollY}
+            onSaveScrollY={setLibraryScrollY}
           />
         );
       case Screen.ROUTINE:

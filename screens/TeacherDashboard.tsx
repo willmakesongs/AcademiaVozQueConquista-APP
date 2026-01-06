@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Screen, StudentSummary, Appointment, PaymentReceipt } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
+import { STORAGE_BASE_URL } from '../constants';
 
 interface Props {
     onNavigate: (screen: Screen) => void;
@@ -203,6 +204,37 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         }
     };
 
+    const uploadToB2 = async (file: Blob | File, folder: string, filename: string): Promise<string> => {
+        // 1. Get Presigned URL from Edge Function
+        const { data, error: funcError } = await supabase.functions.invoke('b2-proxy', {
+            body: {
+                filename,
+                contentType: file.type || 'image/jpeg',
+                folder
+            }
+        });
+
+        if (funcError || !data?.url) {
+            throw new Error(`Failed to get upload URL: ${funcError?.message || 'Unknown error'}`);
+        }
+
+        // 2. Upload directly to B2 via PUT
+        const uploadResponse = await fetch(data.url, {
+            method: 'PUT',
+            body: file,
+            headers: {
+                'Content-Type': file.type || 'image/jpeg'
+            }
+        });
+
+        if (!uploadResponse.ok) {
+            throw new Error(`Upload failed: ${uploadResponse.statusText}`);
+        }
+
+        // 3. Construct Public URL
+        return `${STORAGE_BASE_URL}/${data.path}`;
+    };
+
     const handleStudentPhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file || !selectedStudent) return;
@@ -247,24 +279,10 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 reader.readAsDataURL(file);
             });
 
-            // 2. Upload to Supabase Storage
+            // 2. Upload to B2 via Proxy
             const fileExt = 'jpg';
             const fileName = `avatar_${Date.now()}.${fileExt}`;
-            const filePath = `${selectedStudent.id}/${fileName}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from('avatars')
-                .upload(filePath, compressedBlob, {
-                    contentType: 'image/jpeg',
-                    upsert: true
-                });
-
-            if (uploadError) throw uploadError;
-
-            // 3. Get Public URL
-            const { data: { publicUrl } } = supabase.storage
-                .from('avatars')
-                .getPublicUrl(filePath);
+            const publicUrl = await uploadToB2(compressedBlob, 'avatars', fileName);
 
             // 4. Update Profile in DB
             const { error: updateError } = await supabase

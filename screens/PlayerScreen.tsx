@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Screen, Vocalize } from '../types';
-import { VOCALIZES } from '../constants';
+import { VOCALIZES, DISABLE_ALL_PLAYERS, MINIMALIST_LOGO_URL } from '../constants';
 import { usePlayback } from '../contexts/PlaybackContext';
+import { useAuth } from '../contexts/AuthContext';
 
 interface Props {
   vocalize: Vocalize | null;
@@ -12,6 +12,9 @@ interface Props {
 }
 
 export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev }) => {
+  const { user } = useAuth();
+  const isAdmin = user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase());
+
   const {
     play, stop: stopPlayback, pause, resume: resumePlayback,
     isPlaying, isLoading: isPlaybackLoading, currentTime,
@@ -137,7 +140,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
   };
 
   const startPlayback = () => {
-    if (!activeAudioUrl) return;
+    if (!activeAudioUrl || (DISABLE_ALL_PLAYERS && !isAdmin)) return;
     play(activeAudioUrl, { pitch });
     startVisualizer();
   };
@@ -195,7 +198,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     if (isNaN(time) || !isFinite(time)) return "0:00";
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
-    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds} `;
   };
 
   const currentTitle = vocalize?.title || "Selecione um exercício";
@@ -203,28 +206,28 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
 
   return (
     <div className="min-h-screen bg-[#101622] flex flex-col relative overflow-hidden pb-24">
-      <div className={`absolute top-[-20%] left-1/2 -translate-x-1/2 w-[120%] h-[60%] bg-[#6F4CE7] blur-[150px] pointer-events-none transition-opacity duration-1000 ${isPlaying ? 'opacity-30' : 'opacity-10'}`}></div>
+      <div className={`absolute top - [-20 %] left - 1 / 2 - translate - x - 1 / 2 w - [120 %] h - [60 %] bg - [#6F4CE7] blur - [150px] pointer - events - none transition - opacity duration - 1000 ${isPlaying ? 'opacity-30' : 'opacity-10'} `}></div>
 
       <style>{`
-        input[type='range']::-webkit-slider-thumb {
-          -webkit-appearance: none;
-          appearance: none;
-          width: 0;
-          height: 0;
-          background: transparent;
-          border: none;
-        }
-        input[type='range']::-moz-range-thumb {
-          width: 0;
-          height: 0;
-          background: transparent;
-          border: none;
-        }
-        /* Mobile Specific */
-        input[type='range']::-webkit-slider-runnable-track {
-          cursor: pointer;
-        }
-      `}</style>
+input[type = 'range']:: -webkit - slider - thumb {
+  -webkit - appearance: none;
+  appearance: none;
+  width: 0;
+  height: 0;
+  background: transparent;
+  border: none;
+}
+input[type = 'range']:: -moz - range - thumb {
+  width: 0;
+  height: 0;
+  background: transparent;
+  border: none;
+}
+/* Mobile Specific */
+input[type = 'range']:: -webkit - slider - runnable - track {
+  cursor: pointer;
+}
+`}</style>
 
       {/* Header */}
       <div className="flex items-center justify-between p-6 z-10">
@@ -243,15 +246,16 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
       {/* Visualizer Area */}
       <div className="flex-1 flex flex-col items-center justify-center px-8 z-10 overflow-y-auto hide-scrollbar">
 
-        <div className="h-48 flex items-center justify-center gap-4 mb-4 shrink-0">
+        <div className="h-24 flex items-end justify-center gap-2 shrink-0 relative z-10 my-8">
           {logoConfig.map((bar, index) => (
             <div
               key={index}
-              className="w-5 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-[80ms] ease-linear"
+              className="w-3 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-[80ms] ease-linear"
               style={{
                 backgroundColor: bar.color,
-                height: `${barHeights[index] * 1.2}px`,
-                boxShadow: isPlaying ? `0 0 20px ${bar.color}40` : 'none'
+                height: `${barHeights[index] * 0.6}px`,
+                boxShadow: isPlaying ? `0 0 15px ${bar.color}60` : 'none',
+                opacity: isPlaying ? 1 : 0.6
               }}
             ></div>
           ))}
@@ -260,6 +264,13 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
         <div className="w-full text-center mb-6">
           <h1 className="text-2xl font-bold mb-2">{currentTitle}</h1>
           <p className="text-gray-400 mb-6">{currentCategory} • {vocalize?.difficulty || 'Geral'}</p>
+
+          {DISABLE_ALL_PLAYERS && !isAdmin && (
+            <div className="bg-[#FF00BC]/10 border border-[#FF00BC]/30 text-[#FF00BC] text-sm font-bold py-3 px-6 rounded-2xl mb-6 inline-flex items-center gap-2 animate-pulse">
+              <span className="material-symbols-rounded text-lg">info</span>
+              Ativo para assinantes
+            </div>
+          )}
 
           {/* Debug - Remover após confirmar fix */}
           <div className="hidden" id="active-source-debug">{activeSource}</div>
@@ -285,8 +296,8 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
             <p className="text-[10px] uppercase text-gray-500 font-bold tracking-widest mb-0.5">
               Tom {pitch !== 0 && '(HQ Resampling)'}
             </p>
-            <p className={`text-lg font-bold font-mono transition-colors ${pitch !== 0 ? 'text-[#FF00BC]' : 'text-white'}`}>
-              {pitch > 0 ? `+${pitch}` : pitch} st
+            <p className={`text - lg font - bold font - mono transition - colors ${pitch !== 0 ? 'text-[#FF00BC]' : 'text-white'} `}>
+              {pitch > 0 ? `+ ${pitch} ` : pitch} st
             </p>
           </div>
 
@@ -306,10 +317,10 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
             max={duration || 100}
             value={currentTime}
             onChange={handleSeek}
-            disabled={isPlaybackLoading}
+            disabled={isPlaybackLoading || (DISABLE_ALL_PLAYERS && !isAdmin)}
             className="w-full h-2 bg-gray-800 rounded-full appearance-none cursor-pointer disabled:opacity-50"
             style={{
-              background: `linear-gradient(to right, #FF00BC 0%, #6F4CE7 ${(currentTime / (duration || 0.1)) * 100}%, #2D3748 ${(currentTime / (duration || 0.1)) * 100}%, #2D3748 100%)`
+              background: `linear - gradient(to right, #FF00BC 0 %, #6F4CE7 ${(currentTime / (duration || 0.1)) * 100}%, #2D3748 ${(currentTime / (duration || 0.1)) * 100}%, #2D3748 100 %)`
             }}
           />
           <div className="flex justify-between text-[10px] text-gray-500 font-bold uppercase tracking-wider mt-2 px-1">
@@ -338,8 +349,8 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
 
           <button
             onClick={togglePlay}
-            disabled={isPlaybackLoading}
-            className={`w-20 h-20 rounded-full bg-brand-gradient flex items-center justify-center shadow-[0_10px_30px_rgba(238,19,202,0.4)] hover:scale-105 transition-transform active:scale-95 ${isPlaybackLoading ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+            disabled={isPlaybackLoading || (DISABLE_ALL_PLAYERS && !isAdmin)}
+            className={`w - 20 h - 20 rounded - full bg - brand - gradient flex items - center justify - center shadow - [0_10px_30px_rgba(238, 19, 202, 0.4)] hover: scale - 105 transition - transform active: scale - 95 ${isPlaybackLoading || (DISABLE_ALL_PLAYERS && !isAdmin) ? 'opacity-50 cursor-not-allowed grayscale' : ''} `}
           >
             {isPlaybackLoading ? (
               <span className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
@@ -373,10 +384,10 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
           <button
             onClick={() => handleTrain('example')}
             disabled={!vocalize?.exampleUrl}
-            className={`rounded-xl p-3 flex flex-col items-center justify-center border cursor-pointer transition-all group ${activeSource === 'example'
+            className={`rounded - xl p - 3 flex flex - col items - center justify - center border cursor - pointer transition - all group ${activeSource === 'example'
               ? 'bg-[#1A202C] border-[#6F4CE7] shadow-[0_0_15px_rgba(111,76,231,0.2)]'
               : 'bg-[#1A202C] border-white/5 hover:border-[#6F4CE7]/50 hover:bg-[#6F4CE7]/10'
-              } ${!vocalize?.exampleUrl ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+              } ${!vocalize?.exampleUrl ? 'opacity-50 cursor-not-allowed grayscale' : ''} `}
           >
             <div className="w-8 h-8 rounded-full bg-[#6F4CE7]/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
               <span className="material-symbols-rounded text-[#6F4CE7] text-xl">play_circle</span>
@@ -388,10 +399,10 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
           {/* FEMALE BUTTON */}
           <button
             onClick={() => handleTrain('female')}
-            className={`rounded-xl p-3 flex flex-col items-center justify-center border cursor-pointer transition-all group ${activeSource === 'female'
+            className={`rounded - xl p - 3 flex flex - col items - center justify - center border cursor - pointer transition - all group ${activeSource === 'female'
               ? 'bg-[#1A202C] border-[#FF00BC] shadow-[0_0_15px_rgba(255,0,188,0.2)]'
               : 'bg-[#1A202C] border-white/5 hover:border-[#FF00BC]/50 hover:bg-[#FF00BC]/10'
-              }`}
+              } `}
           >
             <div className="w-8 h-8 rounded-full bg-[#FF00BC]/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
               <span className="material-symbols-rounded text-[#FF00BC] text-xl">woman</span>
@@ -404,10 +415,10 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
           <button
             onClick={() => handleTrain('male')}
             disabled={!vocalize?.audioUrlMale}
-            className={`rounded-xl p-3 flex flex-col items-center justify-center border cursor-pointer transition-all group ${activeSource === 'male'
+            className={`rounded - xl p - 3 flex flex - col items - center justify - center border cursor - pointer transition - all group ${activeSource === 'male'
               ? 'bg-[#1A202C] border-[#0081FF] shadow-[0_0_15px_rgba(0,129,255,0.2)]'
               : 'bg-[#1A202C] border-white/5 hover:border-[#0081FF]/50 hover:bg-[#0081FF]/10'
-              } ${!vocalize?.audioUrlMale ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+              } ${!vocalize?.audioUrlMale ? 'opacity-50 cursor-not-allowed grayscale' : ''} `}
           >
             <div className="w-8 h-8 rounded-full bg-[#0081FF]/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
               <span className="material-symbols-rounded text-[#0081FF] text-xl">man</span>

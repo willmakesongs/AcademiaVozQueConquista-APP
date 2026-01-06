@@ -1,8 +1,14 @@
-
 import { Vocalize, User, StudentSummary, Appointment, Module, TwisterExercise } from './types';
 
-// URL da foto da Lorena (IA). Substitua pela URL da imagem real se necessário.
-export const LORENA_AVATAR_URL = 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/Fotos/Quer%20ajuda.png';
+// CONFIGURAÇÃO GLOBAL: Desativar todos os players para manutenção/assinantes
+export const DISABLE_ALL_PLAYERS = true;
+
+// URL BASE PARA ARMAZENAMENTO (Áudio e Vídeo)
+// Quando migrar para o Backblaze, basta trocar esta URL pela nova URL do Bucket
+export const STORAGE_BASE_URL = 'https://academiavqc-app.s3.us-east-005.backblazeb2.com';
+
+// URL da foto da Lorena (IA).
+export const LORENA_AVATAR_URL = 'https://academiavqc-app.s3.us-east-005.backblazeb2.com/PNGs-JPEG/LorenaIA.png';
 
 // -----------------------------------------------------------
 // TWISTERS DATA
@@ -110,13 +116,16 @@ export const INLINE_PLAYER_TEMPLATE = (url: string) => `
     <button class="play-example-btn w-12 h-12 rounded-full bg-[#0081FF] text-white flex items-center justify-center shrink-0 hover:scale-105 transition-transform shadow-[0_0_20px_rgba(0,129,255,0.3)]" data-src="${url}">
         <span class="material-symbols-rounded text-3xl ml-1">play_arrow</span>
     </button>
-    <div class="audio-viz flex items-end gap-1.5 h-10 opacity-50 transition-opacity">
-        <div class="w-1.5 rounded-full transition-all duration-150 shadow-[0_0_10px_rgba(0,129,255,0.3)]" style="background-color: #0081FF; height: 23px;" data-base-height="23"></div>
-        <div class="w-1.5 rounded-full transition-all duration-150 shadow-[0_0_10px_rgba(0,129,255,0.3)]" style="background-color: #0081FF; height: 12px;" data-base-height="12"></div>
-        <div class="w-1.5 rounded-full transition-all duration-150" style="background-color: #6F4CE7; height: 8px;" data-base-height="8"></div>
-        <div class="w-1.5 rounded-full transition-all duration-150 shadow-[0_0_10px_rgba(147,51,234,0.3)]" style="background-color: #9333EA; height: 28px;" data-base-height="28"></div>
-        <div class="w-1.5 rounded-full transition-all duration-150" style="background-color: #EE13CA; height: 15px;" data-base-height="15"></div>
-        <div class="w-1.5 rounded-full transition-all duration-150 shadow-[0_0_10px_rgba(255,0,188,0.3)]" style="background-color: #FF00BC; height: 8px;" data-base-height="8"></div>
+    <div class="flex items-center gap-3">
+        <img src="${MINIMALIST_LOGO_URL}" class="w-8 h-8 object-contain opacity-40 group-hover:opacity-100 transition-opacity" alt="Logo" />
+        <div class="audio-viz flex items-end gap-1.5 h-10 opacity-50 transition-opacity">
+            <div class="w-1.5 rounded-full transition-all duration-150 shadow-[0_0_10px_rgba(0,129,255,0.3)]" style="background-color: #0081FF; height: 23px;" data-base-height="23"></div>
+            <div class="w-1.5 rounded-full transition-all duration-150 shadow-[0_0_10px_rgba(0,129,255,0.3)]" style="background-color: #0081FF; height: 12px;" data-base-height="12"></div>
+            <div class="w-1.5 rounded-full transition-all duration-150" style="background-color: #6F4CE7; height: 8px;" data-base-height="8"></div>
+            <div class="w-1.5 rounded-full transition-all duration-150 shadow-[0_0_10px_rgba(147,51,234,0.3)]" style="background-color: #9333EA; height: 28px;" data-base-height="28"></div>
+            <div class="w-1.5 rounded-full transition-all duration-150" style="background-color: #EE13CA; height: 15px;" data-base-height="15"></div>
+            <div class="w-1.5 rounded-full transition-all duration-150 shadow-[0_0_10px_rgba(255,0,188,0.3)]" style="background-color: #FF00BC; height: 8px;" data-base-height="8"></div>
+        </div>
     </div>
 </div>
 </div>
@@ -139,18 +148,23 @@ export const YOUTUBE_EMBED_TEMPLATE = (videoId: string, title: string) => `
             class="absolute top-0 left-0 w-full h-full"
         ></iframe>
     </div>
-    <div class="bg-[#1A202C] p-3 flex justify-between items-center">
-        <span class="text-sm font-bold text-white truncate max-w-[80%]">${title}</span>
-        <div class="px-2 py-1 bg-[#FF00BC]/20 rounded border border-[#FF00BC]/50 flex items-center gap-1">
+    <div class="bg-[#1A202C] p-3 flex justify-between items-center relative overflow-hidden">
+        <div class="flex items-center gap-3 relative z-10">
+            <img src="${MINIMALIST_LOGO_URL}" class="w-8 h-8 object-contain animate-[pulse_2s_infinite]" alt="Logo" />
+            <span class="text-sm font-bold text-white truncate max-w-[200px]">${title}</span>
+        </div>
+        <div class="px-2 py-1 bg-[#FF00BC]/20 rounded border border-[#FF00BC]/50 flex items-center gap-1 relative z-10">
              <span class="w-1.5 h-1.5 bg-[#FF00BC] rounded-full animate-pulse"></span>
              <span class="text-[10px] text-[#FF00BC] font-bold uppercase tracking-wider">Karaoke</span>
         </div>
+        <div class="absolute bottom-0 left-0 w-full h-[2px] bg-gradient-to-right from-[#0081FF] via-[#9333EA] to-[#FF00BC] opacity-30"></div>
     </div>
 </div>
 `;
 
 // Base URL for vocalizes
-const VOCALIZES_BASE_URL = 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/';
+export const MINIMALIST_LOGO_URL = 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/PNGs-JPEG/VQLOGOMINIMALISTA.png';
+const VOCALIZES_BASE_URL = `${STORAGE_BASE_URL}/VOCALIZES%20mp3/`;
 
 // -----------------------------------------------------------
 // MODULES DATA
@@ -674,7 +688,7 @@ export const MODULES: Module[] = [
                         <p class="text-xs text-gray-300"><strong>Como fazer:</strong> Emita um som contínuo e confortável. Se tiver dificuldade, pressione levemente os cantos da boca.</p>
                         <p class="text-xs text-[#FF00BC] italic">Atenção: Se a vibração parar, você está ou segurando o ar demais ou soltando-o sem controle.</p>
                     </div>
-                    ${INLINE_PLAYER_TEMPLATE('https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/Long%20Scale%20(H)%20-%20Synthetic-1650753786.mp3')}
+                    ${INLINE_PLAYER_TEMPLATE(`${STORAGE_BASE_URL}/VOCALIZES%20mp3/Long%20Scale%20(H)%20-%20Synthetic-1650753786.mp3`)}
                 </div>
 
                 <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative">
@@ -751,7 +765,7 @@ export const MODULES: Module[] = [
                             <p className="text-xs text-gray-400">Emita aquele som de "porta rangendo" sem apertar a garganta. Isso relaxa o músculo TA.</p>
                         </div>
                     </div>
-                    ${INLINE_PLAYER_TEMPLATE('https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/BRRR%20DOWN.mp3')}
+                    ${INLINE_PLAYER_TEMPLATE(`${STORAGE_BASE_URL}/VOCALIZES%20mp3/BRRR%20DOWN.mp3`)}
                 </div>
              </div>
         `
@@ -805,7 +819,7 @@ export const MODULES: Module[] = [
                         <p class="text-xs text-gray-400 mb-3">
                             Para não dissociar o treino da voz: Inspire elevando o livro e, na descida, faça um <strong>Humming (Mmmm)</strong> mantendo o peso do livro "sustentado" por 2 segundos antes de relaxar.
                         </p>
-                        ${INLINE_PLAYER_TEMPLATE('https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/BRRR_1.mp3')}
+                        ${INLINE_PLAYER_TEMPLATE(`${STORAGE_BASE_URL}/VOCALIZES%20mp3/BRRR_1.mp3`)}
                     </div>
                 </div>
             `
@@ -851,7 +865,7 @@ export const MODULES: Module[] = [
                         <p class="text-xs text-gray-400 mb-3">
                             Inspire expandindo as mãos. Agora, solte um som de <strong>"ZZZZ"</strong> contínuo, mas tente <strong>NÃO</strong> deixar as costelas murcharem imediatamente. Mantenha as mãos "empurradas" enquanto o som sai.
                         </p>
-                        ${INLINE_PLAYER_TEMPLATE('https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/BRRR_1.mp3')}
+                        ${INLINE_PLAYER_TEMPLATE(`${STORAGE_BASE_URL}/VOCALIZES%20mp3/BRRR_1.mp3`)}
                     </div>
                 </div>
             `
@@ -892,7 +906,7 @@ export const MODULES: Module[] = [
                         <p class="text-xs text-gray-400 mb-3">
                             Faça o vácuo. Segure por 3 segundos sentindo a abertura. Destampe o nariz e deixe o ar entrar passivamente, transformando imediatamente em um som de <strong>"VVVV"</strong> firme e estável.
                         </p>
-                        ${INLINE_PLAYER_TEMPLATE('https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/BRRR_1.mp3')}
+                        ${INLINE_PLAYER_TEMPLATE(`${STORAGE_BASE_URL}/VOCALIZES%20mp3/BRRR_1.mp3`)}
                     </div>
                 </div>
             `
@@ -939,7 +953,7 @@ export const MODULES: Module[] = [
                         <p class="text-xs text-gray-400 mb-3">
                             Faça um movimento circular lento com a cabeça (pescoço). Durante o movimento, inspire e solte um <strong>Humming</strong>. Se o som falhar ou "tremer" em algum ponto do giro, ali existe uma tensão a ser liberada.
                         </p>
-                        ${INLINE_PLAYER_TEMPLATE('https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/BRRR_1.mp3')}
+                        ${INLINE_PLAYER_TEMPLATE(`${STORAGE_BASE_URL}/VOCALIZES%20mp3/BRRR_1.mp3`)}
                     </div>
                 </div>
             `
@@ -1188,13 +1202,13 @@ export const MODULES: Module[] = [
                       <div class="bg-black/20 p-4 rounded-xl border border-white/5">
                          <strong class="text-[#0081FF] text-xs uppercase tracking-wide block mb-1">1. BRRR (Vibração de Lábios)</strong>
                          <p class="text-sm text-gray-300 mb-2">Mantenha a energia constante. Se sentir falhas, pressione levemente as bochechas.</p>
-                         ${INLINE_PLAYER_TEMPLATE('https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/BRRR_1.mp3')}
+                         ${INLINE_PLAYER_TEMPLATE(`${STORAGE_BASE_URL}/VOCALIZES%20mp3/BRRR_1.mp3`)}
                       </div>
 
                       <div class="bg-black/20 p-4 rounded-xl border border-white/5">
                          <strong class="text-[#0081FF] text-xs uppercase tracking-wide block mb-1">2. Bochechas Infladas (Baiacu)</strong>
                          <p class="text-sm text-gray-300 mb-2">Encha as bochechas de ar enquanto emite o som. Isso cria contrapressão e protege as pregas vocais.</p>
-                         ${INLINE_PLAYER_TEMPLATE('https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VVVV%20-%20UP%20DPWN%20C.mp3')}
+                         ${INLINE_PLAYER_TEMPLATE(`${STORAGE_BASE_URL}/VOCALIZES%20mp3/VVVV%20-%20UP%20DPWN%20C.mp3`)}
                       </div>
                    </div>
                 </div>
@@ -1224,7 +1238,7 @@ export const MODULES: Module[] = [
                       <li>A língua deve encostar nos dentes inferiores.</li>
                       <li>Comece médio e aumente o volume gradualmente.</li>
                    </ul>
-                   ${INLINE_PLAYER_TEMPLATE('https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/MA%20MA%20MA.mp3')}
+                   ${INLINE_PLAYER_TEMPLATE(`${STORAGE_BASE_URL}/VOCALIZES%20mp3/MA%20MA%20MA.mp3`)}
                 </div>
              </div>
           </div>
@@ -1246,13 +1260,13 @@ export const MODULES: Module[] = [
                    <div class="relative pl-4 border-l-2 border-[#6F4CE7]">
                       <h4 class="text-white font-bold text-sm">1. "BRRR" (Oitava)</h4>
                       <p class="text-xs text-gray-400 mb-2">Vibração de lábios em oitava. Isso relaxa a tensão.</p>
-                      ${INLINE_PLAYER_TEMPLATE('https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/BRRR_1.mp3')}
+                      ${INLINE_PLAYER_TEMPLATE(`${STORAGE_BASE_URL}/VOCALIZES%20mp3/BRRR_1.mp3`)}
                    </div>
 
                    <div class="relative pl-4 border-l-2 border-[#6F4CE7]">
                       <h4 class="text-white font-bold text-sm">2. "PA" (Arpejo)</h4>
                       <p class="text-xs text-gray-400 mb-2">Este é para resistência. Sinta seu abdome (core) trabalhar a cada repetição.</p>
-                      ${INLINE_PLAYER_TEMPLATE('https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/PAPAPA%203x.mp3')}
+                      ${INLINE_PLAYER_TEMPLATE(`${STORAGE_BASE_URL}/VOCALIZES%20mp3/PAPAPA%203x.mp3`)}
                    </div>
                 </div>
              </div>
@@ -1271,7 +1285,7 @@ export const MODULES: Module[] = [
                 <p class="text-sm text-gray-300 mb-6">
                    Nunca termine um treino intenso abruptamente. Traga sua voz de volta para a fala com escalas descendentes suaves.
                 </p>
-                ${INLINE_PLAYER_TEMPLATE('https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/BRRR%20DOWN.mp3')}
+                ${INLINE_PLAYER_TEMPLATE(`${STORAGE_BASE_URL}/VOCALIZES%20mp3/BRRR%20DOWN.mp3`)}
              </div>
           </div>
         `
@@ -1311,9 +1325,9 @@ export const VOCALIZES: Vocalize[] = [
         bpm: 90,
         key: 'C Major',
         description: 'Escala fundamental para extensão e controle de fluxo.',
-        audioUrl: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Escala%20longa%20I-V%20(H).mp3',
-        audioUrlMale: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Escala%20longa%20I-V%20(L).mp3',
-        exampleUrl: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/BRRR_1.mp3'
+        audioUrl: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Escala%20longa%20I-V%20(H).mp3`,
+        audioUrlMale: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Escala%20longa%20I-V%20(L).mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}BRRR_1.mp3`
     },
 
     // 2. Desaquecimento Reverso (M2 - Aquecimento / M8 - Final)
@@ -1327,9 +1341,9 @@ export const VOCALIZES: Vocalize[] = [
         bpm: 80,
         key: 'Descendente',
         description: 'Essencial após o treino. Traga sua voz de volta para a região de fala.',
-        audioUrl: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Desaquecimento%20Reverso%20(H).mp3',
-        audioUrlMale: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Desaquecimento%20Reverso%20(L).mp3',
-        exampleUrl: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/BRRR%20DOWN.mp3'
+        audioUrl: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Desaquecimento%20Reverso%20(H).mp3`,
+        audioUrlMale: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Desaquecimento%20Reverso%20(L).mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}BRRR%20DOWN.mp3`
     },
 
     // 3. Arpeggio Maior 3x (M3 - Técnica / M8 - Força)
@@ -1343,9 +1357,9 @@ export const VOCALIZES: Vocalize[] = [
         bpm: 110,
         key: 'D Major',
         description: 'Arpejo triplo para trabalhar flexibilidade e precisão.',
-        audioUrl: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Arpeggio%20Maior%203x%20(H).mp3',
-        audioUrlMale: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Arpeggio%20Maior%203x%20(L).mp3',
-        exampleUrl: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/PAPAPA%203x.mp3'
+        audioUrl: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Arpeggio%20Maior%203x%20(H).mp3`,
+        audioUrlMale: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Arpeggio%20Maior%203x%20(L).mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}PAPAPA%203x.mp3`
     },
 
     // 4. Repetição de Oitava (M4 - Ressonância / M7 - Notas Altas)
@@ -1375,9 +1389,9 @@ export const VOCALIZES: Vocalize[] = [
         bpm: 120,
         key: 'F Major',
         description: 'Desafio de agilidade e controle de fôlego.',
-        audioUrl: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(H).mp3',
-        audioUrlMale: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(L).mp3',
-        exampleUrl: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(H).mp3'
+        audioUrl: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(H).mp3`,
+        audioUrlMale: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(L).mp3`,
+        exampleUrl: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(H).mp3`
     },
 
     // Duplicatas para aparecer em módulos adicionais (opcional, mantendo coerência com módulos)
@@ -1391,9 +1405,9 @@ export const VOCALIZES: Vocalize[] = [
         bpm: 110,
         key: 'D Major',
         description: 'Use este arpejo para expandir sua ressonância com energia.',
-        audioUrl: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Arpeggio%20Maior%203x%20(H).mp3',
-        audioUrlMale: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Arpeggio%20Maior%203x%20(L).mp3',
-        exampleUrl: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/PAPAPA%203x.mp3'
+        audioUrl: `https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/Vocalizes+SINGEO/arpeggio_major_3x_high.mp3`,
+        audioUrlMale: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Arpeggio%20Maior%203x%20(L).mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}PAPAPA%203x.mp3`
     },
     {
         id: 'v-desaq-m8',
@@ -1405,9 +1419,9 @@ export const VOCALIZES: Vocalize[] = [
         bpm: 80,
         key: 'Descendente',
         description: 'Relaxe a laringe após os exercícios de potência.',
-        audioUrl: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Desaquecimento%20Reverso%20(H).mp3',
-        audioUrlMale: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Desaquecimento%20Reverso%20(L).mp3',
-        exampleUrl: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/BRRR%20DOWN.mp3'
+        audioUrl: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Desaquecimento%20Reverso%20(H).mp3`,
+        audioUrlMale: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Desaquecimento%20Reverso%20(L).mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}BRRR%20DOWN.mp3`
     },
     // NOVO: Escala Longa I-V no Módulo M8
     {
@@ -1420,9 +1434,9 @@ export const VOCALIZES: Vocalize[] = [
         bpm: 90,
         key: 'C Major',
         description: 'Escala fundamental para extensão e controle de fluxo.',
-        audioUrl: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Escala%20longa%20I-V%20(H).mp3',
-        audioUrlMale: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Escala%20longa%20I-V%20(L).mp3',
-        exampleUrl: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/BRRR_1.mp3'
+        audioUrl: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Escala%20longa%20I-V%20(H).mp3`,
+        audioUrlMale: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Escala%20longa%20I-V%20(L).mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}BRRR_1.mp3`
     },
     // NOVO: Reverso Repetindo no Módulo M8
     {
@@ -1435,9 +1449,9 @@ export const VOCALIZES: Vocalize[] = [
         bpm: 120,
         key: 'C Major',
         description: 'Exercício de agilidade e controle de fôlego com padrão reverso.',
-        audioUrl: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(H).mp3',
-        audioUrlMale: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(L).mp3',
-        exampleUrl: 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(H).mp3'
+        audioUrl: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(H).mp3`,
+        audioUrlMale: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(L).mp3`,
+        exampleUrl: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(H).mp3`
     },
     {
         id: 'v-rep-oit-m7',

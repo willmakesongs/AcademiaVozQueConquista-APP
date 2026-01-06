@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Screen } from '../types';
+import { Screen, User, StudentSummary, Appointment } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { usePlayback } from '../contexts/PlaybackContext';
 import { supabase } from '../lib/supabaseClient';
 import { Logo } from '../components/Logo';
 import { PianoScreen } from './PianoScreen';
+import { STORAGE_BASE_URL } from '../constants';
 import * as Tone from 'tone';
 
 interface Props {
@@ -382,6 +383,37 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
         setTimeout(() => setPixCopyStatus('Copiar Chave'), 2000);
     };
 
+    const uploadToB2 = async (file: Blob | File, folder: string, filename: string): Promise<string> => {
+        // 1. Get Presigned URL from Edge Function
+        const { data, error: funcError } = await supabase.functions.invoke('b2-proxy', {
+            body: {
+                filename,
+                contentType: file.type || 'image/jpeg',
+                folder
+            }
+        });
+
+        if (funcError || !data?.url) {
+            throw new Error(`Failed to get upload URL: ${funcError?.message || 'Unknown error'}`);
+        }
+
+        // 2. Upload directly to B2 via PUT
+        const uploadResponse = await fetch(data.url, {
+            method: 'PUT',
+            body: file,
+            headers: {
+                'Content-Type': file.type || 'image/jpeg'
+            }
+        });
+
+        if (!uploadResponse.ok) {
+            throw new Error(`Upload failed: ${uploadResponse.statusText}`);
+        }
+
+        // 3. Construct Public URL
+        return `${STORAGE_BASE_URL}/${data.path}`;
+    };
+
     const handlePhotoCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file || !user || user.id === 'guest') return;
@@ -426,24 +458,10 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                 reader.readAsDataURL(file);
             });
 
-            // 2. Upload to Supabase Storage
+            // 2. Upload to B2 via Proxy
             const fileExt = 'jpg';
             const fileName = `avatar_${Date.now()}.${fileExt}`;
-            const filePath = `${user.id}/${fileName}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from('avatars')
-                .upload(filePath, compressedBlob, {
-                    contentType: 'image/jpeg',
-                    upsert: true
-                });
-
-            if (uploadError) throw uploadError;
-
-            // 3. Get Public URL
-            const { data: { publicUrl } } = supabase.storage
-                .from('avatars')
-                .getPublicUrl(filePath);
+            const publicUrl = await uploadToB2(compressedBlob, 'avatars', fileName);
 
             // 4. Update Profile in context
             await updateProfileAvatar(publicUrl);
@@ -504,20 +522,9 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                 }, 'image/png');
             });
 
-            // 2. Upload to Supabase Storage
+            // 2. Upload to B2 via Proxy
             const fileName = `signature_${user.id}_${Date.now()}.png`;
-            const filePath = `${user.id}/${fileName}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from('signatures') // Create this bucket if it doesn't exist? Ideally should exist.
-                .upload(filePath, blob, { contentType: 'image/png', upsert: true });
-
-            if (uploadError) throw uploadError;
-
-            // 3. Get Public URL
-            const { data: { publicUrl } } = supabase.storage
-                .from('signatures')
-                .getPublicUrl(filePath);
+            const publicUrl = await uploadToB2(blob, 'signatures', fileName);
 
             // 4. Update Profile
             const { error: updateError } = await supabase
@@ -552,21 +559,10 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                 return;
             }
 
-            // 2. Upload para Storage
-            const fileExt = file.name.split('.').pop();
+            // 2. Upload para B2 via Proxy
+            const fileExt = file.name.split('.').pop() || 'jpg';
             const fileName = `receipt_${user.id}_${Date.now()}.${fileExt}`;
-            const filePath = `${user.id}/${fileName}`;
-
-            const { error: uploadError } = await supabase.storage
-                .from('receipts')
-                .upload(filePath, file);
-
-            if (uploadError) throw uploadError;
-
-            // 3. Pegar URL Pública
-            const { data: { publicUrl } } = supabase.storage
-                .from('receipts')
-                .getPublicUrl(filePath);
+            const publicUrl = await uploadToB2(file, 'receipts', fileName);
 
             // 4. Inserir no Banco de Dados
             // Sanitizar o valor numérico (removendo vírgulas que causam erro no Postgres)
@@ -1074,7 +1070,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                 {/* Cartão do Plano Customizado com Nova Arte */}
                 <div className="relative w-full h-48 rounded-2xl overflow-hidden mb-8 shadow-2xl shadow-purple-900/30 group bg-black">
                     <img
-                        src="https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/VOCALIZES%20mp3/Fotos/Capa%20Pagamento.png"
+                        src={`${STORAGE_BASE_URL}/VOCALIZES%20mp3/Fotos/Capa%20Pagamento.png`}
                         alt="Cartão Assinatura"
                         className="absolute inset-0 w-full h-full object-cover"
                     />

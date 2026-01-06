@@ -203,6 +203,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const userData: User = {
           id: data.id,
           name: data.name || meta.full_name || meta.name || '',
+          email: authUser?.email || '',
           role: data.role as 'student' | 'teacher',
           avatarUrl: data.avatar_url || meta.avatar_url || meta.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name || meta.full_name || 'U')}&background=random&color=fff`,
           status: (data.status as any) || 'active',
@@ -355,6 +356,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser({
       id: 'guest',
       name: 'Visitante (Teste)',
+      email: 'guest@vocalizes.com.br',
       role: role,
       avatarUrl: `https://ui-avatars.com/api/?name=${role === 'student' ? 'Aluno' : 'Prof'}&background=random&color=fff&background=6F4CE7`,
       status: 'active',

@@ -1,31 +1,66 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Screen, Module, Vocalize } from '../types';
-import { MODULES, VOCALIZES } from '../constants';
+import { MODULES, VOCALIZES, DISABLE_ALL_PLAYERS } from '../constants';
 import { useAuth } from '../contexts/AuthContext';
 import { usePlayback } from '../contexts/PlaybackContext';
 import { RepertoireView } from '../components/RepertoireView';
 
 interface Props {
   onNavigate: (screen: Screen) => void;
-  onPlayVocalize: (vocalize: Vocalize) => void;
-  defaultModuleId?: string;
+  expandedModule: string | null;
+  onExpandedModuleChange: (id: string | null) => void;
+  initialScrollY: number;
+  onSaveScrollY: (y: number) => void;
 }
 
-export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, defaultModuleId }) => {
+export const LibraryScreen: React.FC<Props> = ({
+  onNavigate,
+  onPlayVocalize,
+  expandedModule,
+  onExpandedModuleChange,
+  initialScrollY,
+  onSaveScrollY
+}) => {
   const { user } = useAuth(); // Auth context for guest check
 
-  // Estado inicial null garante que todos comecem fechados
-  const [expandedModule, setExpandedModule] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTopic, setSelectedTopic] = useState<{ id: string; title: string; content: string } | null>(null);
 
   // Refs e Estados para o Checklist e Audio Inline
   const contentRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [checklistState, setChecklistState] = useState<Record<string, boolean>>({});
+
+  // Restore scroll position on mount with a slight delay to ensure layout stability
+  // This is crucial because module expansion (CSS transitions) might affect scroll height
+  React.useLayoutEffect(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = initialScrollY;
+
+      // Backup attempt after a short delay to account for any layout shifts
+      setTimeout(() => {
+        if (scrollContainerRef.current) {
+          scrollContainerRef.current.scrollTop = initialScrollY;
+        }
+      }, 100);
+    }
+  }, [initialScrollY]);
+
+  // Save scroll position on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollContainerRef.current) {
+        onSaveScrollY(scrollContainerRef.current.scrollTop);
+      }
+    };
+  }, []);
 
   const { play: playGlobal, stop: stopGlobal, isPlaying, activeUrl } = usePlayback();
   const [activeInlineBtn, setActiveInlineBtn] = useState<HTMLElement | null>(null);
+
+  const isAdmin = user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase());
+
   const visualizerIntervalRef = useRef<number | null>(null);
 
   // Carrega estado salvo do checklist ao iniciar
@@ -39,13 +74,6 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
       }
     }
   }, []);
-
-  // Expande o módulo padrão se fornecido (apenas se defaultModuleId for passado explicitamente)
-  useEffect(() => {
-    if (defaultModuleId) {
-      setExpandedModule(defaultModuleId);
-    }
-  }, [defaultModuleId]);
 
   const { preload } = usePlayback();
 
@@ -168,6 +196,10 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
   }, [selectedTopic, checklistState]);
 
   const handleInlinePlay = async (url: string, btn: HTMLElement) => {
+    if (DISABLE_ALL_PLAYERS && !isAdmin) {
+      alert("Ativo para assinantes");
+      return;
+    }
     // Se clicou no mesmo botão que estava tocando, apenas para
     if (activeUrl === url && isPlaying) {
       stopCurrentAudio();
@@ -247,7 +279,7 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
       // Optional: show toast/alert for locked modules
       return;
     }
-    setExpandedModule(expandedModule === id ? null : id);
+    onExpandedModuleChange(expandedModule === id ? null : id);
   };
 
   const getVocalizesForModule = (moduleId: string) => {
@@ -308,7 +340,10 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
         </div>
       </header>
 
-      <div className="px-6 py-6 space-y-4 overflow-y-auto hide-scrollbar flex-1">
+      <div
+        ref={scrollContainerRef}
+        className="px-6 py-6 space-y-4 overflow-y-auto hide-scrollbar flex-1"
+      >
         {MODULES.map((module, index) => {
           const isActive = expandedModule === module.id;
           const moduleExercises = getVocalizesForModule(module.id);
@@ -397,7 +432,13 @@ export const LibraryScreen: React.FC<Props> = ({ onNavigate, onPlayVocalize, def
                         {moduleExercises.map(exercise => (
                           <div
                             key={exercise.id}
-                            onClick={() => onPlayVocalize(exercise)}
+                            onClick={() => {
+                              if (DISABLE_ALL_PLAYERS && !isAdmin) {
+                                alert("Ativo para assinantes");
+                                return;
+                              }
+                              onPlayVocalize(exercise);
+                            }}
                             className="flex items-center gap-3 p-3 rounded-xl bg-black/20 hover:bg-white/5 border border-white/5 cursor-pointer group transition-colors"
                           >
                             <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 group-hover:text-[#FF00BC] group-hover:bg-[#FF00BC]/10 transition-colors">
