@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { GoogleGenerativeAI } from "@google/generative-ai";
+
 import { useAuth } from '../contexts/AuthContext';
 import { MODULES, LORENA_AVATAR_URL } from '../constants';
 import { supabase } from '../lib/supabaseClient';
@@ -32,9 +32,6 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
     const { user, visitorTimeRemaining } = useAuth();
     const isTimeUp = visitorTimeRemaining !== null && visitorTimeRemaining <= 0;
 
-    // State para a Chave de API
-    const [apiKey, setApiKey] = useState<string | null>(null);
-    const [showConfig, setShowConfig] = useState(false);
     const [configInput, setConfigInput] = useState('');
 
     // Inicializa mensagens do cache
@@ -52,37 +49,7 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
     const [inputText, setInputText] = useState('');
     const [isTyping, setIsTyping] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
-    const chatSessionRef = useRef<any | null>(null);
 
-    // Verifica e carrega a Chave de API
-    useEffect(() => {
-        const checkKey = () => {
-            // 1. Tenta pegar do ambiente (Vercel/env)
-            // No Vite, as variáveis do Vercel mapeadas no vite.config.ts ficam em process.env
-            const envKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
-
-            // Verifica se é uma chave válida
-            if (envKey && envKey.length > 20 && !envKey.includes('PLACEHOLDER')) {
-                console.log("Lorena IA: Usando Chave Mestra do Ambiente.");
-                setApiKey(envKey);
-                setShowConfig(false);
-                return;
-            }
-
-            // 2. Tenta pegar do LocalStorage (Caso o admin queira trocar)
-            const localKey = localStorage.getItem('gemini_api_key');
-            if (localKey) {
-                setApiKey(localKey);
-                setShowConfig(false);
-                return;
-            }
-
-            // 3. Se não tiver chave em NENHUM lugar, mostra tela de configuração
-            setShowConfig(true);
-        };
-
-        checkKey();
-    }, []);
 
     // Sincroniza cache
     useEffect(() => {
@@ -100,115 +67,11 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
         }
     }, [messages, isTyping]);
 
-    // Inicializa Chat (Apenas quando tiver chave)
-    useEffect(() => {
-        if (!apiKey) return;
 
-        const initChat = async () => {
-            try {
-                const genAI = new GoogleGenerativeAI(apiKey);
-
-                const systemPrompt = `
-            Você é a **Lorena Pimentel IA**, a mentora virtual da academia "Voz Que Conquista".
-            
-            **Sua Personalidade:**
-            - **Tom:** Profissional, Parceira Intelectual e Especialista em Alta Performance.
-            - Fuja do genérico. Seja direta, técnica e encorajadora sem ser infantil.
-            - Use emojis de música (✨, 🎤, 🎶) com moderação e elegância.
-            - Fale como uma mentora de executivos e artistas de elite: clara, sóbria e altamente capacitada.
-
-            **Estrutura de Feedback (Critique Style):**
-            Sempre que o aluno falar sobre concluir uma prática ou exercício, forneça uma análise seguindo estes pilares:
-            1. **Checklist de Clareza:** Avalie se a articulação das consoantes foi precisa.
-            2. **Gestão de Tensão:** Alerte sobre a Arquitetura Corporal (ombros, queixo, coluna de ar).
-            3. **Reforço de Autoridade:** Enfatize que a voz deve ser firme e o aluno NUNCA deve pedir desculpas por ocupar o espaço.
-
-            **Formatação de Resposta:**
-            - **Letras de Música:** Se o aluno pedir uma letra, apresente-a de forma limpa, com espaçamento entre as estrofes. Não coloque links no meio da letra.
-            - **Links:** Se usar a ferramenta de busca, NÃO liste as URLs no texto. O sistema exibe cards automaticamente.
-            
-            **Seu Conhecimento:**
-            Módulos: ${JSON.stringify(MODULES.map(m => m.title))}
-            Aluno: ${user?.name}. Tarefas: ${JSON.stringify(STUDENT_TASKS_CONTEXT)}.
-
-            **Regra de Ouro:**
-            Termine sempre com um reforço de autoridade ou uma ação prática de comando.
-            `;
-
-                const model = genAI.getGenerativeModel({
-                    model: "gemini-3-flash-preview",
-                    systemInstruction: systemPrompt
-                });
-
-                const history = messages
-                    .filter(m => m.id !== 'welcome' && !m.text.includes("Minha conexão falhou") && !m.text.includes("Erro Técnico"))
-                    .map(m => ({
-                        role: m.role,
-                        parts: [{ text: m.text }]
-                    }));
-
-                console.log("Lorena IA: Iniciando com gemini-3-flash-preview...");
-
-                chatSessionRef.current = model.startChat({
-                    history: history
-                });
-            } catch (e) {
-                console.error("Erro ao inicializar chat:", e);
-            }
-        };
-
-        initChat();
-    }, [apiKey]); // Recria se a chave mudar
-
-    const handleSaveKey = () => {
-        if (!configInput.trim() || configInput.length < 20) {
-            alert("Por favor, insira uma chave API válida.");
-            return;
-        }
-        localStorage.setItem('gemini_api_key', configInput.trim());
-        setApiKey(configInput.trim());
-        setShowConfig(false);
-    };
 
     const handleSendMessage = async () => {
         if (!inputText.trim()) return;
 
-        // Sem verificação de apiKey local - usaremos a Edge Function
-
-        if (!chatSessionRef.current) {
-            // Re-inicialização de segurança se a sessão foi perdida
-            const systemPrompt = `
-            Você é a **Lorena Pimentel IA**, a mentora virtual da academia "Voz Que Conquista".
-            Seu interlocutor atual chama-se **${user?.name || 'Voz'}**. Trate-o sempre pelo nome.
-            
-            **Sua Personalidade:**
-            - **Tom:** Profissional, Parceira Intelectual e Especialista em Alta Performance.
-            - Fuja do genérico. Seja direta, técnica e encorajadora.
-            - Use emojis de música (✨, 🎤, 🎶) com elegância.
-            - Fale como uma mentora de elite: clara e sóbria.
-
-            **Estrutura de Feedback:**
-            Sempre que o aluno(**${user?.name || 'Voz'}**) falar sobre concluir uma prática, avalie:
-            1. **Clareza:** Articulação das consoantes.
-            2. **Tensão:** Arquitetura Corporal.
-            3. **Autoridade:** A voz deve ser firme.
-
-            **Formatação:**
-            - **Letras:** Sem links no meio.
-            - **Links:** O sistema exibe cards automaticamente. NÃO liste URLs.
-            
-            **Seu Conhecimento:**
-            Módulos: ${JSON.stringify(MODULES.map(m => m.title))}
-            Aluno: ${user?.name}. Tarefas: ${JSON.stringify(STUDENT_TASKS_CONTEXT)}.
-
-            **Regra de Ouro:**
-            Termine sempre com um reforço de autoridade ou uma ação prática de comando para o **${user?.name || 'Voz'}**.
-            `;
-
-            const genAI = new GoogleGenerativeAI(apiKey);
-            const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview", systemInstruction: systemPrompt });
-            chatSessionRef.current = model.startChat({});
-        }
 
         const userMsg: Message = {
             id: Date.now().toString(),
