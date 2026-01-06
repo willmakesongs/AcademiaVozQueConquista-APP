@@ -1758,6 +1758,316 @@ export const MODULES: Module[] = [
                 content: '<div class="p-8 text-center text-gray-400">Conteúdo em desenvolvimento...</div>'
             }
         ]
+    },
+    // --- CURSO DE ORATÓRIA ---
+    {
+        id: "ora_m1",
+        courseId: "oratoria",
+        number: "01",
+        title: "Fundamentos e Gestão de Estado",
+        subtitle: "Vença a ansiedade",
+        description: "Vença a ansiedade e organize sua base de comunicação.",
+        topics: [
+            {
+                id: "ora_1.1",
+                title: "Psicologia do Orador: O Mito da Perfeição",
+                description: "Ajuste sua mentalidade para uma comunicação autêntica.",
+                content: `
+            <div class="space-y-8 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
+                    <div class="relative z-10">
+                        <h3 class="text-lg font-bold text-white mb-4">1. O Mito da Perfeição</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed mb-4">
+                            Muitos travam porque acreditam que um bom orador nunca erra. A verdade é que a <b>perfeição afasta</b>, enquanto a <b>autenticidade conecta</b>.
+                        </p>
+                        <div class="bg-black/20 p-4 rounded-xl border border-white/5 italic text-xs text-[#0081FF]">
+                            "O público não quer um robô, ele quer um ser humano que tenha algo valioso para compartilhar."
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">Mudança de Foco</h3>
+                    <p class="text-sm text-gray-400 mb-4">Pare de pensar em como você está sendo julgado e foque em como você pode ajudar quem está ouvindo.</p>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-red-500/10 border border-red-500/20 p-3 rounded-xl text-center">
+                            <span class="text-[10px] text-red-500 font-bold uppercase tracking-widest block mb-1">Foco antigo</span>
+                            <span class="text-xs text-white">"Eu vou errar?"</span>
+                        </div>
+                        <div class="bg-green-500/10 border border-green-500/20 p-3 rounded-xl text-center">
+                            <span class="text-[10px] text-green-500 font-bold uppercase tracking-widest block mb-1">Foco novo</span>
+                            <span class="text-xs text-white">"Eles vão aprender?"</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          `
+            },
+            {
+                id: "ora_1.2",
+                title: "Fisiologia e Respiração Diafragmática",
+                description: "Domine seu corpo para acalmar a mente.",
+                content: `
+            <div class="space-y-6 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">A Biohacking da Comunicação</h3>
+                    <p class="text-sm text-gray-300 mb-6">A ansiedade gera uma respiração curta e alta. Para "hackear" o cérebro e enviar um sinal de calma, usamos a respiração diafragmática.</p>
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-4 p-4 bg-white/5 rounded-2xl">
+                            <span class="w-8 h-8 rounded-full bg-[#0081FF] flex items-center justify-center text-white font-bold shrink-0">1</span>
+                            <p class="text-sm text-gray-300">Inspire pelo nariz por 4 segundos, sentindo o abdômen expandir.</p>
+                        </div>
+                        <div class="flex items-start gap-4 p-4 bg-white/5 rounded-2xl">
+                            <span class="w-8 h-8 rounded-full bg-[#0081FF] flex items-center justify-center text-white font-bold shrink-0">2</span>
+                            <p class="text-sm text-gray-300">Segure por 2 segundos.</p>
+                        </div>
+                        <div class="flex items-start gap-4 p-4 bg-white/5 rounded-2xl">
+                            <span class="w-8 h-8 rounded-full bg-[#0081FF] flex items-center justify-center text-white font-bold shrink-0">3</span>
+                            <p class="text-sm text-gray-300">Solte suavemente por 6 segundos.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-[#EE13CA]/10 border border-[#EE13CA]/20 p-5 rounded-2xl">
+                    <h4 class="text-[#EE13CA] font-bold text-sm mb-2">Por que funciona?</h4>
+                    <p class="text-xs text-gray-400">Isso estimula o nervo vago, reduzindo batimentos cardíacos e cortisol instantaneamente.</p>
+                </div>
+            </div>
+          `
+            },
+            {
+                id: "ora_1.3",
+                title: "Postura e Linguagem Non-Verbal",
+                description: "Sua fala começa antes da primeira palavra.",
+                content: `
+            <div class="space-y-8 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-6">Linguagem Corporal de Poder</h3>
+                    <div class="grid gap-4">
+                        <div class="flex items-center gap-4 bg-black/20 p-4 rounded-[20px] border border-white/5">
+                            <span class="material-symbols-rounded text-[#0081FF] text-3xl">straighten</span>
+                            <div class="flex-1">
+                                <h4 class="text-white font-bold text-sm">Eixo de Prumo</h4>
+                                <p class="text-xs text-gray-500">Ombros para trás e peito aberto, sem rigidez.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 bg-black/20 p-4 rounded-[20px] border border-white/5">
+                            <span class="material-symbols-rounded text-[#0081FF] text-3xl">visibility</span>
+                            <div class="flex-1">
+                                <h4 class="text-white font-bold text-sm">Contato Visual</h4>
+                                <p class="text-xs text-gray-500">Varra o público em Z ou foque no topo da lente da câmera.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 bg-black/20 p-4 rounded-[20px] border border-white/5">
+                            <span class="material-symbols-rounded text-[#0081FF] text-3xl">pan_tool</span>
+                            <div class="flex-1">
+                                <h4 class="text-white font-bold text-sm">Gesticulação Aberta</h4>
+                                <p class="text-xs text-gray-500">Mãos visíveis e acima da linha da cintura transmitem confiança.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          `
+            },
+            {
+                id: "ora_1.4",
+                title: "Dicção: Articulação e Projeção Vocal",
+                description: "Seja ouvido e compreendido sem esforço.",
+                content: `
+            <div class="space-y-6 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-3">Musculatura da Fala</h3>
+                    <p class="text-sm text-gray-300 leading-relaxed mb-6">
+                        Falar bem requer "exagero" na abertura da boca e precisão nos fonemas.
+                    </p>
+                    <div class="p-6 bg-[#0081FF]/10 rounded-2xl border border-[#0081FF]/20 text-center">
+                        <p class="text-xs text-[#0081FF] font-bold uppercase tracking-wider mb-2">Exercício Prático</p>
+                        <h4 class="text-white font-bold italic mb-4">"Um tigre, dois tigres, três tigres."</h4>
+                        <p class="text-[10px] text-gray-500 leading-relaxed">Repita 5 vezes articulando cada sílaba de forma lenta e exagerada, depois aumente a velocidade.</p>
+                    </div>
+                </div>
+            </div>
+          `
+            }
+        ]
+    },
+    {
+        id: "ora_m2",
+        courseId: "oratoria",
+        number: "02",
+        title: "Engenharia de Roteiro e Argumentação",
+        subtitle: "Estruture suas ideias",
+        description: "Aprenda a estruturar ideias para que ninguém se perca na sua fala.",
+        topics: [
+            {
+                id: "ora_2.1",
+                title: "Aberturas Magnéticas: O Gancho",
+                description: "Ganhe a atenção nos primeiros 15 segundos.",
+                content: `
+            <div class="space-y-8 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-6">O Poder do Gancho</h3>
+                    <p class="text-sm text-gray-300 mb-6">O cérebro humano decide se vai ouvir em poucos segundos. Use uma destas 3 técnicas:</p>
+                    <div class="space-y-4">
+                        <div class="p-4 bg-white/5 rounded-xl border-l-4 border-yellow-500">
+                            <h4 class="text-white font-bold text-sm mb-1">A Pergunta Provocativa</h4>
+                            <p class="text-xs text-gray-400">"Você já sentiu que suas ideias são ótimas, mas ninguém as ouve?"</p>
+                        </div>
+                        <div class="p-4 bg-white/5 rounded-xl border-l-4 border-[#0081FF]">
+                            <h4 class="text-white font-bold text-sm mb-1">O Dado Estatístico de Impacto</h4>
+                            <p class="text-xs text-gray-400">"80% das pessoas sentem mais medo de falar em público do que da morte."</p>
+                        </div>
+                        <div class="p-4 bg-white/5 rounded-xl border-l-4 border-[#FF00BC]">
+                            <h4 class="text-white font-bold text-sm mb-1">O Cenário Imaginário</h4>
+                            <p class="text-xs text-gray-400">"Imagine que você acaba de subir no palco e todos os olhares estão em você..."</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          `
+            },
+            {
+                id: "ora_2.2",
+                title: "O Método dos 3 Pilares (Estrutura)",
+                description: "O corpo do seu discurso.",
+                content: `
+            <div class="space-y-6 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">A Regra de Três</h3>
+                    <p class="text-sm text-gray-300 leading-relaxed mb-6">O cérebro humano é treinado para absorver informações em grupos de 3. Sua fala deve ter:</p>
+                    <div class="grid grid-cols-1 gap-3">
+                        <div class="p-3 bg-white/5 border border-white/5 rounded-xl flex items-center gap-3">
+                            <span class="w-6 h-6 rounded bg-[#0081FF]/20 text-[#0081FF] text-xs font-bold flex items-center justify-center">1</span>
+                            <span class="text-sm text-white">Introdução (O Gancho)</span>
+                        </div>
+                        <div class="p-3 bg-white/5 border border-white/5 rounded-xl flex items-center gap-3">
+                            <span class="w-6 h-6 rounded bg-[#0081FF]/20 text-[#0081FF] text-xs font-bold flex items-center justify-center">2</span>
+                            <span class="text-sm text-white">Desenvolvimento (Três pontos principais)</span>
+                        </div>
+                        <div class="p-3 bg-white/5 border border-white/5 rounded-xl flex items-center gap-3">
+                            <span class="w-6 h-6 rounded bg-[#0081FF]/20 text-[#0081FF] text-xs font-bold flex items-center justify-center">3</span>
+                            <span class="text-sm text-white">Conclusão (O Gran Finale e CTA)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          `
+            },
+            {
+                id: "ora_2.4",
+                title: "Eliminação de Vícios de Linguagem",
+                description: "Limpe seu vocabulário de ruídos.",
+                content: `
+            <div class="space-y-6 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 text-center">
+                    <h3 class="text-lg font-bold text-white mb-2 underline decoration-[#FF00BC]">O Inimigo Silencioso</h3>
+                    <p class="text-sm text-gray-400">"Né", "Hã", "Tá", "Tipo assim"... eles destroem sua autoridade.</p>
+                </div>
+                <div class="bg-black/40 p-6 rounded-2xl border border-white/5">
+                    <h4 class="text-white font-bold text-sm mb-4">A Cura: O Silêncio Consciente</h4>
+                    <p class="text-xs text-gray-300 leading-relaxed">
+                        Em vez de dizer "Hã" enquanto pensa, <b>simplesmente não diga nada</b>. O silêncio gera suspense e demonstra que você tem o controle do tempo.
+                    </p>
+                </div>
+            </div>
+          `
+            }
+        ]
+    },
+    {
+        id: "ora_m3",
+        courseId: "oratoria",
+        number: "03",
+        title: "Storytelling e Persuasão",
+        subtitle: "Conecte emocionalmente",
+        description: "Conecte-se emocionalmente com seu público e convença com técnica.",
+        topics: [
+            {
+                id: "ora_3.1",
+                title: "A Jornada do Conflito",
+                description: "Por que amamos histórias?",
+                content: `
+            <div class="space-y-8 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">Estrutura de uma Boa História</h3>
+                    <div class="flex flex-col gap-4">
+                        <div class="p-4 bg-white/5 rounded-xl border border-white/10">
+                            <span class="text-[10px] text-gray-500 uppercase tracking-widest font-bold">1. O Estado Comum</span>
+                            <p class="text-sm text-white">Como era a vida antes do problema.</p>
+                        </div>
+                        <div class="p-4 bg-white/5 rounded-xl border border-white/10">
+                            <span class="text-[10px] text-[#FF00BC] uppercase tracking-widest font-bold">2. O Conflito</span>
+                            <p class="text-sm text-white">O desafio que mudou tudo.</p>
+                        </div>
+                        <div class="p-4 bg-white/5 rounded-xl border border-white/10">
+                            <span class="text-[10px] text-green-500 uppercase tracking-widest font-bold">3. A Resolução</span>
+                            <p class="text-sm text-white">O aprendizado final.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          `
+            },
+            {
+                id: "ora_3.2",
+                title: "Gatilhos Mentais: Autoridade e Prova Social",
+                description: "Atalhos para a confiança do público.",
+                content: `
+            <div class="space-y-6 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">Gatilhos de Persuasão</h3>
+                    <div class="grid gap-3">
+                        <div class="bg-black/20 p-4 rounded-xl">
+                            <strong class="text-[#0081FF] block text-xs uppercase mb-1">Autoridade</strong>
+                            <p class="text-xs text-gray-400">Mencione seus resultados, estudos ou experiências para fundamentar sua fala.</p>
+                        </div>
+                        <div class="bg-black/20 p-4 rounded-xl">
+                            <strong class="text-[#EE13CA] block text-xs uppercase mb-1">Prova Social</strong>
+                            <p class="text-xs text-gray-400">"Milhares de alunos já usaram este método". O ser humano segue a maioria.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          `
+            },
+            {
+                id: "ora_3.3",
+                title: "O Uso Estratégico do Silêncio",
+                description: "O silêncio fala mais que mil palavras.",
+                content: `
+            <div class="space-y-6 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">O Poder da Pausa</h3>
+                    <p class="text-sm text-gray-300 leading-relaxed mb-6">Existem 3 tipos de pausas estratégicas:</p>
+                    <div class="space-y-3">
+                        <div class="flex gap-3 text-xs text-gray-400"><b class="text-[#0081FF]">Pausa de Digestão:</b> Logo após uma ideia complexa.</div>
+                        <div class="flex gap-3 text-xs text-gray-400"><b class="text-[#EE13CA]">Pausa de Ênfase:</b> Antes de dizer a frase mais importante.</div>
+                        <div class="flex gap-3 text-xs text-gray-400"><b class="text-yellow-500">Pausa de Transição:</b> Ao mudar de um tópico para outro.</div>
+                    </div>
+                </div>
+            </div>
+          `
+            },
+            {
+                id: "ora_3.4",
+                title: "Metáforas e Analogias Poderosas",
+                description: "Traduza o complexo para o simples.",
+                content: `
+            <div class="space-y-6 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4 underline decoration-[#0081FF]">Ponte de Entendimento</h3>
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        Uma metáfora boa vale por 20 minutos de explicação técnica. Compare o novo com algo que o seu público já conhece bem.
+                    </p>
+                </div>
+                <div class="p-6 bg-gradient-to-br from-[#0081FF]/20 to-[#FF00BC]/20 rounded-2xl border border-white/10 text-center">
+                    <h4 class="text-white font-bold mb-2">💡 Dica de Mestre</h4>
+                    <p class="text-xs text-white/80">"Se você não consegue explicar para uma criança de 6 anos, você não entendeu o assunto." - Einstein</p>
+                </div>
+            </div>
+          `
+            }
+        ]
     }
 ];
 
