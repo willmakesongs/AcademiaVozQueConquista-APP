@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Screen, StudentSummary, Appointment, PaymentReceipt } from '../types';
+import { Screen, StudentSummary, Appointment, PaymentReceipt, Course, StudentCourse } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import { STORAGE_BASE_URL } from '../constants';
@@ -22,6 +22,8 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     const [activeTab, setActiveTab] = useState<'dashboard' | 'students' | 'history' | 'reports' | 'settings'>(initialTab);
     const [receipts, setReceipts] = useState<any[]>([]);
     const [paymentHistory, setPaymentHistory] = useState<any[]>([]);
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [selectedCourseId, setSelectedCourseId] = useState<string>('all');
 
     // States UI
     const [searchQuery, setSearchQuery] = useState('');
@@ -75,7 +77,11 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         const matchesStatus = studentFilter === 'active'
             ? student.status !== 'inactive'
             : student.status === 'inactive';
-        return matchesSearch && matchesStatus;
+
+        const matchesCourse = selectedCourseId === 'all' ||
+            (student.courses?.some(c => c.course_id === selectedCourseId));
+
+        return matchesSearch && matchesStatus && matchesCourse;
     });
 
     useEffect(() => {
@@ -123,27 +129,38 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             if (sError) throw sError;
 
             if (sData) {
-                const dbStudents: StudentSummary[] = sData.map(s => ({
-                    id: s.id,
-                    name: s.name,
-                    avatarUrl: s.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=random`,
-                    level: 'Iniciante',
-                    lastPractice: 'Hoje',
-                    progress: 0,
-                    status: (s.status as any) || 'active',
-                    phone: s.phone || '',
-                    age: s.age ? String(s.age) : '',
-                    paymentDay: s.payment_day || '05',
-                    notes: s.notes || '',
-                    modality: s.modality || 'Online',
-                    scheduleDay: s.schedule_day || 'Seg',
-                    scheduleTime: s.schedule_time || '14:00',
-                    amount: (s.amount !== null && s.amount !== undefined) ? s.amount : 97,
-                    address: s.address || '',
-                    contractAgreed: s.contract_agreed,
-                    contractAgreedAt: s.contract_agreed_at,
-                    signatureUrl: s.signature_url
-                }));
+                // Fetch Courses and Student-Course relations
+                const { data: coursesData } = await supabase.from('courses').select('*').eq('ativo', true);
+                if (coursesData) setCourses(coursesData);
+
+                const { data: relationsData } = await supabase.from('student_courses').select('*');
+
+                const dbStudents: StudentSummary[] = sData.map(s => {
+                    const studentCourses = relationsData?.filter(r => r.student_id === s.id) || [];
+
+                    return {
+                        id: s.id,
+                        name: s.name,
+                        avatarUrl: s.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=random`,
+                        level: 'Iniciante',
+                        lastPractice: 'Hoje',
+                        progress: 0,
+                        status: (s.status as any) || 'active',
+                        phone: s.phone || '',
+                        age: s.age ? String(s.age) : '',
+                        paymentDay: s.payment_day || '05',
+                        notes: s.notes || '',
+                        modality: s.modality || 'Online',
+                        scheduleDay: s.schedule_day || 'Seg',
+                        scheduleTime: s.schedule_time || '14:00',
+                        amount: (s.amount !== null && s.amount !== undefined) ? s.amount : 97,
+                        address: s.address || '',
+                        contractAgreed: s.contract_agreed,
+                        contractAgreedAt: s.contract_agreed_at,
+                        signatureUrl: s.signature_url,
+                        courses: studentCourses
+                    };
+                });
 
                 // Update local storage and state with fresh data from DB
                 // SERVER IS SOURCE OF TRUTH
@@ -411,10 +428,47 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         setEditAddress(student.address || '');
         setEditInstagram(student.instagram || '');
         setEditAmount((student.amount !== null && student.amount !== undefined) ? student.amount : 97);
-        // Deleting duplicate line 391 automatically in next chunk logic if applicable or just replacing both
         setEditPaymentDay(student.paymentDay || '05');
         setEditStatus(student.status as any || 'active');
         setIsEditing(false);
+    };
+
+    const toggleStudentCourse = async (courseId: string, currentStatus: boolean) => {
+        if (!selectedStudent) return;
+
+        try {
+            if (currentStatus) {
+                // Unlink
+                const { error } = await supabase
+                    .from('student_courses')
+                    .delete()
+                    .eq('student_id', selectedStudent.id)
+                    .eq('course_id', courseId);
+                if (error) throw error;
+            } else {
+                // Link
+                const { error } = await supabase
+                    .from('student_courses')
+                    .upsert({
+                        student_id: selectedStudent.id,
+                        course_id: courseId,
+                        status: 'ativo'
+                    }, { onConflict: 'student_id,course_id' });
+                if (error) throw error;
+            }
+            await fetchData(); // Refresh data
+            // Update local selectedStudent to reflect changes
+            const updatedStudent = { ...selectedStudent };
+            if (currentStatus) {
+                updatedStudent.courses = updatedStudent.courses?.filter(c => c.course_id !== courseId);
+            } else {
+                updatedStudent.courses = [...(updatedStudent.courses || []), { id: '', student_id: selectedStudent.id, course_id: courseId, status: 'ativo', created_at: '' }];
+            }
+            setSelectedStudent(updatedStudent);
+        } catch (err: any) {
+            console.error("Erro ao alterar curso:", err);
+            alert("Erro ao alterar curso: " + err.message);
+        }
     };
 
     const openWhatsApp = (phone: string) => {
@@ -1175,6 +1229,31 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                             className="w-full h-12 bg-[#1A202C] rounded-2xl border border-white/5 pl-12 pr-4 text-white text-sm focus:outline-none focus:border-[#0081FF] transition-all shadow-inner"
                         />
                     </div>
+
+                    {/* Course Filter Tabs */}
+                    <div className="mt-6 flex gap-2 overflow-x-auto hide-scrollbar pb-2">
+                        <button
+                            onClick={() => setSelectedCourseId('all')}
+                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${selectedCourseId === 'all'
+                                ? 'bg-[#0081FF] text-white border-[#0081FF] shadow-lg shadow-[#0081FF]/20'
+                                : 'bg-[#1A202C] text-gray-500 border-white/5 hover:border-white/10'
+                                }`}
+                        >
+                            Todos os Cursos
+                        </button>
+                        {courses.map(course => (
+                            <button
+                                key={course.id}
+                                onClick={() => setSelectedCourseId(course.id)}
+                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${selectedCourseId === course.id
+                                    ? 'bg-[#0081FF] text-white border-[#0081FF] shadow-lg shadow-[#0081FF]/20'
+                                    : 'bg-[#1A202C] text-gray-500 border-white/5 hover:border-white/10'
+                                    }`}
+                            >
+                                {course.nome}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 <div className="flex-1 overflow-y-auto hide-scrollbar px-6 py-4 space-y-4 pb-32">
@@ -1551,6 +1630,32 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     >
                                         <span className="material-symbols-rounded text-lg">chat</span>
                                     </button>
+                                </div>
+                            </div>
+
+                            <div className="p-3 bg-white/5 rounded-xl border border-white/5 space-y-3">
+                                <p className="text-[10px] text-gray-500 font-bold uppercase">Cursos Vinculados</p>
+                                <div className="space-y-2">
+                                    {courses.map(course => {
+                                        const isLinked = selectedStudent.courses?.some(sc => sc.course_id === course.id);
+                                        return (
+                                            <div key={course.id} className="flex items-center justify-between p-2 rounded-lg bg-black/20 border border-white/5">
+                                                <div className="flex items-center gap-2">
+                                                    <div className={`w-1.5 h-1.5 rounded-full ${isLinked ? 'bg-green-500' : 'bg-gray-700'}`}></div>
+                                                    <span className="text-xs text-white font-medium">{course.nome}</span>
+                                                </div>
+                                                <button
+                                                    onClick={() => toggleStudentCourse(course.id, !!isLinked)}
+                                                    className={`px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-wider transition-all ${isLinked
+                                                        ? 'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20'
+                                                        : 'bg-green-500/10 text-green-500 border border-green-500/20 hover:bg-green-500/20'
+                                                        }`}
+                                                >
+                                                    {isLinked ? 'Remover' : 'Adicionar'}
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
 

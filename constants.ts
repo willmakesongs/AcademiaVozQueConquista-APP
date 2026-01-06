@@ -1458,7 +1458,6 @@ export const MODULES: Module[] = [
             }
         ]
     },
-    // MÓDULO 10 - REPERTÓRIO (KARAOKE)
     {
         id: 'm10',
         number: '10',
@@ -1471,6 +1470,292 @@ export const MODULES: Module[] = [
                 title: 'Biblioteca de Karaokê (Acervo)',
                 description: 'Playbacks profissionais para treino.',
                 content: ''
+            }
+        ]
+    },
+    {
+        id: 'm11',
+        number: '11',
+        title: 'Ornamentos e Agilidade Vocal',
+        subtitle: 'Técnica e Estilo',
+        description: 'Domine a velocidade, precisão e os ornamentos que refinam sua interpretação.',
+        topics: [
+            {
+                id: '11.1',
+                title: 'Aula 1: A Base da Agilidade – Leveza e Precisão',
+                description: 'Preparar a musculatura para movimentos rápidos.',
+                content: `
+          <div class="space-y-8 font-sans">
+            <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
+               <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
+               <div class="relative z-10">
+                   <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                       <span class="w-8 h-8 rounded-lg bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] text-sm font-bold">1</span>
+                       O Conceito: Leveza é Velocidade
+                   </h3>
+                   <p class="text-sm text-gray-300 leading-relaxed">
+                       Para fazer notas rápidas, a voz precisa estar "solta". Se você cantar com muita força ou volume, não terá velocidade. Pense na voz como um <b>pincel fino</b>, não como um rolo de pintura. O toque deve ser leve.
+                   </p>
+               </div>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] text-sm font-bold">2</span>
+                    Técnica de Estacato
+                </h3>
+                <p class="text-sm text-gray-300 mb-4">
+                    Usaremos notas curtas e destacadas para treinar o fechamento rápido das pregas vocais sem esforço.
+                </p>
+                <div class="bg-black/20 p-4 rounded-xl border border-white/5">
+                    <strong class="text-[#6F4CE7] block text-xs uppercase tracking-wide mb-2">Exercício Prático</strong>
+                    <ol class="space-y-3 text-sm text-gray-300">
+                        <li class="flex gap-2">
+                            <span class="text-[#6F4CE7] font-bold">1.</span>
+                            Escolha uma nota confortável.
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="text-[#6F4CE7] font-bold">2.</span>
+                            Cante essa nota 4 vezes de forma curta e rápida (como um pequeno "quique").
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="text-[#6F4CE7] font-bold">3.</span>
+                            Sinta que o esforço não vem da garganta, mas de um controle firme e breve do ar.
+                        </li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-gradient-to-br from-[#1A202C] to-[#0D1117] border border-white/10 relative overflow-hidden group">
+                <div class="flex items-center justify-between relative z-10">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
+                            <span class="material-symbols-rounded text-3xl">lock</span>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold">Vídeo de Demonstração</h4>
+                            <p class="text-xs text-gray-500">Notas Curtas e Precisas</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 rounded-full bg-[#FF00BC]/10 border border-[#FF00BC]/20 text-[#FF00BC] text-[10px] font-bold uppercase tracking-widest">
+                        Assinantes
+                    </span>
+                </div>
+                <div class="mt-4 h-24 bg-black/40 rounded-xl border border-white/5 flex items-center justify-center">
+                    <span class="text-xs text-gray-600 font-medium">Conteúdo Bloqueado para Visitantes</span>
+                </div>
+            </div>
+          </div>
+        `
+            },
+            {
+                id: '11.2',
+                title: 'Aula 2: Notas de Passagem e Floreios Simples',
+                description: 'Dominar o movimento entre duas notas vizinhas.',
+                content: `
+          <div class="space-y-8 font-sans">
+            <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
+               <div class="absolute top-0 right-0 w-32 h-32 bg-[#EE13CA] blur-[80px] opacity-20"></div>
+               <div class="relative z-10">
+                   <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                       <span class="w-8 h-8 rounded-lg bg-[#EE13CA]/20 flex items-center justify-center text-[#EE13CA] text-sm font-bold">1</span>
+                       O Floreio de Duas Notas
+                   </h3>
+                   <p class="text-sm text-gray-300 leading-relaxed">
+                       É o ornamento mais básico, onde você "visita" uma nota vizinha rapidamente antes de voltar para a nota principal. A precisão é o que diferencia um bom cantor de alguém desafinado.
+                   </p>
+               </div>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] text-sm font-bold">2</span>
+                    Evitando o "Escorregão"
+                </h3>
+                <p class="text-sm text-gray-300 mb-4">
+                    As notas devem ser como <b>degraus de uma escada</b>, bem definidos. Não murchar entre uma nota e outra.
+                </p>
+                <div class="bg-black/20 p-4 rounded-xl border border-white/5">
+                    <strong class="text-[#FF00BC] block text-xs uppercase tracking-wide mb-2 italic">Exercício Prático</strong>
+                    <ul class="space-y-3 text-sm text-gray-300">
+                        <li class="flex items-start gap-3">
+                            <span class="material-symbols-rounded text-[#FF00BC] text-lg">music_note</span>
+                            <span>Cante: Nota Base -> Nota de Cima -> Nota Base.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="material-symbols-rounded text-[#FF00BC] text-lg">speed</span>
+                            <span>Repita aumentando a velocidade, mantendo a clareza.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="p-6 rounded-2xl bg-[#101622] border border-white/5 flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-[#0081FF]/10 flex items-center justify-center text-[#0081FF]">
+                        <span class="material-symbols-rounded">lock</span>
+                    </div>
+                    <div>
+                        <h4 class="text-white text-sm font-bold">Áudio Guia</h4>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-tighter">Exercícios de Floreios</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full bg-gray-600"></div>
+                    <span class="text-[10px] text-gray-500 font-bold uppercase">Exclusivo</span>
+                </div>
+            </div>
+          </div>
+        `
+            },
+            {
+                id: '11.3',
+                title: 'Aula 3: O Trinado – Oscilação Controlada',
+                description: 'Crie um efeito de "tremido" elegante e voluntário.',
+                content: `
+          <div class="space-y-8 font-sans">
+            <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+               <h3 class="text-lg font-bold text-white mb-3">O Que é o Trinado?</h3>
+               <p class="text-sm text-gray-300">
+                   É uma escolha técnica onde você controla exatamente em quais notas a voz está oscilando rapidamente. É diferente do vibrato natural.
+               </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-[#1A202C] p-5 rounded-2xl border border-white/5 border-t-2 border-t-[#0081FF]">
+                    <h4 class="text-[#0081FF] font-bold text-sm mb-2 uppercase tracking-wide">Sensação Térmica</h4>
+                    <p class="text-xs text-gray-400">
+                        Pense em uma <b>risada leve</b>. O movimento interno é similar ao "há-há-há".
+                    </p>
+                </div>
+                <div class="bg-[#1A202C] p-5 rounded-2xl border border-white/5 border-t-2 border-t-[#FF00BC]">
+                    <h4 class="text-[#FF00BC] font-bold text-sm mb-2 uppercase tracking-wide">Desafio</h4>
+                    <p class="text-xs text-gray-400">
+                        Tente o movimento entre notas com <b>meio tom</b> de distância. É mais fácil para soltar a laringe.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-black/40 p-1 rounded-3xl border border-white/10">
+                <div class="bg-[#1A202C] p-6 rounded-[22px] border border-white/5 text-center">
+                    <div class="w-16 h-16 rounded-full bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] mx-auto mb-4">
+                        <span class="material-symbols-rounded text-4xl">video_library</span>
+                    </div>
+                    <h4 class="text-white font-bold mb-1">Vídeo: Domine a Oscilação</h4>
+                    <p class="text-xs text-gray-500 mb-6">Acesso restrito para alunos da Academia</p>
+                    <button class="w-full py-3 bg-white/5 border border-white/10 rounded-xl text-xs text-white font-bold uppercase tracking-widest opacity-50 cursor-not-allowed">
+                        <span class="flex items-center justify-center gap-2">
+                            <span class="material-symbols-rounded text-sm">lock</span>
+                            Bloqueado
+                        </span>
+                    </button>
+                </div>
+            </div>
+          </div>
+        `
+            },
+            {
+                id: '11.4',
+                title: 'Aula 4: Introdução aos Riffs e Escalas Rápidas',
+                description: 'Cantar frases longas e rápidas sem perder a afinação.',
+                content: `
+          <div class="space-y-8 font-sans">
+            <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
+               <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#0081FF] via-[#6F4CE7] to-[#FF00BC]"></div>
+               <h3 class="text-lg font-bold text-white mb-4">Método de Câmera Lenta</h3>
+               <p class="text-sm text-gray-300 mb-6">
+                   Nunca tente cantar um riff (frase rápida) na velocidade original logo de cara.
+               </p>
+               
+               <div class="space-y-4">
+                   <div class="flex gap-4">
+                       <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs font-bold text-white shrink-0">1</div>
+                       <p class="text-sm text-gray-400">Identifique cada nota da frase separadamente.</p>
+                   </div>
+                   <div class="flex gap-4">
+                       <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs font-bold text-white shrink-0">2</div>
+                       <p class="text-sm text-gray-400">Cante bem devagar, como se fosse uma melodia lenta.</p>
+                   </div>
+                   <div class="flex gap-4">
+                       <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-xs font-bold text-white shrink-0">3</div>
+                       <p class="text-sm text-gray-400">Só acelere quando seu ouvido "decorar" o caminho exato.</p>
+                   </div>
+               </div>
+            </div>
+
+            <div class="bg-[#0081FF]/10 border border-[#0081FF]/20 p-5 rounded-2xl">
+                <div class="flex items-center gap-3 mb-2">
+                    <span class="material-symbols-rounded text-[#0081FF]">lightbulb</span>
+                    <h4 class="text-white font-bold text-sm">Aplicação Prática</h4>
+                </div>
+                <p class="text-xs text-gray-300 leading-relaxed">
+                    Muito usado na <b>MPB contemporânea</b> e no <b>Gospel brasileiro</b> para dar dinâmica e sofisticação à interpretação.
+                </p>
+            </div>
+
+            <div class="p-5 border border-dashed border-white/20 rounded-2xl flex flex-col items-center justify-center gap-3 bg-white/[0.02]">
+                <span class="material-symbols-rounded text-gray-600 text-4xl">audio_file</span>
+                <div class="text-center">
+                    <p class="text-sm text-white font-bold">Treino de Escalas</p>
+                    <p class="text-[10px] text-gray-500 italic">Disponível para assinantes premium</p>
+                </div>
+                <div class="w-full h-1 bg-white/5 rounded-full overflow-hidden">
+                    <div class="w-1/3 h-full bg-[#0081FF] opacity-30"></div>
+                </div>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                    <span class="material-symbols-rounded text-green-500">tips_and_updates</span>
+                    Dicas para o Aluno
+                </h3>
+                <ul class="space-y-4">
+                    <li class="flex gap-3 items-start">
+                        <div class="w-1.5 h-1.5 rounded-full bg-green-500 mt-1.5 shrink-0"></div>
+                        <p class="text-sm text-gray-300"><b>Paciência:</b> A agilidade vocal é como um treino de academia para os dedos de um pianista. Requer repetição constante.</p>
+                    </li>
+                    <li class="flex gap-3 items-start">
+                        <div class="w-1.5 h-1.5 rounded-full bg-green-500 mt-1.5 shrink-0"></div>
+                        <p class="text-sm text-gray-300"><b>Gravação:</b> Grave seus exercícios. Se a frase soar "borrada", diminua a velocidade do seu treino.</p>
+                    </li>
+                </ul>
+            </div>
+          </div>
+        `
+            }
+        ]
+    },
+    // Módulo de Teste: Violão
+    {
+        id: 'mv1',
+        courseId: 'violao',
+        number: '01',
+        title: 'Primeiros Acordes',
+        subtitle: 'Violão Popular',
+        description: 'Aprenda a tocar suas primeiras músicas.',
+        topics: [
+            {
+                id: 'v1.1',
+                title: 'Postura e Mão Direita',
+                description: 'Como segurar o violão e fazer o primeiro dedilhado.',
+                content: '<div class="p-8 text-center text-gray-400">Conteúdo em desenvolvimento...</div>'
+            }
+        ]
+    },
+    // Módulo de Teste: Guitarra
+    {
+        id: 'mg1',
+        courseId: 'guitarra',
+        number: '01',
+        title: 'Power Chords e Drive',
+        subtitle: 'Rock & Blues',
+        description: 'Fundamentos da guitarra elétrica.',
+        topics: [
+            {
+                id: 'g1.1',
+                title: 'O Som do Rock',
+                description: 'Power chords e timbragem básica.',
+                content: '<div class="p-8 text-center text-gray-400">Conteúdo em desenvolvimento...</div>'
             }
         ]
     }

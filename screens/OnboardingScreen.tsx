@@ -25,12 +25,26 @@ export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
     const [modality, setModality] = useState<'Presencial' | 'Online'>('Presencial');
     const [level, setLevel] = useState('Iniciante');
     const [scheduleDay, setScheduleDay] = useState('Segunda');
+    const [courses, setCourses] = useState<any[]>([]);
+    const [selectedCourseId, setSelectedCourseId] = useState<string>('');
 
     // Controlled state only for loading
     const [loading, setLoading] = useState(false);
 
     // Pre-fill data without causing re-renders loop
     useEffect(() => {
+        const fetchCourses = async () => {
+            const { data } = await supabase.from('courses').select('*').eq('ativo', true);
+            if (data) {
+                setCourses(data);
+                // Pre-select Canto by default if available
+                const canto = data.find(c => c.slug === 'canto');
+                if (canto) setSelectedCourseId(canto.id);
+                else if (data.length > 0) setSelectedCourseId(data[0].id);
+            }
+        };
+        fetchCourses();
+
         if (user) {
             if (nameRef.current) nameRef.current.value = user.name || '';
             if (phoneRef.current) phoneRef.current.value = user.phone || '';
@@ -86,6 +100,21 @@ export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
                     .eq('id', user.id);
             } catch (extendedError) {
                 console.warn('Campos estendidos falharam:', extendedError);
+            }
+
+            // 3. Vincular Curso Selecionado
+            if (selectedCourseId) {
+                try {
+                    await supabase
+                        .from('student_courses')
+                        .upsert({
+                            student_id: user.id,
+                            course_id: selectedCourseId,
+                            status: 'ativo'
+                        }, { onConflict: 'student_id,course_id' });
+                } catch (courseErr) {
+                    console.warn('Vínculo de curso falhou:', courseErr);
+                }
             }
 
             // Force local update
@@ -269,6 +298,26 @@ export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
                                         className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white outline-none transition-colors"
                                     />
                                 </div>
+                            </div>
+
+                            {/* Seleção de Curso */}
+                            <div>
+                                <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Curso de Interesse</p>
+                                <select
+                                    value={selectedCourseId}
+                                    onChange={(e) => setSelectedCourseId(e.target.value)}
+                                    className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white outline-none"
+                                >
+                                    <option value="" disabled>Selecione um curso...</option>
+                                    {courses.map(course => (
+                                        <option key={course.id} value={course.id} className="bg-[#1A202C]">
+                                            {course.nome}
+                                        </option>
+                                    ))}
+                                </select>
+                                <p className="text-[10px] text-gray-500 italic mt-2 ml-1 px-1">
+                                    Selecione o curso que você deseja iniciar. Você poderá adicionar outros cursos posteriormente.
+                                </p>
                             </div>
                         </div>
                     </section>

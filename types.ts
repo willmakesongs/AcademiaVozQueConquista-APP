@@ -46,6 +46,7 @@ export interface TwisterExercise {
 
 export interface Module {
   id: string;
+  courseId?: string; // e.g., "canto", "violao"
   number: string;
   title: string;
   subtitle: string;
@@ -117,6 +118,7 @@ export interface StudentSummary {
   instrument?: string; // e.g., "Canto", "Piano"
   address?: string;
   instagram?: string;
+  courses?: StudentCourse[];
 }
 
 export interface Appointment {
@@ -139,4 +141,21 @@ export interface Task {
   status: 'pending' | 'completed' | 'locked';
   category: string;
   date: string;
+}
+
+export interface Course {
+  id: string;
+  slug: string;
+  nome: string;
+  ativo: boolean;
+  created_at?: string;
+}
+
+export interface StudentCourse {
+  id: string;
+  student_id: string;
+  course_id: string;
+  status: 'ativo' | 'bloqueado';
+  created_at?: string;
+  course?: Course;
 }

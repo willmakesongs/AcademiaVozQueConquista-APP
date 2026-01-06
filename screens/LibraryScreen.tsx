@@ -1,8 +1,8 @@
-
 import React, { useState, useEffect, useRef } from 'react';
-import { Screen, Module, Vocalize } from '../types';
+import { Screen, Module, Vocalize, Course, StudentCourse } from '../types';
 import { MODULES, VOCALIZES, DISABLE_ALL_PLAYERS } from '../constants';
 import { useAuth } from '../contexts/AuthContext';
+import { supabase } from '../lib/supabaseClient';
 import { usePlayback } from '../contexts/PlaybackContext';
 import { RepertoireView } from '../components/RepertoireView';
 
@@ -26,6 +26,9 @@ export const LibraryScreen: React.FC<Props> = ({
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTopic, setSelectedTopic] = useState<{ id: string; title: string; content: string } | null>(null);
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [userCourses, setUserCourses] = useState<StudentCourse[]>([]);
+  const [loading, setLoading] = useState(true);
 
   // Refs e Estados para o Checklist e Audio Inline
   const contentRef = useRef<HTMLDivElement>(null);
@@ -63,7 +66,7 @@ export const LibraryScreen: React.FC<Props> = ({
 
   const visualizerIntervalRef = useRef<number | null>(null);
 
-  // Carrega estado salvo do checklist ao iniciar
+  // Carrega estado salvo do checklist, cursos e vínculos ao iniciar
   useEffect(() => {
     const saved = localStorage.getItem('checklist_progress');
     if (saved) {
@@ -73,7 +76,30 @@ export const LibraryScreen: React.FC<Props> = ({
         console.error("Erro ao carregar checklist:", e);
       }
     }
-  }, []);
+
+    const fetchData = async () => {
+      if (!user || user.id === 'guest') {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const [cRes, scRes] = await Promise.all([
+          supabase.from('courses').select('*').eq('ativo', true),
+          supabase.from('student_courses').select('*').eq('student_id', user.id)
+        ]);
+
+        if (cRes.data) setCourses(cRes.data);
+        if (scRes.data) setUserCourses(scRes.data);
+      } catch (err) {
+        console.error("Erro ao carregar cursos:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user]);
 
   const { preload } = usePlayback();
 
@@ -344,131 +370,166 @@ export const LibraryScreen: React.FC<Props> = ({
         ref={scrollContainerRef}
         className="px-6 py-6 space-y-4 overflow-y-auto hide-scrollbar flex-1"
       >
-        {MODULES.map((module, index) => {
-          const isActive = expandedModule === module.id;
-          const moduleExercises = getVocalizesForModule(module.id);
-          const isGuest = user?.id === 'guest';
-          const isTrial = user?.status === 'trial';
-          const isLocked = (isGuest || isTrial) && index > 0;
+        {courses.map(course => {
+          const isEnrolled = userCourses.some(uc => uc.course_id === course.id && uc.status === 'ativo');
+          const courseModules = MODULES.filter(m => (m.courseId || 'canto') === course.slug);
 
-          if (searchTerm && !module.title.toLowerCase().includes(searchTerm.toLowerCase()) && !moduleExercises.some(v => v.title.toLowerCase().includes(searchTerm.toLowerCase()))) {
-            return null;
-          }
+          if (courseModules.length === 0 && !isEnrolled) return null;
 
           return (
-            <div
-              key={module.id}
-              className={`rounded-2xl border transition-all duration-300 overflow-hidden ${isActive
-                ? 'bg-[#1A202C] border-[#6F4CE7]/50 shadow-[0_0_30px_rgba(111,76,231,0.1)]'
-                : (isLocked ? 'bg-[#1A202C]/30 border-white/5 opacity-70' : 'bg-[#1A202C]/50 border-white/5 hover:bg-[#1A202C]')
-                }`}
-            >
-              {/* Module Header */}
-              <button
-                onClick={() => toggleModule(module.id, isLocked)}
-                className="w-full flex items-start p-5 text-left relative"
-              >
-                <div className={`mr-4 w-12 h-12 rounded-xl flex items-center justify-center shrink-0 font-bold text-lg transition-colors ${isActive ? 'bg-brand-gradient text-white' : (isLocked ? 'bg-white/5 text-gray-600' : 'bg-white/5 text-gray-500')
-                  }`}>
-                  {isLocked ? <span className="material-symbols-rounded text-xl">lock</span> : module.number}
-                </div>
+            <div key={course.id} className="space-y-4 mb-8">
+              <div className="flex items-center gap-3 px-2">
+                <div className={`w-1 h-6 rounded-full ${isEnrolled ? 'bg-[#0081FF]' : 'bg-gray-700'}`}></div>
+                <h2 className={`font-black text-xs uppercase tracking-[0.2em] ${isEnrolled ? 'text-white' : 'text-gray-500'}`}>
+                  Curso: {course.nome}
+                </h2>
+                {!isEnrolled && (
+                  <span className="bg-gray-800 text-gray-500 text-[8px] px-2 py-0.5 rounded-full font-bold">BLOQUEADO</span>
+                )}
+              </div>
 
-                <div className="flex-1">
-                  <h3 className={`font-bold text-lg leading-tight mb-1 ${isActive ? 'text-white' : (isLocked ? 'text-gray-400' : 'text-gray-300')}`}>
-                    {module.title}
-                  </h3>
-                  <p className={`text-xs font-medium uppercase tracking-wider mb-1 ${isLocked ? 'text-gray-600' : 'text-[#0081FF]'}`}>
-                    {isLocked ? 'Bloqueado no Modo Visitante' : module.subtitle}
-                  </p>
-                  <p className="text-xs text-gray-500 line-clamp-2">{module.description}</p>
-                </div>
+              {isEnrolled ? (
+                courseModules.map((module, index) => {
+                  const isActive = expandedModule === module.id;
+                  const moduleExercises = getVocalizesForModule(module.id);
+                  const isTrial = user?.status === 'trial';
+                  const isLocked = isTrial && index > 0;
 
-                <div className={`ml-2 mt-1 transition-transform duration-300 ${isActive ? 'rotate-180 text-[#6F4CE7]' : 'text-gray-600'}`}>
-                  {isLocked ? null : <span className="material-symbols-rounded">expand_more</span>}
-                </div>
-              </button>
+                  if (searchTerm && !module.title.toLowerCase().includes(searchTerm.toLowerCase()) && !moduleExercises.some(v => v.title.toLowerCase().includes(searchTerm.toLowerCase()))) {
+                    return null;
+                  }
 
-              {/* Module Content (Topics & Exercises) */}
-              <div className={`transition-all duration-500 ease-in-out ${isActive ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                <div className="px-5 pb-5 pt-0">
-
-                  {/* Topics List */}
-                  <div className="mb-6 pl-4 border-l border-white/10 space-y-3">
-                    {module.topics.map(topic => (
-                      <div
-                        key={topic.id}
-                        className={`relative p-2 rounded-lg transition-colors ${topic.content || topic.id.startsWith('10.1') ? 'hover:bg-white/5 cursor-pointer group' : ''}`}
-                        onClick={() => {
-                          if (topic.content || topic.id.startsWith('10.1')) {
-                            setSelectedTopic({ id: topic.id, title: topic.title, content: topic.content });
-                          }
-                        }}
+                  return (
+                    <div
+                      key={module.id}
+                      className={`rounded-2xl border transition-all duration-300 overflow-hidden ${isActive
+                        ? 'bg-[#1A202C] border-[#6F4CE7]/50 shadow-[0_0_30px_rgba(111,76,231,0.1)]'
+                        : (isLocked ? 'bg-[#1A202C]/30 border-white/5 opacity-70' : 'bg-[#1A202C]/50 border-white/5 hover:bg-[#1A202C]')
+                        }`}
+                    >
+                      {/* Module Header */}
+                      <button
+                        onClick={() => toggleModule(module.id, isLocked)}
+                        className="w-full flex items-start p-5 text-left relative"
                       >
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <p className={`text-sm font-semibold ${topic.content || topic.id.startsWith('10.1') ? 'text-[#0081FF] group-hover:text-white' : 'text-white'}`}>
-                              {topic.title}
-                            </p>
-                            <p className="text-[10px] text-gray-500">{topic.description}</p>
+                        <div className={`mr-4 w-12 h-12 rounded-xl flex items-center justify-center shrink-0 font-bold text-lg transition-colors ${isActive ? 'bg-brand-gradient text-white' : (isLocked ? 'bg-white/5 text-gray-600' : 'bg-white/5 text-gray-500')
+                          }`}>
+                          {isLocked ? <span className="material-symbols-rounded text-xl">lock</span> : module.number}
+                        </div>
+
+                        <div className="flex-1">
+                          <h3 className={`font-bold text-lg leading-tight mb-1 ${isActive ? 'text-white' : (isLocked ? 'text-gray-400' : 'text-gray-300')}`}>
+                            {module.title}
+                          </h3>
+                          <p className={`text-xs font-medium uppercase tracking-wider mb-1 ${isLocked ? 'text-gray-600' : 'text-[#0081FF]'}`}>
+                            {isLocked ? 'Assine para liberar todos os módulos' : module.subtitle}
+                          </p>
+                          <p className="text-xs text-gray-500 line-clamp-2">{module.description}</p>
+                        </div>
+
+                        <div className={`ml-2 mt-1 transition-transform duration-300 ${isActive ? 'rotate-180 text-[#6F4CE7]' : 'text-gray-600'}`}>
+                          {isLocked ? null : <span className="material-symbols-rounded">expand_more</span>}
+                        </div>
+                      </button>
+
+                      {/* Module Content */}
+                      <div className={`transition-all duration-500 ease-in-out ${isActive ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                        <div className="px-5 pb-5 pt-0">
+                          {/* Topics List */}
+                          <div className="mb-6 pl-4 border-l border-white/10 space-y-3">
+                            {module.topics.map(topic => (
+                              <div
+                                key={topic.id}
+                                className={`relative p-2 rounded-lg transition-colors ${topic.content || topic.id.startsWith('10.1') ? 'hover:bg-white/5 cursor-pointer group' : ''}`}
+                                onClick={() => {
+                                  if (topic.content || topic.id.startsWith('10.1')) {
+                                    setSelectedTopic({ id: topic.id, title: topic.title, content: topic.content });
+                                  }
+                                }}
+                              >
+                                <div className="flex justify-between items-start">
+                                  <div>
+                                    <p className={`text-sm font-semibold ${topic.content || topic.id.startsWith('10.1') ? 'text-[#0081FF] group-hover:text-white' : 'text-white'}`}>
+                                      {topic.title}
+                                    </p>
+                                    <p className="text-[10px] text-gray-500">{topic.description}</p>
+                                  </div>
+                                  {(topic.content || topic.id.startsWith('10.1')) && (
+                                    <span className="material-symbols-rounded text-gray-600 text-sm group-hover:text-white">
+                                      {topic.id.startsWith('10.1') ? 'play_circle' : 'article'}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
                           </div>
-                          {(topic.content || topic.id.startsWith('10.1')) && (
-                            <span className="material-symbols-rounded text-gray-600 text-sm group-hover:text-white">
-                              {topic.id.startsWith('10.1') ? 'play_circle' : 'article'}
-                            </span>
+
+                          {/* Exercises List */}
+                          {moduleExercises.length > 0 && (
+                            <div>
+                              <h4 className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-3 flex items-center gap-2">
+                                <span className="material-symbols-rounded text-sm">piano</span>
+                                TREINE COM O PIANO
+                              </h4>
+                              <div className="space-y-2">
+                                {moduleExercises.map(exercise => (
+                                  <div
+                                    key={exercise.id}
+                                    onClick={() => {
+                                      if (DISABLE_ALL_PLAYERS && !isAdmin) {
+                                        alert("Ativo para assinantes");
+                                        return;
+                                      }
+                                      onPlayVocalize(exercise);
+                                    }}
+                                    className="flex items-center gap-3 p-3 rounded-xl bg-black/20 hover:bg-white/5 border border-white/5 cursor-pointer group transition-colors"
+                                  >
+                                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 group-hover:text-[#FF00BC] group-hover:bg-[#FF00BC]/10 transition-colors">
+                                      <span className="material-symbols-rounded text-lg">play_arrow</span>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-sm font-medium text-white truncate">{exercise.title}</p>
+                                      <div className="flex items-center gap-2">
+                                        <span className={`text-[9px] px-1.5 py-0.5 rounded ${exercise.difficulty === 'Iniciante' ? 'bg-green-500/10 text-green-500' :
+                                          exercise.difficulty === 'Intermediário' ? 'bg-yellow-500/10 text-yellow-500' :
+                                            'bg-red-500/10 text-red-500'
+                                          }`}>
+                                          {exercise.difficulty}
+                                        </span>
+                                        <span className="text-[10px] text-gray-500">• {exercise.duration}</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {moduleExercises.length === 0 && module.id !== 'm10' && (
+                            <div className="p-4 rounded-xl bg-white/5 text-center">
+                              <p className="text-xs text-gray-400">Exercícios deste módulo serão liberados em breve.</p>
+                            </div>
                           )}
                         </div>
                       </div>
-                    ))}
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="p-8 rounded-[2rem] bg-[#1A202C]/50 border border-white/5 flex flex-col items-center text-center">
+                  <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center text-gray-600 mb-4">
+                    <span className="material-symbols-rounded text-3xl">lock</span>
                   </div>
-
-                  {/* Exercises List */}
-                  {moduleExercises.length > 0 && (
-                    <div>
-                      <h4 className="text-xs text-gray-400 font-bold uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <span className="material-symbols-rounded text-sm">piano</span>
-                        TREINE COM O PIANO
-                      </h4>
-                      <div className="space-y-2">
-                        {moduleExercises.map(exercise => (
-                          <div
-                            key={exercise.id}
-                            onClick={() => {
-                              if (DISABLE_ALL_PLAYERS && !isAdmin) {
-                                alert("Ativo para assinantes");
-                                return;
-                              }
-                              onPlayVocalize(exercise);
-                            }}
-                            className="flex items-center gap-3 p-3 rounded-xl bg-black/20 hover:bg-white/5 border border-white/5 cursor-pointer group transition-colors"
-                          >
-                            <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 group-hover:text-[#FF00BC] group-hover:bg-[#FF00BC]/10 transition-colors">
-                              <span className="material-symbols-rounded text-lg">play_arrow</span>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-white truncate">{exercise.title}</p>
-                              <div className="flex items-center gap-2">
-                                <span className={`text-[9px] px-1.5 py-0.5 rounded ${exercise.difficulty === 'Iniciante' ? 'bg-green-500/10 text-green-500' :
-                                  exercise.difficulty === 'Intermediário' ? 'bg-yellow-500/10 text-yellow-500' :
-                                    'bg-red-500/10 text-red-500'
-                                  }`}>
-                                  {exercise.difficulty}
-                                </span>
-                                <span className="text-[10px] text-gray-500">• {exercise.duration}</span>
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {moduleExercises.length === 0 && module.id !== 'm10' && (
-                    <div className="p-4 rounded-xl bg-white/5 text-center">
-                      <p className="text-xs text-gray-400">Exercícios deste módulo serão liberados em breve.</p>
-                    </div>
-                  )}
+                  <h4 className="text-white font-bold mb-2">Acesso Restrito</h4>
+                  <p className="text-xs text-gray-400 mb-6 max-w-[240px]">
+                    Você ainda não possui acesso ao curso de <strong className="text-white">{course.nome}</strong>. Entre em contato com seu professor para liberar.
+                  </p>
+                  <button className="px-6 py-3 rounded-xl bg-white/5 text-white text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-colors flex items-center gap-2">
+                    <span className="material-symbols-rounded text-sm">chat</span>
+                    Solicitar Acesso
+                  </button>
                 </div>
-              </div>
+              )}
             </div>
           );
         })}
