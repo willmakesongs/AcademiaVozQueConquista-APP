@@ -234,7 +234,12 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
         try {
             // 🛡️ SEGURANÇA MÁXIMA: Bloqueio de dados estratégicos para Alunos/Visitantes
             const isAdmin = user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase());
-            const strategyKeywords = ['financeiro', 'faturamento', 'agenda', 'semana', 'previsão', 'marketing', 'postagem', 'instagram', 'lavras', 'receita', 'inadimplente', 'quanto ganhou'];
+            const strategyKeywords = [
+                'financeiro', 'faturamento', 'agenda', 'semana', 'previsão',
+                'marketing', 'postagem', 'instagram', 'lavras', 'receita',
+                'inadimplente', 'quanto ganhou', 'saúde', 'status', 'como está',
+                'plataforma', 'onboarding', 'alunos ativos'
+            ];
             const isStrategicQuery = strategyKeywords.some(key => userMsg.text.toLowerCase().includes(key));
 
             if (isStrategicQuery && !isAdmin) {
