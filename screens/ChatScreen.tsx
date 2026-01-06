@@ -232,10 +232,23 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
         setMessages(prev => [...prev, botPlaceholder]);
 
         try {
-            // Se for Administrador e a pergunta for sobre gestão/estratégia, usa a Edge Function "Cérebro"
+            // 🛡️ SEGURANÇA MÁXIMA: Bloqueio de dados estratégicos para Alunos/Visitantes
             const isAdmin = user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase());
-            const strategyKeywords = ['financeiro', 'faturamento', 'agenda', 'semana', 'previsão', 'marketing', 'postagem', 'instagram', 'lavras'];
+            const strategyKeywords = ['financeiro', 'faturamento', 'agenda', 'semana', 'previsão', 'marketing', 'postagem', 'instagram', 'lavras', 'receita', 'inadimplente', 'quanto ganhou'];
             const isStrategicQuery = strategyKeywords.some(key => userMsg.text.toLowerCase().includes(key));
+
+            if (isStrategicQuery && !isAdmin) {
+                // Se um aluno perguntar sobre finanças ou estratégia, a Lorena recusa educadamente mas firmemente
+                setMessages(prev => prev.map(m =>
+                    m.id === botMsgId ? {
+                        ...m,
+                        text: "Desculpe, como sua mentora vocal, eu foco em ajudar na evolução da sua voz e performance musical. Não tenho acesso a dados administrativos ou financeiros para alunos. Como podemos praticar hoje? ✨🎶",
+                        isLoading: false
+                    } : m
+                ));
+                setIsTyping(false);
+                return;
+            }
 
             if (isAdmin && isStrategicQuery) {
                 const { data, error } = await supabase.functions.invoke('lorena-ai-brain', {
