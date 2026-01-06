@@ -316,7 +316,7 @@ const AppContent = () => {
       {user && screen !== Screen.LOGIN && screen !== Screen.CALENDAR && user.status !== 'blocked' && !(user.id === 'guest' && visitorTimeRemaining === 0) && (
         <BottomNav
           currentScreen={screen}
-          onNavigate={handleNavigate}
+          onNavigate={handleBottomNav}
           role={user?.role || 'student'}
           status={user?.status}
         />
