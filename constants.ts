@@ -165,6 +165,7 @@ export const YOUTUBE_EMBED_TEMPLATE = (videoId: string, title: string) => `
 // Base URL for vocalizes
 export const MINIMALIST_LOGO_URL = 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/PNGs-JPEG/VQLOGOMINIMALISTA.png';
 const VOCALIZES_BASE_URL = `${STORAGE_BASE_URL}/VOCALIZES%20mp3/`;
+const SINGEO_BASE_URL = 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/Vocalizes+SINGEO/';
 
 // -----------------------------------------------------------
 // MODULES DATA
@@ -1325,8 +1326,8 @@ export const VOCALIZES: Vocalize[] = [
         bpm: 90,
         key: 'C Major',
         description: 'Escala fundamental para extensão e controle de fluxo.',
-        audioUrl: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Escala%20longa%20I-V%20(H).mp3`,
-        audioUrlMale: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Escala%20longa%20I-V%20(L).mp3`,
+        audioUrl: `${SINGEO_BASE_URL}scale_long_I_V_high.mp3`,
+        audioUrlMale: `${SINGEO_BASE_URL}scale_long_I_V_low.mp3`,
         exampleUrl: `${VOCALIZES_BASE_URL}BRRR_1.mp3`
     },
 
@@ -1341,8 +1342,8 @@ export const VOCALIZES: Vocalize[] = [
         bpm: 80,
         key: 'Descendente',
         description: 'Essencial após o treino. Traga sua voz de volta para a região de fala.',
-        audioUrl: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Desaquecimento%20Reverso%20(H).mp3`,
-        audioUrlMale: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Desaquecimento%20Reverso%20(L).mp3`,
+        audioUrl: `${SINGEO_BASE_URL}warmup_reverse_high.mp3`,
+        audioUrlMale: `${SINGEO_BASE_URL}warmup_reverse_low.mp3`,
         exampleUrl: `${VOCALIZES_BASE_URL}BRRR%20DOWN.mp3`
     },
 
@@ -1357,8 +1358,8 @@ export const VOCALIZES: Vocalize[] = [
         bpm: 110,
         key: 'D Major',
         description: 'Arpejo triplo para trabalhar flexibilidade e precisão.',
-        audioUrl: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Arpeggio%20Maior%203x%20(H).mp3`,
-        audioUrlMale: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Arpeggio%20Maior%203x%20(L).mp3`,
+        audioUrl: `${SINGEO_BASE_URL}arpeggio_major_3x_high.mp3`,
+        audioUrlMale: `${SINGEO_BASE_URL}arpeggio_major_3x_low.mp3`,
         exampleUrl: `${VOCALIZES_BASE_URL}PAPAPA%203x.mp3`
     },
 
@@ -1373,8 +1374,8 @@ export const VOCALIZES: Vocalize[] = [
         bpm: 100,
         key: 'E Major',
         description: 'Saltos de oitava para conectar os registros grave e agudo.',
-        audioUrl: `${VOCALIZES_BASE_URL}Repetição%20de%20oitava%20(H).mp3`,
-        audioUrlMale: `${VOCALIZES_BASE_URL}Repetição%20de%20oitava%20(L).mp3`,
+        audioUrl: `${SINGEO_BASE_URL}interval_octave_repeat_high.mp3`,
+        audioUrlMale: `${SINGEO_BASE_URL}interval_octave_repeat_low.mp3`,
         exampleUrl: `${VOCALIZES_BASE_URL}Repetição%20de%20oitava%20(H).mp3`
     },
 
@@ -1389,8 +1390,8 @@ export const VOCALIZES: Vocalize[] = [
         bpm: 120,
         key: 'F Major',
         description: 'Desafio de agilidade e controle de fôlego.',
-        audioUrl: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(H).mp3`,
-        audioUrlMale: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(L).mp3`,
+        audioUrl: `${SINGEO_BASE_URL}reverse_5_repeat_high.mp3`,
+        audioUrlMale: `${SINGEO_BASE_URL}reverse_5_repeat_low.mp3`,
         exampleUrl: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(H).mp3`
     },
 
@@ -1405,8 +1406,8 @@ export const VOCALIZES: Vocalize[] = [
         bpm: 110,
         key: 'D Major',
         description: 'Use este arpejo para expandir sua ressonância com energia.',
-        audioUrl: `https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/Vocalizes+SINGEO/arpeggio_major_3x_high.mp3`,
-        audioUrlMale: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Arpeggio%20Maior%203x%20(L).mp3`,
+        audioUrl: `${SINGEO_BASE_URL}arpeggio_major_3x_high.mp3`,
+        audioUrlMale: `${SINGEO_BASE_URL}arpeggio_major_3x_low.mp3`,
         exampleUrl: `${VOCALIZES_BASE_URL}PAPAPA%203x.mp3`
     },
     {
@@ -1419,8 +1420,8 @@ export const VOCALIZES: Vocalize[] = [
         bpm: 80,
         key: 'Descendente',
         description: 'Relaxe a laringe após os exercícios de potência.',
-        audioUrl: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Desaquecimento%20Reverso%20(H).mp3`,
-        audioUrlMale: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Desaquecimento%20Reverso%20(L).mp3`,
+        audioUrl: `${SINGEO_BASE_URL}warmup_reverse_high.mp3`,
+        audioUrlMale: `${SINGEO_BASE_URL}warmup_reverse_low.mp3`,
         exampleUrl: `${VOCALIZES_BASE_URL}BRRR%20DOWN.mp3`
     },
     // NOVO: Escala Longa I-V no Módulo M8
@@ -1434,8 +1435,8 @@ export const VOCALIZES: Vocalize[] = [
         bpm: 90,
         key: 'C Major',
         description: 'Escala fundamental para extensão e controle de fluxo.',
-        audioUrl: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Escala%20longa%20I-V%20(H).mp3`,
-        audioUrlMale: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Escala%20longa%20I-V%20(L).mp3`,
+        audioUrl: `${SINGEO_BASE_URL}scale_long_I_V_high.mp3`,
+        audioUrlMale: `${SINGEO_BASE_URL}scale_long_I_V_low.mp3`,
         exampleUrl: `${VOCALIZES_BASE_URL}BRRR_1.mp3`
     },
     // NOVO: Reverso Repetindo no Módulo M8
@@ -1449,8 +1450,8 @@ export const VOCALIZES: Vocalize[] = [
         bpm: 120,
         key: 'C Major',
         description: 'Exercício de agilidade e controle de fôlego com padrão reverso.',
-        audioUrl: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(H).mp3`,
-        audioUrlMale: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(L).mp3`,
+        audioUrl: `${SINGEO_BASE_URL}reverse_5_repeat_high.mp3`,
+        audioUrlMale: `${SINGEO_BASE_URL}reverse_5_repeat_low.mp3`,
         exampleUrl: `${STORAGE_BASE_URL}/VOCALIZES%20mp3/VOCALIZES%20PIANO/Reverso%205%20Repetindo%20(H).mp3`
     },
     {
@@ -1463,8 +1464,8 @@ export const VOCALIZES: Vocalize[] = [
         bpm: 100,
         key: 'E Major',
         description: 'Treino de agudos limpos através de saltos intervalares.',
-        audioUrl: `${VOCALIZES_BASE_URL}Repetição%20de%20oitava%20(H).mp3`,
-        audioUrlMale: `${VOCALIZES_BASE_URL}Repetição%20de%20oitava%20(L).mp3`,
+        audioUrl: `${SINGEO_BASE_URL}interval_octave_repeat_high.mp3`,
+        audioUrlMale: `${SINGEO_BASE_URL}interval_octave_repeat_low.mp3`,
         exampleUrl: `${VOCALIZES_BASE_URL}Repetição%20de%20oitava%20(H).mp3`
     },
 
