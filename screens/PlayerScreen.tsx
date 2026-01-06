@@ -384,47 +384,47 @@ input[type = 'range']:: -webkit - slider - runnable - track {
           <button
             onClick={() => handleTrain('example')}
             disabled={!vocalize?.exampleUrl}
-            className={`rounded - xl p - 3 flex flex - col items - center justify - center border cursor - pointer transition - all group ${activeSource === 'example'
+            className={`rounded-xl p-2 flex flex-col items-center justify-center border cursor-pointer transition-all group min-h-[100px] ${activeSource === 'example'
               ? 'bg-[#1A202C] border-[#6F4CE7] shadow-[0_0_15px_rgba(111,76,231,0.2)]'
               : 'bg-[#1A202C] border-white/5 hover:border-[#6F4CE7]/50 hover:bg-[#6F4CE7]/10'
-              } ${!vocalize?.exampleUrl ? 'opacity-50 cursor-not-allowed grayscale' : ''} `}
+              } ${!vocalize?.exampleUrl ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
           >
             <div className="w-8 h-8 rounded-full bg-[#6F4CE7]/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
               <span className="material-symbols-rounded text-[#6F4CE7] text-xl">play_circle</span>
             </div>
-            <span className="text-[10px] font-bold text-white uppercase tracking-wider mb-0.5">Exemplo</span>
-            <span className="text-[9px] text-gray-400">Guia</span>
+            <span className="text-[10px] font-bold text-white uppercase tracking-wider mb-1 text-center w-full leading-tight break-words whitespace-normal">Exemplo</span>
+            <span className="text-[9px] text-gray-400 text-center">Guia</span>
           </button>
 
           {/* FEMALE BUTTON */}
           <button
             onClick={() => handleTrain('female')}
-            className={`rounded - xl p - 3 flex flex - col items - center justify - center border cursor - pointer transition - all group ${activeSource === 'female'
+            className={`rounded-xl p-2 flex flex-col items-center justify-center border cursor-pointer transition-all group min-h-[100px] ${activeSource === 'female'
               ? 'bg-[#1A202C] border-[#FF00BC] shadow-[0_0_15px_rgba(255,0,188,0.2)]'
               : 'bg-[#1A202C] border-white/5 hover:border-[#FF00BC]/50 hover:bg-[#FF00BC]/10'
-              } `}
+              }`}
           >
             <div className="w-8 h-8 rounded-full bg-[#FF00BC]/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
               <span className="material-symbols-rounded text-[#FF00BC] text-xl">woman</span>
             </div>
-            <span className="text-[10px] font-bold text-white uppercase tracking-wider mb-0.5">Vocalize F.</span>
-            <span className="text-[9px] text-gray-400">Agudo (H)</span>
+            <span className="text-[10px] font-bold text-white uppercase tracking-wider mb-1 text-center w-full leading-tight break-words whitespace-normal">Vocalize F.</span>
+            <span className="text-[9px] text-gray-400 text-center">Agudo (H)</span>
           </button>
 
           {/* MALE BUTTON */}
           <button
             onClick={() => handleTrain('male')}
             disabled={!vocalize?.audioUrlMale}
-            className={`rounded - xl p - 3 flex flex - col items - center justify - center border cursor - pointer transition - all group ${activeSource === 'male'
+            className={`rounded-xl p-2 flex flex-col items-center justify-center border cursor-pointer transition-all group min-h-[100px] ${activeSource === 'male'
               ? 'bg-[#1A202C] border-[#0081FF] shadow-[0_0_15px_rgba(0,129,255,0.2)]'
               : 'bg-[#1A202C] border-white/5 hover:border-[#0081FF]/50 hover:bg-[#0081FF]/10'
-              } ${!vocalize?.audioUrlMale ? 'opacity-50 cursor-not-allowed grayscale' : ''} `}
+              } ${!vocalize?.audioUrlMale ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
           >
             <div className="w-8 h-8 rounded-full bg-[#0081FF]/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
               <span className="material-symbols-rounded text-[#0081FF] text-xl">man</span>
             </div>
-            <span className="text-[10px] font-bold text-white uppercase tracking-wider mb-0.5">Vocalize M.</span>
-            <span className="text-[9px] text-gray-400">Grave (L)</span>
+            <span className="text-[10px] font-bold text-white uppercase tracking-wider mb-1 text-center w-full leading-tight break-words whitespace-normal">Vocalize M.</span>
+            <span className="text-[9px] text-gray-400 text-center">Grave (L)</span>
           </button>
         </div>
       </div>

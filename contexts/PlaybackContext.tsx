@@ -1,6 +1,5 @@
 
 import React, { createContext, useContext, useRef, useState, useCallback, useEffect } from 'react';
-import * as Tone from 'tone';
 import { VOCALIZES, MODULES, DISABLE_ALL_PLAYERS } from '../constants';
 import { useAuth } from './AuthContext';
 
@@ -28,155 +27,261 @@ interface PlaybackContextType {
 const PlaybackContext = createContext<PlaybackContextType | undefined>(undefined);
 
 export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { user } = useAuth();
+
+    // State
     const [isPlaying, setIsPlaying] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const [activeUrl, setActiveUrl] = useState<string | null>(null);
-    const [isOfflineMode, setOfflineMode] = useState(() => localStorage.getItem('offline_mode') === 'true');
+    const [isOfflineMode, setIsOfflineMode] = useState(() => localStorage.getItem('offline_mode') === 'true');
     const [downloadProgress, setDownloadProgress] = useState(0);
-    const { user } = useAuth();
+    const [pitch, setPitchState] = useState(0);
 
-    const isAudioBlocked = useCallback(() => {
-        if (!DISABLE_ALL_PLAYERS) return false;
-        if (!user || !user.email) return true;
+    // Refs
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+    const onEndedRef = useRef<(() => void) | null>(null);
+    const cachedUrlsRef = useRef<Set<string>>(new Set());
 
-        const adminEmails = ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'];
-        return !adminEmails.includes(user.email.toLowerCase());
-    }, [user]);
+    // Initialize Audio Element
+    useEffect(() => {
+        const audio = new Audio();
+        audio.preload = 'auto'; // Try to load metadata/data automatically
+        (audio as any).playsInline = true; // Important for iOS
 
-    const buffersRef = useRef<Tone.ToneAudioBuffers>(new Tone.ToneAudioBuffers());
-    const playerRef = useRef<Tone.Player | null>(null);
-    const progressIntervalRef = useRef<number | null>(null);
-    const currentPitchRef = useRef(0);
-    const durationRef = useRef(0); // CRITICAL: For progress loop sync
-    const silentAudioRef = useRef<HTMLAudioElement | null>(null);
+        // Event Listeners
+        const handleTimeUpdate = () => setCurrentTime(audio.currentTime);
+        const handleDurationChange = () => setDuration(audio.duration || 0);
+        const handleEnded = () => {
+            setIsPlaying(false);
+            if (onEndedRef.current) onEndedRef.current();
+        };
+        const handleWaiting = () => setIsLoading(true);
+        const handleCanPlay = () => setIsLoading(false);
+        const handleError = (e: Event) => {
+            console.error("Audio Error:", audio.error, e);
+            setIsLoading(false);
+            setIsPlaying(false);
+        };
 
-    // Save offline mode preference
+        audio.addEventListener('timeupdate', handleTimeUpdate);
+        audio.addEventListener('durationchange', handleDurationChange);
+        audio.addEventListener('ended', handleEnded);
+        audio.addEventListener('waiting', handleWaiting);
+        audio.addEventListener('canplay', handleCanPlay);
+        audio.addEventListener('error', handleError);
+
+        audioRef.current = audio;
+
+        return () => {
+            audio.pause();
+            audio.removeEventListener('timeupdate', handleTimeUpdate);
+            audio.removeEventListener('durationchange', handleDurationChange);
+            audio.removeEventListener('ended', handleEnded);
+            audio.removeEventListener('waiting', handleWaiting);
+            audio.removeEventListener('canplay', handleCanPlay);
+            audio.removeEventListener('error', handleError);
+            audioRef.current = null;
+        };
+    }, []);
+
+    // Persist Offline Mode
     useEffect(() => {
         localStorage.setItem('offline_mode', isOfflineMode.toString());
     }, [isOfflineMode]);
 
-    // iOS Audio Unlock Trick (v5): Force Media Session to bypass physical silent switch
-    const unlockIOSAudio = useCallback(async () => {
-        try {
-            // 1. Start Tone.js context
-            if (Tone.context.state !== 'running') {
-                await Tone.start();
-                console.log('Tone.js context started');
-            }
+    const isAudioBlocked = useCallback(() => {
+        if (!DISABLE_ALL_PLAYERS) return false;
+        if (!user || !user.email) return true;
+        const adminEmails = ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'];
+        return !adminEmails.includes(user.email.toLowerCase());
+    }, [user]);
 
-            // 2. Play silent audio to force media session (ignores physical silent switch)
-            if (!silentAudioRef.current) {
-                const audio = new Audio();
-                audio.src = 'data:audio/mpeg;base64,SUQzBAAAAAABAFRYWFgAAAASAAADbWFqb3JfYnJhbmQAZGFzaABUWFhYAAAAEQAAA21pbm9yX3ZlcnNpb24AMABUWFhYAAAAHAAAAGNvbXBhdGlibGVfYnJhbmRzAGlzbzZtcDQxAFRTU0UAAAAPAAADTGF2ZjU3LjcxLjEwMAAAAAAAAAAAAAAA//uQZAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZyAAAADBAAAADwAAAhYCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA//uQZAAAK8f9AFAAAAByEAD+AAAAE0InQAAEAACvSCAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//uQZAAAK8f9AFAAAAByEAD+AAAAE0InQAAEAACvSCAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA//uQZAAAK8f9AFAAAAByEAD+AAAAE0InQAAEAACvSCAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
-                audio.setAttribute('playsinline', 'true');
-                audio.loop = true;
-                audio.volume = 0.01; // Minimum volume to count as media but audible only to dogs
-                audio.muted = false; // MUST be unmuted to bypass silent switch
-                document.body.appendChild(audio);
-                silentAudioRef.current = audio;
-            }
-
-            const playPromise = silentAudioRef.current.play();
-            if (playPromise !== undefined) {
-                await playPromise.catch(e => console.warn('Silent play failed:', e));
-            }
-        } catch (e) {
-            console.error('iOS Unlock Error:', e);
-        }
+    const setOfflineMode = useCallback((enabled: boolean) => {
+        setIsOfflineMode(enabled);
     }, []);
 
-    // Monitor context state and resume if suspended/interrupted
-    useEffect(() => {
-        const handleStateChange = () => {
-            console.log('Tone.js context state:', Tone.context.state);
-            if (Tone.context.state === 'suspended' || Tone.context.state === 'interrupted') {
-                // If it was interrupted (phone call, etc) or suspended (locked screen),
-                // we'll try to resume on the next interaction
-                console.warn('Audio context suspended/interrupted');
-            }
-        };
-
-        Tone.context.on('statechange', handleStateChange);
-
-        const resume = async () => {
-            if (Tone.context.state !== 'running') {
-                await unlockIOSAudio();
-                await Tone.start();
-                console.log('Context resumed via user interaction');
-            }
-        };
-
-        window.addEventListener('click', resume, { once: true });
-        window.addEventListener('touchstart', resume, { once: true });
-        window.addEventListener('keydown', resume, { once: true });
-
-        return () => {
-            Tone.context.off('statechange', handleStateChange);
-            window.removeEventListener('click', resume);
-            window.removeEventListener('touchstart', resume);
-            window.removeEventListener('keydown', resume);
-        };
-    }, [unlockIOSAudio]);
-
     const isLoaded = useCallback((url: string) => {
-        return buffersRef.current.has(url);
+        return cachedUrlsRef.current.has(url);
     }, []);
 
     const preload = useCallback(async (urls: string[]) => {
-        const newUrls = urls.filter(url => url && !buffersRef.current.has(url));
-        if (newUrls.length === 0) return;
+        if (!('caches' in window)) return;
 
-        setIsLoading(true);
         try {
-            await Promise.all(newUrls.map(async (url) => {
-                let loadUrl = url;
-                try {
-                    if ('caches' in window) {
-                        const cache = await caches.open('vocalizes-offline-v1');
-                        const cachedResponse = await cache.match(url);
-                        if (cachedResponse) {
-                            const blob = await cachedResponse.blob();
-                            loadUrl = URL.createObjectURL(blob);
-                        } else if (isOfflineMode) {
-                            // If offline mode is on but not in cache, fetch and cache it
-                            const response = await fetch(url);
-                            await cache.put(url, response.clone());
-                            const blob = await response.blob();
-                            loadUrl = URL.createObjectURL(blob);
-                        }
-                    }
-                } catch (e) { }
+            const cache = await caches.open('vocalizes-offline-v1');
+            const uniqueUrls = urls.filter(Boolean);
 
-                return new Promise<void>((resolve) => {
-                    const buffer = new Tone.ToneAudioBuffer(loadUrl, () => {
-                        buffersRef.current.add(url, buffer);
-                        resolve();
-                    }, (err) => {
-                        console.warn(`Failed to preload ${url}:`, err);
-                        resolve();
-                    });
-                });
+            await Promise.all(uniqueUrls.map(async (url) => {
+                try {
+                    const match = await cache.match(url);
+                    if (!match) {
+                        await cache.add(url);
+                    }
+                    cachedUrlsRef.current.add(url);
+                } catch (e) {
+                    console.warn(`Failed to preload ${url}`, e);
+                }
             }));
-        } finally {
+        } catch (e) {
+            console.warn("Preload error:", e);
+        }
+    }, []);
+
+    const getAudioSrc = async (url: string): Promise<string> => {
+        // 1. Check Cache
+        if ('caches' in window) {
+            try {
+                const cache = await caches.open('vocalizes-offline-v1');
+                const cachedResponse = await cache.match(url);
+                if (cachedResponse) {
+                    const blob = await cachedResponse.blob();
+                    return URL.createObjectURL(blob);
+                }
+            } catch (e) {
+                console.warn("Cache lookup error:", e);
+            }
+        }
+
+        // 2. Return URL directly (Stream)
+        return url;
+    };
+
+    const play = useCallback(async (url: string, options?: { pitch?: number, onEnded?: () => void }) => {
+        if (isAudioBlocked()) return;
+
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        // Save callback
+        onEndedRef.current = options?.onEnded || null;
+
+        // Logic
+        try {
+            // Check if same URL
+            const isSameUrl = activeUrl === url;
+
+            if (isSameUrl) {
+                if (audio.paused) {
+                    await audio.play();
+                    setIsPlaying(true);
+                } else {
+                    audio.currentTime = 0;
+                    if (options?.pitch !== undefined) setPitch(options.pitch);
+                }
+            } else {
+                // New URL
+                setIsLoading(true); // Optimistic UI
+                setActiveUrl(url);
+
+                const src = await getAudioSrc(url);
+
+                // If we created a NEW ObjectURL, we rely on the browser to clean it up eventually or we'd need to track it.
+                // For simplicity/performance in this app, we're letting it be (or strict management would remove it on next load).
+                // Actually, HTML5 audio handles URLs well.
+
+                audio.src = src;
+
+                // Pitch
+                const p = options?.pitch ?? 0;
+                setPitchState(p);
+                // HTML5 Audio playbackRate (preservesPitch = false to mimick generic pitch shift if desired,
+                // but usually users want time-stretching.
+                // The PREVIOUS implementation used Tone.js playbackRate which changes BOTH pitch and speed (Speed up = chipmunk).
+                // To replicate that:
+                audio.playbackRate = Math.pow(2, p / 12);
+                // "preservesPitch" is true by default on some browsers, false on others.
+                // If we want "Chipmunk effect" (Classic sampler behavior), we must set preservesPitch = false.
+                if (audio.preservesPitch !== undefined) {
+                    audio.preservesPitch = false;
+                } else if ('mozPreservesPitch' in audio) {
+                    (audio as any).mozPreservesPitch = false;
+                } else if ('webkitPreservesPitch' in audio) {
+                    (audio as any).webkitPreservesPitch = false;
+                }
+
+                await audio.play();
+                setIsPlaying(true);
+
+                // Media Session
+                if ('mediaSession' in navigator) {
+                    const vocalize = VOCALIZES.find(v => v.audioUrl === url || v.audioUrlMale === url || v.exampleUrl === url);
+                    navigator.mediaSession.metadata = new MediaMetadata({
+                        title: vocalize?.title || 'Exercício Vocal',
+                        artist: 'Academia Voz Que Conquista',
+                        album: vocalize?.category || 'Treinamento',
+                        artwork: [
+                            { src: 'https://vocalizes.com.br/wp-content/uploads/2023/12/logo-academia-vocal.png', sizes: '512x512', type: 'image/png' }
+                        ]
+                    });
+
+                    navigator.mediaSession.setActionHandler('play', () => audio.play());
+                    navigator.mediaSession.setActionHandler('pause', () => audio.pause());
+                    navigator.mediaSession.setActionHandler('seekbackward', () => { audio.currentTime = Math.max(0, audio.currentTime - 5); });
+                    navigator.mediaSession.setActionHandler('seekforward', () => { audio.currentTime = Math.min(audio.duration, audio.currentTime + 5); });
+                }
+            }
+
+        } catch (e) {
+            console.error("Play failed:", e);
+            setIsPlaying(false);
             setIsLoading(false);
         }
-    }, [isOfflineMode]);
+    }, [activeUrl, isAudioBlocked]);
+
+    const stop = useCallback(() => {
+        const audio = audioRef.current;
+        if (audio) {
+            audio.pause();
+            audio.currentTime = 0;
+        }
+        setIsPlaying(false);
+        setCurrentTime(0);
+    }, []);
+
+    const pause = useCallback(() => {
+        const audio = audioRef.current;
+        if (audio) {
+            audio.pause();
+        }
+        setIsPlaying(false);
+    }, []);
+
+    const resume = useCallback(() => {
+        const audio = audioRef.current;
+        if (audio && audio.src) {
+            audio.play().catch(console.error);
+            setIsPlaying(true);
+        }
+    }, []);
+
+    const seek = useCallback((time: number) => {
+        const audio = audioRef.current;
+        if (audio) {
+            audio.currentTime = time;
+            setCurrentTime(time);
+        }
+    }, []);
+
+    const setPitch = useCallback((p: number) => {
+        setPitchState(p);
+        const audio = audioRef.current;
+        if (audio) {
+            audio.playbackRate = Math.pow(2, p / 12);
+        }
+    }, []);
 
     const downloadAll = useCallback(async () => {
         setIsLoading(true);
         setDownloadProgress(0);
         try {
             const urls: string[] = [];
-            // Collect all unique URLs from vocalizes
             VOCALIZES.forEach(v => {
                 if (v.audioUrl) urls.push(v.audioUrl);
                 if (v.audioUrlMale) urls.push(v.audioUrlMale);
                 if (v.exampleUrl) urls.push(v.exampleUrl);
             });
-
-            // Collect URLs from module topics content
             MODULES.forEach(m => {
                 m.topics.forEach(t => {
                     const matches = t.content.matchAll(/data-src="([^"]+)"/g);
@@ -187,182 +292,23 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             });
 
             const uniqueUrls = Array.from(new Set(urls.filter(Boolean)));
-            const total = uniqueUrls.length;
-            let count = 0;
-
             if ('caches' in window) {
                 const cache = await caches.open('vocalizes-offline-v1');
+                let count = 0;
                 for (const url of uniqueUrls) {
                     try {
                         const match = await cache.match(url);
-                        if (!match) {
-                            await cache.add(url);
-                        }
-                    } catch (e) {
-                        console.warn(`Failed to cache ${url}:`, e);
-                    }
+                        if (!match) await cache.add(url);
+                        cachedUrlsRef.current.add(url);
+                    } catch (e) { }
                     count++;
-                    setDownloadProgress(Math.round((count / total) * 100));
+                    setDownloadProgress(Math.round((count / uniqueUrls.length) * 100));
                 }
             }
         } finally {
             setIsLoading(false);
             setDownloadProgress(100);
             setTimeout(() => setDownloadProgress(0), 3000);
-        }
-    }, []);
-
-    const stop = useCallback(() => {
-        if (playerRef.current) {
-            playerRef.current.stop();
-        }
-        Tone.Transport.stop();
-        Tone.Transport.cancel(); // CRITICAL: Cancel all scheduled events (sync() triggers)
-        Tone.Transport.seconds = 0;
-
-        setIsPlaying(false);
-        setCurrentTime(0);
-        durationRef.current = 0; // Reset duration ref to prevent stale checks
-
-        if (progressIntervalRef.current) {
-            clearInterval(progressIntervalRef.current);
-            progressIntervalRef.current = null;
-        }
-    }, []);
-
-    const pause = useCallback(() => {
-        Tone.Transport.pause();
-        setIsPlaying(false);
-    }, []);
-
-    const startProgressLoop = useCallback(() => {
-        if (progressIntervalRef.current) clearInterval(progressIntervalRef.current);
-        progressIntervalRef.current = window.setInterval(() => {
-            setCurrentTime(Tone.Transport.seconds);
-        }, 32); // 30fps is enough for UI and less CPU intensive
-    }, []);
-
-    const resume = useCallback(async () => {
-        if (isAudioBlocked()) return;
-        await unlockIOSAudio();
-        await Tone.start();
-        Tone.Transport.start();
-        setIsPlaying(true);
-        startProgressLoop(); // Ensure loop restarts on resume
-    }, [unlockIOSAudio, startProgressLoop]);
-
-    const play = useCallback(async (url: string, options?: { pitch?: number, onEnded?: () => void }) => {
-        if (!url || isAudioBlocked()) return;
-
-        // If same URL and paused, just resume
-        if (activeUrl === url && !isPlaying && playerRef.current) {
-            await resume();
-            return;
-        }
-
-        stop();
-        setActiveUrl(url);
-
-        const hasBuffer = buffersRef.current.has(url);
-        if (!hasBuffer) {
-            setIsLoading(true);
-        }
-
-        try {
-            // CRITICAL: Call these FIRST in the user event handler
-            // Do not put these inside if/else if they might be skipped
-            await unlockIOSAudio();
-            await Tone.start();
-
-            let buffer;
-            if (buffersRef.current.has(url)) {
-                buffer = buffersRef.current.get(url);
-            } else {
-                let loadUrl = url;
-                try {
-                    if ('caches' in window) {
-                        const cache = await caches.open('vocalizes-offline-v1');
-                        const cachedResponse = await cache.match(url);
-                        if (cachedResponse) {
-                            const blob = await cachedResponse.blob();
-                            loadUrl = URL.createObjectURL(blob);
-                            console.log('Using cached audio for:', url);
-                        }
-                    }
-                } catch (e) { }
-
-                buffer = await new Promise<Tone.ToneAudioBuffer>((resolve, reject) => {
-                    const b = new Tone.ToneAudioBuffer(loadUrl, () => resolve(b), reject);
-                });
-                buffersRef.current.add(url, buffer);
-            }
-
-            if (!playerRef.current) {
-                playerRef.current = new Tone.Player().toDestination();
-            }
-
-            playerRef.current.buffer = buffer;
-            playerRef.current.sync().start(0);
-
-            const bDuration = buffer.duration;
-            setDuration(bDuration);
-            durationRef.current = bDuration;
-
-            if (options?.pitch !== undefined) {
-                currentPitchRef.current = options.pitch;
-                playerRef.current.playbackRate = Math.pow(2, options.pitch / 12);
-            }
-
-            // Precisely schedule the stop at the end of the audio
-            Tone.Transport.schedule(() => {
-                stop();
-                if (options?.onEnded) options.onEnded();
-            }, bDuration);
-
-            Tone.Transport.start();
-            setIsPlaying(true);
-            startProgressLoop();
-
-            // MEDIA SESSION API: Update Lock Screen Metadata
-            if ('mediaSession' in navigator) {
-                const vocalize = VOCALIZES.find(v => v.audioUrl === url || v.audioUrlMale === url || v.exampleUrl === url);
-                navigator.mediaSession.metadata = new MediaMetadata({
-                    title: vocalize?.title || 'Exercício Vocal',
-                    artist: 'Academia Voz Que Conquista',
-                    album: vocalize?.category || 'Treinamento',
-                    artwork: [
-                        { src: 'https://vocalizes.com.br/wp-content/uploads/2023/12/logo-academia-vocal.png', sizes: '512x512', type: 'image/png' }
-                    ]
-                });
-
-                // Control Handlers
-                navigator.mediaSession.setActionHandler('play', () => resume());
-                navigator.mediaSession.setActionHandler('pause', () => pause());
-                navigator.mediaSession.setActionHandler('stop', () => stop());
-                navigator.mediaSession.setActionHandler('seekbackward', () => seek(Math.max(0, Tone.Transport.seconds - 5)));
-                navigator.mediaSession.setActionHandler('seekforward', () => seek(Math.min(duration, Tone.Transport.seconds + 5)));
-            }
-
-            playerRef.current.onstop = () => {
-                if (options?.onEnded) options.onEnded();
-            };
-
-        } catch (e) {
-            console.error("Playback error:", e);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [activeUrl, isPlaying, resume, stop, startProgressLoop]);
-
-    const seek = useCallback((time: number) => {
-        Tone.Transport.seconds = time;
-        setCurrentTime(time);
-    }, []);
-
-    const setPitch = useCallback((pitch: number) => {
-        currentPitchRef.current = pitch;
-        if (playerRef.current) {
-            playerRef.current.playbackRate = Math.pow(2, pitch / 12);
         }
     }, []);
 
@@ -380,7 +326,7 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             duration,
             seek,
             setPitch,
-            pitch: currentPitchRef.current,
+            pitch,
             activeUrl,
             isOfflineMode,
             setOfflineMode,
@@ -394,8 +340,6 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
 export const usePlayback = () => {
     const context = useContext(PlaybackContext);
-    if (context === undefined) {
-        throw new Error('usePlayback must be used within a PlaybackProvider');
-    }
+    if (!context) throw new Error("usePlayback must be used within PlaybackProvider");
     return context;
 };
