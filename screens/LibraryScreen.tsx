@@ -615,7 +615,7 @@ export const LibraryScreen: React.FC<Props> = ({
       {isSelectorOpen && (
         <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex flex-col justify-end animate-in fade-in duration-300">
           <div
-            className="w-full max-w-md mx-auto bg-[#1A202C] rounded-t-[2.5rem] border-t border-white/10 p-8 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] animate-in slide-in-from-bottom duration-500 overflow-y-auto max-h-[80vh]"
+            className="w-full max-w-md mx-auto bg-[#1A202C] rounded-t-[2.5rem] border-t border-white/10 p-8 pb-32 shadow-[0_-20px_50px_rgba(0,0,0,0.5)] animate-in slide-in-from-bottom duration-500 overflow-y-auto max-h-[80vh]"
           >
             <div className="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-8"></div>
 

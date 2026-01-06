@@ -32,7 +32,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentScreen, onNavigate,
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-[#1A202C] border-t border-gray-800 pb-safe pt-2 px-6 shadow-2xl z-50">
+    <div className="fixed bottom-0 left-0 right-0 bg-[#1A202C] border-t border-gray-800 pb-safe pt-2 px-6 shadow-2xl z-[150]">
       <div className="flex justify-between items-center h-16 max-w-md mx-auto">
         <button
           onClick={() => handleNavClick(role === 'student' ? Screen.STUDENT_DASHBOARD : Screen.TEACHER_DASHBOARD)}
