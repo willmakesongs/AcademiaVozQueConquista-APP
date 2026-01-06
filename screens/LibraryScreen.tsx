@@ -622,7 +622,7 @@ export const LibraryScreen: React.FC<Props> = ({
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-black text-white uppercase tracking-tighter">Escolha seu Curso</h2>
               <button
-                onClick={() => activeCourseSlug && setIsSelectorOpen(false)}
+                onClick={() => setIsSelectorOpen(false)}
                 className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400"
               >
                 <span className="material-symbols-rounded">close</span>
