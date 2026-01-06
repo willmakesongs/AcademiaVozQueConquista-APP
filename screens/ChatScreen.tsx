@@ -238,7 +238,8 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                 'financeiro', 'faturamento', 'agenda', 'semana', 'previsão',
                 'marketing', 'postagem', 'instagram', 'lavras', 'receita',
                 'inadimplente', 'quanto ganhou', 'saúde', 'status', 'como está',
-                'plataforma', 'onboarding', 'alunos ativos'
+                'plataforma', 'onboarding', 'alunos ativos', 'quantos alunos',
+                'matriculados', 'cadastrados', 'base de dados', 'gestão', 'vendas'
             ];
             const isStrategicQuery = strategyKeywords.some(key => userMsg.text.toLowerCase().includes(key));
 
