@@ -233,15 +233,15 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
         setMessages(prev => [...prev, botPlaceholder]);
 
         try {
-            // 🛡️ SEGURANÇA MÁXIMA: Bloqueio de dados estratégicos para Alunos/Visitantes
-            const isAdmin = user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase());
+            // 🛡️ SEGURANÇA MÁXIMA: Identificação de Administrador e Consultas Estratégicas
+            const isAdmin = user?.role === 'teacher' || (user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com', 'lorenamax@gmail.com'].includes(user.email.toLowerCase()));
             const strategyKeywords = [
                 'financeiro', 'faturamento', 'agenda', 'semana', 'previsão',
                 'marketing', 'postagem', 'instagram', 'lavras', 'receita',
                 'inadimplente', 'quanto ganhou', 'saúde', 'status', 'como está',
                 'plataforma', 'onboarding', 'alunos ativos', 'quantos alunos',
                 'matriculados', 'cadastrados', 'base de dados', 'gestão', 'vendas',
-                'aluno', 'alunos', 'base', 'faturou'
+                'aluno', 'alunos', 'base', 'faturou', 'quantos', 'métrica'
             ];
             const isStrategicQuery = strategyKeywords.some(key => userMsg.text.toLowerCase().includes(key));
 
@@ -259,6 +259,7 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
             }
 
             if (isAdmin && isStrategicQuery) {
+                // Lorena Secretária de Alto Nível: Sempre chama pelo nome do usuário logado
                 const { data, error } = await supabase.functions.invoke('lorena-ai-brain', {
                     body: { query: userMsg.text, user_id: user.id }
                 });
