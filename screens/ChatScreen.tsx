@@ -173,10 +173,7 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
     const handleSendMessage = async () => {
         if (!inputText.trim()) return;
 
-        if (!apiKey) {
-            setShowConfig(true);
-            return;
-        }
+        // Sem verificação de apiKey local - usaremos a Edge Function
 
         if (!chatSessionRef.current) {
             // Re-inicialização de segurança se a sessão foi perdida
@@ -233,149 +230,36 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
         setMessages(prev => [...prev, botPlaceholder]);
 
         try {
-            // 🛡️ SEGURANÇA MÁXIMA: Identificação de Administrador e Consultas Estratégicas
-            const isAdmin = user?.role === 'teacher' || (user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com', 'lorenamax@gmail.com'].includes(user.email.toLowerCase()));
-            const strategyKeywords = [
-                'financeiro', 'faturamento', 'agenda', 'semana', 'previsão',
-                'marketing', 'postagem', 'instagram', 'lavras', 'receita',
-                'inadimplente', 'quanto ganhou', 'saúde', 'status', 'como está',
-                'plataforma', 'onboarding', 'alunos ativos', 'quantos alunos',
-                'matriculados', 'cadastrados', 'base de dados', 'gestão', 'vendas',
-                'aluno', 'alunos', 'base', 'faturou', 'quantos', 'métrica'
-            ];
-            const isStrategicQuery = strategyKeywords.some(key => userMsg.text.toLowerCase().includes(key));
-
-            if (isStrategicQuery && !isAdmin) {
-                // Se um aluno perguntar sobre finanças ou estratégia, a Lorena recusa educadamente mas firmemente
-                setMessages(prev => prev.map(m =>
-                    m.id === botMsgId ? {
-                        ...m,
-                        text: "Desculpe, como sua mentora vocal, eu foco em ajudar na evolução da sua voz e performance musical. Não tenho acesso a dados administrativos ou financeiros para alunos. Como podemos praticar hoje? ✨🎶",
-                        isLoading: false
-                    } : m
-                ));
-                setIsTyping(false);
-                return;
-            }
-
-            if (isAdmin && isStrategicQuery) {
-                // Lorena Secretária de Alto Nível: Sempre chama pelo nome do usuário logado
-                const { data, error } = await supabase.functions.invoke('lorena-ai-brain', {
-                    body: { query: userMsg.text, user_id: user.id }
-                });
-
-                if (error) throw error;
-
-                setMessages(prev => prev.map(m =>
-                    m.id === botMsgId ? { ...m, text: data.answer, isLoading: false } : m
-                ));
-            } else if (chatSessionRef.current) {
-                const result = await chatSessionRef.current.sendMessageStream(userMsg.text);
-
-                let accumulatedText = '';
-                let finalMetadata = null;
-
-                for await (const chunk of result.stream) {
-                    const chunkText = chunk.text();
-                    accumulatedText += chunkText;
-
-                    if (chunk.groundingMetadata) {
-                        finalMetadata = chunk.groundingMetadata;
-                    }
-
-                    setMessages(prev => {
-                        const newMsgs = [...prev];
-                        const lastMsgIndex = newMsgs.findIndex(m => m.id === botMsgId);
-                        if (lastMsgIndex !== -1) {
-                            newMsgs[lastMsgIndex] = {
-                                ...newMsgs[lastMsgIndex],
-                                text: accumulatedText,
-                                groundingMetadata: finalMetadata,
-                                isLoading: false
-                            };
-                        }
-                        return newMsgs;
-                    });
+            // CÉREBRO UNIFICADO: Todas as mensagens passam pela Edge Function agora
+            // A função decide se é Brain Mode ou Mentor Mode e gerencia a chave internamente no servidor.
+            const { data, error } = await supabase.functions.invoke('lorena-ai-brain', {
+                body: {
+                    query: userMsg.text,
+                    user_id: user?.id,
+                    history: messages.slice(-5) // Passa contexto recente
                 }
-            }
+            });
+
+            if (error) throw error;
+
+            setMessages(prev => prev.map(m =>
+                m.id === botMsgId ? { ...m, text: data.answer, isLoading: false } : m
+            ));
+
         } catch (error: any) {
             console.error("Erro no chat:", error);
-
-            const errorMessage = error?.message || String(error);
-            console.log("Detalhes do erro:", errorMessage);
-
-            if (errorMessage.includes('400') || errorMessage.includes('API key') || errorMessage.includes('permission denied')) {
-                localStorage.removeItem('gemini_api_key');
-                setApiKey(null);
-                setShowConfig(true);
-            }
-
-            setMessages(prev => {
-                const newMsgs = [...prev];
-                return newMsgs.filter(m => m.id !== botMsgId).concat({
-                    id: Date.now().toString(),
-                    role: 'model',
-                    text: `⚠️ Ops, tivemos um problema!\n\nErro: ${errorMessage}\n\nTente novamente ou verifique sua conexão.`
-                });
-            });
-            chatSessionRef.current = null;
+            setMessages(prev => prev.map(m =>
+                m.id === botMsgId ? {
+                    ...m,
+                    text: "Ops, minha conexão com o servidor falhou momentaneamente. Tente enviar novamente! 🔌✨",
+                    isLoading: false,
+                    isError: true
+                } : m
+            ));
         } finally {
             setIsTyping(false);
         }
     };
-
-    if (!apiKey || showConfig) {
-        return (
-            <div className="min-h-screen bg-[#101622] flex flex-col relative overflow-hidden">
-                {/* Header Simplificado */}
-                <div className="pt-8 px-6 pb-4 bg-[#101622] border-b border-white/5 flex items-center gap-4">
-                    <button onClick={onBack} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white">
-                        <span className="material-symbols-rounded">arrow_back</span>
-                    </button>
-                    <h1 className="text-lg font-bold text-white">Configuração da IA</h1>
-                </div>
-
-                <div className="flex-1 flex flex-col items-center justify-center p-6 text-center space-y-6">
-                    <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-4 relative">
-                        <span className="material-symbols-rounded text-4xl text-[#FF00BC]">key</span>
-                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-red-500 rounded-full border-2 border-[#101622] flex items-center justify-center">!</div>
-                    </div>
-
-                    <div>
-                        <h2 className="text-xl font-bold text-white mb-2">Conectar Lorena IA</h2>
-                        <p className="text-sm text-gray-400">Para conversar com a mentora, precisamos de uma chave de acesso do Google (API Key).</p>
-                    </div>
-
-                    <div className="w-full max-w-sm space-y-3">
-                        <input
-                            type="text"
-                            value={configInput}
-                            onChange={(e) => setConfigInput(e.target.value)}
-                            placeholder="Cole sua chave aqui (AIza...)"
-                            className="w-full h-12 bg-[#1A202C] rounded-xl border border-white/10 px-4 text-white text-sm focus:outline-none focus:border-[#0081FF]"
-                        />
-                        <button
-                            onClick={handleSaveKey}
-                            className="w-full h-12 bg-[#0081FF] hover:bg-[#006bd1] text-white font-bold rounded-xl shadow-lg transition-all"
-                        >
-                            Salvar e Conectar
-                        </button>
-                    </div>
-
-                    <div className="p-4 bg-white/5 rounded-xl border border-white/5 text-left w-full max-w-sm">
-                        <p className="text-xs text-gray-300 font-bold mb-2">Como conseguir uma chave?</p>
-                        <ol className="list-decimal list-inside text-xs text-gray-400 space-y-1">
-                            <li>Acesse o <a href="https://aistudio.google.com/app/apikey" target="_blank" className="text-[#0081FF] underline">Google AI Studio</a>.</li>
-                            <li>Clique em "Create API Key".</li>
-                            <li>Selecione "Create in new project".</li>
-                            <li>Copie o código e cole acima.</li>
-                        </ol>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     return (
         <div className="min-h-screen bg-[#101622] flex flex-col relative overflow-hidden">
             {/* Header */}
@@ -393,114 +277,114 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                     </h1>
                     <p className="text-xs text-[#FF00BC] font-medium">Mentora IA • Voz Que Conquista</p>
                 </div>
-                <div className="w-10 h-10 rounded-full bg-brand-gradient p-[2px]">
-                    <div className="w-full h-full bg-[#101622] rounded-full flex items-center justify-center overflow-hidden relative">
-                        <img src={LORENA_AVATAR_URL} className="w-full h-full object-cover" alt="Lorena Bot" />
-                    </div>
-                </div>
-                <button onClick={() => { localStorage.removeItem('gemini_api_key'); setApiKey(null); }} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white" title="Redefinir Chave">
-                    <span className="material-symbols-rounded text-sm">settings</span>
-                </button>
             </div>
 
             {/* Chat Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-6 hide-scrollbar" ref={scrollRef}>
-                {messages.map((msg) => (
-                    <div
-                        key={msg.id}
-                        className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
-                    >
+            < div className="flex-1 overflow-y-auto p-4 space-y-6 hide-scrollbar" ref={scrollRef} >
+                {
+                    messages.map((msg) => (
                         <div
-                            className={`max-w-[90%] rounded-2xl p-4 text-sm leading-relaxed relative ${msg.role === 'user'
-                                ? 'bg-[#1A202C] text-white rounded-tr-none border border-white/10'
-                                : 'bg-gradient-to-br from-[#2D3748] to-[#1A202C] text-gray-100 rounded-tl-none border border-white/5 shadow-md'
-                                }`}
+                            key={msg.id}
+                            className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
                         >
-                            {/* Renderiza Markdown simplificado (quebras de linha) */}
-                            <div className="whitespace-pre-wrap font-sans">{msg.text}</div>
-                        </div>
-
-                        {/* Renderiza Grounding como CARDS horizontais abaixo da mensagem */}
-                        {msg.groundingMetadata?.groundingChunks && msg.groundingMetadata.groundingChunks.length > 0 && (
-                            <div className="w-full max-w-[90%] mt-3 pl-2 overflow-x-auto hide-scrollbar">
-                                <p className="text-[10px] text-gray-500 uppercase font-bold mb-2 flex items-center gap-1">
-                                    <span className="material-symbols-rounded text-xs">manage_search</span>
-                                    Sugestões & Referências
-                                </p>
-                                <div className="flex gap-3 pb-2">
-                                    {msg.groundingMetadata.groundingChunks.map((chunk: any, idx: number) => (
-                                        chunk.web?.uri && (
-                                            <a
-                                                key={idx}
-                                                href={chunk.web.uri}
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                className="min-w-[200px] max-w-[200px] bg-[#101622] border border-white/10 rounded-xl p-3 hover:border-[#0081FF] transition-colors flex flex-col gap-2 group"
-                                            >
-                                                <div className="flex items-start justify-between">
-                                                    <div className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center text-gray-400 group-hover:text-white transition-colors">
-                                                        <span className="material-symbols-rounded text-xs">public</span>
-                                                    </div>
-                                                    <span className="material-symbols-rounded text-xs text-gray-600 -rotate-45">arrow_forward</span>
-                                                </div>
-                                                <span className="text-xs font-bold text-gray-300 line-clamp-2 leading-tight group-hover:text-[#0081FF] transition-colors">
-                                                    {chunk.web.title || "Referência Externa"}
-                                                </span>
-                                            </a>
-                                        )
-                                    ))}
-                                </div>
+                            <div
+                                className={`max-w-[90%] rounded-2xl p-4 text-sm leading-relaxed relative ${msg.role === 'user'
+                                    ? 'bg-[#1A202C] text-white rounded-tr-none border border-white/10'
+                                    : 'bg-gradient-to-br from-[#2D3748] to-[#1A202C] text-gray-100 rounded-tl-none border border-white/5 shadow-md'
+                                    }`}
+                            >
+                                {/* Renderiza Markdown simplificado (quebras de linha) */}
+                                <div className="whitespace-pre-wrap font-sans">{msg.text}</div>
                             </div>
-                        )}
-                    </div>
-                ))}
 
-                {isTyping && messages[messages.length - 1]?.text === '' && (
-                    <div className="flex justify-start">
-                        <div className="bg-[#1A202C] p-4 rounded-2xl rounded-tl-none flex gap-1.5 items-center w-16 h-10 border border-white/5">
-                            <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
-                            <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                            <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                            {/* Renderiza Grounding como CARDS horizontais abaixo da mensagem */}
+                            {msg.groundingMetadata?.groundingChunks && msg.groundingMetadata.groundingChunks.length > 0 && (
+                                <div className="w-full max-w-[90%] mt-3 pl-2 overflow-x-auto hide-scrollbar">
+                                    <p className="text-[10px] text-gray-500 uppercase font-bold mb-2 flex items-center gap-1">
+                                        <span className="material-symbols-rounded text-xs">manage_search</span>
+                                        Sugestões & Referências
+                                    </p>
+                                    <div className="flex gap-3 pb-2">
+                                        {msg.groundingMetadata.groundingChunks.map((chunk: any, idx: number) => (
+                                            chunk.web?.uri && (
+                                                <a
+                                                    key={idx}
+                                                    href={chunk.web.uri}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="min-w-[200px] max-w-[200px] bg-[#101622] border border-white/10 rounded-xl p-3 hover:border-[#0081FF] transition-colors flex flex-col gap-2 group"
+                                                >
+                                                    <div className="flex items-start justify-between">
+                                                        <div className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center text-gray-400 group-hover:text-white transition-colors">
+                                                            <span className="material-symbols-rounded text-xs">public</span>
+                                                        </div>
+                                                        <span className="material-symbols-rounded text-xs text-gray-600 -rotate-45">arrow_forward</span>
+                                                    </div>
+                                                    <span className="text-xs font-bold text-gray-300 line-clamp-2 leading-tight group-hover:text-[#0081FF] transition-colors">
+                                                        {chunk.web.title || "Referência Externa"}
+                                                    </span>
+                                                </a>
+                                            )
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                    </div>
-                )}
+                    ))
+                }
+
+                {
+                    isTyping && messages[messages.length - 1]?.text === '' && (
+                        <div className="flex justify-start">
+                            <div className="bg-[#1A202C] p-4 rounded-2xl rounded-tl-none flex gap-1.5 items-center w-16 h-10 border border-white/5">
+                                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0s' }}></div>
+                                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                                <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                            </div>
+                        </div>
+                    )
+                }
 
                 <div className="h-4"></div>
-            </div>
+            </div >
 
             {/* Quick Actions (Chips) */}
-            {!isTyping && messages.length < 4 && (
-                <div className="px-4 pb-2 flex gap-2 overflow-x-auto hide-scrollbar">
-                    <button onClick={() => setInputText("O que tenho pra treinar hoje?")} className="whitespace-nowrap px-4 py-2 rounded-full bg-[#1A202C] border border-white/10 text-xs text-gray-300 hover:text-white hover:border-[#FF00BC]/50 transition-colors">
-                        📅 Minha Rotina
-                    </button>
-                    <button onClick={() => setInputText("Letra de Queen - Love of my Life")} className="whitespace-nowrap px-4 py-2 rounded-full bg-[#1A202C] border border-white/10 text-xs text-gray-300 hover:text-white hover:border-[#FF00BC]/50 transition-colors">
-                        🎵 Letra de Música
-                    </button>
-                    <button onClick={() => setInputText("Estou com a garganta arranhando")} className="whitespace-nowrap px-4 py-2 rounded-full bg-[#1A202C] border border-white/10 text-xs text-gray-300 hover:text-white hover:border-[#FF00BC]/50 transition-colors">
-                        🚑 SOS Voz
-                    </button>
-                </div>
-            )}
-
-            {/* Visitor/Trial Limit Overlay */}
-            {isTimeUp && (
-                <div className="absolute inset-0 bg-[#101622]/80 backdrop-blur-sm z-50 flex items-center justify-center p-8 text-center">
-                    <div className="bg-[#1A202C] border border-white/10 rounded-3xl p-8 max-w-sm shadow-2xl animate-in zoom-in-95 duration-300">
-                        <div className="w-20 h-20 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-6">
-                            <span className="material-symbols-rounded text-4xl text-red-500">lock_clock</span>
-                        </div>
-                        <h3 className="text-xl font-bold text-white mb-2">Tempo Expirado!</h3>
-                        <p className="text-sm text-gray-400 mb-6">Seu tempo de teste da Lorena IA acabou. Para continuar conversando e ter acesso a todos os módulos, torne-se um aluno oficial!</p>
-                        <button
-                            onClick={onBack}
-                            className="w-full h-12 bg-[#0081FF] hover:bg-[#006bd1] text-white font-bold rounded-xl transition-all"
-                        >
-                            Voltar ao Início
+            {
+                !isTyping && messages.length < 4 && (
+                    <div className="px-4 pb-2 flex gap-2 overflow-x-auto hide-scrollbar">
+                        <button onClick={() => setInputText("O que tenho pra treinar hoje?")} className="whitespace-nowrap px-4 py-2 rounded-full bg-[#1A202C] border border-white/10 text-xs text-gray-300 hover:text-white hover:border-[#FF00BC]/50 transition-colors">
+                            📅 Minha Rotina
+                        </button>
+                        <button onClick={() => setInputText("Letra de Queen - Love of my Life")} className="whitespace-nowrap px-4 py-2 rounded-full bg-[#1A202C] border border-white/10 text-xs text-gray-300 hover:text-white hover:border-[#FF00BC]/50 transition-colors">
+                            🎵 Letra de Música
+                        </button>
+                        <button onClick={() => setInputText("Estou com a garganta arranhando")} className="whitespace-nowrap px-4 py-2 rounded-full bg-[#1A202C] border border-white/10 text-xs text-gray-300 hover:text-white hover:border-[#FF00BC]/50 transition-colors">
+                            🚑 SOS Voz
                         </button>
                     </div>
-                </div>
-            )}
+                )
+            }
+
+            {/* Visitor/Trial Limit Overlay */}
+            {
+                isTimeUp && (
+                    <div className="absolute inset-0 bg-[#101622]/80 backdrop-blur-sm z-50 flex items-center justify-center p-8 text-center">
+                        <div className="bg-[#1A202C] border border-white/10 rounded-3xl p-8 max-w-sm shadow-2xl animate-in zoom-in-95 duration-300">
+                            <div className="w-20 h-20 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-6">
+                                <span className="material-symbols-rounded text-4xl text-red-500">lock_clock</span>
+                            </div>
+                            <h3 className="text-xl font-bold text-white mb-2">Tempo Expirado!</h3>
+                            <p className="text-sm text-gray-400 mb-6">Seu tempo de teste da Lorena IA acabou. Para continuar conversando e ter acesso a todos os módulos, torne-se um aluno oficial!</p>
+                            <button
+                                onClick={onBack}
+                                className="w-full h-12 bg-[#0081FF] hover:bg-[#006bd1] text-white font-bold rounded-xl transition-all"
+                            >
+                                Voltar ao Início
+                            </button>
+                        </div>
+                    </div>
+                )
+            }
 
             {/* Input Area */}
             <div className={`p-4 bg-[#101622] border-t border-white/5 pb-24 ${isTimeUp ? 'opacity-50 pointer-events-none' : ''}`}>
@@ -533,6 +417,6 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                     A IA pode cometer erros. Verifique informações importantes.
                 </p>
             </div>
-        </div>
+        </div >
     );
 };
