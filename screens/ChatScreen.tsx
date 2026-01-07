@@ -136,7 +136,10 @@ Termine sempre com um reforço de autoridade ou uma ação prática de comando p
 
             const chat = model.startChat({
                 history: chatHistory,
-                systemInstruction: systemPrompt
+                systemInstruction: {
+                    role: 'system',
+                    parts: [{ text: systemPrompt }]
+                }
             });
 
             const result = await chat.sendMessage(userMsg.text);
