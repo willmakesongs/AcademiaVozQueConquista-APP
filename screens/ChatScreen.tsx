@@ -98,7 +98,6 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
             }
 
             const genAI = new GoogleGenerativeAI(apiKey);
-            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
             const systemPrompt = `
 Você é a **Lorena Pimentel IA**, a mentora virtual da academia "Voz Que Conquista".
@@ -120,6 +119,14 @@ Se o aluno falar sobre prática/exercício:
 Termine sempre com um reforço de autoridade ou uma ação prática de comando para o **${user?.name || 'Aluno'}**.
 `;
 
+            const model = genAI.getGenerativeModel({
+                model: "gemini-1.5-flash",
+                systemInstruction: {
+                    role: 'system',
+                    parts: [{ text: systemPrompt }]
+                }
+            });
+
             // Histórico para o Gemini SDK
             const chatHistory = messages
                 .filter(m => !m.isLoading && !m.groundingMetadata) // Filtra metadados e loadings
@@ -135,11 +142,7 @@ Termine sempre com um reforço de autoridade ou uma ação prática de comando p
             }
 
             const chat = model.startChat({
-                history: chatHistory,
-                systemInstruction: {
-                    role: 'system',
-                    parts: [{ text: systemPrompt }]
-                }
+                history: chatHistory
             });
 
             const result = await chat.sendMessage(userMsg.text);
