@@ -9,8 +9,8 @@ import { createClient } from '@supabase/supabase-js';
 // 3. Cole abaixo dentro das aspas.
 // ------------------------------------------------------------------
 
-const SUPABASE_URL = 'https://sedjnyryixudxmmkeoam.supabase.co'; 
-const SUPABASE_ANON_KEY = 'sb_publishable_1jpGu98CJuv-QpTjzbH_8Q_h95QYf3y';
+const SUPABASE_URL = 'https://sedjnyryixudxmmkeoam.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlZGpueXJ5aXh1ZHhtbWtlb2FtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyODE0NDIsImV4cCI6MjA4Mjg1NzQ0Mn0.5NozVbt66LPMGYLBd2be_IOX3PttYBZETcowwNOkTRA';
 
 // Validação básica
 const isValidUrl = (url: string) => {
