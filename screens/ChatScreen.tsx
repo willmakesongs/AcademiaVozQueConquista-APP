@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 
 import { useAuth } from '../contexts/AuthContext';
 import { MODULES, LORENA_AVATAR_URL } from '../constants';
-import { supabase } from '../lib/supabaseClient';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
 interface Props {
     onBack: () => void;
@@ -68,10 +68,8 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
     }, [messages, isTyping]);
 
 
-
     const handleSendMessage = async () => {
         if (!inputText.trim()) return;
-
 
         const userMsg: Message = {
             id: Date.now().toString(),
@@ -93,20 +91,60 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
         setMessages(prev => [...prev, botPlaceholder]);
 
         try {
-            // CÉREBRO UNIFICADO: Todas as mensagens passam pela Edge Function agora
-            // A função decide se é Brain Mode ou Mentor Mode e gerencia a chave internamente no servidor.
-            const { data, error } = await supabase.functions.invoke('lorena-ai-brain', {
-                body: {
-                    query: userMsg.text,
-                    user_id: user?.id,
-                    history: messages.slice(-5) // Passa contexto recente
-                }
+            // Lógica Cliente-Side (Revertido)
+            const apiKey = process.env.GEMINI_API_KEY || '';
+            if (!apiKey || apiKey === 'PLACEHOLDER_API_KEY') {
+                throw new Error("Chave de API (GEMINI_API_KEY) não configurada no .env.local");
+            }
+
+            const genAI = new GoogleGenerativeAI(apiKey);
+            const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+            const systemPrompt = `
+Você é a **Lorena Pimentel IA**, a mentora virtual da academia "Voz Que Conquista".
+Seu interlocutor chama-se **${user?.name || 'Aluno'}**. Trate-o sempre pelo nome.
+
+**SUA PERSONALIDADE:**
+- **Tom:** Profissional, Parceira Intelectual e Especialista em Alta Performance Vocal.
+- Fuja do genérico. Seja direta, técnica e encorajadora sem ser infantil.
+- Use emojis de música (✨, 🎤, 🎶) com moderação e elegância.
+- **Não invente dados.** Se não souber, diga que precisa consultar o método.
+
+**ESTRUTURA DE FEEDBACK (CRITIQUE STYLE):**
+Se o aluno falar sobre prática/exercício:
+1. **Clareza:** Articulação precisa.
+2. **Tensão:** Monitorar corpo (ombros/queixo).
+3. **Autoridade:** Voz firme, sem pedir desculpas.
+
+**REGRA DE OURO:**
+Termine sempre com um reforço de autoridade ou uma ação prática de comando para o **${user?.name || 'Aluno'}**.
+`;
+
+            // Histórico para o Gemini SDK
+            const chatHistory = messages
+                .filter(m => !m.isLoading && !m.groundingMetadata) // Filtra metadados e loadings
+                .map(m => ({
+                    role: m.role === 'model' ? 'model' : 'user',
+                    parts: [{ text: m.text }]
+                }));
+
+            // O Gemini SDK exige que a primeira mensagem do histórico seja do USUÁRIO.
+            // Se a primeira for da "model" (boas-vindas), removemos ela da lista enviada para a API.
+            if (chatHistory.length > 0 && chatHistory[0].role === 'model') {
+                chatHistory.shift();
+            }
+
+            const chat = model.startChat({
+                history: chatHistory,
+                systemInstruction: systemPrompt
             });
 
-            if (error) throw error;
+            const result = await chat.sendMessage(userMsg.text);
+            const response = await result.response;
+            const text = response.text();
 
             setMessages(prev => prev.map(m =>
-                m.id === botMsgId ? { ...m, text: data.answer, isLoading: false } : m
+                m.id === botMsgId ? { ...m, text: text, isLoading: false } : m
             ));
 
         } catch (error: any) {
@@ -114,7 +152,7 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
             setMessages(prev => prev.map(m =>
                 m.id === botMsgId ? {
                     ...m,
-                    text: `Ops, minha conexão com o servidor falhou momentaneamente. Tente enviar novamente! 🔌✨\n(Erro técnico: ${error.message || JSON.stringify(error)})`,
+                    text: `Ops, minha conexão falhou! 🔌✨\n(Erro: ${error.message || JSON.stringify(error)})`,
                     isLoading: false,
                     isError: true
                 } : m
@@ -159,39 +197,6 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                                 {/* Renderiza Markdown simplificado (quebras de linha) */}
                                 <div className="whitespace-pre-wrap font-sans">{msg.text}</div>
                             </div>
-
-                            {/* Renderiza Grounding como CARDS horizontais abaixo da mensagem */}
-                            {msg.groundingMetadata?.groundingChunks && msg.groundingMetadata.groundingChunks.length > 0 && (
-                                <div className="w-full max-w-[90%] mt-3 pl-2 overflow-x-auto hide-scrollbar">
-                                    <p className="text-[10px] text-gray-500 uppercase font-bold mb-2 flex items-center gap-1">
-                                        <span className="material-symbols-rounded text-xs">manage_search</span>
-                                        Sugestões & Referências
-                                    </p>
-                                    <div className="flex gap-3 pb-2">
-                                        {msg.groundingMetadata.groundingChunks.map((chunk: any, idx: number) => (
-                                            chunk.web?.uri && (
-                                                <a
-                                                    key={idx}
-                                                    href={chunk.web.uri}
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                    className="min-w-[200px] max-w-[200px] bg-[#101622] border border-white/10 rounded-xl p-3 hover:border-[#0081FF] transition-colors flex flex-col gap-2 group"
-                                                >
-                                                    <div className="flex items-start justify-between">
-                                                        <div className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center text-gray-400 group-hover:text-white transition-colors">
-                                                            <span className="material-symbols-rounded text-xs">public</span>
-                                                        </div>
-                                                        <span className="material-symbols-rounded text-xs text-gray-600 -rotate-45">arrow_forward</span>
-                                                    </div>
-                                                    <span className="text-xs font-bold text-gray-300 line-clamp-2 leading-tight group-hover:text-[#0081FF] transition-colors">
-                                                        {chunk.web.title || "Referência Externa"}
-                                                    </span>
-                                                </a>
-                                            )
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
                         </div>
                     ))
                 }
