@@ -1070,7 +1070,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                 {/* Cartão do Plano Customizado com Nova Arte */}
                 <div className="relative w-full h-48 rounded-2xl overflow-hidden mb-8 shadow-2xl shadow-purple-900/30 group bg-black">
                     <img
-                        src={`${STORAGE_BASE_URL}/VOCALIZES%20mp3/Fotos/Capa%20Pagamento.png`}
+                        src="https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/PNGs-JPEG/Capaassinates.png"
                         alt="Cartão Assinatura"
                         className="absolute inset-0 w-full h-full object-cover"
                     />
@@ -1090,11 +1090,13 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                                     <span className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"></span>
                                 ) : user?.status === 'overdue' ? (
                                     <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse shadow-[0_0_8px_#f59e0b]"></span>
+                                ) : user?.status === 'trial' ? (
+                                    <span className="w-2 h-2 rounded-full bg-blue-400 animate-pulse shadow-[0_0_8px_#60a5fa]"></span>
                                 ) : (
                                     <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_#4ade80]"></span>
                                 )}
                                 <span className="text-lg font-bold text-white drop-shadow-md shadow-black">
-                                    {user?.status === 'blocked' ? 'Bloqueado' : user?.status === 'overdue' ? 'Em Atraso' : 'Ativo'}
+                                    {user?.status === 'blocked' ? 'Bloqueado' : user?.status === 'overdue' ? 'Em Atraso' : user?.status === 'trial' ? 'Visitante' : 'Ativo'}
                                 </span>
                             </div>
                         </div>
@@ -1107,17 +1109,23 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                         <div className="bg-[#1A202C] rounded-xl border border-white/5 divide-y divide-white/5">
                             <div className="p-4 flex justify-between items-center">
                                 <span className="text-sm text-gray-400">Renovação</span>
-                                <span className="text-sm text-white font-medium">{formatDateBR(user?.nextDueDate)}</span>
+                                <span className="text-sm text-white font-medium">
+                                    {user?.status === 'trial' ? '--/--/----' : formatDateBR(user?.nextDueDate)}
+                                </span>
                             </div>
                             <div className="p-4 flex justify-between items-center">
                                 <span className="text-sm text-gray-400">Valor</span>
-                                <span className="text-sm text-white font-medium">R$ {user?.amount || '0,00'} / mês</span>
+                                <span className="text-sm text-white font-medium">
+                                    {user?.status === 'trial' ? 'R$ 0,00 / mês' : `R$ ${user?.amount || '0,00'} / mês`}
+                                </span>
                             </div>
                             <div className="p-4 flex justify-between items-center">
                                 <span className="text-sm text-gray-400">Forma de Pagamento</span>
                                 <div className="flex items-center gap-2">
                                     <span className="material-symbols-rounded text-gray-400 text-sm">credit_card</span>
-                                    <span className="text-sm text-white font-medium">PIX / Cartão</span>
+                                    <span className="text-sm text-white font-medium">
+                                        {user?.status === 'trial' ? 'Gratuito' : 'PIX / Cartão'}
+                                    </span>
                                 </div>
                             </div>
 

@@ -114,7 +114,7 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
             setMessages(prev => prev.map(m =>
                 m.id === botMsgId ? {
                     ...m,
-                    text: "Ops, minha conexão com o servidor falhou momentaneamente. Tente enviar novamente! 🔌✨",
+                    text: `Ops, minha conexão com o servidor falhou momentaneamente. Tente enviar novamente! 🔌✨\n(Erro técnico: ${error.message || JSON.stringify(error)})`,
                     isLoading: false,
                     isError: true
                 } : m

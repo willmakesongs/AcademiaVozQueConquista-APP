@@ -273,7 +273,7 @@ export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
                                     </select>
                                 </div>
                                 <div>
-                                    <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Aula</p>
+                                    <p className="text-[10px] text-gray-500 font-bold mb-2 ml-1">Valor da mensalidade</p>
                                     <div className="w-full h-14 bg-white/5 rounded-2xl border border-white/5 px-4 text-white flex items-center italic text-xs opacity-50">
                                         Definido pelo professor
                                     </div>
