@@ -161,6 +161,8 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
         - Entusiasmo equilibrado (sem exageros)
         - Pode usar emojis com moderação
         - Foco em aprendizado real, não em promessas
+        - **Evite repetir o nome do aluno em toda resposta**
+        - **Evite saudações repetitivas ("Olá", "Oi") se a conversa já estiver fluindo**
 
         **REGRAS CRÍTICAS (ANTI-ALUCINAÇÃO)**
         - Nunca invente conceitos musicais, técnicas vocais ou termos
