@@ -194,28 +194,28 @@ const ChordChart: React.FC<ChordChartProps> = ({
       </div>
 
       <div
-        className={`flex flex-col items-center bg-[#0d1017] p-4 sm:p-8 pb-6 sm:pb-10 rounded-[2.5rem] sm:rounded-[3rem] border shadow-2xl select-none touch-none overflow-hidden transition-all duration-500 ${isInteractive ? 'border-orange-500/50 bg-[#16120d]' : 'border-white/5'} scale-[0.9] sm:scale-100 origin-top`}
+        className={`flex flex-col items-center bg-[#0d1017] p-3 sm:p-8 pb-8 sm:pb-10 rounded-[2.5rem] sm:rounded-[3rem] border shadow-2xl select-none touch-none overflow-hidden transition-all duration-500 ${isInteractive ? 'border-orange-500/50 bg-[#16120d]' : 'border-white/5'} flex-shrink-0`}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
         style={{
-          transform: `translateX(${dragOffset}px) scale(${window.innerWidth < 400 ? 0.85 : (window.innerWidth < 640 ? 0.9 : 1)})`,
+          transform: `translateX(${dragOffset}px)`,
           transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28)'
         }}
       >
-        <div className="flex items-start gap-3 sm:gap-6 mt-4 sm:mt-8">
-          <div className="flex flex-col pt-2 w-10 sm:w-12 items-end">
-            <span className="text-blue-500 font-black text-xl sm:text-2xl leading-none">
+        <div className="flex items-start gap-2 sm:gap-6 mt-6 sm:mt-8">
+          <div className="flex flex-col pt-2 w-9 sm:w-12 items-end">
+            <span className="text-blue-500 font-black text-lg sm:text-2xl leading-none">
               {startFret === 1 ? '' : `${startFret}ª`}
             </span>
-            <span className="text-[8px] sm:text-[9px] font-black text-slate-600 uppercase tracking-tighter text-right">
+            <span className="text-[7px] sm:text-[9px] font-black text-slate-600 uppercase tracking-tighter text-right">
               {startFret === 1 ? '' : 'CASA'}
             </span>
           </div>
 
-          <div className="relative w-[210px] sm:w-[220px]">
+          <div className="relative w-[160px] sm:w-[220px]">
             {/* INDICATORS (Aligned) */}
-            <div className="absolute -top-10 left-0 right-0 h-10 pointer-events-none z-40">
+            <div className="absolute -top-9 left-0 right-0 h-9 pointer-events-none z-40">
               {stringsIndices.map((sIdx, i) => {
                 const note = selectedNotes.find(n => n.stringIndex === sIdx);
                 const isMuted = !note;
@@ -224,19 +224,19 @@ const ChordChart: React.FC<ChordChartProps> = ({
                 return (
                   <div
                     key={sIdx}
-                    className="absolute bottom-0 transform -translate-x-1/2 flex justify-center pointer-events-auto pb-2"
+                    className="absolute bottom-0 transform -translate-x-1/2 flex justify-center pointer-events-auto pb-1"
                     style={{ left: `${i * 20}%` }}
                   >
                     <div
-                      className={`w-8 h-8 flex items-center justify-center transition-transform active:scale-125 ${isInteractive ? 'cursor-pointer hover:bg-white/5 rounded-lg' : ''}`}
+                      className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center transition-transform active:scale-125 ${isInteractive ? 'cursor-pointer hover:bg-white/5 rounded-lg' : ''}`}
                       onClick={() => isInteractive && onToggleNote && onToggleNote(sIdx, isMuted ? 0 : -1)}
                     >
                       {isMuted ? (
-                        <X size={14} className="text-red-500/60" />
+                        <X size={12} className="text-red-500/60" />
                       ) : isOpen ? (
-                        <div className={`w-7 h-7 rounded-full border-2 flex items-center justify-center shadow-lg ${(getMarkerLabel(sIdx, 0, displayMode) === 'T') ? 'border-orange-500 bg-[#0d1017]' : 'border-green-500 bg-[#0d1017]'
+                        <div className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 flex items-center justify-center shadow-lg ${(getMarkerLabel(sIdx, 0, displayMode) === 'T') ? 'border-orange-500 bg-[#0d1017]' : 'border-green-500 bg-[#0d1017]'
                           }`}>
-                          <span className={`text-[8px] sm:text-[9px] font-black ${(getMarkerLabel(sIdx, 0, displayMode) === 'T') ? 'text-orange-500' : 'text-green-500'
+                          <span className={`text-[7px] sm:text-[9px] font-black ${(getMarkerLabel(sIdx, 0, displayMode) === 'T') ? 'text-orange-500' : 'text-green-500'
                             }`}>
                             {getMarkerLabel(sIdx, 0, displayMode)}
                           </span>
@@ -251,7 +251,7 @@ const ChordChart: React.FC<ChordChartProps> = ({
             </div>
 
             {/* Fretboard Body */}
-            <div className="relative border-l border-r border-white/10" style={{ height: '240px' }}>
+            <div className="relative border-l border-r border-white/10" style={{ height: '220px' }}>
               {startFret === 1 && (
                 <div className="absolute -top-1 left-0 right-0 h-2 bg-gradient-to-b from-slate-200 to-slate-400 rounded-sm z-10 shadow-sm"></div>
               )}
@@ -271,7 +271,7 @@ const ChordChart: React.FC<ChordChartProps> = ({
                   >
                     {isInteractive && (
                       <div
-                        className="absolute inset-y-0 -left-5 w-10 hover:bg-blue-500/10 active:bg-blue-500/20 transition-colors z-0"
+                        className="absolute inset-y-0 -left-4 w-8 hover:bg-blue-500/10 active:bg-blue-500/20 transition-colors z-0"
                         onClick={(e) => {
                           if (onToggleNote) {
                             const rect = e.currentTarget.getBoundingClientRect();
@@ -289,11 +289,11 @@ const ChordChart: React.FC<ChordChartProps> = ({
             </div>
 
             {/* BOTTOM NOTES (Now perfectly aligned) */}
-            <div className="absolute -bottom-10 left-0 right-0 h-10 flex items-center pointer-events-none">
+            <div className="absolute -bottom-9 left-0 right-0 h-9 flex items-center pointer-events-none">
               {['E', 'A', 'D', 'G', 'B', 'E'].map((name, i) => (
                 <span
                   key={i}
-                  className="absolute transform -translate-x-1/2 text-[9px] sm:text-[10px] font-black text-slate-700 w-8 text-center uppercase"
+                  className="absolute transform -translate-x-1/2 text-[8px] sm:text-[10px] font-black text-slate-700 w-6 text-center uppercase"
                   style={{ left: `${i * 20}%` }}
                 >
                   {name}
