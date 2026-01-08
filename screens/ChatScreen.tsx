@@ -112,7 +112,6 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
         **Contexto do Aluno:**
         Nome: ${user?.name || 'Aluno'}.
         Módulos Disponíveis: ${MODULES.map(m => m.title).join(', ')}.
-        Tarefas Atuais: ${JSON.stringify(STUDENT_TASKS_CONTEXT)}.
         `;
 
             // Sanitização do histórico para evitar erros da API
