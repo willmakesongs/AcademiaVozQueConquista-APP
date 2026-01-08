@@ -835,8 +835,8 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     </div>
                                     <div className="text-right">
                                         <span className={`text-[10px] font-black uppercase px-2 py-1 rounded-lg ${student.status === 'active' ? 'bg-green-500/10 text-green-500' :
-                                                student.status === 'overdue' ? 'bg-red-500/10 text-red-500' :
-                                                    'bg-orange-500/10 text-orange-500'
+                                            student.status === 'overdue' ? 'bg-red-500/10 text-red-500' :
+                                                'bg-orange-500/10 text-orange-500'
                                             }`}>
                                             {student.status === 'active' ? 'Em Dia' : student.status === 'overdue' ? 'Atraso' : 'Pendente'}
                                         </span>
@@ -1481,7 +1481,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             </div>
 
             {/* Spacer for Global Bottom Nav (This ensures content isn't covered) */}
-            <div className="h-[80px] shrink-0 w-full bg-[#101622]"></div>
+            <div className="h-[150px] shrink-0 w-full bg-[#101622]"></div>
 
             {/* Botão de Add - FIXED e sem sobreposição */}
             <button

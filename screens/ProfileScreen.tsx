@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Screen, User, StudentSummary, Appointment } from '../types';
+import { Screen, User, StudentSummary, Appointment, SelectedNote, FretboardMode } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { usePlayback } from '../contexts/PlaybackContext';
 import { supabase } from '../lib/supabaseClient';
@@ -8,6 +8,13 @@ import { Logo } from '../components/Logo';
 import { PianoScreen } from './PianoScreen';
 import { STORAGE_BASE_URL } from '../constants';
 import * as Tone from 'tone';
+
+// CAGED Imports
+import ChordLibrary from '../components/CAGED/ChordLibrary';
+import Metronome from '../components/CAGED/Metronome';
+import Navigation from '../components/CAGED/Navigation';
+import { preloadGuitarSamples, initAudio, setMetronomeVolume, playMetronomeSound, preloadDrumSamples } from '../services/CAGED/audio';
+import { Sparkles, BookOpen, Clock } from 'lucide-react';
 
 interface Props {
     onNavigate: (screen: Screen) => void;
@@ -131,9 +138,27 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
     const receiptFileInputRef = useRef<HTMLInputElement>(null);
 
     // Navigation State
-    const [activeView, setActiveView] = useState<'menu' | 'personal_data' | 'subscription' | 'contract' | 'vocal_test' | 'piano' | 'tuner'>('menu');
+    const [activeView, setActiveView] = useState<'menu' | 'personal_data' | 'subscription' | 'contract' | 'vocal_test' | 'piano' | 'tuner' | 'chord_dictionary'>('menu');
 
     // --- ESTADO DE EDIÇÃO DE VENCIMENTO ---
+    // --- CAGED / CHORD DICTIONARY STATE ---
+    const [cagedView, setCagedView] = useState<'library' | 'metronome'>('library');
+    const [cagedMode, setCagedMode] = useState<FretboardMode>(() => {
+        const saved = localStorage.getItem('fretboard_mode');
+        return (saved as FretboardMode) || 'notes';
+    });
+
+    // METRONOME STATE
+    const [bpm, setBpm] = useState(120);
+    const [isMetronomePlaying, setIsMetronomePlaying] = useState(false);
+    const [tick, setTick] = useState(0);
+    const [soundType, setSoundType] = useState('loop');
+    const [volume, setVolume] = useState(80);
+    const [isMuted, setIsMuted] = useState(false);
+
+    const timerRef = useRef<number | null>(null);
+    const measureRef = useRef(0);
+
     const [isEditingDueDate, setIsEditingDueDate] = useState(false);
     const [editDueDateDay, setEditDueDateDay] = useState('02');
 
@@ -160,6 +185,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
     // Piano Integration State
     const [pianoNote, setPianoNote] = useState<string | null>(null);
     const [pianoFreq, setPianoFreq] = useState<number | null>(null);
+
 
     // Refs de Áudio
     const audioContextRef = useRef<AudioContext | null>(null);
@@ -198,8 +224,65 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
         return () => {
             stopMic();
             if (synthRef.current) synthRef.current.dispose();
+            if (timerRef.current) clearInterval(timerRef.current);
         };
     }, []);
+
+    // --- CAGED EFFECTS ---
+    useEffect(() => {
+        if (activeView === 'chord_dictionary') {
+            preloadGuitarSamples();
+            preloadDrumSamples();
+        } else {
+            setIsMetronomePlaying(false);
+            if (timerRef.current) clearInterval(timerRef.current);
+        }
+    }, [activeView]);
+
+    useEffect(() => {
+        localStorage.setItem('fretboard_mode', cagedMode);
+    }, [cagedMode]);
+
+    useEffect(() => {
+        const volValue = isMuted ? 0 : volume / 100;
+        setMetronomeVolume(volValue);
+    }, [volume, isMuted]);
+
+    useEffect(() => {
+        if (isMetronomePlaying && activeView === 'chord_dictionary') {
+            const interval = (30 / bpm) * 1000;
+            if (timerRef.current) clearInterval(timerRef.current);
+
+            timerRef.current = window.setInterval(() => {
+                setTick(prev => {
+                    const nextTick = (prev + 1) % 8;
+                    if (nextTick === 0) measureRef.current = (measureRef.current + 1) % 4;
+
+                    const isDownBeat = nextTick % 2 === 0;
+                    const isAccent = nextTick === 0;
+                    const isFillBar = measureRef.current === 3;
+
+                    if (soundType === 'loop' || isDownBeat) {
+                        playMetronomeSound(soundType, isAccent, nextTick, isFillBar);
+                    }
+                    return nextTick;
+                });
+            }, interval);
+        } else {
+            if (timerRef.current) clearInterval(timerRef.current);
+        }
+        return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    }, [isMetronomePlaying, bpm, soundType, activeView]);
+
+    const toggleMetronome = async () => {
+        await initAudio();
+        if (!isMetronomePlaying) {
+            setTick(0);
+            measureRef.current = 0;
+            playMetronomeSound(soundType, true, 0, false);
+        }
+        setIsMetronomePlaying(!isMetronomePlaying);
+    };
 
     // --- LÓGICA DE ÁUDIO ---
     const startMic = async () => {
@@ -665,7 +748,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
     );
 
     const renderMenu = () => (
-        <div className="flex-1 overflow-y-auto hide-scrollbar animate-in slide-in-from-left duration-300">
+        <div className="flex-1 overflow-y-auto hide-scrollbar animate-in slide-in-from-left duration-300 pb-40">
             {/* Header Profile Info */}
             <div className="pt-10 px-6 pb-8 bg-gradient-to-b from-[#1A202C] to-[#101622] text-center border-b border-white/5 relative overflow-hidden">
                 <div className="absolute top-[-50px] left-1/2 -translate-x-1/2 w-[150%] h-[200px] bg-[#0081FF]/10 blur-[80px] rounded-full pointer-events-none"></div>
@@ -746,6 +829,20 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                             <div>
                                 <h4 className="font-bold text-white text-sm">Afinador Cromático</h4>
                                 <p className="text-[10px] text-gray-500 mt-0.5">Verifique sua afinação em tempo real.</p>
+                            </div>
+                        </button>
+
+                        <button
+                            onClick={() => setActiveView('chord_dictionary')}
+                            className="col-span-2 bg-[#1A202C] p-4 rounded-2xl border border-white/5 hover:border-green-500/50 transition-all group flex items-center gap-4 relative overflow-hidden hover:shadow-lg hover:shadow-green-900/20"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center text-green-500 group-hover:scale-110 transition-transform shrink-0">
+                                <span className="material-symbols-rounded">library_music</span>
+                            </div>
+                            <div>
+                                <h4 className="font-bold text-white text-sm">Dicionário de Acordes</h4>
+                                <p className="text-[10px] text-gray-500 mt-0.5">Visualize acordes por notas ou intervalos.</p>
                             </div>
                         </button>
                     </div>
@@ -1042,7 +1139,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                 </div>
             </div>
 
-            <div className="p-6 border-t border-white/5 bg-[#151A23]">
+            <div className="p-6 border-t border-white/5 bg-[#151A23] pb-32">
                 {isEditing ? (
                     <button
                         onClick={handleSaveProfile}
@@ -1189,7 +1286,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
         <div className="flex-1 flex flex-col bg-[#101622] animate-in slide-in-from-right">
             {renderHeader('Contrato de Matrícula', () => setActiveView('menu'))}
 
-            <div className="p-6 flex-1 overflow-y-auto hide-scrollbar space-y-8 pb-32">
+            <div className="p-6 flex-1 overflow-y-auto hide-scrollbar space-y-8 pb-40">
                 {/* Student Card */}
                 <div className="bg-[#1A202C] rounded-3xl p-6 border border-white/5 shadow-xl">
                     <div className="flex items-center gap-4 mb-6">
@@ -1754,6 +1851,94 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
         </div>
     );
 
+    const renderCAGEDHeader = () => {
+        let title = "";
+        let highlight = "";
+        let icon = null;
+        let description = "";
+
+        switch (cagedView) {
+            case 'library':
+                title = "Dicionário";
+                highlight = "CAGED";
+                icon = <BookOpen size={16} className="text-[#007AFF]" />;
+                description = "Exploração de Acordes Universal";
+                break;
+            case 'metronome':
+                title = "Estudo";
+                highlight = "Metrônomo";
+                icon = <Clock size={16} className="text-[#007AFF]" />;
+                description = "Precisão Digital VQC Studio";
+                break;
+        }
+
+        return (
+            <div className="mb-10 px-2 animate-in fade-in slide-in-from-top duration-700">
+                <div className="flex items-center gap-2 mb-4">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#007AFF]/10">
+                        <Sparkles size={14} className="text-[#007AFF]" />
+                    </div>
+                    <span className="text-[#007AFF] font-bold text-[10px] uppercase tracking-widest">
+                        Will Make Chords
+                    </span>
+                </div>
+
+                <h1 className="text-3xl font-bold tracking-tight text-white mb-2 leading-tight">
+                    {title} <span className="text-white/40">{highlight}</span>
+                </h1>
+
+                <div className="flex items-center gap-2 text-gray-500 font-medium text-xs">
+                    {icon}
+                    <span>{description}</span>
+                </div>
+            </div>
+        );
+    };
+
+    const renderChordDictionary = () => (
+        <div className="flex-1 flex flex-col bg-[#000000] text-gray-100 animate-in slide-in-from-right overflow-hidden font-sans">
+            <Navigation
+                currentView={cagedView}
+                onViewChange={setCagedView}
+                metronomeState={{ isPlaying: isMetronomePlaying, bpm }}
+                onToggleMetronome={toggleMetronome}
+                onBack={() => {
+                    setIsMetronomePlaying(false);
+                    setActiveView('menu');
+                }}
+            />
+
+            <main className="flex-grow overflow-y-auto p-5 lg:p-10 max-w-[1400px] mx-auto w-full hide-scrollbar pb-48">
+                {renderCAGEDHeader()}
+
+                {cagedView === 'library' && (
+                    <ChordLibrary
+                        displayMode={cagedMode}
+                        onModeChange={setCagedMode}
+                    />
+                )}
+
+                {cagedView === 'metronome' && (
+                    <div className="flex justify-center items-center py-6 animate-in zoom-in-95 duration-500">
+                        <Metronome
+                            bpm={bpm}
+                            setBpm={setBpm}
+                            isPlaying={isMetronomePlaying}
+                            onTogglePlay={toggleMetronome}
+                            tick={tick}
+                            soundType={soundType}
+                            setSoundType={setSoundType}
+                            volume={volume}
+                            setVolume={setVolume}
+                            isMuted={isMuted}
+                            setIsMuted={setIsMuted}
+                        />
+                    </div>
+                )}
+            </main>
+        </div>
+    );
+
     // --- RENDER MAIN ---
     return (
         <div className="min-h-screen bg-[#101622] flex flex-col relative overflow-hidden">
@@ -1764,6 +1949,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
             {activeView === 'vocal_test' && renderVocalTest()}
             {activeView === 'piano' && <PianoScreen onBack={() => setActiveView('menu')} />}
             {activeView === 'tuner' && renderTuner()}
+            {activeView === 'chord_dictionary' && renderChordDictionary()}
 
             {/* Hidden Input for camera or gallery - Global Access */}
             <input
