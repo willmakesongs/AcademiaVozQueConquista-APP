@@ -359,8 +359,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       email: 'guest@vocalizes.com.br',
       role: role,
       avatarUrl: `https://ui-avatars.com/api/?name=${role === 'student' ? 'Aluno' : 'Prof'}&background=random&color=fff&background=6F4CE7`,
-      status: 'active',
+      status: 'trial',
       plan: 'Plano Pro',
+      onboardingCompleted: true,
       nextDueDate: '2026-02-02',
       amount: '97,00'
     });

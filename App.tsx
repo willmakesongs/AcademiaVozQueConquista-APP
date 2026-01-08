@@ -182,8 +182,8 @@ const AppContent = () => {
     if (visitorTimeRemaining === 0 && user?.id === 'guest') {
       return (
         <VisitorConversionScreen
-          onJoin={() => window.open('https://vozqueconquista.com.br', '_blank')}
-          onLearnMore={() => window.open('https://vozqueconquista.com.br/sobre', '_blank')}
+          onJoin={() => window.open('https://wa.me/5535997565329', '_blank')}
+          onLearnMore={() => window.open('https://wa.me/5535997565329', '_blank')}
         />
       );
     }

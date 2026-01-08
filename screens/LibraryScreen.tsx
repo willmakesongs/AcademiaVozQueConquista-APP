@@ -85,7 +85,7 @@ export const LibraryScreen: React.FC<Props> = ({
     }
 
     const fetchData = async () => {
-      if (!user || user.id === 'guest') {
+      if (!user) {
         setLoading(false);
         return;
       }
@@ -644,7 +644,8 @@ export const LibraryScreen: React.FC<Props> = ({
             <div className="space-y-4">
               {courses.map(course => {
                 const isAdminOrTeacher = user?.role === 'admin' || user?.role === 'teacher';
-                const isEnrolled = userCourses.some(uc => uc.course_id === course.id && uc.status === 'ativo') || isAdminOrTeacher;
+                const isGuest = user?.id === 'guest' || user?.status === 'trial';
+                const isEnrolled = userCourses.some(uc => uc.course_id === course.id && uc.status === 'ativo') || isAdminOrTeacher || isGuest;
                 const isActive = activeCourseSlug === course.slug;
 
                 return (
@@ -659,7 +660,22 @@ export const LibraryScreen: React.FC<Props> = ({
                     className={`relative p-5 rounded-3xl border transition-all flex items-center gap-4 ${isActive ? 'bg-[#0081FF]/10 border-[#0081FF] shadow-lg shadow-[#0081FF]/10' : (isEnrolled ? 'bg-white/5 border-white/5' : 'bg-black/20 border-white/5 opacity-50')}`}
                   >
                     <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl ${isActive ? 'bg-[#0081FF] text-white' : 'bg-white/5'}`}>
-                      {course.slug === 'canto' ? '🎤' : (course.slug === 'violao' ? '🎸' : '🎹')}
+                      {(() => {
+                        const s = course.slug.toLowerCase();
+                        if (s.includes('canto') || s.includes('voz')) return '🎤';
+                        if (s.includes('violao')) return '🎸';
+                        if (s.includes('guitarra')) return '🎸';
+                        if (s.includes('bateria')) return '🥁';
+                        if (s.includes('oratoria') || s.includes('fala')) return '🗣️';
+                        if (s.includes('musicalizacao') || s.includes('infantil')) {
+                          return <img src="/musicalizacao-icon-dark.png" alt="Musicalização" className="w-full h-full object-cover rounded-2xl" />;
+                        }
+                        if (s.includes('piano') || s.includes('teclado')) return '🎹';
+                        if (s.includes('violino')) return '🎻';
+                        if (s.includes('saxofone') || s.includes('sax')) return '🎷';
+                        if (s.includes('producao') || s.includes('studio')) return '🎧';
+                        return '🎹';
+                      })()}
                     </div>
                     <div className="flex-1">
                       <h3 className="font-bold text-white">{course.nome}</h3>
@@ -668,7 +684,13 @@ export const LibraryScreen: React.FC<Props> = ({
                       </p>
                     </div>
                     {!isEnrolled && (
-                      <button className="px-4 py-2 bg-white/5 rounded-xl text-[9px] font-black uppercase tracking-widest text-[#FF00BC]">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          window.open('https://wa.me/5535997565329', '_blank');
+                        }}
+                        className="px-4 py-2 bg-white/5 rounded-xl text-[9px] font-black uppercase tracking-widest text-[#FF00BC] hover:bg-[#FF00BC] hover:text-white transition-all"
+                      >
                         Contratar
                       </button>
                     )}
