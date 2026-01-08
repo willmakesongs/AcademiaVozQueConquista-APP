@@ -139,6 +139,10 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
         - Oferecer os cursos disponíveis (Canto, Violão, Oratória, etc.) e convidar para se inscrever na Academia.
         - Se o visitante perguntar sobre exercícios, explique que eles estão dentro dos módulos exclusivos para alunos, mas que ele pode experimentar a primeira aula gratuitamente ou tirar dúvidas sobre o método.
 
+        **DADOS DE CONTATO (ÚNICOS PERMITIDOS)**
+        - WhatsApp Oficial: (35) 99756 5329
+        - Se perguntarem telefone ou contato, forneça APENAS este número.
+
         **Sua Personalidade:**
         - Acolhedora, entusiasmada e persuasiva (vendedora sutil).
         - Use emojis (✨, 🚀, 🎤).
@@ -190,6 +194,10 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
         - Dúvidas sobre funcionamento da plataforma
         - Encorajamento em momentos de dificuldade
 
+        **DADOS DE CONTATO**
+        - WhatsApp Suporte/Comercial: (35) 99756 5329
+        - Se o aluno pedir contato da academia ou suporte, forneça este número.
+
         **Contexto do Aluno:**
         Nome: ${user?.name || 'Aluno'}.
         Módulos Disponíveis: ${MODULES.map(m => m.title).join(', ')}.
@@ -205,9 +213,9 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                     parts: [{ text: m.text }]
                 }));
 
-            // Usa o modelo 'gemini-flash-latest' conforme sugerido, ou fallback para 'gemini-flash-latest'
+            // Usa o modelo 'gemini-1.5-flash' para maior estabilidade e limites de cota
             const model = genAI.getGenerativeModel({
-                model: "gemini-flash-latest", // Usando latest que vimos na lista
+                model: "gemini-1.5-flash",
                 systemInstruction: {
                     role: 'system',
                     parts: [{ text: systemPrompt }]
@@ -289,12 +297,18 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
         } catch (error: any) {
             console.error("Erro no envio:", error);
 
+            let errorMessage = `Ops! Tive um problema de conexão. Poderia repetir? 🔄`;
+
+            if (error.message?.includes('429') || error.message?.includes('Quota') || error.message?.includes('quota')) {
+                errorMessage = "⏳ O servidor da IA está com muitas requisições no momento. Por favor, aguarde alguns segundos e tente novamente.";
+            }
+
             setMessages(prev => {
                 const clean = prev.filter(m => m.id !== botMsgId);
                 return [...clean, {
                     id: Date.now().toString(),
                     role: 'model',
-                    text: `Ops! Tive um problema de conexão (${error.message}). Poderia repetir? 🔄`
+                    text: errorMessage
                 }];
             });
 
