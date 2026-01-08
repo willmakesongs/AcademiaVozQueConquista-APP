@@ -194,7 +194,7 @@ const ChordChart: React.FC<ChordChartProps> = ({
       </div>
 
       <div
-        className={`flex flex-col items-center bg-[#0d1017] p-3 sm:p-8 pb-8 sm:pb-10 rounded-[2.5rem] sm:rounded-[3rem] border shadow-2xl select-none touch-none overflow-hidden transition-all duration-500 ${isInteractive ? 'border-orange-500/50 bg-[#16120d]' : 'border-white/5'} flex-shrink-0`}
+        className="flex flex-col items-center select-none touch-none overflow-visible transition-all duration-500 flex-shrink-0"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}

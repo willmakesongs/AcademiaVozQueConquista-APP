@@ -208,8 +208,9 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
               </div>
             )}
 
-            <div className="mb-10 w-full flex justify-center overflow-x-auto hide-scrollbar">
+            <div className="mb-6 w-full flex justify-center overflow-x-auto hide-scrollbar">
               <ChordChart
+                selectedRoot={selectedRoot}
                 selectedNotes={displayNotes}
                 displayMode={displayMode}
                 onModeChange={onModeChange}
