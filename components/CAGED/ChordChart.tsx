@@ -194,7 +194,7 @@ const ChordChart: React.FC<ChordChartProps> = ({
       </div>
 
       <div
-        className="flex flex-col items-center select-none touch-none overflow-visible transition-all duration-500 flex-shrink-0"
+        className="flex flex-col items-center select-none touch-none overflow-visible transition-all duration-500 flex-shrink-0 w-full"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -203,8 +203,9 @@ const ChordChart: React.FC<ChordChartProps> = ({
           transition: isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28)'
         }}
       >
-        <div className="flex items-start gap-2 sm:gap-6 mt-6 sm:mt-8">
-          <div className="flex flex-col pt-2 w-9 sm:w-12 items-end">
+        <div className="relative mt-12 sm:mt-16 w-[170px] sm:w-[220px]">
+          {/* Fret Indicators (Casa) - Absolutely positioned on the left to not affect centering */}
+          <div className="absolute -left-10 sm:-left-16 top-0 bottom-0 flex flex-col pt-3 w-10 sm:w-14 items-end pointer-events-none">
             <span className="text-blue-500 font-black text-lg sm:text-2xl leading-none">
               {startFret === 1 ? '' : `${startFret}ª`}
             </span>
@@ -213,7 +214,7 @@ const ChordChart: React.FC<ChordChartProps> = ({
             </span>
           </div>
 
-          <div className="relative w-[160px] sm:w-[220px]">
+          <div className="relative w-full">
             {/* INDICATORS (Aligned) */}
             <div className="absolute -top-9 left-0 right-0 h-9 pointer-events-none z-40">
               {stringsIndices.map((sIdx, i) => {
