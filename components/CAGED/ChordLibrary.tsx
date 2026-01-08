@@ -173,12 +173,12 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
         <div className="bg-[#1C1C1E] rounded-[2.5rem] border border-white/5 overflow-hidden shadow-sm flex flex-col">
 
           <div className="p-10 bg-white/[0.02] border-b border-white/5 flex flex-col items-center gap-6">
-            <div className="flex gap-3 justify-center">
+            <div className="flex gap-2 sm:gap-3 justify-center">
               {cagedShapes.map(shape => (
                 <button
                   key={shape}
                   onClick={() => { setActiveShape(shape); if (isEditing) setIsEditing(false); }}
-                  className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl text-lg font-bold transition-all ${activeShape === shape ? 'bg-[#007AFF] text-white shadow-xl scale-110 z-10' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'
+                  className={`w-11 h-11 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl text-base sm:text-lg font-bold transition-all ${activeShape === shape ? 'bg-[#007AFF] text-white shadow-xl scale-110 z-10' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'
                     }`}
                 >
                   {shape}
