@@ -216,10 +216,7 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
             // Usa o modelo 'gemini-1.5-flash' para maior estabilidade e limites de cota
             const model = genAI.getGenerativeModel({
                 model: "gemini-1.5-flash",
-                systemInstruction: {
-                    role: 'system',
-                    parts: [{ text: systemPrompt }]
-                }
+                systemInstruction: systemPrompt
             });
 
             chatSessionRef.current = model.startChat({
@@ -297,7 +294,7 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
         } catch (error: any) {
             console.error("Erro no envio:", error);
 
-            let errorMessage = `Ops! Tive um problema de conexão. Poderia repetir? 🔄`;
+            let errorMessage = `Ops! Tive um problema de conexão (${error.message || 'Erro desconhecido'}). Poderia repetir? 🔄`;
 
             if (error.message?.includes('429') || error.message?.includes('Quota') || error.message?.includes('quota')) {
                 errorMessage = "⏳ O servidor da IA está com muitas requisições no momento. Por favor, aguarde alguns segundos e tente novamente.";
