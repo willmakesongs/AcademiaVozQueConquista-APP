@@ -156,12 +156,12 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                     parts: [{ text: m.text }]
                 }));
 
-            // MODELO RECOMENDADO: gemini-3-flash-preview (Melhor custo/benefício e cota)
+            // MODELO ESTÁVEL: gemini-1.5-flash (Maior cota na conta gratuita)
             chatSessionRef.current = ai.chats.create({
-                model: 'gemini-3-flash-preview',
+                model: 'gemini-1.5-flash',
                 config: {
-                    systemInstruction: systemPrompt,
-                    tools: [{ googleSearch: {} }]
+                    systemInstruction: systemPrompt
+                    // Grounding desativado temporariamente para economizar cota (Search Tool)
                 },
                 history: history
             });
