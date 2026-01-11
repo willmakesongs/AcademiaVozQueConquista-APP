@@ -361,8 +361,8 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                     >
                         <div
                             className={`max-w-[90%] rounded-2xl p-4 text-sm leading-relaxed relative shadow-md ${msg.role === 'user'
-                                    ? 'bg-[#1A202C] text-white rounded-tr-none border border-white/10'
-                                    : 'bg-gradient-to-br from-[#2D3748] to-[#1A202C] text-gray-100 rounded-tl-none border border-white/5'
+                                ? 'bg-[#1A202C] text-white rounded-tr-none border border-white/10'
+                                : 'bg-gradient-to-br from-[#2D3748] to-[#1A202C] text-gray-100 rounded-tl-none border border-white/5'
                                 }`}
                         >
                             <div className="whitespace-pre-wrap font-sans">{msg.text}</div>
@@ -423,7 +423,12 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                 </div>
             )}
 
-            <div className="p-4 bg-[#101622] border-t border-white/5 pb-safe-bottom">
+            {/* 
+                AJUSTE DE UI: 
+                Adicionamos pb-28 (7rem) para garantir que a caixa de texto 
+                fique acima do botão flutuante da Lorena no BottomNav.
+            */}
+            <div className="p-4 bg-[#101622] border-t border-white/5 pb-28">
                 <div className="flex gap-2 items-end bg-[#1A202C] p-2 rounded-2xl border border-white/10 focus-within:border-[#6F4CE7] focus-within:ring-1 focus-within:ring-[#6F4CE7]/30 transition-all shadow-lg">
                     <textarea
                         value={inputText}
@@ -442,8 +447,8 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                         onClick={handleSendMessage}
                         disabled={!inputText.trim() || isTyping}
                         className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${inputText.trim()
-                                ? 'bg-[#0081FF] text-white shadow-lg transform active:scale-95'
-                                : 'bg-white/5 text-gray-600'
+                            ? 'bg-[#0081FF] text-white shadow-lg transform active:scale-95'
+                            : 'bg-white/5 text-gray-600'
                             }`}
                     >
                         <span className="material-symbols-rounded">send</span>
