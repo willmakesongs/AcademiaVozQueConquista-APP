@@ -72,8 +72,7 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                 try {
                     key = process.env.API_KEY || process.env.GEMINI_API_KEY;
                 } catch (e) {
-                    // process not defined in browser without polyfill
-                    console.warn("process.env access failed, checking alternatives");
+                    console.warn("process.env access failed");
                 }
 
                 if (key && key.length > 10 && !key.includes("PLACEHOLDER")) {
@@ -155,12 +154,13 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                     parts: [{ text: m.text }]
                 }));
 
-            // MODELO ESTÁVEL: gemini-2.0-flash (Funciona bem no SDK atual)
+            // MODELO DEFINITIVO: gemini-2.0-flash-exp
+            // Esta versão é amplamente disponível e resolve os erros 404 (Not Found) do 1.5
+            // e erros 429 (Quota) do 3-preview.
             chatSessionRef.current = ai.chats.create({
-                model: 'gemini-2.0-flash',
+                model: 'gemini-2.0-flash-exp',
                 config: {
-                    systemInstruction: systemPrompt
-                    // Grounding desativado para economizar cota e evitar 429 imediato
+                    systemInstruction: systemPrompt,
                 },
                 history: history
             });
@@ -183,7 +183,7 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                 alert("Erro ao conectar chave. Tente novamente.");
             }
         } else {
-            alert("Ambiente de seleção automática não disponível. Por favor, configure a variável 'API_KEY' no painel da Vercel/Netlify.");
+            alert("Ambiente de seleção automática não disponível. Por favor, configure a variável 'API_KEY'.");
         }
     };
 
@@ -257,16 +257,15 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
             let errorMsg = "Ops! Tive um problema de conexão. Poderia repetir? 🔄";
             const errStr = error.toString();
 
-            // Tratamento de erros específicos
-            if (errStr.includes("404") || errStr.includes("not found")) {
-                errorMsg = "⚠️ Erro Técnico: O modelo de IA está indisponível ou descontinuado na região atual. Tente recarregar a página.";
+            // Tratamento de erros
+            if (errStr.includes("404") || errStr.includes("not found") || errStr.includes("Not Found")) {
+                errorMsg = "⚠️ Modelo em manutenção: O servidor da IA está temporariamente indisponível. Tente novamente em 1 minuto.";
             } else if (errStr.includes("API key") || errStr.includes("403")) {
-                errorMsg = "⚠️ Erro de Autenticação: Chave API inválida ou não configurada no Vercel/Supabase.";
+                errorMsg = "⚠️ Erro de Autenticação: Chave API inválida.";
             } else if (errStr.includes("429") || errStr.includes("quota") || errStr.includes("Quota exceeded")) {
-                // Mensagem amigável para erro de cota
-                errorMsg = "⏳ Ufa! Recebi muitas mensagens de uma vez e preciso recuperar o fôlego. Aguarde cerca de 30 segundos e tente novamente!";
+                errorMsg = "⏳ A Lorena está recebendo muitos pedidos! Aguarde 10 segundos e tente novamente.";
             } else if (errStr.includes("503") || errStr.includes("overloaded")) {
-                errorMsg = "🤯 O servidor da IA está superlotado no momento. Tente novamente em alguns segundos.";
+                errorMsg = "🤯 Servidor sobrecarregado. Tentando reconectar...";
             }
 
             setMessages(prev => {
@@ -278,7 +277,6 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                 }];
             });
 
-            // Força recriação da sessão para tentar limpar erros
             chatSessionRef.current = null;
         } finally {
             setIsTyping(false);
@@ -326,7 +324,7 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                                 API_KEY=sua_chave_aqui
                             </code>
                             <p className="text-[10px] text-gray-500">
-                                Configure isso no painel da Vercel (Settings &gt; Environment Variables) e faça o deploy novamente.
+                                Configure isso no painel da Vercel (Settings &gt; Environment Variables).
                             </p>
                         </div>
                     )}
@@ -375,10 +373,6 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
 
                         {msg.groundingMetadata?.groundingChunks && msg.groundingMetadata.groundingChunks.length > 0 && (
                             <div className="w-full max-w-[90%] mt-3 pl-2 overflow-x-auto hide-scrollbar">
-                                <p className="text-[10px] text-gray-500 uppercase font-bold mb-2 flex items-center gap-1">
-                                    <span className="material-symbols-rounded text-xs">manage_search</span>
-                                    Referências Encontradas
-                                </p>
                                 <div className="flex gap-3 pb-2">
                                     {msg.groundingMetadata.groundingChunks.map((chunk: any, idx: number) => {
                                         if (!chunk.web?.uri) return null;
@@ -388,14 +382,8 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                                                 href={chunk.web.uri}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="min-w-[200px] max-w-[200px] bg-[#101622] border border-white/10 rounded-xl p-3 hover:border-[#0081FF] transition-all hover:-translate-y-1 flex flex-col gap-2 group shadow-lg"
+                                                className="min-w-[200px] max-w-[200px] bg-[#101622] border border-white/10 rounded-xl p-3 flex flex-col gap-2 group shadow-lg"
                                             >
-                                                <div className="flex items-start justify-between">
-                                                    <div className="w-6 h-6 rounded-full bg-white/5 flex items-center justify-center text-gray-400 group-hover:text-white transition-colors">
-                                                        <span className="material-symbols-rounded text-xs">public</span>
-                                                    </div>
-                                                    <span className="material-symbols-rounded text-xs text-gray-600 -rotate-45 group-hover:text-[#0081FF]">arrow_forward</span>
-                                                </div>
                                                 <span className="text-xs font-bold text-gray-300 line-clamp-2 leading-tight group-hover:text-[#0081FF] transition-colors">
                                                     {chunk.web.title || "Link Externo"}
                                                 </span>
