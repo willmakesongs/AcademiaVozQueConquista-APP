@@ -156,10 +156,9 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                     parts: [{ text: m.text }]
                 }));
 
-            // MODELO ATUALIZADO: gemini-2.0-flash (Estável e Rápido)
-            // Corrige o erro de "1.5-flash-latest not found"
+            // MODELO RECOMENDADO: gemini-3-flash-preview (Melhor custo/benefício e cota)
             chatSessionRef.current = ai.chats.create({
-                model: 'gemini-2.0-flash',
+                model: 'gemini-3-flash-preview',
                 config: {
                     systemInstruction: systemPrompt,
                     tools: [{ googleSearch: {} }]
@@ -235,7 +234,6 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                 const chunkText = chunk.text || '';
                 accumulatedText += chunkText;
 
-                // Updated to access groundingMetadata securely from candidates
                 if (chunk.candidates?.[0]?.groundingMetadata) {
                     finalMetadata = chunk.candidates[0].groundingMetadata;
                 }
@@ -265,8 +263,11 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                 errorMsg = "⚠️ Erro Técnico: O modelo de IA está indisponível ou descontinuado na região atual. Tente recarregar a página.";
             } else if (errStr.includes("API key") || errStr.includes("403")) {
                 errorMsg = "⚠️ Erro de Autenticação: Chave API inválida ou não configurada no Vercel/Supabase.";
-            } else if (errStr.includes("quota") || errStr.includes("429")) {
-                errorMsg = "⚠️ Limite de Uso: A IA está sobrecarregada no momento. Tente novamente em alguns segundos.";
+            } else if (errStr.includes("429") || errStr.includes("quota") || errStr.includes("Quota exceeded")) {
+                // Mensagem amigável para erro de cota
+                errorMsg = "⏳ Ufa! Recebi muitas mensagens de uma vez e preciso recuperar o fôlego. Aguarde cerca de 30 segundos e tente novamente!";
+            } else if (errStr.includes("503") || errStr.includes("overloaded")) {
+                errorMsg = "🤯 O servidor da IA está superlotado no momento. Tente novamente em alguns segundos.";
             }
 
             setMessages(prev => {
@@ -278,6 +279,7 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                 }];
             });
 
+            // Força recriação da sessão para tentar limpar erros
             chatSessionRef.current = null;
         } finally {
             setIsTyping(false);
