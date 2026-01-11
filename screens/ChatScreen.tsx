@@ -215,7 +215,7 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
 
             // Usa o modelo 'gemini-1.5-flash' para maior estabilidade e limites de cota
             const model = genAI.getGenerativeModel({
-                model: "gemini-1.5-flash",
+                model: "gemini-1.5-flash-latest",
                 systemInstruction: systemPrompt
             });
 
