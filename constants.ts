@@ -2323,6 +2323,12 @@ export const VOCALIZES: Vocalize[] = [
     }
 ];
 
+export const INITIAL_TASKS: Task[] = [
+    { id: 1, time: '08:00', title: 'Aquecimento Matinal', duration: '15 min', status: 'pending', category: 'Técnica', date: '02' },
+    { id: 2, time: '10:00', title: 'Técnica de Respiração (Módulo 3)', duration: '15 min', status: 'pending', category: 'Técnica', date: '02' },
+    { id: 3, time: '14:00', title: 'Repertório: Let It Be', duration: '30 min', status: 'pending', category: 'Repertório', date: '02' }
+];
+
 export const CURRENT_USER: User = {
     id: 'u1',
     name: 'Lorena Pimentel',
@@ -2334,3 +2340,4 @@ export const CURRENT_USER: User = {
 export const MOCK_STUDENTS: StudentSummary[] = [];
 
 export const TEACHER_APPOINTMENTS: Appointment[] = [];
+

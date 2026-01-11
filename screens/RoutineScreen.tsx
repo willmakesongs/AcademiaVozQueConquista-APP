@@ -1,8 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { Screen, Task } from '../types';
-import { supabase } from '../lib/supabaseClient';
-import { useAuth } from '../contexts/AuthContext';
+import { INITIAL_TASKS } from '../constants'; // Importando dados centralizados
 
 interface Props {
   onNavigate: (screen: Screen) => void;
@@ -19,24 +17,26 @@ const WEEK_DAYS = [
   { day: 'Dom', date: '04', active: false }, // Jan
 ];
 
-
-
 const CATEGORIES = ['Aquecimento', 'Técnica', 'Repertório', 'Saúde Vocal'];
 
 export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
-  const { user } = useAuth();
   const [selectedDate, setSelectedDate] = useState('02');
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(true);
+
+  // INICIALIZAÇÃO COM LOCAL STORAGE
+  // Se houver dados salvos, usa eles. Se não, usa o INITIAL_TASKS.
+  const [tasks, setTasks] = useState<Task[]>(() => {
+    if (typeof window !== 'undefined') {
+      const savedTasks = localStorage.getItem('vocalizes_routine_tasks');
+      return savedTasks ? JSON.parse(savedTasks) : INITIAL_TASKS;
+    }
+    return INITIAL_TASKS;
+  });
 
   // UI States
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [openMenuId, setOpenMenuId] = useState<string | number | null>(null);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
-
-  // Delete Modal States
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [taskToDelete, setTaskToDelete] = useState<string | number | null>(null);
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null); // State para modal de exclusão
 
   // Form States
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -45,29 +45,11 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
   const [newTaskDuration, setNewTaskDuration] = useState('15');
   const [newTaskDate, setNewTaskDate] = useState('02');
 
+  // PERSISTÊNCIA AUTOMÁTICA
+  // Sempre que 'tasks' mudar (adicionar, editar, excluir), salva no localStorage
   useEffect(() => {
-    if (user) {
-      fetchTasks();
-    }
-  }, [user]);
-
-  const fetchTasks = async () => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('routines')
-        .select('*')
-        .eq('user_id', user?.id)
-        .order('time', { ascending: true });
-
-      if (error) throw error;
-      setTasks(data || []);
-    } catch (err) {
-      console.error('Error fetching tasks:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    localStorage.setItem('vocalizes_routine_tasks', JSON.stringify(tasks));
+  }, [tasks]);
 
   // Fecha o menu se clicar fora (simples)
   useEffect(() => {
@@ -111,105 +93,64 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
     setOpenMenuId(null);
   };
 
-  const handleSaveTask = async () => {
-    if (!newTaskTitle.trim() || !user) return;
+  const handleSaveTask = () => {
+    if (!newTaskTitle.trim()) return;
 
-    try {
-      if (editingTask) {
-        // EDITAR NO SUPABASE
-        const { error } = await supabase
-          .from('routines')
-          .update({
+    if (editingTask) {
+      // EDITAR: Usa atualização funcional para garantir estado consistente
+      setTasks(prevTasks => prevTasks.map(t => {
+        if (t.id === editingTask.id) {
+          return {
+            ...t,
             title: newTaskTitle,
             category: newTaskCategory,
             time: newTaskTime,
             duration: `${newTaskDuration} min`,
             date: newTaskDate
-          })
-          .eq('id', editingTask.id);
-
-        if (error) throw error;
-
-        setTasks(prev => prev.map(t => t.id === editingTask.id ? {
-          ...t,
-          title: newTaskTitle,
-          category: newTaskCategory,
-          time: newTaskTime,
-          duration: `${newTaskDuration} min`,
-          date: newTaskDate
-        } : t));
-      } else {
-        // ADICIONAR NOVO NO SUPABASE
-        const { data, error } = await supabase
-          .from('routines')
-          .insert([{
-            user_id: user.id,
-            title: newTaskTitle,
-            category: newTaskCategory,
-            time: newTaskTime,
-            duration: `${newTaskDuration} min`,
-            date: newTaskDate,
-            status: 'pending'
-          }])
-          .select();
-
-        if (error) throw error;
-        if (data) setTasks(prev => [...prev, data[0]]);
-      }
-
-      resetForm();
-      setIsAddModalOpen(false);
-      resetForm();
-      setIsAddModalOpen(false);
-    } catch (err) {
-      console.error('Error saving task:', err);
-      alert('Erro ao salvar tarefa no servidor. Verifique se você está conectado.');
+          };
+        }
+        return t;
+      }));
+    } else {
+      // ADICIONAR NOVO
+      const newTask: Task = {
+        id: Date.now().toString(), // Garante ID único como string
+        title: newTaskTitle,
+        category: newTaskCategory,
+        time: newTaskTime,
+        duration: `${newTaskDuration} min`,
+        date: newTaskDate,
+        status: 'pending'
+      };
+      setTasks(prevTasks => [...prevTasks, newTask]);
     }
+
+    resetForm();
+    setIsAddModalOpen(false);
   };
 
-  const handleDeleteTask = (taskId: string | number) => {
-    setTaskToDelete(taskId);
+  // Solicita exclusão (abre modal)
+  const handleDeleteRequest = (task: Task) => {
     setOpenMenuId(null);
-    setShowDeleteConfirm(true);
+    setTaskToDelete(task);
   };
 
-  const confirmDeleteTask = async () => {
-    if (!taskToDelete) return;
-
-    try {
-      const { error } = await supabase
-        .from('routines')
-        .delete()
-        .eq('id', taskToDelete);
-
-      if (error) throw error;
-      setTasks(prev => prev.filter(t => String(t.id) !== String(taskToDelete)));
-      setShowDeleteConfirm(false);
+  // Confirma exclusão (executa ação)
+  const confirmDelete = () => {
+    if (taskToDelete) {
+      setTasks(prevTasks => prevTasks.filter(t => String(t.id) !== String(taskToDelete.id)));
       setTaskToDelete(null);
-    } catch (err) {
-      console.error('Error deleting task:', err);
-      // More descriptive error for RLS failure
-      alert('Erro ao excluir tarefa. Você pode não ter permissão para excluir este item.');
     }
   };
 
-  const toggleTaskStatus = async (taskId: string | number) => {
-    const task = tasks.find(t => t.id === taskId);
-    if (!task || task.status === 'locked') return;
-
-    const newStatus = task.status === 'pending' ? 'completed' : 'pending';
-
-    try {
-      const { error } = await supabase
-        .from('routines')
-        .update({ status: newStatus })
-        .eq('id', taskId);
-
-      if (error) throw error;
-      setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: newStatus } : t));
-    } catch (err) {
-      console.error('Error toggling status:', err);
-    }
+  const toggleTaskStatus = (taskId: string | number) => {
+    setTasks(prevTasks => prevTasks.map(t => {
+      if (t.id === taskId) {
+        if (t.status === 'locked') return t; // Don't toggle locked
+        return { ...t, status: t.status === 'pending' ? 'completed' : 'pending' };
+      }
+      return t;
+    }));
   };
 
   const toggleMenu = (e: React.MouseEvent, taskId: string | number) => {
@@ -236,8 +177,8 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
               key={item.date}
               onClick={() => setSelectedDate(item.date)}
               className={`flex flex-col items-center justify-center w-14 h-20 rounded-2xl border transition-all ${selectedDate === item.date
-                ? 'bg-[#FF00BC] border-[#FF00BC] text-white shadow-[0_4px_20px_rgba(255,0,188,0.4)] transform scale-105'
-                : 'bg-[#1A202C] border-white/5 text-gray-400 hover:bg-white/5'
+                  ? 'bg-[#FF00BC] border-[#FF00BC] text-white shadow-[0_4px_20px_rgba(255,0,188,0.4)] transform scale-105'
+                  : 'bg-[#1A202C] border-white/5 text-gray-400 hover:bg-white/5'
                 }`}
             >
               <span className="text-xs font-medium mb-1">{item.day}</span>
@@ -307,8 +248,8 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
                     <button
                       onClick={() => toggleTaskStatus(task.id)}
                       className={`absolute left-0 top-1 w-10 h-10 rounded-full border-4 border-[#101622] flex items-center justify-center z-10 transition-colors ${task.status === 'completed' ? 'bg-[#0081FF] text-white' :
-                        task.status === 'pending' ? 'bg-[#FF00BC] text-white hover:bg-[#FF00BC]/80' :
-                          'bg-[#1A202C] text-gray-600 border-white/5'
+                          task.status === 'pending' ? 'bg-[#FF00BC] text-white hover:bg-[#FF00BC]/80' :
+                            'bg-[#1A202C] text-gray-600 border-white/5'
                         }`}
                     >
                       <span className="material-symbols-rounded text-lg">
@@ -321,8 +262,8 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
                     <div
                       onClick={() => task.status !== 'locked' && onNavigate(Screen.PLAYER)}
                       className={`p-4 rounded-xl border transition-all cursor-pointer group relative ${task.status === 'pending'
-                        ? 'bg-[#1A202C] border-[#FF00BC]/50 shadow-[0_0_20px_rgba(255,0,188,0.1)]'
-                        : 'bg-[#1A202C]/50 border-white/5 opacity-80'
+                          ? 'bg-[#1A202C] border-[#FF00BC]/50 shadow-[0_0_20px_rgba(255,0,188,0.1)]'
+                          : 'bg-[#1A202C]/50 border-white/5 opacity-80'
                         }`}
                     >
                       {/* MORE OPTIONS BUTTON CONTAINER */}
@@ -353,7 +294,7 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleDeleteTask(task.id);
+                                handleDeleteRequest(task);
                               }}
                               className="w-full text-left px-4 py-3 text-xs font-bold text-red-400 hover:bg-red-500/10 flex items-center gap-2"
                             >
@@ -429,8 +370,8 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
                       key={cat}
                       onClick={() => setNewTaskCategory(cat)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${newTaskCategory === cat
-                        ? 'bg-[#6F4CE7] border-[#6F4CE7] text-white'
-                        : 'bg-[#101622] border-white/10 text-gray-400 hover:text-white'
+                          ? 'bg-[#6F4CE7] border-[#6F4CE7] text-white'
+                          : 'bg-[#101622] border-white/10 text-gray-400 hover:text-white'
                         }`}
                     >
                       {cat}
@@ -490,29 +431,29 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
         </div>
       )}
 
-
-      {/* DELETE CONFIRMATION MODAL */}
-      {showDeleteConfirm && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="w-full max-w-[280px] bg-[#1A202C] rounded-[32px] border border-white/10 p-8 shadow-2xl flex flex-col items-center text-center animate-in zoom-in-95 duration-200">
-            <div className="w-16 h-16 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center mb-6">
-              <span className="material-symbols-rounded text-3xl">delete_forever</span>
+      {/* MODAL: DELETE CONFIRMATION */}
+      {taskToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="w-full max-w-sm bg-[#1A202C] rounded-2xl border border-white/10 shadow-2xl p-6 animate-in zoom-in-95 duration-200 text-center">
+            <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">
+              <span className="material-symbols-rounded text-3xl text-red-500">delete</span>
             </div>
-            <h3 className="text-white font-black text-lg mb-2">Excluir Tarefa?</h3>
-            <p className="text-gray-400 text-sm mb-8 leading-relaxed">Esta ação não pode ser desfeita. Deseja continuar?</p>
-
-            <div className="grid grid-cols-2 gap-3 w-full">
+            <h3 className="text-lg font-bold text-white mb-2">Excluir Tarefa?</h3>
+            <p className="text-sm text-gray-400 mb-6">
+              Você tem certeza que deseja remover <strong>"{taskToDelete.title}"</strong> da sua rotina? Esta ação não pode ser desfeita.
+            </p>
+            <div className="flex gap-3">
               <button
-                onClick={() => setShowDeleteConfirm(false)}
-                className="h-12 rounded-2xl bg-white/5 text-gray-400 font-black text-xs uppercase tracking-widest hover:bg-white/10 transition-all"
+                onClick={() => setTaskToDelete(null)}
+                className="flex-1 py-3 rounded-xl bg-white/5 text-white font-bold hover:bg-white/10 transition-colors border border-white/5"
               >
-                NÃO
+                Cancelar
               </button>
               <button
-                onClick={confirmDeleteTask}
-                className="h-12 rounded-2xl bg-red-500 text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-red-500/20 active:scale-95 transition-all"
+                onClick={confirmDelete}
+                className="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 transition-colors shadow-lg shadow-red-900/20"
               >
-                SIM
+                Sim, Excluir
               </button>
             </div>
           </div>
