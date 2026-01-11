@@ -14,6 +14,21 @@ interface Props {
 
 const WEEK_DAYS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
 
+const getCourseIcon = (slug: string) => {
+    const s = slug.toLowerCase();
+    if (s.includes('canto') || s.includes('voz')) return '🎤';
+    if (s.includes('violao')) return '🎸';
+    if (s.includes('guitarra')) return '🎸';
+    if (s.includes('bateria')) return '🥁';
+    if (s.includes('oratoria') || s.includes('fala')) return '🗣️';
+    if (s.includes('musicalizacao') || s.includes('infantil')) return '👶';
+    if (s.includes('piano') || s.includes('teclado')) return '🎹';
+    if (s.includes('violino')) return '🎻';
+    if (s.includes('saxofone') || s.includes('sax')) return '🎷';
+    if (s.includes('producao') || s.includes('studio')) return '🎧';
+    return '🎵';
+};
+
 export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initialTab = 'dashboard', isAdminView = false }) => {
     const { user } = useAuth();
     const [showConfig, setShowConfig] = useState(false);
@@ -1370,7 +1385,25 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     </div>
                                     <div>
                                         <h4 className="text-sm font-bold text-white">{student.name}</h4>
-                                        <p className="text-[10px] text-gray-500 font-bold uppercase">{student.modality} • {student.level}</p>
+                                        <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
+                                            {student.courses && student.courses.length > 0 && (
+                                                <div className="flex items-center gap-1">
+                                                    {student.courses.map((sc, idx) => {
+                                                        const courseDetails = courses.find(c => c.id === sc.course_id);
+                                                        return (
+                                                            <span key={sc.id} className="text-[10px] text-[#0081FF] font-black uppercase tracking-wider flex items-center gap-1">
+                                                                {getCourseIcon(courseDetails?.slug || '')} {courseDetails?.nome || 'Curso'}
+                                                                {idx < student.courses!.length - 1 ? ' • ' : ''}
+                                                            </span>
+                                                        );
+                                                    })}
+                                                </div>
+                                            )}
+                                            <p className="text-[10px] text-gray-500 font-bold uppercase">
+                                                {student.courses && student.courses.length > 0 && <span className="mr-2 opacity-50">•</span>}
+                                                {student.modality} • {student.level}
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className="text-right">
