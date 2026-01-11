@@ -140,7 +140,6 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
 
         **Regras de Resposta:**
         - Se o aluno pedir **Letra de Música**, formate com espaçamento claro entre estrofes.
-        - Use as informações do Google Search para enriquecer sua resposta com fatos recentes se necessário.
         - Seja concisa e prática.
         
         **Contexto do Aluno:**
@@ -156,12 +155,12 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                     parts: [{ text: m.text }]
                 }));
 
-            // MODELO ESTÁVEL: gemini-1.5-flash (Maior cota na conta gratuita)
+            // MODELO ESTÁVEL: gemini-2.0-flash (Funciona bem no SDK atual)
             chatSessionRef.current = ai.chats.create({
-                model: 'gemini-1.5-flash',
+                model: 'gemini-2.0-flash',
                 config: {
                     systemInstruction: systemPrompt
-                    // Grounding desativado temporariamente para economizar cota (Search Tool)
+                    // Grounding desativado para economizar cota e evitar 429 imediato
                 },
                 history: history
             });
