@@ -29,6 +29,9 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
 
   // Estados para animação das barras
   const [barHeights, setBarHeights] = useState<number[]>([70, 35, 25, 85, 45, 25]);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const minSwipeDistance = 50;
 
   // Refs
   const animationIntervalRef = useRef<number | null>(null);
@@ -201,11 +204,38 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds} `;
   };
 
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe && onNext) {
+      onNext();
+    } else if (isRightSwipe && onPrev) {
+      onPrev();
+    }
+  };
+
   const currentTitle = vocalize?.title || "Selecione um exercício";
   const currentCategory = vocalize?.category || "Biblioteca";
 
   return (
-    <div className="min-h-screen bg-[#101622] flex flex-col relative overflow-hidden pb-24">
+    <div
+      className="min-h-screen bg-[#101622] flex flex-col relative overflow-hidden pb-24"
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
       <div className={`absolute top - [-20 %] left - 1 / 2 - translate - x - 1 / 2 w - [120 %] h - [60 %] bg - [#6F4CE7] blur - [150px] pointer - events - none transition - opacity duration - 1000 ${isPlaying ? 'opacity-30' : 'opacity-10'} `}></div>
 
       <style>{`

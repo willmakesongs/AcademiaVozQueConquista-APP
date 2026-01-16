@@ -35,6 +35,11 @@ export const LibraryScreen: React.FC<Props> = ({
   const [loading, setLoading] = useState(true);
   const [lastLesson, setLastLesson] = useState<{ moduleId: string; topicId: string; title: string } | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+
+  // Mínimo em pixels para considerar um swipe
+  const minSwipeDistance = 50;
 
   // Refs e Estados para o Checklist e Audio Inline
   const contentRef = useRef<HTMLDivElement>(null);
@@ -401,6 +406,39 @@ export const LibraryScreen: React.FC<Props> = ({
     localStorage.setItem('last_accessed_lesson', JSON.stringify(lessonData));
   };
 
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      // Próxima página
+      const slides = selectedTopic?.content?.split('<!-- slide -->') || [];
+      if (currentPage < slides.length - 1) {
+        setCurrentPage(prev => prev + 1);
+        contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+      } else if (slides.length > 1) {
+        setSelectedTopic(null);
+      }
+    } else if (isRightSwipe) {
+      // Página anterior
+      if (currentPage > 0) {
+        setCurrentPage(prev => prev - 1);
+        contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  };
+
   if (loading) {
     return <div className="min-h-screen bg-[#101622] flex items-center justify-center text-white">Carregando Academia...</div>;
   }
@@ -445,13 +483,18 @@ export const LibraryScreen: React.FC<Props> = ({
                 <div className="flex-1 flex flex-col justify-center min-w-0">
                   <h2 className="text-lg font-bold text-white truncate">{selectedTopic.title}</h2>
                   {selectedTopic.content?.includes('<!-- slide -->') && (
-                    <div className="flex gap-1 mt-1">
-                      {selectedTopic.content.split('<!-- slide -->').map((_, i) => (
-                        <div
-                          key={i}
-                          className={`h-1 rounded-full transition-all duration-300 ${i === currentPage ? 'w-4 bg-[#0081FF]' : 'w-1 bg-white/20'}`}
-                        />
-                      ))}
+                    <div className="flex items-center gap-3 mt-1">
+                      <div className="flex gap-1">
+                        {selectedTopic.content.split('<!-- slide -->').map((_, i) => (
+                          <div
+                            key={i}
+                            className={`h-1 rounded-full transition-all duration-300 ${i === currentPage ? 'w-4 bg-[#0081FF]' : 'w-1 bg-white/20'}`}
+                          />
+                        ))}
+                      </div>
+                      <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">
+                        Página {currentPage + 1} de {selectedTopic.content.split('<!-- slide -->').length}
+                      </span>
                     </div>
                   )}
                 </div>
@@ -460,6 +503,9 @@ export const LibraryScreen: React.FC<Props> = ({
                 className="flex-1 overflow-y-auto p-6 hide-scrollbar relative"
                 ref={contentRef}
                 onClick={handleContentClick}
+                onTouchStart={selectedTopic.content?.includes('<!-- slide -->') ? onTouchStart : undefined}
+                onTouchMove={selectedTopic.content?.includes('<!-- slide -->') ? onTouchMove : undefined}
+                onTouchEnd={selectedTopic.content?.includes('<!-- slide -->') ? onTouchEnd : undefined}
               >
                 <div
                   className="prose prose-invert prose-sm max-w-none animate-in fade-in duration-500"
