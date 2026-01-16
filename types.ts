@@ -51,6 +51,7 @@ export interface Module {
   title: string;
   subtitle: string;
   description: string;
+  icon?: string;
   topics: {
     id: string;
     title: string;

@@ -671,7 +671,19 @@ export const LibraryScreen: React.FC<Props> = ({
                     >
                       <div className={`mr-4 w-12 h-12 rounded-xl flex items-center justify-center shrink-0 font-bold text-lg transition-colors ${isActive ? 'bg-brand-gradient text-white' : (status === 'completed' ? 'bg-green-500/20 text-green-500' : 'bg-white/5 text-gray-500')
                         }`}>
-                        {isLocked ? <span className="material-symbols-rounded text-xl">lock</span> : (status === 'completed' ? <span className="material-symbols-rounded">check</span> : module.number)}
+                        {isLocked ? (
+                          <span className="material-symbols-rounded text-xl">lock</span>
+                        ) : (
+                          status === 'completed' ? (
+                            <span className="material-symbols-rounded">check</span>
+                          ) : (
+                            module.icon ? (
+                              <span className="material-symbols-rounded">{module.icon}</span>
+                            ) : (
+                              module.number
+                            )
+                          )
+                        )}
                       </div>
 
                       <div className="flex-1">

@@ -172,8 +172,22 @@ const SINGEO_BASE_URL = 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/
 // -----------------------------------------------------------
 export const MODULES: Module[] = [
     {
-        id: 'm1',
+        id: 'm_theory',
         number: '01',
+        title: 'TEORIA',
+        subtitle: 'Conhecimento é Poder',
+        description: 'A base teórica indispensável: Respiração, Fonação, Ressonância e Postura.',
+        icon: 'menu_book',
+        topics: [
+            { id: '1.1_t', title: 'Respiração', description: 'O combustível da voz.' },
+            { id: '1.2_t', title: 'Fonação', description: 'A criação do som.' },
+            { id: '1.3_t', title: 'Ressonância', description: 'O amplificador natural.' },
+            { id: '1.4_t', title: 'Registros e Postura', description: 'Equilíbrio e sustentação.' },
+        ]
+    },
+    {
+        id: 'm1',
+        number: '02',
         title: 'Fundamentos Biofisiológicos',
         subtitle: 'A Base',
         description: 'Prepara a "máquina" antes de exigir performance.',
