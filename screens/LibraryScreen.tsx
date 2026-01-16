@@ -35,8 +35,8 @@ export const LibraryScreen: React.FC<Props> = ({
   const [loading, setLoading] = useState(true);
   const [lastLesson, setLastLesson] = useState<{ moduleId: string; topicId: string; title: string } | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [touchStart, setTouchStart] = useState<{ x: number, y: number } | null>(null);
+  const [touchEnd, setTouchEnd] = useState<{ x: number, y: number } | null>(null);
 
   // Mínimo em pixels para considerar um swipe
   const minSwipeDistance = 50;
@@ -408,33 +408,48 @@ export const LibraryScreen: React.FC<Props> = ({
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
+    setTouchStart({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY
+    });
   };
 
   const onTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
+    setTouchEnd({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY
+    });
   };
 
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStart) return;
 
-    if (isLeftSwipe) {
-      // Próxima página
-      const slides = selectedTopic?.content?.split('<!-- slide -->') || [];
-      if (currentPage < slides.length - 1) {
-        setCurrentPage(prev => prev + 1);
-        contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-      } else if (slides.length > 1) {
-        setSelectedTopic(null);
-      }
-    } else if (isRightSwipe) {
-      // Página anterior
-      if (currentPage > 0) {
-        setCurrentPage(prev => prev - 1);
-        contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    // Use changedTouches if touchEnd wasn't set by onTouchMove
+    const finalTouch = touchEnd || {
+      x: e.changedTouches[0].clientX,
+      y: e.changedTouches[0].clientY
+    };
+
+    const deltaX = touchStart.x - finalTouch.x;
+    const deltaY = touchStart.y - finalTouch.y;
+
+    // Garante que o swipe foi predominantemente horizontal
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
+      if (deltaX > 0) {
+        // Swipe para a Esquerda -> Próximo
+        const slides = selectedTopic?.content?.split('<!-- slide -->') || [];
+        if (currentPage < slides.length - 1) {
+          setCurrentPage(prev => prev + 1);
+          contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+        } else if (slides.length > 1) {
+          setSelectedTopic(null);
+        }
+      } else {
+        // Swipe para a Direita -> Anterior
+        if (currentPage > 0) {
+          setCurrentPage(prev => prev - 1);
+          contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       }
     }
   };
@@ -500,7 +515,7 @@ export const LibraryScreen: React.FC<Props> = ({
                 </div>
               </div>
               <div
-                className="flex-1 overflow-y-auto p-6 hide-scrollbar relative"
+                className="flex-1 overflow-y-auto p-6 hide-scrollbar relative touch-pan-y"
                 ref={contentRef}
                 onClick={handleContentClick}
                 onTouchStart={selectedTopic.content?.includes('<!-- slide -->') ? onTouchStart : undefined}
@@ -516,7 +531,7 @@ export const LibraryScreen: React.FC<Props> = ({
                       : (selectedTopic.content || '')
                   }}
                 />
-                <div className="h-24"></div>
+                <div className="h-44"></div>
               </div>
 
               {/* Navigation Controls for Slideshow */}
@@ -530,7 +545,7 @@ export const LibraryScreen: React.FC<Props> = ({
                       }
                     }}
                     disabled={currentPage === 0}
-                    className={`w-14 h-14 rounded-full flex items-center justify-center transition-all pointer-events-auto ${currentPage === 0 ? 'bg-white/5 text-gray-700' : 'bg-white/10 text-white hover:bg-white/20 active:scale-95'}`}
+                    className={`w-14 h-14 rounded-full flex items-center justify-center transition-all pointer-events-auto shadow-lg backdrop-blur-md ${currentPage === 0 ? 'bg-white/5 text-gray-700' : 'bg-white/10 text-white hover:bg-white/20 active:scale-95'}`}
                   >
                     <span className="material-symbols-rounded text-3xl">arrow_back</span>
                   </button>

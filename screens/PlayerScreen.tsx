@@ -27,10 +27,9 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
   const { pitch: globalPitch } = usePlayback();
   const [pitch, setPitch] = useState(globalPitch);
 
-  // Estados para animação das barras
   const [barHeights, setBarHeights] = useState<number[]>([70, 35, 25, 85, 45, 25]);
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
+  const [touchStart, setTouchStart] = useState<{ x: number, y: number } | null>(null);
+  const [touchEnd, setTouchEnd] = useState<{ x: number, y: number } | null>(null);
   const minSwipeDistance = 50;
 
   // Refs
@@ -206,23 +205,36 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
 
   const onTouchStart = (e: React.TouchEvent) => {
     setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
+    setTouchStart({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY
+    });
   };
 
   const onTouchMove = (e: React.TouchEvent) => {
-    setTouchEnd(e.targetTouches[0].clientX);
+    setTouchEnd({
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY
+    });
   };
 
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (!touchStart) return;
 
-    if (isLeftSwipe && onNext) {
-      onNext();
-    } else if (isRightSwipe && onPrev) {
-      onPrev();
+    const finalTouch = touchEnd || {
+      x: e.changedTouches[0].clientX,
+      y: e.changedTouches[0].clientY
+    };
+
+    const deltaX = touchStart.x - finalTouch.x;
+    const deltaY = touchStart.y - finalTouch.y;
+
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
+      if (deltaX > 0 && onNext) {
+        onNext();
+      } else if (deltaX < 0 && onPrev) {
+        onPrev();
+      }
     }
   };
 
@@ -231,7 +243,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
 
   return (
     <div
-      className="min-h-screen bg-[#101622] flex flex-col relative overflow-hidden pb-24"
+      className="min-h-screen bg-[#101622] flex flex-col relative overflow-hidden pb-24 touch-pan-y"
       onTouchStart={onTouchStart}
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
