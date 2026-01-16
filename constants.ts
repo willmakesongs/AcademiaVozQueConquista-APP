@@ -607,7 +607,7 @@ export const MODULES: Module[] = [
     },
     {
         id: 'm2',
-        number: '02',
+        number: '03',
         title: 'O Ritual',
         subtitle: 'Aquecimento e Condicionamento',
         description: 'O seu hub diário. Prepare a voz antes de cantar e recupere-a depois.',
@@ -790,7 +790,7 @@ export const MODULES: Module[] = [
     // MÓDULO 03 - RESPIRAÇÃO (NÍVEL 1: PROPRIOCEPÇÃO)
     {
         id: 'm_breath',
-        number: '03',
+        number: '04',
         title: 'Respiração',
         subtitle: 'Nível 1: Propriocepção',
         description: 'Localize, expanda e sinta. A fundação biomecânica.',
@@ -1082,7 +1082,7 @@ export const MODULES: Module[] = [
     },
     {
         id: 'm3',
-        number: '04',
+        number: '05',
         title: 'Técnica de Emissão',
         subtitle: 'Registros e Agilidade',
         description: 'O núcleo da agilidade e controle vocal.',
@@ -1095,7 +1095,7 @@ export const MODULES: Module[] = [
     },
     {
         id: 'm4',
-        number: '05',
+        number: '06',
         title: 'Ressonância e Articulação',
         subtitle: 'Cor e Projeção',
         description: 'Onde o som ganha identidade.',
@@ -1107,7 +1107,7 @@ export const MODULES: Module[] = [
     },
     {
         id: 'm5',
-        number: '06',
+        number: '07',
         title: 'Mudança de Registro Vocal',
         subtitle: 'A Arte da Conexão',
         description: 'Coordenação neuromuscular para transitar entre registros sem quebras.',
@@ -1284,7 +1284,7 @@ export const MODULES: Module[] = [
     },
     {
         id: 'm6',
-        number: '07',
+        number: '08',
         title: 'Agilidade e Precisão Articulatória',
         subtitle: 'Trava-Línguas',
         description: 'Mantenha a laringe relaxada. Pratique em 3 fases: 1. Sussurrado, 2. Lento/Exagerado, 3. Velocidade Máxima.',
@@ -1328,7 +1328,7 @@ export const MODULES: Module[] = [
     },
     {
         id: 'm7',
-        number: '08',
+        number: '09',
         title: 'Alcançar Notas Altas',
         subtitle: 'ACERTE AQUELA NOTA ALTA',
         description: 'Especialização avançada: domine os agudos com segurança e potência (Método Cheryl Porter).',
@@ -1461,7 +1461,7 @@ export const MODULES: Module[] = [
     },
     {
         id: 'm8',
-        number: '09',
+        number: '10',
         title: 'Voz Forte e Ressonante',
         subtitle: 'Potência e Saúde',
         description: 'Desenvolva força vocal real sem gritar, usando a metodologia de resistência e ressonância.',
@@ -1579,7 +1579,7 @@ export const MODULES: Module[] = [
     },
     {
         id: 'm10',
-        number: '10',
+        number: '11',
         title: 'Repertório & Aplicação',
         subtitle: 'Biblioteca de Karaokê',
         description: 'Coloque a técnica em prática com nossa curadoria de Playbacks.',
@@ -1594,7 +1594,7 @@ export const MODULES: Module[] = [
     },
     {
         id: 'm11',
-        number: '11',
+        number: '12',
         title: 'Ornamentos e Agilidade Vocal',
         subtitle: 'Técnica e Estilo',
         description: 'Domine a velocidade, precisão e os ornamentos que refinam sua interpretação.',
