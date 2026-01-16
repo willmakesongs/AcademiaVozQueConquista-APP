@@ -34,6 +34,7 @@ export const LibraryScreen: React.FC<Props> = ({
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [lastLesson, setLastLesson] = useState<{ moduleId: string; topicId: string; title: string } | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
 
   // Refs e Estados para o Checklist e Audio Inline
   const contentRef = useRef<HTMLDivElement>(null);
@@ -200,6 +201,9 @@ export const LibraryScreen: React.FC<Props> = ({
     if (lastTopicRef.current && !selectedTopic) {
       stopCurrentAudio();
     }
+    if (!selectedTopic) {
+      setCurrentPage(0);
+    }
     lastTopicRef.current = selectedTopic;
   }, [selectedTopic]);
 
@@ -333,6 +337,30 @@ export const LibraryScreen: React.FC<Props> = ({
       setShowCritiqueModal(true);
       return;
     }
+
+    // 4. Lógica do Quiz
+    const quizOption = target.closest('.quiz-option');
+    if (quizOption) {
+      const isCorrect = quizOption.getAttribute('data-correct') === 'true';
+      const allOptions = quizOption.parentElement?.querySelectorAll('.quiz-option');
+
+      allOptions?.forEach(opt => {
+        opt.classList.remove('border-[#0081FF]', 'bg-[#0081FF]/10', 'bg-gradient-to-r', 'from-green-500/20', 'to-blue-500/20', 'border-green-500/50');
+        opt.classList.add('opacity-50');
+      });
+
+      quizOption.classList.remove('opacity-50');
+      if (isCorrect) {
+        quizOption.classList.add('bg-gradient-to-r', 'from-green-500/20', 'to-blue-500/20', 'border-green-500/50');
+        // Feedback visual de acerto
+        const icon = quizOption.querySelector('.option-icon');
+        if (icon) icon.innerHTML = '<span class="material-symbols-rounded text-green-500">check_circle</span>';
+      } else {
+        quizOption.classList.add('border-red-500/50', 'bg-red-500/10');
+        const icon = quizOption.querySelector('.option-icon');
+        if (icon) icon.innerHTML = '<span class="material-symbols-rounded text-red-500">cancel</span>';
+      }
+    }
   };
 
   const toggleModule = (id: string, isLocked: boolean) => {
@@ -414,19 +442,71 @@ export const LibraryScreen: React.FC<Props> = ({
                 >
                   <span className="material-symbols-rounded">close</span>
                 </button>
-                <h2 className="text-lg font-bold text-white flex-1 truncate">{selectedTopic.title}</h2>
+                <div className="flex-1 flex flex-col justify-center min-w-0">
+                  <h2 className="text-lg font-bold text-white truncate">{selectedTopic.title}</h2>
+                  {selectedTopic.content?.includes('<!-- slide -->') && (
+                    <div className="flex gap-1 mt-1">
+                      {selectedTopic.content.split('<!-- slide -->').map((_, i) => (
+                        <div
+                          key={i}
+                          className={`h-1 rounded-full transition-all duration-300 ${i === currentPage ? 'w-4 bg-[#0081FF]' : 'w-1 bg-white/20'}`}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
               <div
-                className="flex-1 overflow-y-auto p-6 hide-scrollbar"
+                className="flex-1 overflow-y-auto p-6 hide-scrollbar relative"
                 ref={contentRef}
                 onClick={handleContentClick}
               >
                 <div
-                  className="prose prose-invert prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{ __html: selectedTopic.content }}
+                  className="prose prose-invert prose-sm max-w-none animate-in fade-in duration-500"
+                  key={currentPage}
+                  dangerouslySetInnerHTML={{
+                    __html: selectedTopic.content?.includes('<!-- slide -->')
+                      ? selectedTopic.content.split('<!-- slide -->')[currentPage]
+                      : (selectedTopic.content || '')
+                  }}
                 />
-                <div className="h-12"></div>
+                <div className="h-24"></div>
               </div>
+
+              {/* Navigation Controls for Slideshow */}
+              {selectedTopic.content?.includes('<!-- slide -->') && (
+                <div className="absolute bottom-28 left-0 right-0 px-6 flex justify-between items-center pointer-events-none">
+                  <button
+                    onClick={() => {
+                      if (currentPage > 0) {
+                        setCurrentPage(prev => prev - 1);
+                        contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+                      }
+                    }}
+                    disabled={currentPage === 0}
+                    className={`w-14 h-14 rounded-full flex items-center justify-center transition-all pointer-events-auto ${currentPage === 0 ? 'bg-white/5 text-gray-700' : 'bg-white/10 text-white hover:bg-white/20 active:scale-95'}`}
+                  >
+                    <span className="material-symbols-rounded text-3xl">arrow_back</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      const slides = selectedTopic.content?.split('<!-- slide -->') || [];
+                      if (currentPage < slides.length - 1) {
+                        setCurrentPage(prev => prev + 1);
+                        contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+                      } else {
+                        setSelectedTopic(null);
+                      }
+                    }}
+                    className="w-14 h-14 rounded-full bg-black text-white flex items-center justify-center transition-all pointer-events-auto active:scale-95 shadow-xl"
+                  >
+                    <span className="material-symbols-rounded text-3xl">
+                      {currentPage === (selectedTopic.content?.split('<!-- slide -->').length || 0) - 1 ? 'check' : 'arrow_forward'}
+                    </span>
+                  </button>
+                </div>
+              )}
             </>
           )}
         </div>

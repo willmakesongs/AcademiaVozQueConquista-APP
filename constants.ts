@@ -783,181 +783,286 @@ export const MODULES: Module[] = [
         topics: [
             {
                 id: '3.1',
-                title: 'O Despertar do Diafragma',
-                description: 'Localizando o músculo motor.',
+                title: 'A Jornada do Sopro',
+                description: 'Dominando a biomecânica em 12 passos.',
                 content: `
-                <div class="space-y-8 font-sans">
-                    <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
-                        <div className="flex justify-center mb-6">
-                            <div className="w-20 h-20 rounded-full bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] animate-pulse">
-                                <span className="material-symbols-rounded text-4xl">accessibility_new</span>
+                <div class="space-y-6 font-sans">
+                    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1A202C] to-[#101622] border border-white/10 p-8">
+                        <div class="absolute -top-10 -right-10 w-40 h-40 bg-[#0081FF] blur-[100px] opacity-20"></div>
+                        <div class="text-center">
+                            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#0081FF]/10 text-[#0081FF] mb-6">
+                                <span class="material-symbols-rounded text-5xl">air</span>
                             </div>
-                        </div>
-                        <h3 class="text-lg font-bold text-white mb-4 text-center">Onde está o motor?</h3>
-                        <p class="text-sm text-gray-300 leading-relaxed mb-6">
-                            Muitos alunos respiram "alto" (peito/ombros) por ansiedade. O diafragma é um músculo que separa o tórax do abdome. Para ativá-lo, precisamos anular os ombros.
-                        </p>
-                        
-                        <div class="bg-black/20 p-4 rounded-xl border border-white/5 space-y-4">
-                            <strong class="text-[#0081FF] text-xs uppercase tracking-wide block">O Exercício do Livro</strong>
-                            <ol class="list-decimal list-inside text-sm text-gray-300 space-y-2">
-                                <li>Deite-se no chão (decúbito dorsal).</li>
-                                <li>Coloque um livro pesado sobre o umbigo.</li>
-                                <li><strong>Inspire:</strong> Tente "empurrar" o livro para o teto apenas com a barriga.</li>
-                                <li><strong>Expire:</strong> Deixe o livro descer lentamente.</li>
-                            </ol>
-                            <div class="p-3 bg-[#FF00BC]/10 rounded-lg border border-[#FF00BC]/20 text-xs text-pink-200">
-                                <strong>⚠️ Atenção:</strong> Se o peito subir junto com o livro, você está "roubando". Isole o movimento abdominal.
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-gradient-to-r from-[#0081FF]/10 to-transparent p-5 rounded-2xl border border-[#0081FF]/30">
-                        <h4 class="text-sm font-bold text-white flex items-center gap-2 mb-2">
-                            <span class="material-symbols-rounded text-[#0081FF]">record_voice_over</span>
-                            O Elo Perdido (Conexão Sonora)
-                        </h4>
-                        <p class="text-xs text-gray-400 mb-3">
-                            Para não dissociar o treino da voz: Inspire elevando o livro e, na descida, faça um <strong>Humming (Mmmm)</strong> mantendo o peso do livro "sustentado" por 2 segundos antes de relaxar.
-                        </p>
-                        ${INLINE_PLAYER_TEMPLATE(`${STORAGE_BASE_URL}/VOCALIZES%20mp3/BRRR_1.mp3`)}
-                    </div>
-                </div>
-            `
-            },
-            {
-                id: '3.2',
-                title: 'A Expansão 360º',
-                description: 'Costelas e Costas (Intercostais).',
-                content: `
-                <div class="space-y-8 font-sans">
-                    <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
-                        <div class="relative z-10">
-                            <h3 class="text-lg font-bold text-white mb-4">Respiração não é só "frente"</h3>
-                            <p class="text-sm text-gray-300 leading-relaxed mb-6">
-                                Imagine que sua cintura é um balão que infla para todos os lados, não apenas para a frente. O verdadeiro volume de ar está na expansão lateral e posterior (costas).
+                            <h2 class="text-2xl font-black text-white mb-4">Parte 1: A Grande Ilusão</h2>
+                            <p class="text-gray-400 leading-relaxed">
+                                Muitos acreditam que cantar exige "muito ar". Na verdade, o segredo não é a <span class="text-[#0081FF] font-bold">quantidade</span>, mas a <span class="text-[#FF00BC] font-bold">gestão da pressão</span>. 
                             </p>
-                            
-                            <div class="flex justify-center my-6">
-                                <div class="w-32 h-32 border-4 border-dashed border-[#6F4CE7] rounded-full flex items-center justify-center relative">
-                                    <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#1A202C] px-2 text-[10px] text-gray-400">Costas</div>
-                                    <div class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 bg-[#1A202C] px-2 text-[10px] text-gray-400">Barriga</div>
-                                    <div class="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#1A202C] px-2 text-[10px] text-gray-400 rotate-90">Esq</div>
-                                    <div class="absolute right-0 top-1/2 translate-x-1/2 -translate-y-1/2 bg-[#1A202C] px-2 text-[10px] text-gray-400 rotate-90">Dir</div>
-                                    <span class="material-symbols-rounded text-3xl text-white animate-ping">open_in_full</span>
-                                </div>
+                        </div>
+                        <div class="mt-8 grid grid-cols-2 gap-4">
+                            <div class="bg-white/5 p-4 rounded-2xl border border-white/5 text-center">
+                                <p class="text-[10px] text-gray-500 uppercase font-black mb-1">Mito</p>
+                                <p class="text-xs text-red-400 font-bold">Pulmão explodindo de ar</p>
                             </div>
-
-                            <div class="bg-black/20 p-4 rounded-xl border border-white/5">
-                                <strong class="text-[#6F4CE7] text-xs uppercase tracking-wide block mb-2">Exercício Prático</strong>
-                                <p class="text-sm text-gray-300">
-                                    Coloque as mãos nas "costelas flutuantes" (parte lateral inferior). Ao inspirar, tente empurrar suas mãos para fora.
-                                </p>
+                            <div class="bg-white/5 p-4 rounded-2xl border border-white/5 text-center">
+                                <p class="text-[10px] text-gray-500 uppercase font-black mb-1">Realidade</p>
+                                <p class="text-xs text-green-400 font-bold">Fluxo constante e controlado</p>
                             </div>
                         </div>
                     </div>
-
-                    <div class="bg-gradient-to-r from-[#6F4CE7]/10 to-transparent p-5 rounded-2xl border border-[#6F4CE7]/30">
-                        <h4 class="text-sm font-bold text-white flex items-center gap-2 mb-2">
-                            <span class="material-symbols-rounded text-[#6F4CE7]">record_voice_over</span>
-                            O Elo Perdido (Sopro com Som)
-                        </h4>
-                        <p class="text-xs text-gray-400 mb-3">
-                            Inspire expandindo as mãos. Agora, solte um som de <strong>"ZZZZ"</strong> contínuo, mas tente <strong>NÃO</strong> deixar as costelas murcharem imediatamente. Mantenha as mãos "empurradas" enquanto o som sai.
-                        </p>
-                        ${INLINE_PLAYER_TEMPLATE(`${STORAGE_BASE_URL}/VOCALIZES%20mp3/BRRR_1.mp3`)}
-                    </div>
                 </div>
-            `
-            },
-            {
-                id: '3.3',
-                title: 'O Vácuo e a Pressão',
-                description: 'Consciência da musculatura interna.',
-                content: `
-                <div class="space-y-8 font-sans">
+                <!-- slide -->
+                <div class="space-y-6 font-sans">
                     <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
-                        <h3 class="text-lg font-bold text-white mb-4">Sinta, não imagine.</h3>
-                        <p class="text-sm text-gray-300 leading-relaxed mb-4">
-                            Muitas vezes respiramos "frouxo". Precisamos sentir a pressão interna que sustentará a nota aguda. Para isso, usaremos o Vácuo.
-                        </p>
-                        
-                        <div class="bg-black/20 p-4 rounded-xl border border-white/5 space-y-3">
-                            <div class="flex items-start gap-3">
-                                <span class="material-symbols-rounded text-[#FF00BC] mt-0.5">filter_1</span>
-                                <p class="text-sm text-gray-300">Solte todo o ar do pulmão até não sobrar nada.</p>
-                            </div>
-                            <div class="flex items-start gap-3">
-                                <span class="material-symbols-rounded text-[#FF00BC] mt-0.5">filter_2</span>
-                                <p class="text-sm text-gray-300">Tape o nariz e feche a boca.</p>
-                            </div>
-                            <div class="flex items-start gap-3">
-                                <span class="material-symbols-rounded text-[#FF00BC] mt-0.5">filter_3</span>
-                                <p class="text-sm text-gray-300">Tente inspirar com força (sem deixar o ar entrar). Você sentirá suas costelas e abdome expandirem violentamente a vácuo. <strong>Essa é a musculatura que você precisa!</strong></p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-gradient-to-r from-[#FF00BC]/10 to-transparent p-5 rounded-2xl border border-[#FF00BC]/30">
-                        <h4 class="text-sm font-bold text-white flex items-center gap-2 mb-2">
-                            <span class="material-symbols-rounded text-[#FF00BC]">record_voice_over</span>
-                            O Elo Perdido (Apoio Ativo)
-                        </h4>
-                        <p class="text-xs text-gray-400 mb-3">
-                            Faça o vácuo. Segure por 3 segundos sentindo a abertura. Destampe o nariz e deixe o ar entrar passivamente, transformando imediatamente em um som de <strong>"VVVV"</strong> firme e estável.
-                        </p>
-                        ${INLINE_PLAYER_TEMPLATE(`${STORAGE_BASE_URL}/VOCALIZES%20mp3/BRRR_1.mp3`)}
-                    </div>
-                </div>
-            `
-            },
-            {
-                id: '3.4',
-                title: 'O Check-up da Tensão',
-                description: 'Escaneamento corporal ativo.',
-                content: `
-                <div class="space-y-8 font-sans">
-                    <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
-                        <h3 class="text-lg font-bold text-white mb-4">O Inimigo Invisível</h3>
+                        <h3 class="text-xl font-bold text-white mb-4">O Motor: Diafragma</h3>
                         <p class="text-sm text-gray-300 leading-relaxed mb-6">
-                            Muitos alunos respiram "corretamente" com o diafragma, mas travam a mandíbula ou o pescoço no processo. Respirar deve ser um ato livre de tensão superior.
+                            O diafragma é um músculo em forma de cúpula que separa o tórax do abdome. Quando ele <span class="text-[#0081FF] font-bold">contrai</span>, ele desce, criando um vácuo que puxa o ar para dentro.
                         </p>
+                        <div class="flex justify-center py-8">
+                            <div class="relative w-48 h-48">
+                                <div class="absolute inset-0 bg-[#0081FF] blur-[60px] opacity-10 animate-pulse"></div>
+                                <div class="relative z-10 w-full h-full border-2 border-dashed border-[#0081FF]/30 rounded-full flex flex-col items-center justify-center text-center p-4">
+                                    <span class="material-symbols-rounded text-4xl text-[#0081FF] mb-2">expand_circle_down</span>
+                                    <p class="text-[10px] text-gray-400 font-bold uppercase">Movimento Inspiratório</p>
+                                    <p class="text-xs text-white">Descida e Expansão</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-black/20 p-4 rounded-xl border border-white/5 text-xs text-gray-400 italic">
+                            Dica: Você não "puxa" o ar com o nariz. Você expande o corpo e o ar "entra sozinho" por diferença de pressão.
+                        </div>
+                    </div>
+                </div>
+                <!-- slide -->
+                <div class="space-y-6 font-sans">
+                    <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                        <h3 class="text-xl font-bold text-white mb-4">Expansão 360º</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed mb-6">
+                            Fuja do erro de estufar apenas a barriga para frente. A verdadeira respiração custofreunobasal expande as <span class="text-[#6F4CE7] font-bold">costelas laterais</span> e as <span class="text-[#FF00BC] font-bold">costas</span>.
+                        </p>
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="p-4 rounded-2xl bg-white/5 border border-white/5">
+                                <div class="w-8 h-8 rounded-lg bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] mb-2">
+                                    <span class="material-symbols-rounded">side_navigation</span>
+                                </div>
+                                <p class="text-xs font-bold text-white mb-1">Laterais</p>
+                                <p class="text-[10px] text-gray-500">Abertura das costelas flutuantes.</p>
+                            </div>
+                            <div class="p-4 rounded-2xl bg-white/5 border border-white/5">
+                                <div class="w-8 h-8 rounded-lg bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC] mb-2">
+                                    <span class="material-symbols-rounded">back_hand</span>
+                                </div>
+                                <p class="text-xs font-bold text-white mb-1">Costas</p>
+                                <p class="text-[10px] text-gray-500">Expansão da região lombar.</p>
+                            </div>
+                        </div>
+                        <div class="p-4 rounded-xl bg-[#0081FF]/10 border border-[#0081FF]/20 text-xs text-blue-200">
+                             <strong>Pratique:</strong> Coloque as mãos na cintura (como se estivesse bravo) e sinta seus dedos serem empurrados para os lados ao inspirar.
+                        </div>
+                    </div>
+                </div>
+                <!-- slide -->
+                <div class="space-y-6 font-sans">
+                    <div class="text-center mb-8">
+                         <span class="text-[10px] font-black text-[#0081FF] uppercase tracking-[0.2em]">Desafio de Fixação</span>
+                         <h2 class="text-2xl font-black text-white mt-1">Quiz 01: Propriocepção</h2>
+                    </div>
 
-                        <div class="space-y-2">
-                            <div class="checklist-item flex items-center gap-3 p-3 rounded-lg bg-black/20 border border-white/5 cursor-pointer hover:bg-white/5 transition-colors" data-id="chk-prop-1">
-                                <div class="checkbox-box w-5 h-5 rounded border border-gray-600 flex items-center justify-center transition-all bg-[#1A202C]">
-                                    <span class="material-symbols-rounded text-sm text-white opacity-0 check-icon scale-0 transition-all">check</span>
-                                </div>
-                                <span class="text-sm text-gray-300">Minha mandíbula está solta durante a inspiração?</span>
+                    <div class="space-y-3">
+                        <p class="text-sm text-gray-400 mb-4 px-2">Qual o movimento correto do diafragma durante a inspiração?</p>
+                        
+                        <div class="quiz-option p-4 rounded-2xl bg-[#1A202C] border border-white/5 flex items-center gap-4 cursor-pointer transition-all hover:border-[#0081FF]/50" data-correct="true">
+                            <div class="option-icon w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
+                                <span class="text-sm font-bold">A</span>
                             </div>
-                            <div class="checklist-item flex items-center gap-3 p-3 rounded-lg bg-black/20 border border-white/5 cursor-pointer hover:bg-white/5 transition-colors" data-id="chk-prop-2">
-                                <div class="checkbox-box w-5 h-5 rounded border border-gray-600 flex items-center justify-center transition-all bg-[#1A202C]">
-                                    <span class="material-symbols-rounded text-sm text-white opacity-0 check-icon scale-0 transition-all">check</span>
-                                </div>
-                                <span class="text-sm text-gray-300">Meus ombros permaneceram baixos?</span>
+                            <p class="text-sm text-white font-medium">Ele desce e expande a base dos pulmões.</p>
+                        </div>
+
+                        <div class="quiz-option p-4 rounded-2xl bg-[#1A202C] border border-white/5 flex items-center gap-4 cursor-pointer transition-all hover:border-[#0081FF]/50" data-correct="false">
+                            <div class="option-icon w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
+                                <span class="text-sm font-bold">B</span>
                             </div>
-                            <div class="checklist-item flex items-center gap-3 p-3 rounded-lg bg-black/20 border border-white/5 cursor-pointer hover:bg-white/5 transition-colors" data-id="chk-prop-3">
-                                <div class="checkbox-box w-5 h-5 rounded border border-gray-600 flex items-center justify-center transition-all bg-[#1A202C]">
-                                    <span class="material-symbols-rounded text-sm text-white opacity-0 check-icon scale-0 transition-all">check</span>
+                            <p class="text-sm text-white font-medium">Ele sobe para empurrar o ar para cima.</p>
+                        </div>
+
+                        <div class="quiz-option p-4 rounded-2xl bg-[#1A202C] border border-white/5 flex items-center gap-4 cursor-pointer transition-all hover:border-[#0081FF]/50" data-correct="false">
+                            <div class="option-icon w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
+                                <span class="text-sm font-bold">C</span>
+                            </div>
+                            <p class="text-sm text-white font-medium">Ele expande apenas para frente, estufando o umbigo.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- slide -->
+                <div class="space-y-6 font-sans">
+                    <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                        <h3 class="text-xl font-bold text-white mb-4">Retenção e Suspensão</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed mb-6">
+                            Entre a inspiração e a expiração, existe um momento de <span class="text-[#6F4CE7] font-bold">suspensão</span>. Não é um trancamento da glote, mas um equilíbrio muscular onde você "sustenta" a abertura sem soltar o ar.
+                        </p>
+                        <div class="bg-black/40 rounded-3xl p-8 flex flex-col items-center">
+                            <div class="w-32 h-32 rounded-full border-4 border-[#6F4CE7] flex items-center justify-center animate-pulse">
+                                 <span class="material-symbols-rounded text-5xl text-[#6F4CE7]">pause</span>
+                            </div>
+                            <p class="mt-6 text-xs text-gray-400 font-bold uppercase tracking-widest">Estado de Prontidão</p>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-6 leading-relaxed">
+                            Pense em uma bailarina no topo de um salto: há um milissegundo de imobilidade ativa antes da descida. Isso é a suspensão vocal.
+                        </p>
+                    </div>
+                </div>
+                <!-- slide -->
+                <div class="space-y-6 font-sans">
+                    <div class="bg-gradient-to-br from-[#101622] to-[#1A202C] p-8 rounded-[32px] border border-white/10 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-40 h-40 bg-[#FF00BC] blur-[100px] opacity-10"></div>
+                        <h2 class="text-2xl font-black text-white mb-4">O Segredo do Appoggio</h2>
+                        <p class="text-sm text-gray-300 leading-relaxed mb-6">
+                            "Appoggiare" em italiano significa <span class="text-[#FF00BC] font-bold">Apoiar</span>. O suporte não é "empurrar" o ar para fora, mas <span class="text-[#0081FF] font-bold">resistir</span> à sua saída rápida.
+                        </p>
+                        <div class="space-y-4">
+                            <div class="flex gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                                <div class="w-10 h-10 rounded-full bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC] shrink-0">
+                                    <span class="material-symbols-rounded">speed</span>
                                 </div>
-                                <span class="text-sm text-gray-300">Consigo girar o pescoço enquanto respiro fundo?</span>
+                                <div>
+                                    <p class="text-xs font-bold text-white">Controle de Fluxo</p>
+                                    <p class="text-[10px] text-gray-500">Economia máxima para frases longas.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                                <div class="w-10 h-10 rounded-full bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] shrink-0">
+                                    <span class="material-symbols-rounded">shield</span>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-white">Estabilidade</p>
+                                    <p class="text-[10px] text-gray-500">Evita que a nota "balance" ou desafine.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="bg-gradient-to-r from-green-500/10 to-transparent p-5 rounded-2xl border border-green-500/30">
-                        <h4 class="text-sm font-bold text-white flex items-center gap-2 mb-2">
-                            <span class="material-symbols-rounded text-green-500">record_voice_over</span>
-                            O Elo Perdido (Movimento com Som)
-                        </h4>
-                        <p class="text-xs text-gray-400 mb-3">
-                            Faça um movimento circular lento com a cabeça (pescoço). Durante o movimento, inspire e solte um <strong>Humming</strong>. Se o som falhar ou "tremer" em algum ponto do giro, ali existe uma tensão a ser liberada.
+                </div>
+                <!-- slide -->
+                <div class="space-y-6 font-sans">
+                    <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                        <h3 class="text-xl font-bold text-white mb-4">Pressão Subglótica</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed mb-6">
+                            A física do canto: O ar acumulado abaixo das pregas vocais gera uma <span class="text-[#FF00BC] font-bold">pressão</span>. Se a pressão for pouca, a voz soa soprosa. Se for muita, a voz soa gritada.
                         </p>
-                        ${INLINE_PLAYER_TEMPLATE(`${STORAGE_BASE_URL}/VOCALIZES%20mp3/BRRR_1.mp3`)}
+                        <div class="relative py-10 flex justify-center">
+                            <div class="w-20 h-40 bg-[#151A23] rounded-full border-2 border-white/10 relative overflow-hidden">
+                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#0081FF] to-[#FF00BC] h-24 animate-bounce"></div>
+                                <div class="absolute top-1/4 left-0 right-0 h-0.5 bg-white/20"></div>
+                                <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-4 text-[8px] font-bold text-white uppercase">Glote</div>
+                            </div>
+                        </div>
+                        <div class="bg-black/20 p-4 rounded-xl border border-white/5 text-xs text-center text-gray-400">
+                            O apoio serve para <span class="text-white">equilibrar</span> essa balança de pressão.
+                        </div>
                     </div>
                 </div>
-            `
+                <!-- slide -->
+                <div class="space-y-6 font-sans">
+                    <div class="text-center mb-8">
+                         <span class="text-[10px] font-black text-[#FF00BC] uppercase tracking-[0.2em]">Verificação Técnica</span>
+                         <h2 class="text-2xl font-black text-white mt-1">Quiz 02: Suporte Vocal</h2>
+                    </div>
+
+                    <div class="space-y-3">
+                        <p class="text-sm text-gray-400 mb-4 px-2">O que define o verdadeiro "Apoio Vocal" (Appoggio)?</p>
+                        
+                        <div class="quiz-option p-4 rounded-2xl bg-[#1A202C] border border-white/5 flex items-center gap-4 cursor-pointer transition-all hover:border-[#FF00BC]/50" data-correct="false">
+                            <div class="option-icon w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
+                                <span class="text-sm font-bold">A</span>
+                            </div>
+                            <p class="text-sm text-white font-medium">Fazer força com o abdome para expulsar o ar.</p>
+                        </div>
+
+                        <div class="quiz-option p-4 rounded-2xl bg-[#1A202C] border border-white/5 flex items-center gap-4 cursor-pointer transition-all hover:border-[#FF00BC]/50" data-correct="true">
+                            <div class="option-icon w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
+                                <span class="text-sm font-bold">B</span>
+                            </div>
+                            <p class="text-sm text-white font-medium">Equilibrar a pressão inspiratória com a expiratória.</p>
+                        </div>
+
+                        <div class="quiz-option p-4 rounded-2xl bg-[#1A202C] border border-white/5 flex items-center gap-4 cursor-pointer transition-all hover:border-[#FF00BC]/50" data-correct="false">
+                            <div class="option-icon w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
+                                <span class="text-sm font-bold">C</span>
+                            </div>
+                            <p class="text-sm text-white font-medium">Prender a respiração para que o ar não saia.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- slide -->
+                <div class="space-y-6 font-sans">
+                    <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                        <h3 class="text-xl font-bold text-white mb-4">Gestão do Ar Residual</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed mb-6">
+                            Nunca cante até ficar "roxo" ou sem nada de ar. O final da expiração é onde mora o perigo da <span class="text-red-400 font-bold">tensão laríngea</span>.
+                        </p>
+                        <div class="bg-red-500/10 border border-red-500/20 p-6 rounded-2xl text-center">
+                            <span class="material-symbols-rounded text-4xl text-red-500 mb-3">warning</span>
+                            <p class="text-sm font-bold text-red-200">A Regra dos 20%</p>
+                            <p class="text-xs text-red-300/70 mt-2">Sempre deixe uma reserva de ar. Se você espremer o final, seu pescoço assumirá a carga e você terá pigarro e cansaço.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- slide -->
+                <div class="space-y-6 font-sans">
+                    <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                        <h3 class="text-xl font-bold text-white mb-4">Antagonismo Muscular</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed mb-6">
+                            O apoio é uma <span class="text-[#0081FF] font-bold">Luta Amigável</span>.
+                        </p>
+                        <div class="space-y-3">
+                            <div class="p-4 rounded-xl bg-white/5 flex items-center justify-between">
+                                <span class="text-xs text-gray-300">Músculos Expiratórios</span>
+                                <span class="text-[10px] font-black text-[#FF00BC]">QUEREM FECHAR</span>
+                            </div>
+                            <div class="flex justify-center text-[#6F4CE7]">
+                                <span class="material-symbols-rounded text-3xl">swap_vert</span>
+                            </div>
+                            <div class="p-4 rounded-xl bg-white/5 flex items-center justify-between">
+                                <span class="text-xs text-gray-300">Músculos Inspiratórios</span>
+                                <span class="text-[10px] font-black text-[#0081FF]">QUEREM MANTER ABERTO</span>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-6 italic text-center">Essa resistência mútua cria a coluna de ar estável.</p>
+                    </div>
+                </div>
+                <!-- slide -->
+                <div class="space-y-6 font-sans">
+                    <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                        <h3 class="text-xl font-bold text-white mb-4">O Perigo do Over-Blowing</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed mb-6">
+                            Sabe aquela sensação de "ar demais" que trava a garganta? Isso se chama <span class="text-[#FF00BC] font-bold">Over-Blowing</span>. 
+                        </p>
+                        <div class="p-5 rounded-2xl bg-black/40 border-l-4 border-red-500">
+                             <p class="text-xs text-gray-400">Muita pressão de ar empurra as pregas vocais para se abrirem. O corpo então reage "apertando" o pescoço para não deixar o ar vazar.</p>
+                             <p class="text-xs font-bold text-white mt-3">Resultado: Perda de agudos e rouquidão.</p>
+                        </div>
+                        <div class="mt-8 flex justify-center">
+                            <span class="material-symbols-rounded text-6xl text-gray-700">air_freshener</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- slide -->
+                <div class="space-y-6 font-sans">
+                    <div class="relative overflow-hidden rounded-[40px] bg-gradient-to-br from-[#0081FF] to-[#6F4CE7] p-10 text-center shadow-2xl">
+                        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+                        <div class="relative z-10">
+                            <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-md">
+                                <span class="material-symbols-rounded text-white text-3xl">verified</span>
+                            </div>
+                            <h2 class="text-2xl font-black text-white mb-2">Conclusão: Apoio Orgânico</h2>
+                            <p class="text-sm text-white/80 leading-relaxed mb-8">
+                                A respiração deve se tornar um reflexo automático. Pratique isolado para que, na hora de cantar, sua mente esteja apenas na <span class="text-white font-black underline">EMOÇÃO</span> da música.
+                            </p>
+                            <button class="w-full py-4 bg-white text-[#0081FF] font-black rounded-2xl uppercase tracking-widest text-xs shadow-xl active:scale-95 transition-transform" onclick="window.location.reload()">
+                                Finalizar Módulo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                `
             }
         ]
     },
