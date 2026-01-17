@@ -834,10 +834,10 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
 
                         <button
                             onClick={() => setActiveView('chord_dictionary')}
-                            className="col-span-2 bg-[#1A202C] p-4 rounded-2xl border border-white/5 hover:border-green-500/50 transition-all group flex items-center gap-4 relative overflow-hidden hover:shadow-lg hover:shadow-green-900/20"
+                            className="col-span-2 bg-[#1A202C] p-4 rounded-2xl border border-white/5 hover:border-[#0081FF]/50 transition-all group flex items-center gap-4 relative overflow-hidden hover:shadow-lg hover:shadow-green-900/20"
                         >
-                            <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center text-green-500 group-hover:scale-110 transition-transform shrink-0">
+                            <div className="absolute inset-0 bg-gradient-to-r from-[#0081FF]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div className="w-10 h-10 rounded-xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] group-hover:scale-110 transition-transform shrink-0">
                                 <span className="material-symbols-rounded">library_music</span>
                             </div>
                             <div>
@@ -881,7 +881,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                             className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors border-b border-white/5"
                         >
                             <div className="flex items-center gap-4">
-                                <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
+                                <div className="w-8 h-8 rounded-lg bg-[#0081FF]/10 flex items-center justify-center text-blue-400">
                                     <span className="material-symbols-rounded text-lg">person</span>
                                 </div>
                                 <div className="text-left">
@@ -987,7 +987,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
 
                 <button
                     onClick={onLogout}
-                    className="w-full py-4 rounded-xl border border-red-500/20 text-red-500 hover:bg-red-500/5 transition-colors font-semibold text-sm flex items-center justify-center gap-2"
+                    className="w-full py-4 rounded-xl border border-[#FF00BC]/20 text-[#FF00BC] hover:bg-[#FF00BC]/5 transition-colors font-semibold text-sm flex items-center justify-center gap-2"
                 >
                     <span className="material-symbols-rounded">logout</span>
                     Sair da Conta
@@ -1184,7 +1184,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                             <p className="text-xs text-white/90 mb-1 font-medium drop-shadow-md shadow-black">Status do Plano</p>
                             <div className="flex items-center justify-end gap-2">
                                 {user?.status === 'blocked' ? (
-                                    <span className="w-2 h-2 rounded-full bg-red-500 shadow-[0_0_8px_#ef4444]"></span>
+                                    <span className="w-2 h-2 rounded-full bg-[#FF00BC] shadow-[0_0_8px_#ef4444]"></span>
                                 ) : user?.status === 'overdue' ? (
                                     <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse shadow-[0_0_8px_#f59e0b]"></span>
                                 ) : user?.status === 'trial' ? (
@@ -1238,7 +1238,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                                     <button
                                         onClick={handleCopyPix}
                                         className={`px-3 rounded-lg font-bold text-xs transition-all flex items-center justify-center gap-1 ${pixCopyStatus === 'Copiado!'
-                                            ? 'bg-green-500 text-white'
+                                            ? 'bg-[#0081FF] text-white'
                                             : 'bg-white/10 text-white hover:bg-white/20'
                                             }`}
                                     >
@@ -1254,7 +1254,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                     <div className="mb-8">
                         <button
                             onClick={() => receiptFileInputRef.current?.click()}
-                            className="w-full h-14 bg-[#0081FF] rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-blue-500/20 active:scale-95 transition-all text-white font-bold hover:scale-[1.02]"
+                            className="w-full h-14 bg-[#0081FF] rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-[#0081FF]/20 active:scale-95 transition-all text-white font-bold hover:scale-[1.02]"
                         >
                             <span className="material-symbols-rounded">upload_file</span>
                             Enviar Comprovante de Pagamento
@@ -1317,7 +1317,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                                         />
                                         <button
                                             onClick={() => setIsEditingDueDate(false)}
-                                            className="w-8 h-8 rounded-lg bg-green-500/20 text-green-500 flex items-center justify-center"
+                                            className="w-8 h-8 rounded-lg bg-[#0081FF]/20 text-[#0081FF] flex items-center justify-center"
                                         >
                                             <span className="material-symbols-rounded text-sm">check</span>
                                         </button>
@@ -1463,7 +1463,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                     <button
                         disabled={!contractAgreed || (!hasSignature && !user?.signatureUrl)}
                         onClick={handleSignContract}
-                        className="w-full h-14 rounded-2xl bg-[#0081FF] text-white font-black flex items-center justify-center gap-2 shadow-lg shadow-blue-500/20 disabled:opacity-30 disabled:grayscale transition-all hover:scale-[1.02] active:scale-[0.98]"
+                        className="w-full h-14 rounded-2xl bg-[#0081FF] text-white font-black flex items-center justify-center gap-2 shadow-lg shadow-[#0081FF]/20 disabled:opacity-30 disabled:grayscale transition-all hover:scale-[1.02] active:scale-[0.98]"
                     >
                         <span className="material-symbols-rounded">edit_square</span>
                         {user?.contractAgreed ? 'Atualizar Assinatura' : 'Assinar e Confirmar'}
@@ -1484,11 +1484,11 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
 
         const circleBorderColor = isPianoActive
             ? 'border-[#0081FF]'
-            : (isTuned ? 'border-green-500' : 'border-[#1A202C]');
+            : (isTuned ? 'border-[#0081FF]' : 'border-[#1A202C]');
 
         const circleBgColor = isPianoActive
             ? 'bg-[#0081FF]/10'
-            : (isTuned ? 'bg-green-500/5' : 'bg-[#1A202C]');
+            : (isTuned ? 'bg-[#0081FF]/5' : 'bg-[#1A202C]');
 
         return (
             <div className="flex-1 flex flex-col animate-in slide-in-from-right relative">
@@ -1517,18 +1517,18 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                         {/* Needle (Voice Only) */}
                         {!isPianoActive && pitchNote !== '-' && (
                             <div
-                                className="absolute top-0 bottom-0 w-1 bg-red-500 origin-center transition-transform duration-100 ease-linear rounded-full opacity-70"
+                                className="absolute top-0 bottom-0 w-1 bg-[#FF00BC] origin-center transition-transform duration-100 ease-linear rounded-full opacity-70"
                                 style={{ transform: `rotate(${pitchCents}deg)` }}
                             ></div>
                         )}
 
                         {/* Status Label (Piano or Tuned) */}
                         {isPianoActive ? (
-                            <div className="absolute -bottom-4 bg-[#0081FF] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-blue-500/20">
+                            <div className="absolute -bottom-4 bg-[#0081FF] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-[#0081FF]/20">
                                 Piano
                             </div>
                         ) : (Math.abs(pitchCents) < 10 && pitchNote !== '-') ? (
-                            <div className="absolute -bottom-4 bg-green-500 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-green-500/20">
+                            <div className="absolute -bottom-4 bg-[#0081FF] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-[#0081FF]/20">
                                 Afinado
                             </div>
                         ) : null}
@@ -1537,11 +1537,11 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                     {/* Tuning Indicators (Voice Only) */}
                     {!isPianoActive && isMicOn && pitchNote !== '-' && (
                         <div className="flex justify-center items-center gap-2 mt-8 mb-4">
-                            <div className={`w-3 h-3 rounded-full ${pitchCents < -10 ? 'bg-red-500' : 'bg-gray-700'}`}></div>
+                            <div className={`w-3 h-3 rounded-full ${pitchCents < -10 ? 'bg-[#FF00BC]' : 'bg-gray-700'}`}></div>
                             <span className="text-xs font-bold text-gray-500 uppercase tracking-widest px-2">
                                 {Math.abs(pitchCents) < 10 ? 'AFINADO' : (pitchCents < 0 ? 'BAIXO' : 'ALTO')}
                             </span>
-                            <div className={`w-3 h-3 rounded-full ${pitchCents > 10 ? 'bg-red-500' : 'bg-gray-700'}`}></div>
+                            <div className={`w-3 h-3 rounded-full ${pitchCents > 10 ? 'bg-[#FF00BC]' : 'bg-gray-700'}`}></div>
                         </div>
                     )}
 
@@ -1622,8 +1622,8 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                             Este teste identificará sua classificação vocal com base na sua extensão e tessitura confortável.
                         </p>
 
-                        <div className="bg-[#1A202C] p-4 rounded-xl border border-yellow-500/20 mb-8 mx-2">
-                            <p className="text-xs text-yellow-500 text-left">
+                        <div className="bg-[#1A202C] p-4 rounded-xl border border-[#6F4CE7]/20 mb-8 mx-2">
+                            <p className="text-xs text-[#6F4CE7] text-left">
                                 <span className="font-bold block mb-1">⚠  Importante</span>
                                 Este teste não substitui um professor de canto. A classificação vocal pode mudar conforme sua técnica evolui.
                             </p>
@@ -1769,7 +1769,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                                         <button
                                             key={zone}
                                             onClick={() => setDifficultyZone(zone as any)}
-                                            className={`py-3 rounded-lg border text-sm font-bold capitalize ${difficultyZone === zone ? 'bg-red-500/20 border-red-500 text-red-500' : 'bg-[#1A202C] border-white/10 text-gray-400'}`}
+                                            className={`py-3 rounded-lg border text-sm font-bold capitalize ${difficultyZone === zone ? 'bg-[#FF00BC]/20 border-[#FF00BC] text-[#FF00BC]' : 'bg-[#1A202C] border-white/10 text-gray-400'}`}
                                         >
                                             {zone}
                                         </button>

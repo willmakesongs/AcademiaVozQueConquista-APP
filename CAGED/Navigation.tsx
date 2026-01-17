@@ -36,10 +36,10 @@ const Navigation: React.FC<NavigationProps> = ({ onViewChange, currentView }) =>
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center gap-2 cursor-pointer" onClick={() => handleNavClick('identifier')}>
-              <div className="bg-blue-600 p-1.5 rounded-xl shadow-lg shadow-blue-500/20">
+              <div className="bg-blue-600 p-1.5 rounded-xl shadow-lg shadow-[#0081FF]/20">
                 <Music size={22} className="text-white" />
               </div>
-              <span className="font-black text-xl tracking-tighter">Will Make <span className="text-blue-500">Chords</span></span>
+              <span className="font-black text-xl tracking-tighter">Will Make <span className="text-[#0081FF]">Chords</span></span>
             </div>
             
             <div className="hidden md:block ml-10">
@@ -56,7 +56,7 @@ const Navigation: React.FC<NavigationProps> = ({ onViewChange, currentView }) =>
                           onClick={() => handleNavClick(sub.id)}
                           className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors border-b border-slate-50 last:border-0"
                         >
-                          <span className="text-blue-500 opacity-70">{sub.icon}</span>
+                          <span className="text-[#0081FF] opacity-70">{sub.icon}</span>
                           {sub.name}
                         </button>
                       ))}
@@ -69,7 +69,7 @@ const Navigation: React.FC<NavigationProps> = ({ onViewChange, currentView }) =>
 
           <div className="hidden md:flex items-center gap-4">
               <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
-                Status: <span className="text-green-500">Live Edition</span>
+                Status: <span className="text-[#0081FF]">Live Edition</span>
               </div>
           </div>
 
@@ -97,7 +97,7 @@ const Navigation: React.FC<NavigationProps> = ({ onViewChange, currentView }) =>
                     onClick={() => handleNavClick(sub.id)}
                     className="w-full flex items-center gap-3 px-4 py-4 rounded-xl text-base font-bold text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
                   >
-                    <span className="text-blue-500">{sub.icon}</span>
+                    <span className="text-[#0081FF]">{sub.icon}</span>
                     {sub.name}
                   </button>
                 ))}

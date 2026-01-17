@@ -150,7 +150,7 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div className="lg:col-span-4 bg-[#0e1017] p-8 rounded-[3rem] border border-white/5 shadow-xl">
                 <h3 className="text-white font-black text-[10px] uppercase tracking-[0.4em] mb-6 flex items-center gap-2">
-                  <Hash size={14} className="text-blue-500"/> Escolha a Tônica
+                  <Hash size={14} className="text-[#0081FF]"/> Escolha a Tônica
                 </h3>
                 <div className="grid grid-cols-4 gap-3">
                   {NOTES.map(note => (
@@ -158,7 +158,7 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
                       key={note}
                       onClick={() => { setSelectedRoot(note); if(isEditing) setIsEditing(false); }}
                       className={`py-4 rounded-2xl font-black text-xs transition-all ${
-                        selectedRoot === note ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20 scale-105' : 'bg-white/5 text-slate-500 hover:bg-white/10'
+                        selectedRoot === note ? 'bg-blue-600 text-white shadow-lg shadow-[#0081FF]/20 scale-105' : 'bg-white/5 text-slate-500 hover:bg-white/10'
                       }`}
                     >
                       {note}
@@ -169,17 +169,17 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
 
             <div className="lg:col-span-8 bg-[#0e1017] p-8 rounded-[3rem] border border-white/5 shadow-xl flex flex-col justify-center">
                 <h3 className="text-white font-black text-[10px] uppercase tracking-[0.4em] mb-4 flex items-center gap-2">
-                  <Settings2 size={14} className="text-blue-500"/> Qualidade Harmônica
+                  <Settings2 size={14} className="text-[#0081FF]"/> Qualidade Harmônica
                 </h3>
                 <button 
                   onClick={() => setIsModalOpen(true)}
-                  className="group w-full p-8 bg-blue-600/5 border border-blue-500/20 rounded-[2.5rem] flex items-center justify-between hover:bg-blue-600/10 transition-all active:scale-[0.98]"
+                  className="group w-full p-8 bg-blue-600/5 border border-[#0081FF]/20 rounded-[2.5rem] flex items-center justify-between hover:bg-blue-600/10 transition-all active:scale-[0.98]"
                 >
                   <div className="flex flex-col items-start text-left">
                     <span className="text-4xl md:text-5xl font-black text-white tracking-tighter">
                       {getDisplayName()}
                     </span>
-                    <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest mt-1">Clique para mudar o tipo de acorde</span>
+                    <span className="text-[10px] font-black text-[#0081FF] uppercase tracking-widest mt-1">Clique para mudar o tipo de acorde</span>
                   </div>
                   <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-2xl group-hover:scale-110 transition-transform">
                     <LayoutGrid size={24} />
@@ -242,7 +242,7 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
                       <button 
                         onClick={() => handlePlayChord()}
                         className={`group flex-1 flex items-center justify-center gap-2 md:gap-3 px-4 py-4 md:px-8 md:py-5 rounded-2xl font-black text-[10px] md:text-xs uppercase tracking-widest transition-all active:scale-95 whitespace-nowrap ${
-                          isAnimating ? 'bg-blue-400 text-white scale-95' : 'bg-blue-600 text-white hover:bg-blue-500 shadow-xl shadow-blue-600/20'
+                          isAnimating ? 'bg-blue-400 text-white scale-95' : 'bg-blue-600 text-white hover:bg-[#0081FF] shadow-xl shadow-blue-600/20'
                         }`}
                       >
                         <Volume2 size={16} className="md:w-[18px] md:h-[18px]" />
@@ -274,7 +274,7 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
                           {hasCustomVersion && (
                             <button 
                               onClick={handleResetOverride}
-                              className="flex items-center justify-center w-12 h-auto md:w-16 rounded-2xl bg-red-600/20 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-95"
+                              className="flex items-center justify-center w-12 h-auto md:w-16 rounded-2xl bg-[#FF00BC]/20 border border-[#FF00BC]/20 text-[#FF00BC] hover:bg-[#FF00BC] hover:text-white transition-all active:scale-95"
                               title="Restaurar Padrão Chediak"
                             >
                               <RotateCcw size={16} />
@@ -296,7 +296,7 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
           <div className="absolute inset-0 bg-black/95 backdrop-blur-2xl" onClick={() => setIsModalOpen(false)}></div>
           <div className="relative w-full max-w-4xl max-h-[85vh] bg-[#12141c] border border-white/10 rounded-[4rem] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-300">
             <div className="p-10 border-b border-white/5 flex items-center justify-between">
-                <h3 className="text-3xl font-black text-white tracking-tighter uppercase">Escolha a <span className="text-blue-500">Qualidade</span></h3>
+                <h3 className="text-3xl font-black text-white tracking-tighter uppercase">Escolha a <span className="text-[#0081FF]">Qualidade</span></h3>
                 <button onClick={() => setIsModalOpen(false)} className="w-16 h-16 bg-white/5 rounded-3xl flex items-center justify-center transition-all text-slate-400 active:scale-90">
                   <X size={32} />
                 </button>
@@ -305,7 +305,7 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
                {chordCategories.map((category, catIdx) => (
                  <div key={catIdx} className="space-y-8">
                     <div className="flex items-center gap-4">
-                      <h4 className="text-[11px] font-black text-blue-500 uppercase tracking-[0.6em] whitespace-nowrap">{category.label}</h4>
+                      <h4 className="text-[11px] font-black text-[#0081FF] uppercase tracking-[0.6em] whitespace-nowrap">{category.label}</h4>
                       <div className="h-[1px] flex-grow bg-white/5"></div>
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -315,7 +315,7 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
                           onClick={() => { setSelectedType(type.symbol); setIsModalOpen(false); if(isEditing) setIsEditing(false); }}
                           className={`px-6 py-6 rounded-[2rem] font-black text-sm transition-all border flex flex-col items-center gap-1 ${
                             selectedType === type.symbol 
-                            ? 'bg-blue-600 border-blue-400 text-white shadow-xl shadow-blue-500/30 scale-105' 
+                            ? 'bg-blue-600 border-blue-400 text-white shadow-xl shadow-[#0081FF]/30 scale-105' 
                             : 'bg-white/5 border-white/5 text-slate-400 hover:bg-white/10'
                           }`}
                         >

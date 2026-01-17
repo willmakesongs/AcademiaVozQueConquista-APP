@@ -9,8 +9,8 @@ export const BlockedScreen: React.FC<BlockedScreenProps> = ({ onLogout }) => {
     return (
         <div className="min-h-screen bg-[#0F172A] flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-500">
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-red-500/10 blur-[100px] rounded-full"></div>
-                <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-red-600/5 blur-[100px] rounded-full"></div>
+                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-[#FF00BC]/10 blur-[100px] rounded-full"></div>
+                <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-[#FF00BC]/5 blur-[100px] rounded-full"></div>
             </div>
 
             <div className="relative z-10 max-w-sm w-full">
@@ -18,8 +18,8 @@ export const BlockedScreen: React.FC<BlockedScreenProps> = ({ onLogout }) => {
                     <Logo />
                 </div>
 
-                <div className="bg-[#1A202C]/80 backdrop-blur-xl rounded-[32px] p-8 border border-red-500/20 shadow-2xl shadow-red-900/20">
-                    <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6 text-red-500 border border-red-500/20">
+                <div className="bg-[#1A202C]/80 backdrop-blur-xl rounded-[32px] p-8 border border-[#FF00BC]/20 shadow-2xl shadow-red-900/20">
+                    <div className="w-20 h-20 bg-[#FF00BC]/10 rounded-full flex items-center justify-center mx-auto mb-6 text-[#FF00BC] border border-[#FF00BC]/20">
                         <span className="material-symbols-rounded text-4xl">lock</span>
                     </div>
 

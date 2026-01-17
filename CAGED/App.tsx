@@ -98,13 +98,13 @@ const App: React.FC = () => {
       case 'library':
         title = "DICIONÁRIO";
         highlight = "CAGED";
-        icon = <BookOpen size={12} className="text-blue-500"/>;
+        icon = <BookOpen size={12} className="text-[#0081FF]"/>;
         description = "Biblioteca Universal de Acordes";
         break;
       case 'metronome':
         title = "ESTUDE COM";
         highlight = "METRÔNOMO";
-        icon = <Clock size={12} className="text-blue-500"/>;
+        icon = <Clock size={12} className="text-[#0081FF]"/>;
         description = "Precisão Digital Studio";
         break;
     }
@@ -112,11 +112,11 @@ const App: React.FC = () => {
     return (
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div>
-          <div className="flex items-center gap-2 text-blue-500 font-black text-[10px] uppercase tracking-[0.4em] mb-2">
+          <div className="flex items-center gap-2 text-[#0081FF] font-black text-[10px] uppercase tracking-[0.4em] mb-2">
              <Sparkles size={14} /> Criado por: @WilsonClaudiano
           </div>
           <h1 className="text-4xl md:text-7xl font-black tracking-tighter text-white mb-2 leading-none uppercase">
-            {title} <span className="text-blue-500">{highlight}</span>
+            {title} <span className="text-[#0081FF]">{highlight}</span>
           </h1>
           <p className="text-slate-500 font-bold flex items-center gap-2 uppercase text-[10px] tracking-[0.2em]">
             {icon} {description}
@@ -167,11 +167,11 @@ const App: React.FC = () => {
       <footer className="mt-20 border-t border-white/5 bg-black/40 py-20 px-8">
         <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left">
           <div className="flex items-center gap-5">
-             <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-2xl shadow-blue-500/30">
+             <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-2xl shadow-[#0081FF]/30">
                 <Sparkles size={32}/>
              </div>
              <div>
-               <span className="font-black tracking-tighter text-3xl text-white block">Will Make <span className="text-blue-500">Chords</span></span>
+               <span className="font-black tracking-tighter text-3xl text-white block">Will Make <span className="text-[#0081FF]">Chords</span></span>
                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-700">Harmonic Engine v3.0</span>
              </div>
           </div>

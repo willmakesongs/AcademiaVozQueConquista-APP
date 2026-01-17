@@ -11,6 +11,7 @@ interface Props {
 
 export const StudentDashboard: React.FC<Props> = ({ onNavigate }) => {
     const { user } = useAuth();
+    const firstName = user?.name?.split(' ')[0] || 'Voz';
 
     return (
         <div className="min-h-screen bg-[#101622] pb-40">
@@ -38,11 +39,40 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate }) => {
                 {/* Introduction Text */}
                 <div className="space-y-4 text-center pt-2">
                     <p className="text-gray-300 text-sm leading-relaxed">
-                        <strong className="text-white">Olá, VOZ!</strong> É um prazer ter você conosco nesta jornada de autodescoberta e domínio vocal.
+                        <strong className="text-white">Olá, {firstName}!</strong> É um prazer ter você conosco nesta jornada de autodescoberta e domínio vocal.
                     </p>
                     <p className="text-gray-300 text-sm leading-relaxed">
                         Na nossa Academia, unimos a sensibilidade das aulas presenciais com a tecnologia deste app para acelerar sua evolução.
                     </p>
+                </div>
+
+                {/* Section: Como usar o App */}
+                <div className="bg-[#1A202C] p-5 rounded-2xl border border-white/5">
+                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <span className="material-symbols-rounded text-[#0081FF]">school</span>
+                        Seu Guia de Bolso
+                    </h3>
+
+                    <ul className="space-y-4">
+                        <li className="flex gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] shrink-0 mt-1">
+                                <span className="material-symbols-rounded text-lg">map</span>
+                            </div>
+                            <div>
+                                <strong className="text-white text-sm block">Sua Trilha Personalizada</strong>
+                                <p className="text-xs text-gray-400">Módulos de estudo liberados conforme sua evolução na Academia.</p>
+                            </div>
+                        </li>
+                        <li className="flex gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] shrink-0 mt-1">
+                                <span className="material-symbols-rounded text-lg">library_music</span>
+                            </div>
+                            <div>
+                                <strong className="text-white text-sm block">Guia de Prática Diária</strong>
+                                <p className="text-xs text-gray-400">Áudios de vocalizes e exercícios de respiração com qualidade de estúdio.</p>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
 
                 {/* Section: LORENA IA (Destaque Principal) */}
@@ -126,35 +156,6 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate }) => {
                     <p className="text-[10px] text-gray-500 mt-3 italic text-center relative z-10">
                         *Confira também os detalhes do seu plano e assinatura.
                     </p>
-                </div>
-
-                {/* Section: Como usar o App */}
-                <div className="bg-[#1A202C] p-5 rounded-2xl border border-white/5">
-                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                        <span className="material-symbols-rounded text-green-500">school</span>
-                        Seu Guia de Bolso
-                    </h3>
-
-                    <ul className="space-y-4">
-                        <li className="flex gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] shrink-0 mt-1">
-                                <span className="material-symbols-rounded text-lg">map</span>
-                            </div>
-                            <div>
-                                <strong className="text-white text-sm block">Sua Trilha Personalizada</strong>
-                                <p className="text-xs text-gray-400">Módulos de estudo liberados conforme sua evolução na Academia.</p>
-                            </div>
-                        </li>
-                        <li className="flex gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] shrink-0 mt-1">
-                                <span className="material-symbols-rounded text-lg">library_music</span>
-                            </div>
-                            <div>
-                                <strong className="text-white text-sm block">Guia de Prática Diária</strong>
-                                <p className="text-xs text-gray-400">Áudios de vocalizes e exercícios de respiração com qualidade de estúdio.</p>
-                            </div>
-                        </li>
-                    </ul>
                 </div>
 
                 {/* Quote & CTA */}

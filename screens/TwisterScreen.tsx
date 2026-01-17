@@ -151,9 +151,9 @@ export const TwisterScreen: React.FC<Props> = ({ onBack, initialExerciseId }) =>
                                     <div className="flex justify-between items-start mb-2">
                                         <h3 className="font-bold text-white">{ex.title}</h3>
                                         <span className={`text-[10px] px-2 py-0.5 rounded border ${
-                                            ex.difficulty === 'Nível 1' ? 'border-green-500 text-green-500' :
-                                            ex.difficulty === 'Nível 2' ? 'border-yellow-500 text-yellow-500' :
-                                            'border-red-500 text-red-500'
+                                            ex.difficulty === 'Nível 1' ? 'border-[#0081FF] text-[#0081FF]' :
+                                            ex.difficulty === 'Nível 2' ? 'border-[#6F4CE7] text-[#6F4CE7]' :
+                                            'border-[#FF00BC] text-[#FF00BC]'
                                         }`}>
                                             {ex.difficulty}
                                         </span>
@@ -277,7 +277,7 @@ export const TwisterScreen: React.FC<Props> = ({ onBack, initialExerciseId }) =>
             <div className="flex-1 flex items-center justify-center min-h-[160px] mb-6 relative bg-[#151A23] rounded-2xl p-6 border border-white/5 shadow-inner">
                  {/* Bitola Mode Badge */}
                  {isBitolaMode && (
-                    <div className="absolute top-3 right-3 bg-red-500/10 text-red-400 text-[9px] font-bold px-2 py-1 rounded-full border border-red-500/20 flex items-center gap-1">
+                    <div className="absolute top-3 right-3 bg-[#FF00BC]/10 text-red-400 text-[9px] font-bold px-2 py-1 rounded-full border border-[#FF00BC]/20 flex items-center gap-1">
                         <span className="material-symbols-rounded text-[10px]">block</span>
                         COM OBSTÁCULO
                     </div>
@@ -300,7 +300,7 @@ export const TwisterScreen: React.FC<Props> = ({ onBack, initialExerciseId }) =>
                     onClick={() => setIsBitolaMode(!isBitolaMode)}
                     className={`flex-1 flex flex-col items-center justify-center py-3 rounded-xl border transition-all ${
                         isBitolaMode 
-                            ? 'bg-red-500/20 border-red-500 text-red-200' 
+                            ? 'bg-[#FF00BC]/20 border-[#FF00BC] text-red-200' 
                             : 'bg-[#1A202C] border-white/5 hover:bg-white/5 text-gray-400'
                     }`}
                 >

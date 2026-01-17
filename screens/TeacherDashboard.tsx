@@ -736,11 +736,11 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     <h3 className="text-xl font-bold text-white">R$ {metrics.totalFaturado.toLocaleString()}</h3>
                                 </div>
                                 <div className="bg-[#1A202C] p-5 rounded-3xl border border-white/5">
-                                    <p className="text-[10px] text-green-500 font-black uppercase mb-1">Total Recebido</p>
+                                    <p className="text-[10px] text-[#0081FF] font-black uppercase mb-1">Total Recebido</p>
                                     <h3 className="text-xl font-bold text-white">R$ {metrics.totalRecebido.toLocaleString()}</h3>
                                 </div>
                                 <div className="bg-[#1A202C] p-5 rounded-3xl border border-white/5">
-                                    <p className="text-[10px] text-red-500 font-black uppercase mb-1">Em Atraso</p>
+                                    <p className="text-[10px] text-[#FF00BC] font-black uppercase mb-1">Em Atraso</p>
                                     <h3 className="text-xl font-bold text-white">R$ {metrics.totalAtraso.toLocaleString()}</h3>
                                 </div>
                                 <div className="bg-[#1A202C] p-5 rounded-3xl border border-white/5">
@@ -760,8 +760,8 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
                             {/* Pendências de Comprovantes */}
                             {pendingReceipts.length > 0 && (
-                                <div className="bg-yellow-500/10 p-5 rounded-3xl border border-yellow-500/20">
-                                    <h3 className="text-yellow-500 font-bold mb-3 flex items-center gap-2">
+                                <div className="bg-[#6F4CE7]/10 p-5 rounded-3xl border border-[#6F4CE7]/20">
+                                    <h3 className="text-[#6F4CE7] font-bold mb-3 flex items-center gap-2">
                                         <span className="material-symbols-rounded">warning</span>
                                         Comprovantes Pendentes ({pendingReceipts.length})
                                     </h3>
@@ -814,7 +814,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                             return (
                                                 <tr key={course.id}>
                                                     <td className="p-4 text-white font-bold">{course.nome}</td>
-                                                    <td className="p-4 text-green-500 font-black">R$ {courseMetrics.totalRecebido.toFixed(2)}</td>
+                                                    <td className="p-4 text-[#0081FF] font-black">R$ {courseMetrics.totalRecebido.toFixed(2)}</td>
                                                     <td className="p-4 text-gray-400">{courseMetrics.activeStudentsCount}</td>
                                                 </tr>
                                             );
@@ -849,8 +849,8 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                         </div>
                                     </div>
                                     <div className="text-right">
-                                        <span className={`text-[10px] font-black uppercase px-2 py-1 rounded-lg ${student.status === 'active' ? 'bg-green-500/10 text-green-500' :
-                                            student.status === 'overdue' ? 'bg-red-500/10 text-red-500' :
+                                        <span className={`text-[10px] font-black uppercase px-2 py-1 rounded-lg ${student.status === 'active' ? 'bg-[#0081FF]/10 text-[#0081FF]' :
+                                            student.status === 'overdue' ? 'bg-[#FF00BC]/10 text-[#FF00BC]' :
                                                 'bg-orange-500/10 text-orange-500'
                                             }`}>
                                             {student.status === 'active' ? 'Em Dia' : student.status === 'overdue' ? 'Atraso' : 'Pendente'}
@@ -890,14 +890,14 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                                 <tr key={teacher.id}>
                                                     <td className="p-4">
                                                         <div className="flex items-center gap-2">
-                                                            <div className="w-6 h-6 rounded-full bg-blue-500/20 text-blue-500 flex items-center justify-center font-bold text-[10px]">
+                                                            <div className="w-6 h-6 rounded-full bg-[#0081FF]/20 text-[#0081FF] flex items-center justify-center font-bold text-[10px]">
                                                                 {teacher.name.charAt(0)}
                                                             </div>
                                                             <span className="text-white font-bold">{teacher.name}</span>
                                                         </div>
                                                     </td>
                                                     <td className="p-4 text-gray-400">{teacherActiveStudents}</td>
-                                                    <td className="p-4 text-green-500 font-black">R$ {teacherTotalRepasse.toLocaleString()}</td>
+                                                    <td className="p-4 text-[#0081FF] font-black">R$ {teacherTotalRepasse.toLocaleString()}</td>
                                                 </tr>
                                             );
                                         })}
@@ -1062,7 +1062,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
                     <button
                         onClick={onLogout}
-                        className="w-full p-4 bg-red-500/10 rounded-3xl border border-red-500/20 text-red-500 font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2"
+                        className="w-full p-4 bg-[#FF00BC]/10 rounded-3xl border border-[#FF00BC]/20 text-[#FF00BC] font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2"
                     >
                         <span className="material-symbols-rounded text-lg">logout</span>
                         Encerrar Sessão
@@ -1137,16 +1137,16 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     </div>
 
                     {/* Pag. Pendentes */}
-                    <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5 relative overflow-hidden group hover:border-red-500/30 transition-colors">
+                    <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5 relative overflow-hidden group hover:border-[#FF00BC]/30 transition-colors">
                         <div className="flex justify-between items-start mb-4">
                             <h3 className="text-[#94A3B8] font-bold text-sm">Pag. Pendentes</h3>
-                            <div className="w-8 h-8 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center">
+                            <div className="w-8 h-8 rounded-xl bg-[#FF00BC]/10 text-[#FF00BC] flex items-center justify-center">
                                 <span className="material-symbols-rounded text-xl">warning</span>
                             </div>
                         </div>
                         <div className="flex items-baseline gap-2">
                             <span className="text-4xl font-black text-white tracking-tight">{pendingPaymentsCount}</span>
-                            <span className="text-[10px] font-black uppercase text-red-400 bg-red-500/10 px-2 py-1 rounded-lg tracking-wider">Atrasados</span>
+                            <span className="text-[10px] font-black uppercase text-red-400 bg-[#FF00BC]/10 px-2 py-1 rounded-lg tracking-wider">Atrasados</span>
                         </div>
                     </div>
                 </div>
@@ -1187,7 +1187,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                         {date.dayName}
                                     </span>
                                     <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${date.active
-                                        ? 'bg-[#0081FF] text-white shadow-lg shadow-blue-500/30 scale-110'
+                                        ? 'bg-[#0081FF] text-white shadow-lg shadow-[#0081FF]/30 scale-110'
                                         : 'bg-transparent text-gray-400 hover:bg-white/5 group-hover:text-white'
                                         }`}>
                                         {date.dayNum}
@@ -1226,7 +1226,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                 >
                                     <div className="relative">
                                         <img src={apt.avatarUrl} className="w-12 h-12 rounded-full object-cover border-2 border-[#151A23]" alt={apt.studentName} />
-                                        <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-[#1A202C] flex items-center justify-center overflow-hidden ${apt.paymentStatus === 'overdue' ? 'bg-red-500' : 'bg-green-500'
+                                        <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-[#1A202C] flex items-center justify-center overflow-hidden ${apt.paymentStatus === 'overdue' ? 'bg-[#FF00BC]' : 'bg-[#0081FF]'
                                             }`}>
                                             {apt.paymentStatus === 'overdue' && <span className="material-symbols-rounded text-[10px] text-white font-bold">!</span>}
                                         </div>
@@ -1237,14 +1237,14 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                             <div className="flex items-center gap-2">
                                                 <h4 className="text-sm font-bold text-white truncate">{apt.studentName}</h4>
                                                 {apt.paymentStatus === 'overdue' || apt.paymentStatus === 'blocked' ? (
-                                                    <span className="px-1.5 py-0.5 rounded text-[8px] font-black uppercase bg-red-500/10 text-red-500 tracking-wider">Pendente</span>
+                                                    <span className="px-1.5 py-0.5 rounded text-[8px] font-black uppercase bg-[#FF00BC]/10 text-[#FF00BC] tracking-wider">Pendente</span>
                                                 ) : (
-                                                    <span className="px-1.5 py-0.5 rounded text-[8px] font-black uppercase bg-green-500/10 text-green-500 tracking-wider">Ativo</span>
+                                                    <span className="px-1.5 py-0.5 rounded text-[8px] font-black uppercase bg-[#0081FF]/10 text-[#0081FF] tracking-wider">Ativo</span>
                                                 )}
                                             </div>
-                                            <span className={`text-[9px] font-black uppercase tracking-tighter mt-0.5 ${apt.paymentStatus === 'active' || apt.paymentStatus === 'overdue' ? 'text-green-500/70' :
+                                            <span className={`text-[9px] font-black uppercase tracking-tighter mt-0.5 ${apt.paymentStatus === 'active' || apt.paymentStatus === 'overdue' ? 'text-[#0081FF]/70' :
                                                 apt.paymentStatus === 'trial' ? 'text-[#FF00BC]/70' :
-                                                    'text-red-500/70'
+                                                    'text-[#FF00BC]/70'
                                                 }`}>
                                                 {apt.paymentStatus === 'active' || apt.paymentStatus === 'overdue' ? 'ALUNO ATIVO' :
                                                     apt.paymentStatus === 'trial' ? 'ALUNO TESTE' : 'ALUNO BLOQUEADO'}
@@ -1255,14 +1255,14 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                         {/* Optional: Check-in/Status text similar to image 'Em dia' */}
                                         {apt.paymentStatus !== 'overdue' && (
                                             <div className="flex items-center gap-1 mt-1">
-                                                <span className="material-symbols-rounded text-green-500 text-[10px]">check_circle</span>
-                                                <span className="text-[9px] text-green-500 font-bold">Em dia</span>
+                                                <span className="material-symbols-rounded text-[#0081FF] text-[10px]">check_circle</span>
+                                                <span className="text-[9px] text-[#0081FF] font-bold">Em dia</span>
                                             </div>
                                         )}
                                         {apt.paymentStatus === 'overdue' && (
                                             <div className="flex items-center gap-1 mt-1">
-                                                <span className="material-symbols-rounded text-red-500 text-[10px]">error</span>
-                                                <span className="text-[9px] text-red-500 font-bold">Pagamento Pendente</span>
+                                                <span className="material-symbols-rounded text-[#FF00BC] text-[10px]">error</span>
+                                                <span className="text-[9px] text-[#FF00BC] font-bold">Pagamento Pendente</span>
                                             </div>
                                         )}
                                     </div>
@@ -1379,7 +1379,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                 <div className="flex items-center gap-4">
                                     <div className="relative">
                                         <img src={student.avatarUrl} className="w-12 h-12 rounded-full object-cover border-2 border-[#101622]" alt="" />
-                                        <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-[#101622] ${student.status === 'active' ? 'bg-green-500' : student.status === 'trial' ? 'bg-[#FF00BC]' : student.status === 'inactive' ? 'bg-gray-500' : 'bg-red-500'}`}>
+                                        <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-[#101622] ${student.status === 'active' ? 'bg-[#0081FF]' : student.status === 'trial' ? 'bg-[#FF00BC]' : student.status === 'inactive' ? 'bg-gray-500' : 'bg-[#FF00BC]'}`}>
                                             {student.status === 'trial' && <span className="material-symbols-rounded text-[8px] text-white absolute inset-0 flex items-center justify-center font-bold">bolt</span>}
                                         </div>
                                     </div>
@@ -1460,8 +1460,8 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                         </h2>
                     </div>
                     <button onClick={() => setShowConfig(!showConfig)} className="relative">
-                        <div className={`absolute top-0 right-0 w-3 h-3 rounded-full border-2 border-[#101622] z-10 ${syncStatus === 'synced' ? 'bg-green-500' :
-                            syncStatus === 'error' ? 'bg-red-500 animate-pulse' : 'bg-yellow-500'
+                        <div className={`absolute top-0 right-0 w-3 h-3 rounded-full border-2 border-[#101622] z-10 ${syncStatus === 'synced' ? 'bg-[#0081FF]' :
+                            syncStatus === 'error' ? 'bg-[#FF00BC] animate-pulse' : 'bg-[#6F4CE7]'
                             }`}></div>
                         <img src={user?.avatarUrl || 'https://picsum.photos/200'} alt="Profile" className="w-10 h-10 rounded-full border-2 border-[#1A202C]" />
                         {showConfig && (
@@ -1501,7 +1501,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
                             {/* Dashboard/Financial Badge */}
                             {tab.id === 'reports' && receipts.some(r => r.status === 'pending') && (
-                                <span className="absolute top-0 -right-1 w-2 h-2 bg-red-500 rounded-full border border-[#101622] animate-pulse"></span>
+                                <span className="absolute top-0 -right-1 w-2 h-2 bg-[#FF00BC] rounded-full border border-[#101622] animate-pulse"></span>
                             )}
                         </button>
                     ))}
@@ -1519,7 +1519,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             {/* Botão de Add - FIXED e sem sobreposição */}
             <button
                 onClick={() => setIsAddModalOpen(true)}
-                className="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-[#0081FF] text-white shadow-lg flex items-center justify-center z-50 hover:scale-110 active:scale-95 transition-all shadow-blue-500/30"
+                className="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-[#0081FF] text-white shadow-lg flex items-center justify-center z-50 hover:scale-110 active:scale-95 transition-all shadow-[#0081FF]/30"
                 style={{ marginBottom: 'env(safe-area-inset-bottom)' }}
             >
                 <span className="material-symbols-rounded text-3xl">add</span>
@@ -1557,10 +1557,10 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     <h4 className="text-lg font-bold text-white">{selectedStudent.name}</h4>
                                     <p className="text-xs text-gray-500 uppercase font-black">{selectedStudent.modality} • {selectedStudent.level}</p>
                                     <div className={`mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-md border ${selectedStudent.status === 'blocked'
-                                        ? 'bg-red-500/20 border-red-500/30 text-red-400'
+                                        ? 'bg-[#FF00BC]/20 border-[#FF00BC]/30 text-red-400'
                                         : selectedStudent.status === 'inactive'
                                             ? 'bg-gray-500/20 border-gray-500/30 text-gray-400'
-                                            : 'bg-green-500/20 border-green-500/30 text-green-400'
+                                            : 'bg-[#0081FF]/20 border-[#0081FF]/30 text-green-400'
                                         }`}>
                                         <span className="material-symbols-rounded text-[14px]">
                                             {selectedStudent.status === 'blocked' ? 'lock' : selectedStudent.status === 'inactive' ? 'pause_circle' : 'check_circle'}
@@ -1581,8 +1581,8 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
                                 <div className="flex bg-[#1A202C] p-1 rounded-2xl border border-white/5 relative h-12 shadow-inner">
                                     <div
-                                        className={`absolute top-1 bottom-1 transition-all duration-300 ease-out rounded-xl shadow-lg z-0 ${editStatus === 'active' || editStatus === 'overdue' ? 'left-1 w-[calc(25%-2px)] bg-green-500 shadow-green-500/20' :
-                                            editStatus === 'blocked' ? 'left-[calc(25%+1px)] w-[calc(25%-2px)] bg-red-500 shadow-red-500/20' :
+                                        className={`absolute top-1 bottom-1 transition-all duration-300 ease-out rounded-xl shadow-lg z-0 ${editStatus === 'active' || editStatus === 'overdue' ? 'left-1 w-[calc(25%-2px)] bg-[#0081FF] shadow-[#0081FF]/20' :
+                                            editStatus === 'blocked' ? 'left-[calc(25%+1px)] w-[calc(25%-2px)] bg-[#FF00BC] shadow-[#FF00BC]/20' :
                                                 editStatus === 'trial' ? 'left-[calc(50%+1px)] w-[calc(25%-2px)] bg-[#FF00BC] shadow-pink-500/20' :
                                                     'left-[calc(75%+1px)] w-[calc(25%-2px)] bg-gray-600 shadow-gray-500/20'
                                             }`}
@@ -1650,7 +1650,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                             href={receipts.find(r => r.userId === selectedStudent.id && r.status === 'pending')?.receiptUrl}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="w-full bg-yellow-500/20 text-yellow-600 h-10 rounded-lg flex items-center justify-center gap-2 text-xs font-bold hover:bg-yellow-500/30 transition-all mb-3 border border-yellow-500/20"
+                                            className="w-full bg-[#6F4CE7]/20 text-yellow-600 h-10 rounded-lg flex items-center justify-center gap-2 text-xs font-bold hover:bg-[#6F4CE7]/30 transition-all mb-3 border border-[#6F4CE7]/20"
                                         >
                                             <span className="material-symbols-rounded text-sm">visibility</span>
                                             Ver Comprovante Enviado
@@ -1749,7 +1749,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     />
                                     <button
                                         onClick={() => openWhatsApp(editPhone)}
-                                        className="w-8 h-8 rounded-lg bg-green-500/20 text-green-500 flex items-center justify-center hover:bg-green-500/30 transition-all"
+                                        className="w-8 h-8 rounded-lg bg-[#0081FF]/20 text-[#0081FF] flex items-center justify-center hover:bg-[#0081FF]/30 transition-all"
                                     >
                                         <span className="material-symbols-rounded text-lg">chat</span>
                                     </button>
@@ -1764,14 +1764,14 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                         return (
                                             <div key={course.id} className="flex items-center justify-between p-2 rounded-lg bg-black/20 border border-white/5">
                                                 <div className="flex items-center gap-2">
-                                                    <div className={`w-1.5 h-1.5 rounded-full ${isLinked ? 'bg-green-500' : 'bg-gray-700'}`}></div>
+                                                    <div className={`w-1.5 h-1.5 rounded-full ${isLinked ? 'bg-[#0081FF]' : 'bg-gray-700'}`}></div>
                                                     <span className="text-xs text-white font-medium">{course.nome}</span>
                                                 </div>
                                                 <button
                                                     onClick={() => toggleStudentCourse(course.id, !!isLinked)}
                                                     className={`px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-wider transition-all ${isLinked
-                                                        ? 'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20'
-                                                        : 'bg-green-500/10 text-green-500 border border-green-500/20 hover:bg-green-500/20'
+                                                        ? 'bg-[#FF00BC]/10 text-[#FF00BC] border border-[#FF00BC]/20 hover:bg-[#FF00BC]/20'
+                                                        : 'bg-[#0081FF]/10 text-[#0081FF] border border-[#0081FF]/20 hover:bg-[#0081FF]/20'
                                                         }`}
                                                 >
                                                     {isLinked ? 'Remover' : 'Adicionar'}
@@ -1785,8 +1785,8 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                             <div className="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
                                 <p className="text-[10px] text-gray-500 font-bold uppercase">Status do Contrato</p>
                                 <div className="flex items-center gap-2">
-                                    <div className={`w-2 h-2 rounded-full ${selectedStudent?.contractAgreed ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                                    <span className={`text-xs font-bold ${selectedStudent?.contractAgreed ? 'text-green-500' : 'text-red-500'}`}>
+                                    <div className={`w-2 h-2 rounded-full ${selectedStudent?.contractAgreed ? 'bg-[#0081FF]' : 'bg-[#FF00BC]'}`}></div>
+                                    <span className={`text-xs font-bold ${selectedStudent?.contractAgreed ? 'text-[#0081FF]' : 'text-[#FF00BC]'}`}>
                                         {selectedStudent?.contractAgreed ? 'Contrato Assinado' : 'Pendente de Assinatura'}
                                     </span>
                                 </div>
@@ -1824,7 +1824,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                         handleDeleteStudent();
                                     }}
                                     disabled={loadingAction}
-                                    className="w-12 h-12 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center hover:bg-red-500/20 transition-all border border-red-500/20"
+                                    className="w-12 h-12 rounded-xl bg-[#FF00BC]/10 text-[#FF00BC] flex items-center justify-center hover:bg-[#FF00BC]/20 transition-all border border-[#FF00BC]/20"
                                     title="Excluir Aluno"
                                 >
                                     <span className="material-symbols-rounded">delete</span>
@@ -1849,7 +1849,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     {showDeleteConfirm && (
                         <div className="absolute inset-0 z-[70] flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-in fade-in zoom-in duration-200">
                             <div className="w-full max-w-[280px] bg-[#1A202C] rounded-[32px] border border-white/10 p-8 shadow-2xl flex flex-col items-center text-center">
-                                <div className="w-16 h-16 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center mb-6">
+                                <div className="w-16 h-16 rounded-full bg-[#FF00BC]/20 text-[#FF00BC] flex items-center justify-center mb-6">
                                     <span className="material-symbols-rounded text-3xl">delete_forever</span>
                                 </div>
                                 <h3 className="text-white font-black text-lg mb-2">Excluir Aluno?</h3>
@@ -1865,7 +1865,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     <button
                                         onClick={confirmDelete}
                                         disabled={loadingAction}
-                                        className="h-12 rounded-2xl bg-red-500 text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-red-500/20 active:scale-95 transition-all disabled:opacity-50"
+                                        className="h-12 rounded-2xl bg-[#FF00BC] text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-[#FF00BC]/20 active:scale-95 transition-all disabled:opacity-50"
                                     >
                                         {loadingAction ? '...' : 'SIM'}
                                     </button>

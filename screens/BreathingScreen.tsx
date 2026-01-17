@@ -145,7 +145,7 @@ export const BreathingScreen: React.FC<Props> = ({ onBack }) => {
   };
 
   const getTmeLevel = (time: number) => {
-      if (time < 15) return { label: 'Iniciante', color: 'text-yellow-500' };
+      if (time < 15) return { label: 'Iniciante', color: 'text-[#6F4CE7]' };
       if (time < 25) return { label: 'Intermediário', color: 'text-blue-400' };
       return { label: 'Avançado', color: 'text-[#FF00BC]' };
   };
@@ -164,15 +164,15 @@ export const BreathingScreen: React.FC<Props> = ({ onBack }) => {
           
           <div className="bg-[#1A202C] p-4 rounded-xl border border-white/5 w-full mb-8 text-left space-y-3">
               <div className="flex gap-3 items-center">
-                  <span className="material-symbols-rounded text-green-500">check_circle</span>
+                  <span className="material-symbols-rounded text-[#0081FF]">check_circle</span>
                   <p className="text-xs text-gray-300">Posicione o celular na altura dos olhos.</p>
               </div>
               <div className="flex gap-3 items-center">
-                  <span className="material-symbols-rounded text-green-500">check_circle</span>
+                  <span className="material-symbols-rounded text-[#0081FF]">check_circle</span>
                   <p className="text-xs text-gray-300">Coluna reta (sentado ou em pé).</p>
               </div>
               <div className="flex gap-3 items-center">
-                  <span className="material-symbols-rounded text-green-500">check_circle</span>
+                  <span className="material-symbols-rounded text-[#0081FF]">check_circle</span>
                   <p className="text-xs text-gray-300">Pés apoiados no chão.</p>
               </div>
           </div>
@@ -210,7 +210,7 @@ export const BreathingScreen: React.FC<Props> = ({ onBack }) => {
           ) : (
               <button 
                 onClick={stopTest}
-                className="w-24 h-24 rounded-full bg-red-500 text-white shadow-[0_0_30px_rgba(239,68,68,0.4)] flex items-center justify-center hover:scale-110 transition-transform"
+                className="w-24 h-24 rounded-full bg-[#FF00BC] text-white shadow-[0_0_30px_rgba(239,68,68,0.4)] flex items-center justify-center hover:scale-110 transition-transform"
               >
                   <span className="font-bold text-sm">PARAR</span>
               </button>

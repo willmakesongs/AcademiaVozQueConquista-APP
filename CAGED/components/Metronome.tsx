@@ -92,10 +92,10 @@ const Metronome: React.FC<MetronomeProps> = ({
   return (
     <div className="w-full max-w-2xl bg-[#0e1017] p-8 md:p-16 rounded-[4rem] border border-white/5 shadow-2xl flex flex-col items-center gap-10 relative overflow-hidden animate-in fade-in duration-500">
       
-      <div className={`absolute top-0 left-0 w-full h-1 transition-all duration-300 ${isPlaying ? 'bg-blue-500' : 'bg-transparent'}`} style={{ transform: `scaleX(${isPlaying ? 1 : 0})` }}></div>
+      <div className={`absolute top-0 left-0 w-full h-1 transition-all duration-300 ${isPlaying ? 'bg-[#0081FF]' : 'bg-transparent'}`} style={{ transform: `scaleX(${isPlaying ? 1 : 0})` }}></div>
       
       <div className="flex flex-col items-center text-center">
-         <div className="flex items-center gap-2 text-blue-500/40 mb-2">
+         <div className="flex items-center gap-2 text-[#0081FF]/40 mb-2">
             <Zap size={16}/>
             <span className="text-[10px] font-black uppercase tracking-[0.4em]">Estude sempre com metrônomo</span>
          </div>
@@ -104,7 +104,7 @@ const Metronome: React.FC<MetronomeProps> = ({
             <div className="text-[120px] md:text-[180px] font-black text-white tracking-tighter leading-none select-none">
               {bpm}
             </div>
-            <span className="text-2xl font-black text-blue-500 uppercase tracking-[0.5em] mt-[-10px] md:mt-[-20px] mb-4">BPM</span>
+            <span className="text-2xl font-black text-[#0081FF] uppercase tracking-[0.5em] mt-[-10px] md:mt-[-20px] mb-4">BPM</span>
          </div>
       </div>
 
@@ -115,7 +115,7 @@ const Metronome: React.FC<MetronomeProps> = ({
             key={i} 
             className={`w-4 h-4 rounded-full transition-all duration-75 ${
               isPlaying && currentBeatVisual === i 
-              ? (i === 0 ? 'bg-blue-500 scale-150 shadow-[0_0_15px_rgba(59,130,246,0.8)]' : 'bg-blue-400 scale-125 shadow-[0_0_10px_rgba(96,165,250,0.5)]') 
+              ? (i === 0 ? 'bg-[#0081FF] scale-150 shadow-[0_0_15px_rgba(59,130,246,0.8)]' : 'bg-blue-400 scale-125 shadow-[0_0_10px_rgba(96,165,250,0.5)]') 
               : 'bg-white/10'
             }`}
           ></div>
@@ -184,7 +184,7 @@ const Metronome: React.FC<MetronomeProps> = ({
             onClick={onTogglePlay}
             className={`group relative flex items-center gap-4 px-12 py-6 rounded-3xl font-black text-xl tracking-tighter transition-all active:scale-95 ${
               isPlaying 
-              ? 'bg-red-500 text-white shadow-[0_20px_50px_rgba(239,68,68,0.2)]' 
+              ? 'bg-[#FF00BC] text-white shadow-[0_20px_50px_rgba(239,68,68,0.2)]' 
               : 'bg-blue-600 text-white hover:bg-blue-50 shadow-[0_20px_50px_rgba(37,99,235,0.2)]'
             }`}
           >

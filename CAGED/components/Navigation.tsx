@@ -38,10 +38,10 @@ const Navigation: React.FC<NavigationProps> = ({ onViewChange, currentView, metr
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-8">
             <div className="flex-shrink-0 flex items-center gap-2 cursor-pointer" onClick={() => handleNavClick('library')}>
-              <div className="bg-blue-600 p-1.5 rounded-xl shadow-lg shadow-blue-500/20">
+              <div className="bg-blue-600 p-1.5 rounded-xl shadow-lg shadow-[#0081FF]/20">
                 <Music size={22} className="text-white" />
               </div>
-              <span className="font-black text-xl tracking-tighter hidden sm:inline">Will Make <span className="text-blue-500">Chords</span></span>
+              <span className="font-black text-xl tracking-tighter hidden sm:inline">Will Make <span className="text-[#0081FF]">Chords</span></span>
             </div>
             
             <div className="hidden md:block">
@@ -57,10 +57,10 @@ const Navigation: React.FC<NavigationProps> = ({ onViewChange, currentView, metr
                           key={sub.name} 
                           onClick={() => handleNavClick(sub.id)}
                           className={`w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold transition-colors border-b border-white/5 last:border-0 ${
-                            currentView === sub.id ? 'bg-blue-600/10 text-blue-500' : 'text-slate-400 hover:bg-white/5 hover:text-white'
+                            currentView === sub.id ? 'bg-blue-600/10 text-[#0081FF]' : 'text-slate-400 hover:bg-white/5 hover:text-white'
                           }`}
                         >
-                          <span className={`${currentView === sub.id ? 'text-blue-500' : 'text-slate-600'}`}>{sub.icon}</span>
+                          <span className={`${currentView === sub.id ? 'text-[#0081FF]' : 'text-slate-600'}`}>{sub.icon}</span>
                           {sub.name}
                         </button>
                       ))}
@@ -73,19 +73,19 @@ const Navigation: React.FC<NavigationProps> = ({ onViewChange, currentView, metr
 
           <div className="flex items-center gap-4">
              {/* Mini Metronome Player */}
-             <div className={`hidden md:flex items-center gap-3 px-3 py-1.5 rounded-full border transition-all duration-300 ${metronomeState.isPlaying ? 'bg-blue-900/30 border-blue-500/30' : 'bg-white/5 border-white/5'}`}>
+             <div className={`hidden md:flex items-center gap-3 px-3 py-1.5 rounded-full border transition-all duration-300 ${metronomeState.isPlaying ? 'bg-blue-900/30 border-[#0081FF]/30' : 'bg-white/5 border-white/5'}`}>
                 <div className="flex flex-col items-start px-2">
                   <span className="text-[8px] font-black uppercase text-slate-500 tracking-widest">BPM</span>
                   <span className={`text-xs font-black ${metronomeState.isPlaying ? 'text-blue-400' : 'text-slate-300'}`}>{metronomeState.bpm}</span>
                 </div>
                 <button 
                   onClick={onToggleMetronome}
-                  className={`w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-90 ${metronomeState.isPlaying ? 'bg-blue-500 text-white shadow-[0_0_15px_rgba(59,130,246,0.5)]' : 'bg-slate-700 text-slate-400 hover:bg-slate-600 hover:text-white'}`}
+                  className={`w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-90 ${metronomeState.isPlaying ? 'bg-[#0081FF] text-white shadow-[0_0_15px_rgba(59,130,246,0.5)]' : 'bg-slate-700 text-slate-400 hover:bg-slate-600 hover:text-white'}`}
                 >
                    {metronomeState.isPlaying ? <Pause size={12} fill="currentColor"/> : <Play size={12} fill="currentColor" className="ml-0.5"/>}
                 </button>
                 {metronomeState.isPlaying && (
-                  <Activity size={14} className="text-blue-500 animate-pulse mr-2" />
+                  <Activity size={14} className="text-[#0081FF] animate-pulse mr-2" />
                 )}
              </div>
 
@@ -107,7 +107,7 @@ const Navigation: React.FC<NavigationProps> = ({ onViewChange, currentView, metr
           <div className="p-4 border-b border-white/5">
              <div className="flex items-center justify-between bg-black/20 p-4 rounded-2xl border border-white/5">
                 <div className="flex items-center gap-3">
-                   <div className={`p-2 rounded-full ${metronomeState.isPlaying ? 'bg-blue-500 text-white' : 'bg-slate-800 text-slate-500'}`}>
+                   <div className={`p-2 rounded-full ${metronomeState.isPlaying ? 'bg-[#0081FF] text-white' : 'bg-slate-800 text-slate-500'}`}>
                       <Clock size={16} />
                    </div>
                    <div>
@@ -136,7 +136,7 @@ const Navigation: React.FC<NavigationProps> = ({ onViewChange, currentView, metr
                       currentView === sub.id ? 'bg-blue-600 text-white' : 'text-slate-300 hover:text-white hover:bg-slate-800'
                     }`}
                   >
-                    <span className="text-blue-500">{sub.icon}</span>
+                    <span className="text-[#0081FF]">{sub.icon}</span>
                     {sub.name}
                   </button>
                 ))}

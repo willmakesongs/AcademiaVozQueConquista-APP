@@ -51,11 +51,11 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ chords }) => {
       <div className="flex items-center justify-between mb-8 px-2">
         <div className="flex flex-col">
           <h2 className="text-3xl font-black text-white tracking-tighter flex items-center gap-3">
-            ACORDES <span className="text-blue-500">DETECTADOS</span>
+            ACORDES <span className="text-[#0081FF]">DETECTADOS</span>
           </h2>
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] mt-1">Baseado em análise intervalar profunda</span>
         </div>
-        <div className="bg-blue-600/10 text-blue-500 px-4 py-2 rounded-2xl border border-blue-500/20 flex items-center gap-2">
+        <div className="bg-blue-600/10 text-[#0081FF] px-4 py-2 rounded-2xl border border-[#0081FF]/20 flex items-center gap-2">
             <Music size={14} />
             <span className="font-black text-xs">{chords.length} Sugestões</span>
         </div>
@@ -72,16 +72,16 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ chords }) => {
               className={`relative overflow-hidden group p-8 rounded-[2.5rem] border-2 transition-all duration-300 ${
                 isPrimary 
                   ? 'bg-blue-600 border-blue-400 shadow-[0_20px_50px_rgba(37,99,235,0.3)] scale-[1.02] z-10' 
-                  : 'bg-[#0e1017] border-white/5 hover:border-blue-500/30'
+                  : 'bg-[#0e1017] border-white/5 hover:border-[#0081FF]/30'
               }`}
             >
-              <div className={`absolute top-0 right-0 w-32 h-32 opacity-10 pointer-events-none transition-transform group-hover:scale-110 ${isPrimary ? 'text-white' : 'text-blue-500'}`}>
+              <div className={`absolute top-0 right-0 w-32 h-32 opacity-10 pointer-events-none transition-transform group-hover:scale-110 ${isPrimary ? 'text-white' : 'text-[#0081FF]'}`}>
                  <Music size={128} />
               </div>
 
               <div className="flex justify-between items-start mb-6">
                 <div className="flex flex-col">
-                   <span className={`text-5xl font-black tracking-tighter ${isPrimary ? 'text-white' : 'text-blue-500'}`}>
+                   <span className={`text-5xl font-black tracking-tighter ${isPrimary ? 'text-white' : 'text-[#0081FF]'}`}>
                     {chord.fullName}
                   </span>
                   {chord.fullName.includes('/') && (
@@ -92,7 +92,7 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ chords }) => {
                 </div>
                 <div className="flex flex-col items-end">
                   <div className={`text-[9px] font-black uppercase tracking-widest ${isPrimary ? 'text-blue-200' : 'text-slate-500'}`}>Precisão</div>
-                  <div className={`text-xl font-black ${isPrimary ? 'text-white' : 'text-green-500'}`}>
+                  <div className={`text-xl font-black ${isPrimary ? 'text-white' : 'text-[#0081FF]'}`}>
                     {chord.score}%
                   </div>
                 </div>
@@ -126,7 +126,7 @@ const ChordDisplay: React.FC<ChordDisplayProps> = ({ chords }) => {
                     className={`py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 ${
                       isPlaying 
                       ? 'bg-white/20 text-white cursor-wait' 
-                      : (isPrimary ? 'bg-white text-blue-600 hover:bg-blue-50 shadow-xl' : 'bg-blue-600/10 text-blue-500 hover:bg-blue-600/20')
+                      : (isPrimary ? 'bg-white text-blue-600 hover:bg-blue-50 shadow-xl' : 'bg-blue-600/10 text-[#0081FF] hover:bg-blue-600/20')
                     }`}
                   >
                     <Volume2 size={14} className={isPlaying ? 'animate-bounce' : ''}/>

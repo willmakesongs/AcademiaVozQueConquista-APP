@@ -72,7 +72,7 @@ export const LibraryScreen: React.FC<Props> = ({
     };
   }, []);
 
-  const { play: playGlobal, stop: stopGlobal, isPlaying, activeUrl } = usePlayback();
+  const { play: playGlobal, stop: stopGlobal, isPlaying, activeUrl, setPlaybackSpeed, playbackSpeed } = usePlayback();
   const [activeInlineBtn, setActiveInlineBtn] = useState<HTMLElement | null>(null);
 
   const isAdmin = user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase());
@@ -137,8 +137,7 @@ export const LibraryScreen: React.FC<Props> = ({
   // Preload audio when a module is expanded
   useEffect(() => {
     if (expandedModule) {
-      const moduleVocalizes = VOCALIZES.filter(v => v.moduleId === expandedModule);
-      const urlsToPreload = moduleVocalizes.flatMap(v => [v.audioUrl, v.audioUrlMale, v.exampleUrl].filter(Boolean) as string[]);
+      const urlsToPreload = []; // Module vocalizes removed from UI
 
       // Also preload topics examples
       const module = MODULES.find(m => m.id === expandedModule);
@@ -230,24 +229,24 @@ export const LibraryScreen: React.FC<Props> = ({
           // Estilo MARCADO
           if (box) {
             box.classList.remove('border-gray-600', 'bg-[#1A202C]');
-            box.classList.add('bg-green-500', 'border-green-500');
+            box.classList.add('bg-[#0081FF]', 'border-[#0081FF]');
           }
           if (icon) {
             icon.classList.remove('opacity-0', 'scale-0');
             icon.classList.add('opacity-100', 'scale-100');
           }
-          item.classList.add('bg-green-500/5');
+          item.classList.add('bg-[#0081FF]/5');
         } else {
           // Estilo DESMARCADO
           if (box) {
             box.classList.add('border-gray-600', 'bg-[#1A202C]');
-            box.classList.remove('bg-green-500', 'border-green-500');
+            box.classList.remove('bg-[#0081FF]', 'border-[#0081FF]');
           }
           if (icon) {
             icon.classList.add('opacity-0', 'scale-0');
             icon.classList.remove('opacity-100', 'scale-100');
           }
-          item.classList.remove('bg-green-500/5');
+          item.classList.remove('bg-[#0081FF]/5');
         }
       });
     }, 50);
@@ -350,21 +349,32 @@ export const LibraryScreen: React.FC<Props> = ({
       const allOptions = quizOption.parentElement?.querySelectorAll('.quiz-option');
 
       allOptions?.forEach(opt => {
-        opt.classList.remove('border-[#0081FF]', 'bg-[#0081FF]/10', 'bg-gradient-to-r', 'from-green-500/20', 'to-blue-500/20', 'border-green-500/50');
+        opt.classList.remove('border-[#0081FF]', 'bg-[#0081FF]/10', 'bg-gradient-to-r', 'from-[#0081FF]/20', 'to-[#0081FF]/20', 'border-[#0081FF]/50');
         opt.classList.add('opacity-50');
       });
 
       quizOption.classList.remove('opacity-50');
       if (isCorrect) {
-        quizOption.classList.add('bg-gradient-to-r', 'from-green-500/20', 'to-blue-500/20', 'border-green-500/50');
+        quizOption.classList.add('bg-gradient-to-r', 'from-[#0081FF]/20', 'to-[#0081FF]/20', 'border-[#0081FF]/50');
         // Feedback visual de acerto
         const icon = quizOption.querySelector('.option-icon');
-        if (icon) icon.innerHTML = '<span class="material-symbols-rounded text-green-500">check_circle</span>';
+        if (icon) icon.innerHTML = '<span class="material-symbols-rounded text-[#0081FF]">check_circle</span>';
       } else {
-        quizOption.classList.add('border-red-500/50', 'bg-red-500/10');
+        quizOption.classList.add('border-[#FF00BC]/50', 'bg-[#FF00BC]/10');
         const icon = quizOption.querySelector('.option-icon');
-        if (icon) icon.innerHTML = '<span class="material-symbols-rounded text-red-500">cancel</span>';
+        if (icon) icon.innerHTML = '<span class="material-symbols-rounded text-[#FF00BC]">cancel</span>';
       }
+    }
+
+    // 5. Lógica de Controle de Velocidade
+    const speedBtn = target.closest('.speed-btn');
+    if (speedBtn) {
+      e.preventDefault();
+      const speedStr = speedBtn.getAttribute('data-speed');
+      if (speedStr) {
+        setPlaybackSpeed(parseFloat(speedStr));
+      }
+      return;
     }
   };
 
@@ -669,7 +679,7 @@ export const LibraryScreen: React.FC<Props> = ({
                       onClick={() => toggleModule(module.id, isLocked)}
                       className="w-full flex items-start p-5 text-left relative"
                     >
-                      <div className={`mr-4 w-12 h-12 rounded-xl flex items-center justify-center shrink-0 font-bold text-lg transition-colors ${isActive ? 'bg-brand-gradient text-white' : (status === 'completed' ? 'bg-green-500/20 text-green-500' : 'bg-white/5 text-gray-500')
+                      <div className={`mr-4 w-12 h-12 rounded-xl flex items-center justify-center shrink-0 font-bold text-lg transition-colors ${isActive ? 'bg-brand-gradient text-white' : (status === 'completed' ? 'bg-[#0081FF]/20 text-[#0081FF]' : 'bg-white/5 text-gray-500')
                         }`}>
                         {isLocked ? (
                           <span className="material-symbols-rounded text-xl">lock</span>
@@ -688,8 +698,8 @@ export const LibraryScreen: React.FC<Props> = ({
 
                       <div className="flex-1">
                         <div className="flex items-center gap-2 mb-1">
-                          {status === 'in_progress' && <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>}
-                          <p className={`text-[9px] font-black uppercase tracking-widest ${status === 'completed' ? 'text-green-500' : (status === 'in_progress' ? 'text-blue-500' : 'text-gray-600')}`}>
+                          {status === 'in_progress' && <span className="w-1.5 h-1.5 rounded-full bg-[#0081FF] animate-pulse"></span>}
+                          <p className={`text-[9px] font-black uppercase tracking-widest ${status === 'completed' ? 'text-[#0081FF]' : (status === 'in_progress' ? 'text-[#0081FF]' : 'text-gray-600')}`}>
                             {status === 'completed' ? 'CONCLUÍDO' : (status === 'in_progress' ? 'EM ANDAMENTO' : 'NÃO INICIADO')}
                           </p>
                         </div>
@@ -724,7 +734,7 @@ export const LibraryScreen: React.FC<Props> = ({
                                 <p className="text-[10px] text-gray-600">{topic.description}</p>
                               </div>
                               <div className="flex items-center gap-2">
-                                {checklistState[topic.id] && <span className="material-symbols-rounded text-green-500 text-sm">check_circle</span>}
+                                {checklistState[topic.id] && <span className="material-symbols-rounded text-[#0081FF] text-sm">check_circle</span>}
                                 {(topic.content || topic.id.startsWith('10.1')) && (
                                   <span className="material-symbols-rounded text-gray-600 text-sm group-hover:text-white">
                                     {topic.id.startsWith('10.1') ? 'play_circle' : 'article'}
@@ -735,34 +745,6 @@ export const LibraryScreen: React.FC<Props> = ({
                           ))}
                         </div>
 
-                        {moduleExercises.length > 0 && (
-                          <div className="space-y-2">
-                            <h4 className="text-[10px] text-gray-600 font-black uppercase tracking-widest mb-2">Exercícios Práticos</h4>
-                            {moduleExercises.map(exercise => (
-                              <div
-                                key={exercise.id}
-                                onClick={() => {
-                                  if (DISABLE_ALL_PLAYERS && !isAdmin) {
-                                    alert("Ativo para assinantes");
-                                    return;
-                                  }
-                                  onPlayVocalize(exercise);
-                                }}
-                                className="flex items-center gap-3 p-3 rounded-xl bg-black/20 hover:bg-white/5 border border-white/5 cursor-pointer group transition-colors"
-                              >
-                                <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 group-hover:text-[#FF00BC] group-hover:bg-[#FF00BC]/10 transition-colors">
-                                  <span className="material-symbols-rounded text-lg">play_arrow</span>
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-sm font-medium text-white truncate">{exercise.title}</p>
-                                  <div className="flex items-center gap-2">
-                                    <span className="text-[9px] text-gray-500">{exercise.difficulty} • {exercise.duration}</span>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
                       </div>
                     </div>
                   </div>
@@ -835,7 +817,7 @@ export const LibraryScreen: React.FC<Props> = ({
                     </div>
                     <div className="flex-1">
                       <h3 className="font-bold text-white">{course.nome}</h3>
-                      <p className={`text-[10px] font-black uppercase tracking-widest ${isEnrolled ? 'text-green-500' : 'text-gray-500'}`}>
+                      <p className={`text-[10px] font-black uppercase tracking-widest ${isEnrolled ? 'text-[#0081FF]' : 'text-gray-500'}`}>
                         {isAdminOrTeacher ? 'ACESSO TOTAL (ADM)' : (isEnrolled ? 'ATIVO NO SEU PLANO' : 'BLOQUEADO')}
                       </p>
                     </div>
@@ -892,7 +874,7 @@ export const LibraryScreen: React.FC<Props> = ({
                 </div>
 
                 <div className="flex gap-4">
-                  <span className="material-symbols-rounded text-yellow-500 text-xl shrink-0">bolt</span>
+                  <span className="material-symbols-rounded text-[#6F4CE7] text-xl shrink-0">bolt</span>
                   <div>
                     <h4 className="text-white text-xs font-bold uppercase mb-1">Gestão de Tensão</h4>
                     <p className="text-[11px] text-gray-400">Fique atento à Arquitetura Corporal. Se sentir peso na garganta, reorganize seus ombros e queixo imediatamente.</p>
@@ -900,7 +882,7 @@ export const LibraryScreen: React.FC<Props> = ({
                 </div>
 
                 <div className="flex gap-4">
-                  <span className="material-symbols-rounded text-[#EE13CA] text-xl shrink-0">shield</span>
+                  <span className="material-symbols-rounded text-[#FF00BC] text-xl shrink-0">shield</span>
                   <div>
                     <h4 className="text-white text-xs font-bold uppercase mb-1">Reforço de Autoridade</h4>
                     <p className="text-[11px] text-gray-300 font-medium italic">"Nunca peça desculpas por ocupar o espaço com sua voz. Sua intenção deve ser absoluta."</p>

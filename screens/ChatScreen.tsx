@@ -234,8 +234,8 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
     if (!checkingKey && !apiKeyReady) {
         return (
             <div className="min-h-screen bg-[#101622] flex flex-col relative overflow-hidden text-center p-8">
-                <div className="w-24 h-24 bg-red-500/10 rounded-full flex items-center justify-center mb-6 mx-auto border border-red-500/20">
-                    <span className="material-symbols-rounded text-5xl text-red-500">vpn_key_off</span>
+                <div className="w-24 h-24 bg-[#FF00BC]/10 rounded-full flex items-center justify-center mb-6 mx-auto border border-[#FF00BC]/20">
+                    <span className="material-symbols-rounded text-5xl text-[#FF00BC]">vpn_key_off</span>
                 </div>
                 <h2 className="text-2xl font-bold text-white mb-3">Chave API Necessária</h2>
                 <p className="text-sm text-gray-400 mb-8 max-w-xs mx-auto">
@@ -257,7 +257,7 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                 <div className="flex-1">
                     <h1 className="text-lg font-bold text-white flex items-center gap-2">
                         Lorena Pimentel
-                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                        <span className="w-2 h-2 rounded-full bg-[#0081FF] animate-pulse"></span>
                     </h1>
                     <p className="text-xs text-[#FF00BC] font-medium">Mentora IA • Voz Que Conquista</p>
                 </div>

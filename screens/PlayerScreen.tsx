@@ -41,7 +41,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     { color: '#0081FF', baseHeight: 35 },
     { color: '#6F4CE7', baseHeight: 25 },
     { color: '#9333EA', baseHeight: 85 },
-    { color: '#EE13CA', baseHeight: 45 },
+    { color: '#FF00BC', baseHeight: 45 },
     { color: '#FF00BC', baseHeight: 25 },
   ];
 
@@ -318,7 +318,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
           <div className="hidden" id="active-source-debug">{activeSource}</div>
 
           {errorMsg && (
-            <div className="bg-red-500/10 border border-red-500/20 text-red-200 text-xs p-3 rounded-lg mb-4 inline-block">
+            <div className="bg-[#FF00BC]/10 border border-[#FF00BC]/20 text-red-200 text-xs p-3 rounded-lg mb-4 inline-block">
               <span className="material-symbols-rounded text-sm align-bottom mr-1">warning</span>
               {errorMsg}
             </div>

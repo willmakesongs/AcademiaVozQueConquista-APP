@@ -158,7 +158,7 @@ const Metronome: React.FC<MetronomeProps> = ({
           <button
             onClick={onTogglePlay}
             className={`flex items-center justify-center gap-3 px-12 py-5 rounded-2xl font-bold text-lg tracking-tight transition-all active:scale-95 w-full md:w-auto ${isPlaying
-                ? 'bg-red-500 text-white shadow-lg shadow-red-500/20'
+                ? 'bg-[#FF00BC] text-white shadow-lg shadow-[#FF00BC]/20'
                 : 'bg-[#007AFF] text-white shadow-lg shadow-[#007AFF]/20'
               }`}
           >

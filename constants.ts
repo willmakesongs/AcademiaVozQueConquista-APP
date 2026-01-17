@@ -119,12 +119,12 @@ export const INLINE_PLAYER_TEMPLATE = (url: string) => `
     <div class="flex items-center gap-3">
         <img src="${MINIMALIST_LOGO_URL}" class="w-8 h-8 object-contain opacity-40 group-hover:opacity-100 transition-opacity" alt="Logo" />
         <div class="audio-viz flex items-end gap-1.5 h-10 opacity-50 transition-opacity">
-            <div class="w-1.5 rounded-full transition-all duration-150 shadow-[0_0_10px_rgba(0,129,255,0.3)]" style="background-color: #0081FF; height: 23px;" data-base-height="23"></div>
-            <div class="w-1.5 rounded-full transition-all duration-150 shadow-[0_0_10px_rgba(0,129,255,0.3)]" style="background-color: #0081FF; height: 12px;" data-base-height="12"></div>
-            <div class="w-1.5 rounded-full transition-all duration-150" style="background-color: #6F4CE7; height: 8px;" data-base-height="8"></div>
+            <div class="w-1.5 rounded-full transition-all duration-150 shadow-[0_0_10px_rgba(0,129,255,0.3)]" style="background-color: [#0081FF]; height: 23px;" data-base-height="23"></div>
+            <div class="w-1.5 rounded-full transition-all duration-150 shadow-[0_0_10px_rgba(0,129,255,0.3)]" style="background-color: [#0081FF]; height: 12px;" data-base-height="12"></div>
+            <div class="w-1.5 rounded-full transition-all duration-150" style="background-color: [#6F4CE7]; height: 8px;" data-base-height="8"></div>
             <div class="w-1.5 rounded-full transition-all duration-150 shadow-[0_0_10px_rgba(147,51,234,0.3)]" style="background-color: #9333EA; height: 28px;" data-base-height="28"></div>
-            <div class="w-1.5 rounded-full transition-all duration-150" style="background-color: #EE13CA; height: 15px;" data-base-height="15"></div>
-            <div class="w-1.5 rounded-full transition-all duration-150 shadow-[0_0_10px_rgba(255,0,188,0.3)]" style="background-color: #FF00BC; height: 8px;" data-base-height="8"></div>
+            <div class="w-1.5 rounded-full transition-all duration-150" style="background-color: #FF00BC; height: 15px;" data-base-height="15"></div>
+            <div class="w-1.5 rounded-full transition-all duration-150 shadow-[0_0_10px_rgba(255,0,188,0.3)]" style="background-color: [#FF00BC]; height: 8px;" data-base-height="8"></div>
         </div>
     </div>
 </div>
@@ -171,12 +171,13 @@ const SINGEO_BASE_URL = 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/
 // MODULES DATA
 // -----------------------------------------------------------
 export const MODULES: Module[] = [
+    // --- FASE 1: O INSTRUMENTO E A FONTE (O ALICERCE) ---
     {
         id: 'm_theory',
         number: '01',
         title: 'TEORIA',
         subtitle: 'Conhecimento é Poder',
-        description: 'A base teórica indispensável: Respiração, Fonação, Ressonância e Postura.',
+        description: 'A base teórica indispensável: Respiração, Fonação e Ressonância.',
         icon: 'menu_book',
         topics: [
             {
@@ -270,7 +271,7 @@ export const MODULES: Module[] = [
 
           <div class="space-y-8">
             <div class="text-center">
-                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                <div class="w-20 h-20 rounded-full bg-[#6F4CE7]/10 flex items-center justify-center text-[#6F4CE7] mx-auto mb-4 border border-[#6F4CE7]/20">
                     <span class="material-symbols-rounded text-4xl">quiz</span>
                 </div>
                 <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Fixação I</h3>
@@ -378,7 +379,7 @@ export const MODULES: Module[] = [
 
           <div class="space-y-8">
             <div class="text-center">
-                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                <div class="w-20 h-20 rounded-full bg-[#6F4CE7]/10 flex items-center justify-center text-[#6F4CE7] mx-auto mb-4 border border-[#6F4CE7]/20">
                     <span class="material-symbols-rounded text-4xl">quiz</span>
                 </div>
                 <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Fixação II</h3>
@@ -411,7 +412,7 @@ export const MODULES: Module[] = [
 
           <div class="space-y-6">
             <div class="flex items-center gap-4 mb-2">
-                <div class="w-12 h-12 rounded-2xl bg-green-500/20 flex items-center justify-center text-green-500">
+                <div class="w-12 h-12 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
                     <span class="material-symbols-rounded">balance</span>
                 </div>
                 <h3 class="text-2xl font-black text-white tracking-tighter">A Importância do Equilíbrio</h3>
@@ -424,11 +425,11 @@ export const MODULES: Module[] = [
                 
                 <div class="grid grid-cols-2 gap-3 mt-4">
                     <div class="bg-black/40 p-4 rounded-2xl text-center border border-white/5">
-                        <span class="text-[10px] text-green-500 font-black uppercase tracking-widest block mb-1">Custo-Lateral</span>
+                        <span class="text-[10px] text-[#0081FF] font-black uppercase tracking-widest block mb-1">Custo-Lateral</span>
                         <p class="text-[11px] text-gray-400">Expansão das costelas.</p>
                     </div>
                     <div class="bg-black/40 p-4 rounded-2xl text-center border border-white/5">
-                        <span class="text-[10px] text-green-500 font-black uppercase tracking-widest block mb-1">Dorsal</span>
+                        <span class="text-[10px] text-[#0081FF] font-black uppercase tracking-widest block mb-1">Dorsal</span>
                         <p class="text-[11px] text-gray-400">Suporte das costas.</p>
                     </div>
                 </div>
@@ -443,28 +444,28 @@ export const MODULES: Module[] = [
 
           <div class="space-y-6">
             <div class="flex items-center gap-4 mb-2">
-                <div class="w-12 h-12 rounded-2xl bg-red-500/20 flex items-center justify-center text-red-500">
+                <div class="w-12 h-12 rounded-2xl bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC]">
                     <span class="material-symbols-rounded">warning</span>
                 </div>
                 <h3 class="text-2xl font-black text-white tracking-tighter text-red-100">O Perigo da Falta de Apoio</h3>
             </div>
 
-            <div class="bg-red-950/20 border border-red-500/20 p-6 rounded-3xl space-y-6">
+            <div class="bg-red-950/20 border border-[#FF00BC]/20 p-6 rounded-3xl space-y-6">
                 <p class="text-red-100/80 leading-relaxed">
                     A falta de apoio vocal leva a um erro comum: a <strong>sobrecarga da garganta</strong>. Sem o controle muscular do tronco, o cantor acaba utilizando a laringe para regular o ar.
                 </p>
                 
-                <div class="bg-black/60 p-5 rounded-2xl space-y-3 border border-red-500/10">
-                    <h4 class="text-red-500 font-bold text-xs uppercase tracking-widest">Consequências:</h4>
+                <div class="bg-black/60 p-5 rounded-2xl space-y-3 border border-[#FF00BC]/10">
+                    <h4 class="text-[#FF00BC] font-bold text-xs uppercase tracking-widest">Consequências:</h4>
                     <ul class="text-sm text-gray-300 space-y-2">
                         <li class="flex gap-2">
-                            <span class="text-red-500">•</span> Timbre estrangulado.
+                            <span class="text-[#FF00BC]">•</span> Timbre estrangulado.
                         </li>
                         <li class="flex gap-2">
-                            <span class="text-red-500">•</span> Fadiga vocal rápida.
+                            <span class="text-[#FF00BC]">•</span> Fadiga vocal rápida.
                         </li>
                         <li class="flex gap-2">
-                            <span class="text-red-500">•</span> Risco de lesões nas pregas vocais.
+                            <span class="text-[#FF00BC]">•</span> Risco de lesões nas pregas vocais.
                         </li>
                     </ul>
                 </div>
@@ -607,7 +608,7 @@ export const MODULES: Module[] = [
 
           <div class="space-y-8">
             <div class="text-center">
-                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                <div class="w-20 h-20 rounded-full bg-[#6F4CE7]/10 flex items-center justify-center text-[#6F4CE7] mx-auto mb-4 border border-[#6F4CE7]/20">
                     <span class="material-symbols-rounded text-4xl">quiz</span>
                 </div>
                 <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Fixação I</h3>
@@ -691,7 +692,7 @@ export const MODULES: Module[] = [
 
           <div class="space-y-8">
             <div class="text-center">
-                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                <div class="w-20 h-20 rounded-full bg-[#6F4CE7]/10 flex items-center justify-center text-[#6F4CE7] mx-auto mb-4 border border-[#6F4CE7]/20">
                     <span class="material-symbols-rounded text-4xl">quiz</span>
                 </div>
                 <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Fixação II</h3>
@@ -795,7 +796,7 @@ export const MODULES: Module[] = [
 
           <div class="space-y-8">
             <div class="text-center">
-                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                <div class="w-20 h-20 rounded-full bg-[#6F4CE7]/10 flex items-center justify-center text-[#6F4CE7] mx-auto mb-4 border border-[#6F4CE7]/20">
                     <span class="material-symbols-rounded text-4xl">quiz</span>
                 </div>
                 <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Fixação I</h3>
@@ -884,7 +885,7 @@ export const MODULES: Module[] = [
 
           <div class="space-y-8">
             <div class="text-center">
-                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                <div class="w-20 h-20 rounded-full bg-[#6F4CE7]/10 flex items-center justify-center text-[#6F4CE7] mx-auto mb-4 border border-[#6F4CE7]/20">
                     <span class="material-symbols-rounded text-4xl">quiz</span>
                 </div>
                 <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Fixação II</h3>
@@ -939,7 +940,7 @@ export const MODULES: Module[] = [
 
           <div class="space-y-8">
             <div class="text-center">
-                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                <div class="w-20 h-20 rounded-full bg-[#6F4CE7]/10 flex items-center justify-center text-[#6F4CE7] mx-auto mb-4 border border-[#6F4CE7]/20">
                     <span class="material-symbols-rounded text-4xl">quiz</span>
                 </div>
                 <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Fixação III</h3>
@@ -1030,7 +1031,7 @@ export const MODULES: Module[] = [
               <div class="w-16 h-16 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] mb-8">
                 <span class="material-symbols-rounded text-4xl">layers</span>
               </div>
-              <h3 class="text-3xl font-black text-white mb-6 tracking-tighter">Desmistificando a Ressonância</h3>
+              <h3 class="text-3xl font-black text-white mb-6 tracking-tighter">Desmistificando os Registros</h3>
               <p class="text-gray-300 leading-relaxed text-lg">
                 Vamos esclarecer um erro comum: a voz de peito não ressoa no peito, nem a de cabeça na cabeça. Essas são apenas <strong>sensações vibratórias</strong>.
               </p>
@@ -1046,7 +1047,7 @@ export const MODULES: Module[] = [
 
           <div class="space-y-8">
             <div class="text-center">
-                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                <div class="w-20 h-20 rounded-full bg-[#6F4CE7]/10 flex items-center justify-center text-[#6F4CE7] mx-auto mb-4 border border-[#6F4CE7]/20">
                     <span class="material-symbols-rounded text-4xl">quiz</span>
                 </div>
                 <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Origem</h3>
@@ -1147,7 +1148,7 @@ export const MODULES: Module[] = [
 
           <div class="space-y-8">
             <div class="text-center">
-                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                <div class="w-20 h-20 rounded-full bg-[#6F4CE7]/10 flex items-center justify-center text-[#6F4CE7] mx-auto mb-4 border border-[#6F4CE7]/20">
                     <span class="material-symbols-rounded text-4xl">quiz</span>
                 </div>
                 <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Adequação</h3>
@@ -1179,7 +1180,7 @@ export const MODULES: Module[] = [
 
           <div class="space-y-6">
             <div class="flex items-center gap-4 mb-2">
-                <div class="w-12 h-12 rounded-2xl bg-red-500/20 flex items-center justify-center text-red-500">
+                <div class="w-12 h-12 rounded-2xl bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC]">
                     <span class="material-symbols-rounded">fitness_center</span>
                 </div>
                 <h3 class="text-2xl font-black text-white tracking-tighter">O Esforço nos Agudos</h3>
@@ -1189,7 +1190,7 @@ export const MODULES: Module[] = [
                 <p class="text-gray-300 leading-relaxed">
                     Cantar notas agudas com pregas grossas (como na voz de peito) exige um <strong>estiramento extremo</strong> e grande engajamento muscular.
                 </p>
-                <div class="p-4 bg-red-500/10 rounded-2xl border border-red-500/20">
+                <div class="p-4 bg-[#FF00BC]/10 rounded-2xl border border-[#FF00BC]/20">
                     <p class="text-xs text-red-200 italic">
                         Isso é rapidamente cansativo e pode gerar fadiga vocal severa. A voz de cabeça é naturalmente mais apropriada para o agudo.
                     </p>
@@ -1265,7 +1266,7 @@ export const MODULES: Module[] = [
 
           <div class="space-y-8">
             <div class="text-center">
-                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                <div class="w-20 h-20 rounded-full bg-[#6F4CE7]/10 flex items-center justify-center text-[#6F4CE7] mx-auto mb-4 border border-[#6F4CE7]/20">
                     <span class="material-symbols-rounded text-4xl">quiz</span>
                 </div>
                 <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Ajuste</h3>
@@ -1389,7 +1390,7 @@ export const MODULES: Module[] = [
                     <p class="text-xs text-gray-400">Levemente relaxados (destravados) para não desalinharem a coluna.</p>
                 </div>
                 <div class="bg-[#1A202C] p-5 rounded-3xl border border-white/5 flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-xl bg-yellow-500/10 flex items-center justify-center text-yellow-500 flex-shrink-0 text-sm font-bold">Quadril</div>
+                    <div class="w-10 h-10 rounded-xl bg-[#6F4CE7]/10 flex items-center justify-center text-[#6F4CE7] flex-shrink-0 text-sm font-bold">Quadril</div>
                     <p class="text-xs text-gray-400">Alinhado aos joelhos, sem inclinações excessivas.</p>
                 </div>
             </div>
@@ -1425,17 +1426,17 @@ export const MODULES: Module[] = [
 
           <div class="space-y-6">
             <div class="flex items-center gap-4 mb-2">
-                <div class="w-12 h-12 rounded-2xl bg-red-500/20 flex items-center justify-center text-red-500">
+                <div class="w-12 h-12 rounded-2xl bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC]">
                     <span class="material-symbols-rounded">eject</span>
                 </div>
                 <h3 class="text-2xl font-black text-white tracking-tighter text-red-100">O Erro da Cabeça Erguida</h3>
             </div>
 
-            <div class="bg-red-950/20 border border-red-500/20 p-6 rounded-3xl space-y-4">
+            <div class="bg-red-950/20 border border-[#FF00BC]/20 p-6 rounded-3xl space-y-4">
                 <p class="text-red-100/80 leading-relaxed text-sm">
                     Muitos cantores inclinam a cabeça para cima nos agudos. Isso <strong>não ajuda</strong> a técnica; apenas cria tensão no pescoço e na laringe.
                 </p>
-                <div class="bg-black/60 p-4 rounded-xl border border-red-500/10">
+                <div class="bg-black/60 p-4 rounded-xl border border-[#FF00BC]/10">
                     <p class="text-[10px] text-gray-400 leading-relaxed">
                         A técnica correta para o agudo não exige essa inclinação. Mantenha o olhar no horizonte para evitar fadiga.
                     </p>
@@ -1447,7 +1448,7 @@ export const MODULES: Module[] = [
 
           <div class="space-y-8">
             <div class="text-center">
-                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                <div class="w-20 h-20 rounded-full bg-[#6F4CE7]/10 flex items-center justify-center text-[#6F4CE7] mx-auto mb-4 border border-[#6F4CE7]/20">
                     <span class="material-symbols-rounded text-4xl">quiz</span>
                 </div>
                 <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Fixação</h3>
@@ -1586,7 +1587,7 @@ export const MODULES: Module[] = [
                         <strong class="text-[#6F4CE7] text-sm uppercase tracking-wide block mb-1">D. A Cabeça</strong>
                         <ul class="list-disc list-inside text-sm text-gray-300 space-y-1">
                             <li>O queixo deve estar paralelo ao chão.</li>
-                            <li><span class="text-yellow-400 font-bold">Erro comum:</span> Levantar o queixo para notas agudas (esmaga a laringe) ou abaixar demais.</li>
+                            <li><span class="text-[#6F4CE7] font-bold">Erro comum:</span> Levantar o queixo para notas agudas (esmaga a laringe) ou abaixar demais.</li>
                             <li>Imagine um pequeno espaço entre suas vértebras do pescoço.</li>
                         </ul>
                     </div>
@@ -1620,22 +1621,22 @@ export const MODULES: Module[] = [
             </div>
 
             <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
-                 <div class="absolute top-0 right-0 w-32 h-32 bg-green-500 blur-[80px] opacity-10"></div>
+                 <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-10"></div>
                  <div class="relative z-10">
                     <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                        <span class="material-symbols-rounded text-green-500">psychology</span>
+                        <span class="material-symbols-rounded text-[#0081FF]">psychology</span>
                         4. Por que isso importa?
                     </h3>
                     <p class="text-sm text-gray-300 mb-4">Quando você alinha a coluna, a laringe fica livre de pressões externas. Uma postura correta garante:</p>
                     <div class="grid gap-2 mb-6">
                         <div class="bg-black/20 p-3 rounded-lg border border-white/5 text-sm text-gray-300">
-                            <strong class="text-green-400">Mais fôlego:</strong> O diafragma tem espaço total para descer.
+                            <strong class="text-[#0081FF]">Mais fôlego:</strong> O diafragma tem espaço total para descer.
                         </div>
                         <div class="bg-black/20 p-3 rounded-lg border border-white/5 text-sm text-gray-300">
-                            <strong class="text-green-400">Ressonância:</strong> O som flui sem barreiras até a boca e o nariz.
+                            <strong class="text-[#0081FF]">Ressonância:</strong> O som flui sem barreiras até a boca e o nariz.
                         </div>
                         <div class="bg-black/20 p-3 rounded-lg border border-white/5 text-sm text-gray-300">
-                            <strong class="text-green-400">Presença:</strong> Um cantor alinhado transmite autoridade e confiança.
+                            <strong class="text-[#0081FF]">Presença:</strong> Um cantor alinhado transmite autoridade e confiança.
                         </div>
                     </div>
 
@@ -1740,7 +1741,7 @@ export const MODULES: Module[] = [
 
             <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
                 <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                    <span class="material-symbols-rounded text-green-500">checklist</span>
+                    <span class="material-symbols-rounded text-[#0081FF]">checklist</span>
                     Check-list de Execução
                 </h3>
                 <p class="text-xs text-gray-400 mb-3 ml-1">Clique para marcar seu progresso:</p>
@@ -1757,21 +1758,286 @@ export const MODULES: Module[] = [
                         </div>
                         <span>Senti minhas costelas abrirem para os lados?</span>
                     </li>
-                    <li class="checklist-item flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer select-none" data-id="chk-m12-3">
-                        <div class="checkbox-box w-5 h-5 rounded border border-gray-600 flex items-center justify-center transition-all bg-[#1A202C]">
-                            <span class="material-symbols-rounded text-sm text-white opacity-0 check-icon scale-0 transition-all">check</span>
-                        </div>
-                        <span>Minha barriga voltou lentamente (não de uma vez)?</span>
-                    </li>
-                    <li class="checklist-item flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 transition-colors cursor-pointer select-none" data-id="chk-m12-4">
-                        <div class="checkbox-box w-5 h-5 rounded border border-gray-600 flex items-center justify-center transition-all bg-[#1A202C]">
-                            <span class="material-symbols-rounded text-sm text-white opacity-0 check-icon scale-0 transition-all">check</span>
-                        </div>
-                        <span>Senti pressão no baixo ventre?</span>
-                    </li>
                 </ul>
             </div>
           </div>
+          <!-- slide -->
+          <div class="space-y-6 font-sans">
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1A202C] to-[#101622] border border-white/10 p-8">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-[#0081FF] blur-[100px] opacity-20"></div>
+                <div class="text-center">
+                    <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#0081FF]/10 text-[#0081FF] mb-6">
+                        <span class="material-symbols-rounded text-5xl">air</span>
+                    </div>
+                    <h2 class="text-2xl font-black text-white mb-4">Parte 1: A Grande Ilusão</h2>
+                    <p class="text-gray-400 leading-relaxed">
+                        Muitos acreditam que cantar exige "muito ar". Na verdade, o segredo não é a <span class="text-[#0081FF] font-bold">quantidade</span>, mas a <span class="text-[#FF00BC] font-bold">gestão da pressão</span>. 
+                    </p>
+                </div>
+                <div class="mt-8 grid grid-cols-2 gap-4">
+                    <div class="bg-white/5 p-4 rounded-2xl border border-white/5 text-center">
+                        <p class="text-[10px] text-gray-500 uppercase font-black mb-1">Mito</p>
+                        <p class="text-xs text-[#FF00BC] font-bold">Pulmão explodindo de ar</p>
+                    </div>
+                    <div class="bg-white/5 p-4 rounded-2xl border border-white/5 text-center">
+                        <p class="text-[10px] text-gray-500 uppercase font-black mb-1">Realidade</p>
+                        <p class="text-xs text-[#0081FF] font-bold">Fluxo constante e controlado</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- slide -->
+        <div class="space-y-6 font-sans">
+            <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                <h3 class="text-xl font-bold text-white mb-4">O Motor: Diafragma</h3>
+                <p class="text-sm text-gray-300 leading-relaxed mb-6">
+                    O diafragma é um músculo em forma de cúpula que separa o tórax do abdome. Quando ele <span class="text-[#0081FF] font-bold">contrai</span>, ele desce, criando um vácuo que puxa o ar para dentro.
+                </p>
+                <div class="flex justify-center py-8">
+                    <div class="relative w-48 h-48">
+                        <div class="absolute inset-0 bg-[#0081FF] blur-[60px] opacity-10 animate-pulse"></div>
+                        <div class="relative z-10 w-full h-full border-2 border-dashed border-[#0081FF]/30 rounded-full flex flex-col items-center justify-center text-center p-4">
+                            <span class="material-symbols-rounded text-4xl text-[#0081FF] mb-2">expand_circle_down</span>
+                            <p class="text-[10px] text-gray-400 font-bold uppercase">Movimento Inspiratório</p>
+                            <p class="text-xs text-white">Descida e Expansão</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-black/20 p-4 rounded-xl border border-white/5 text-xs text-gray-400 italic">
+                    Dica: Você não "puxa" o ar com o nariz. Você expande o corpo e o ar "entra sozinho" por diferença de pressão.
+                </div>
+            </div>
+        </div>
+        <!-- slide -->
+        <div class="space-y-6 font-sans">
+            <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                <h3 class="text-xl font-bold text-white mb-4">Expansão 360º</h3>
+                <p class="text-sm text-gray-300 leading-relaxed mb-6">
+                    Fuja do erro de estufar apenas a barriga para frente. A verdadeira respiração custofreunobasal expande as <span class="text-[#6F4CE7] font-bold">costelas laterais</span> e as <span class="text-[#FF00BC] font-bold">costas</span>.
+                </p>
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="p-4 rounded-2xl bg-white/5 border border-white/5">
+                        <div class="w-8 h-8 rounded-lg bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] mb-2">
+                            <span class="material-symbols-rounded">side_navigation</span>
+                        </div>
+                        <p class="text-xs font-bold text-white mb-1">Laterais</p>
+                        <p class="text-[10px] text-gray-500">Abertura das costelas flutuantes.</p>
+                    </div>
+                    <div class="p-4 rounded-2xl bg-white/5 border border-white/5">
+                        <div class="w-8 h-8 rounded-lg bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC] mb-2">
+                            <span class="material-symbols-rounded">back_hand</span>
+                        </div>
+                        <p class="text-xs font-bold text-white mb-1">Costas</p>
+                        <p class="text-[10px] text-gray-500">Expansão da região lombar.</p>
+                    </div>
+                </div>
+                <div class="p-4 rounded-xl bg-[#0081FF]/10 border border-[#0081FF]/20 text-xs text-blue-200">
+                     <strong>Pratique:</strong> Coloque as mãos na cintura (como se estivesse bravo) e sinta seus dedos serem empurrados para os lados ao inspirar.
+                </div>
+            </div>
+        </div>
+        <!-- slide -->
+        <div class="space-y-6 font-sans">
+            <div class="text-center mb-8">
+                 <span class="text-[10px] font-black text-[#0081FF] uppercase tracking-[0.2em]">Desafio de Fixação</span>
+                 <h2 class="text-2xl font-black text-white mt-1">Quiz 01: Propriocepção</h2>
+            </div>
+
+            <div class="space-y-3">
+                <p class="text-sm text-gray-400 mb-4 px-2">Qual o movimento correto do diafragma durante a inspiração?</p>
+                
+                <div class="quiz-option p-4 rounded-2xl bg-[#1A202C] border border-white/5 flex items-center gap-4 cursor-pointer transition-all hover:border-[#0081FF]/50" data-correct="true">
+                    <div class="option-icon w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
+                        <span class="text-sm font-bold">A</span>
+                    </div>
+                    <p class="text-sm text-white font-medium">Ele desce e expande a base dos pulmões.</p>
+                </div>
+
+                <div class="quiz-option p-4 rounded-2xl bg-[#1A202C] border border-white/5 flex items-center gap-4 cursor-pointer transition-all hover:border-[#0081FF]/50" data-correct="false">
+                    <div class="option-icon w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
+                        <span class="text-sm font-bold">B</span>
+                    </div>
+                    <p class="text-sm text-white font-medium">Ele sobe para empurrar o ar para cima.</p>
+                </div>
+
+                <div class="quiz-option p-4 rounded-2xl bg-[#1A202C] border border-white/5 flex items-center gap-4 cursor-pointer transition-all hover:border-[#0081FF]/50" data-correct="false">
+                    <div class="option-icon w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
+                        <span class="text-sm font-bold">C</span>
+                    </div>
+                    <p class="text-sm text-white font-medium">Ele expande apenas para frente, estufando o umbigo.</p>
+                </div>
+            </div>
+        </div>
+        <!-- slide -->
+        <div class="space-y-6 font-sans">
+            <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                <h3 class="text-xl font-bold text-white mb-4">Retenção e Suspensão</h3>
+                <p class="text-sm text-gray-300 leading-relaxed mb-6">
+                    Entre a inspiração e a expiração, existe um momento de <span class="text-[#6F4CE7] font-bold">suspensão</span>. Não é um trancamento da glote, mas um equilíbrio muscular onde você "sustenta" a abertura sem soltar o ar.
+                </p>
+                <div class="bg-black/40 rounded-3xl p-8 flex flex-col items-center">
+                    <div class="w-32 h-32 rounded-full border-4 border-[#6F4CE7] flex items-center justify-center animate-pulse">
+                         <span class="material-symbols-rounded text-5xl text-[#6F4CE7]">pause</span>
+                    </div>
+                    <p class="mt-6 text-xs text-gray-400 font-bold uppercase tracking-widest">Estado de Prontidão</p>
+                </div>
+                <p class="text-xs text-gray-500 mt-6 leading-relaxed">
+                    Pense em uma bailarina no topo de um salto: há um milissegundo de imobilidade ativa antes da descida. Isso é a suspensão vocal.
+                </p>
+            </div>
+        </div>
+        <!-- slide -->
+        <div class="space-y-6 font-sans">
+            <div class="bg-gradient-to-br from-[#101622] to-[#1A202C] p-8 rounded-[32px] border border-white/10 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-40 h-40 bg-[#FF00BC] blur-[100px] opacity-10"></div>
+                <h2 class="text-2xl font-black text-white mb-4">O Segredo do Appoggio</h2>
+                <p class="text-sm text-gray-300 leading-relaxed mb-6">
+                    "Appoggiare" em italiano significa <span class="text-[#FF00BC] font-bold">Apoiar</span>. O suporte não é "empurrar" o ar para fora, mas <span class="text-[#0081FF] font-bold">resistir</span> à sua saída rápida.
+                </p>
+                <div class="space-y-4">
+                    <div class="flex gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                        <div class="w-10 h-10 rounded-full bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC] shrink-0">
+                            <span class="material-symbols-rounded">speed</span>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-white">Controle de Fluxo</p>
+                            <p class="text-[10px] text-gray-500">Economia máxima para frases longas.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                        <div class="w-10 h-10 rounded-full bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] shrink-0">
+                            <span class="material-symbols-rounded">shield</span>
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-white">Estabilidade</p>
+                            <p class="text-[10px] text-gray-500">Evita que a nota "balance" ou desafine.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- slide -->
+        <div class="space-y-6 font-sans">
+            <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                <h3 class="text-xl font-bold text-white mb-4">Pressão Subglótica</h3>
+                <p class="text-sm text-gray-300 leading-relaxed mb-6">
+                    A física do canto: O ar acumulado abaixo das pregas vocais gera uma <span class="text-[#FF00BC] font-bold">pressão</span>. Se a pressão for pouca, a voz soa soprosa. Se for muita, a voz soa gritada.
+                </p>
+                <div class="relative py-10 flex justify-center">
+                    <div class="w-20 h-40 bg-[#151A23] rounded-full border-2 border-white/10 relative overflow-hidden">
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#0081FF] to-[#FF00BC] h-24 animate-bounce"></div>
+                        <div class="absolute top-1/4 left-0 right-0 h-0.5 bg-white/20"></div>
+                        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-4 text-[8px] font-bold text-white uppercase">Glote</div>
+                    </div>
+                </div>
+                <div class="bg-black/20 p-4 rounded-xl border border-white/5 text-xs text-center text-gray-400">
+                    O apoio serve para <span class="text-white">equilibrar</span> essa balança de pressão.
+                </div>
+            </div>
+        </div>
+        <!-- slide -->
+        <div class="space-y-6 font-sans">
+            <div class="text-center mb-8">
+                 <span class="text-[10px] font-black text-[#FF00BC] uppercase tracking-[0.2em]">Verificação Técnica</span>
+                 <h2 class="text-2xl font-black text-white mt-1">Quiz 02: Suporte Vocal</h2>
+            </div>
+
+            <div class="space-y-3">
+                <p class="text-sm text-gray-400 mb-4 px-2">O que define o verdadeiro "Apoio Vocal" (Appoggio)?</p>
+                
+                <div class="quiz-option p-4 rounded-2xl bg-[#1A202C] border border-white/5 flex items-center gap-4 cursor-pointer transition-all hover:border-[#FF00BC]/50" data-correct="false">
+                    <div class="option-icon w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
+                        <span class="text-sm font-bold">A</span>
+                    </div>
+                    <p class="text-sm text-white font-medium">Fazer força com o abdome para expulsar o ar.</p>
+                </div>
+
+                <div class="quiz-option p-4 rounded-2xl bg-[#1A202C] border border-white/5 flex items-center gap-4 cursor-pointer transition-all hover:border-[#FF00BC]/50" data-correct="true">
+                    <div class="option-icon w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
+                        <span class="text-sm font-bold">B</span>
+                    </div>
+                    <p class="text-sm text-white font-medium">Equilibrar a pressão inspiratória com a expiratória.</p>
+                </div>
+
+                <div class="quiz-option p-4 rounded-2xl bg-[#1A202C] border border-white/5 flex items-center gap-4 cursor-pointer transition-all hover:border-[#FF00BC]/50" data-correct="false">
+                    <div class="option-icon w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
+                        <span class="text-sm font-bold">C</span>
+                    </div>
+                    <p class="text-sm text-white font-medium">Prender a respiração para que o ar não saia.</p>
+                </div>
+            </div>
+        </div>
+        <!-- slide -->
+        <div class="space-y-6 font-sans">
+            <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                <h3 class="text-xl font-bold text-white mb-4">Gestão do Ar Residual</h3>
+                <p class="text-sm text-gray-300 leading-relaxed mb-6">
+                    Nunca cante até ficar "roxo" ou sem nada de ar. O final da expiração é onde mora o perigo da <span class="text-[#FF00BC] font-bold">tensão laríngea</span>.
+                </p>
+                <div class="bg-[#FF00BC]/10 border border-[#FF00BC]/20 p-6 rounded-2xl text-center">
+                    <span class="material-symbols-rounded text-4xl text-[#FF00BC] mb-3">warning</span>
+                    <p class="text-sm font-bold text-red-200">A Regra dos 20%</p>
+                    <p class="text-xs text-red-300/70 mt-2">Sempre deixe uma reserva de ar. Se você espremer o final, seu pescoço assumirá a carga e você terá pigarro e cansaço.</p>
+                </div>
+            </div>
+        </div>
+        <!-- slide -->
+        <div class="space-y-6 font-sans">
+            <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                <h3 class="text-xl font-bold text-white mb-4">Antagonismo Muscular</h3>
+                <p class="text-sm text-gray-300 leading-relaxed mb-6">
+                    O apoio é uma <span class="text-[#0081FF] font-bold">Luta Amigável</span>.
+                </p>
+                <div class="space-y-3">
+                    <div class="p-4 rounded-xl bg-white/5 flex items-center justify-between">
+                        <span class="text-xs text-gray-300">Músculos Expiratórios</span>
+                        <span class="text-[10px] font-black text-[#FF00BC]">QUEREM FECHAR</span>
+                    </div>
+                    <div class="flex justify-center text-[#6F4CE7]">
+                        <span class="material-symbols-rounded text-3xl">swap_vert</span>
+                    </div>
+                    <div class="p-4 rounded-xl bg-white/5 flex items-center justify-between">
+                        <span class="text-xs text-gray-300">Músculos Inspiratórios</span>
+                        <span class="text-[10px] font-black text-[#0081FF]">QUEREM MANTER ABERTO</span>
+                    </div>
+                </div>
+                <p class="text-xs text-gray-500 mt-6 italic text-center">Essa resistência mútua cria a coluna de ar estável.</p>
+            </div>
+        </div>
+        <!-- slide -->
+        <div class="space-y-6 font-sans">
+            <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                <h3 class="text-xl font-bold text-white mb-4">O Perigo do Over-Blowing</h3>
+                <p class="text-sm text-gray-300 leading-relaxed mb-6">
+                    Sabe aquela sensação de "ar demais" que trava a garganta? Isso se chama <span class="text-[#FF00BC] font-bold">Over-Blowing</span>. 
+                </p>
+                <div class="p-5 rounded-2xl bg-black/40 border-l-4 border-[#FF00BC]">
+                     <p class="text-xs text-gray-400">Muita pressão de ar empurra as pregas vocais para se abrirem. O corpo então reage "apertando" o pescoço para não deixar o ar vazar.</p>
+                     <p class="text-xs font-bold text-white mt-3">Resultado: Perda de agudos e rouquidão.</p>
+                </div>
+                <div class="mt-8 flex justify-center">
+                    <span class="material-symbols-rounded text-6xl text-gray-700">air_freshener</span>
+                </div>
+            </div>
+        </div>
+        <!-- slide -->
+        <div class="space-y-6 font-sans">
+            <div class="relative overflow-hidden rounded-[40px] bg-gradient-to-br from-[#0081FF] to-[#6F4CE7] p-10 text-center shadow-2xl">
+                <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
+                <div class="relative z-10">
+                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-md">
+                        <span class="material-symbols-rounded text-white text-3xl">verified</span>
+                    </div>
+                    <h2 class="text-2xl font-black text-white mb-2">Conclusão: Apoio Orgânico</h2>
+                    <p class="text-sm text-white/80 leading-relaxed mb-8">
+                        A respiração deve se tornar um reflexo automático. Pratique isolado para que, na hora de cantar, sua mente esteja apenas na <span class="text-white font-black underline">EMOÇÃO</span> da música.
+                    </p>
+                    <button class="w-full py-4 bg-white text-[#0081FF] font-black rounded-2xl uppercase tracking-widest text-xs shadow-xl active:scale-95 transition-transform" onclick="window.location.reload()">
+                        Finalizar Módulo
+                    </button>
+                </div>
+            </div>
+        </div>
         `
             },
             {
@@ -1781,10 +2047,10 @@ export const MODULES: Module[] = [
                 content: `
           <div class="space-y-8 font-sans">
             <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
-               <div class="absolute top-0 right-0 w-32 h-32 bg-[#EE13CA] blur-[80px] opacity-20"></div>
+               <div class="absolute top-0 right-0 w-32 h-32 bg-[#FF00BC] blur-[80px] opacity-20"></div>
                <div class="relative z-10">
                    <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                       <div class="w-8 h-8 rounded-lg bg-[#EE13CA]/20 flex items-center justify-center text-[#EE13CA]">
+                       <div class="w-8 h-8 rounded-lg bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC]">
                           <span class="material-symbols-rounded">self_improvement</span>
                        </div>
                        1. O Conceito: O Que é Fáscia?
@@ -1831,7 +2097,7 @@ export const MODULES: Module[] = [
                             <p class="text-xs text-gray-400">Pressione levemente com os polegares logo abaixo do queixo (parte mole).</p>
                         </div>
                         
-                        <div class="text-xs text-yellow-500 font-medium">
+                        <div class="text-xs text-[#6F4CE7] font-medium">
                            ⚠️ Se estiver duro ou dolorido, você está tensionando a língua.
                         </div>
                     </div>
@@ -1881,7 +2147,7 @@ export const MODULES: Module[] = [
 
             <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
                 <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                    <span class="material-symbols-rounded text-green-500">checklist</span>
+                    <span class="material-symbols-rounded text-[#0081FF]">checklist</span>
                     Check-list de Monitoramento
                 </h3>
                 <p class="text-xs text-gray-400 mb-3 ml-1">Clique para marcar seu progresso:</p>
@@ -1963,21 +2229,21 @@ export const MODULES: Module[] = [
                     </h3>
                     <ul class="space-y-3">
                         <li class="flex gap-3">
-                            <span class="material-symbols-rounded text-green-500 mt-0.5">check_circle</span>
+                            <span class="material-symbols-rounded text-[#0081FF] mt-0.5">check_circle</span>
                             <div>
                                 <strong class="text-white text-sm block">Efeito Protetor</strong>
                                 <p className="text-xs text-gray-400">Afasta as pregas vocais ligeiramente, evitando que elas colidam com força excessiva.</p>
                             </div>
                         </li>
                         <li class="flex gap-3">
-                            <span class="material-symbols-rounded text-green-500 mt-0.5">check_circle</span>
+                            <span class="material-symbols-rounded text-[#0081FF] mt-0.5">check_circle</span>
                             <div>
                                 <strong class="text-white text-sm block">Eficiência</strong>
                                 <p className="text-xs text-gray-400">Reduz o esforço fonatório, tornando a vibração mais eficiente com menos pressão.</p>
                             </div>
                         </li>
                         <li class="flex gap-3">
-                            <span class="material-symbols-rounded text-green-500 mt-0.5">check_circle</span>
+                            <span class="material-symbols-rounded text-[#0081FF] mt-0.5">check_circle</span>
                             <div>
                                 <strong class="text-white text-sm block">Massagem Interna</strong>
                                 <p className="text-xs text-gray-400">Massageia a mucosa das pregas vocais através da variação de pressão.</p>
@@ -2036,7 +2302,7 @@ export const MODULES: Module[] = [
                     <div class="bg-black/20 p-4 rounded-xl border border-white/5 space-y-2">
                         <p class="text-xs text-gray-300"><strong>Objetivo:</strong> Transferir o foco da ressonância da garganta para a face ("máscara").</p>
                         <p class="text-xs text-gray-300"><strong>Como fazer:</strong> Os dentes não devem se encostar. Sinta the vibração nos lábios e nos ossos da face.</p>
-                        <p class="text-xs text-yellow-500 italic">Teste: Se você sentir a garganta "apertar", o som está muito recuado.</p>
+                        <p class="text-xs text-[#6F4CE7] italic">Teste: Se você sentir a garganta "apertar", o som está muito recuado.</p>
                     </div>
                     ${INLINE_PLAYER_TEMPLATE(`${VOCALIZES_BASE_URL}BRRR_1.mp3`)}
                 </div>
@@ -2106,327 +2372,364 @@ export const MODULES: Module[] = [
             }
         ]
     },
-    // MÓDULO 03 - RESPIRAÇÃO (NÍVEL 1: PROPRIOCEPÇÃO)
-    {
-        id: 'm_breath',
-        number: '04',
-        title: 'Respiração',
-        subtitle: 'Nível 1: Propriocepção',
-        description: 'Localize, expanda e sinta. A fundação biomecânica.',
-        topics: [
-            {
-                id: '3.1',
-                title: 'A Jornada do Sopro',
-                description: 'Dominando a biomecânica em 12 passos.',
-                content: `
-                <div class="space-y-6 font-sans">
-                    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1A202C] to-[#101622] border border-white/10 p-8">
-                        <div class="absolute -top-10 -right-10 w-40 h-40 bg-[#0081FF] blur-[100px] opacity-20"></div>
-                        <div class="text-center">
-                            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#0081FF]/10 text-[#0081FF] mb-6">
-                                <span class="material-symbols-rounded text-5xl">air</span>
-                            </div>
-                            <h2 class="text-2xl font-black text-white mb-4">Parte 1: A Grande Ilusão</h2>
-                            <p class="text-gray-400 leading-relaxed">
-                                Muitos acreditam que cantar exige "muito ar". Na verdade, o segredo não é a <span class="text-[#0081FF] font-bold">quantidade</span>, mas a <span class="text-[#FF00BC] font-bold">gestão da pressão</span>. 
-                            </p>
-                        </div>
-                        <div class="mt-8 grid grid-cols-2 gap-4">
-                            <div class="bg-white/5 p-4 rounded-2xl border border-white/5 text-center">
-                                <p class="text-[10px] text-gray-500 uppercase font-black mb-1">Mito</p>
-                                <p class="text-xs text-red-400 font-bold">Pulmão explodindo de ar</p>
-                            </div>
-                            <div class="bg-white/5 p-4 rounded-2xl border border-white/5 text-center">
-                                <p class="text-[10px] text-gray-500 uppercase font-black mb-1">Realidade</p>
-                                <p class="text-xs text-green-400 font-bold">Fluxo constante e controlado</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- slide -->
-                <div class="space-y-6 font-sans">
-                    <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
-                        <h3 class="text-xl font-bold text-white mb-4">O Motor: Diafragma</h3>
-                        <p class="text-sm text-gray-300 leading-relaxed mb-6">
-                            O diafragma é um músculo em forma de cúpula que separa o tórax do abdome. Quando ele <span class="text-[#0081FF] font-bold">contrai</span>, ele desce, criando um vácuo que puxa o ar para dentro.
-                        </p>
-                        <div class="flex justify-center py-8">
-                            <div class="relative w-48 h-48">
-                                <div class="absolute inset-0 bg-[#0081FF] blur-[60px] opacity-10 animate-pulse"></div>
-                                <div class="relative z-10 w-full h-full border-2 border-dashed border-[#0081FF]/30 rounded-full flex flex-col items-center justify-center text-center p-4">
-                                    <span class="material-symbols-rounded text-4xl text-[#0081FF] mb-2">expand_circle_down</span>
-                                    <p class="text-[10px] text-gray-400 font-bold uppercase">Movimento Inspiratório</p>
-                                    <p class="text-xs text-white">Descida e Expansão</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-black/20 p-4 rounded-xl border border-white/5 text-xs text-gray-400 italic">
-                            Dica: Você não "puxa" o ar com o nariz. Você expande o corpo e o ar "entra sozinho" por diferença de pressão.
-                        </div>
-                    </div>
-                </div>
-                <!-- slide -->
-                <div class="space-y-6 font-sans">
-                    <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
-                        <h3 class="text-xl font-bold text-white mb-4">Expansão 360º</h3>
-                        <p class="text-sm text-gray-300 leading-relaxed mb-6">
-                            Fuja do erro de estufar apenas a barriga para frente. A verdadeira respiração custofreunobasal expande as <span class="text-[#6F4CE7] font-bold">costelas laterais</span> e as <span class="text-[#FF00BC] font-bold">costas</span>.
-                        </p>
-                        <div class="grid grid-cols-2 gap-4 mb-6">
-                            <div class="p-4 rounded-2xl bg-white/5 border border-white/5">
-                                <div class="w-8 h-8 rounded-lg bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] mb-2">
-                                    <span class="material-symbols-rounded">side_navigation</span>
-                                </div>
-                                <p class="text-xs font-bold text-white mb-1">Laterais</p>
-                                <p class="text-[10px] text-gray-500">Abertura das costelas flutuantes.</p>
-                            </div>
-                            <div class="p-4 rounded-2xl bg-white/5 border border-white/5">
-                                <div class="w-8 h-8 rounded-lg bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC] mb-2">
-                                    <span class="material-symbols-rounded">back_hand</span>
-                                </div>
-                                <p class="text-xs font-bold text-white mb-1">Costas</p>
-                                <p class="text-[10px] text-gray-500">Expansão da região lombar.</p>
-                            </div>
-                        </div>
-                        <div class="p-4 rounded-xl bg-[#0081FF]/10 border border-[#0081FF]/20 text-xs text-blue-200">
-                             <strong>Pratique:</strong> Coloque as mãos na cintura (como se estivesse bravo) e sinta seus dedos serem empurrados para os lados ao inspirar.
-                        </div>
-                    </div>
-                </div>
-                <!-- slide -->
-                <div class="space-y-6 font-sans">
-                    <div class="text-center mb-8">
-                         <span class="text-[10px] font-black text-[#0081FF] uppercase tracking-[0.2em]">Desafio de Fixação</span>
-                         <h2 class="text-2xl font-black text-white mt-1">Quiz 01: Propriocepção</h2>
-                    </div>
-
-                    <div class="space-y-3">
-                        <p class="text-sm text-gray-400 mb-4 px-2">Qual o movimento correto do diafragma durante a inspiração?</p>
-                        
-                        <div class="quiz-option p-4 rounded-2xl bg-[#1A202C] border border-white/5 flex items-center gap-4 cursor-pointer transition-all hover:border-[#0081FF]/50" data-correct="true">
-                            <div class="option-icon w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
-                                <span class="text-sm font-bold">A</span>
-                            </div>
-                            <p class="text-sm text-white font-medium">Ele desce e expande a base dos pulmões.</p>
-                        </div>
-
-                        <div class="quiz-option p-4 rounded-2xl bg-[#1A202C] border border-white/5 flex items-center gap-4 cursor-pointer transition-all hover:border-[#0081FF]/50" data-correct="false">
-                            <div class="option-icon w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
-                                <span class="text-sm font-bold">B</span>
-                            </div>
-                            <p class="text-sm text-white font-medium">Ele sobe para empurrar o ar para cima.</p>
-                        </div>
-
-                        <div class="quiz-option p-4 rounded-2xl bg-[#1A202C] border border-white/5 flex items-center gap-4 cursor-pointer transition-all hover:border-[#0081FF]/50" data-correct="false">
-                            <div class="option-icon w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
-                                <span class="text-sm font-bold">C</span>
-                            </div>
-                            <p class="text-sm text-white font-medium">Ele expande apenas para frente, estufando o umbigo.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- slide -->
-                <div class="space-y-6 font-sans">
-                    <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
-                        <h3 class="text-xl font-bold text-white mb-4">Retenção e Suspensão</h3>
-                        <p class="text-sm text-gray-300 leading-relaxed mb-6">
-                            Entre a inspiração e a expiração, existe um momento de <span class="text-[#6F4CE7] font-bold">suspensão</span>. Não é um trancamento da glote, mas um equilíbrio muscular onde você "sustenta" a abertura sem soltar o ar.
-                        </p>
-                        <div class="bg-black/40 rounded-3xl p-8 flex flex-col items-center">
-                            <div class="w-32 h-32 rounded-full border-4 border-[#6F4CE7] flex items-center justify-center animate-pulse">
-                                 <span class="material-symbols-rounded text-5xl text-[#6F4CE7]">pause</span>
-                            </div>
-                            <p class="mt-6 text-xs text-gray-400 font-bold uppercase tracking-widest">Estado de Prontidão</p>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-6 leading-relaxed">
-                            Pense em uma bailarina no topo de um salto: há um milissegundo de imobilidade ativa antes da descida. Isso é a suspensão vocal.
-                        </p>
-                    </div>
-                </div>
-                <!-- slide -->
-                <div class="space-y-6 font-sans">
-                    <div class="bg-gradient-to-br from-[#101622] to-[#1A202C] p-8 rounded-[32px] border border-white/10 relative overflow-hidden">
-                        <div class="absolute top-0 right-0 w-40 h-40 bg-[#FF00BC] blur-[100px] opacity-10"></div>
-                        <h2 class="text-2xl font-black text-white mb-4">O Segredo do Appoggio</h2>
-                        <p class="text-sm text-gray-300 leading-relaxed mb-6">
-                            "Appoggiare" em italiano significa <span class="text-[#FF00BC] font-bold">Apoiar</span>. O suporte não é "empurrar" o ar para fora, mas <span class="text-[#0081FF] font-bold">resistir</span> à sua saída rápida.
-                        </p>
-                        <div class="space-y-4">
-                            <div class="flex gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
-                                <div class="w-10 h-10 rounded-full bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC] shrink-0">
-                                    <span class="material-symbols-rounded">speed</span>
-                                </div>
-                                <div>
-                                    <p class="text-xs font-bold text-white">Controle de Fluxo</p>
-                                    <p class="text-[10px] text-gray-500">Economia máxima para frases longas.</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
-                                <div class="w-10 h-10 rounded-full bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] shrink-0">
-                                    <span class="material-symbols-rounded">shield</span>
-                                </div>
-                                <div>
-                                    <p class="text-xs font-bold text-white">Estabilidade</p>
-                                    <p class="text-[10px] text-gray-500">Evita que a nota "balance" ou desafine.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- slide -->
-                <div class="space-y-6 font-sans">
-                    <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
-                        <h3 class="text-xl font-bold text-white mb-4">Pressão Subglótica</h3>
-                        <p class="text-sm text-gray-300 leading-relaxed mb-6">
-                            A física do canto: O ar acumulado abaixo das pregas vocais gera uma <span class="text-[#FF00BC] font-bold">pressão</span>. Se a pressão for pouca, a voz soa soprosa. Se for muita, a voz soa gritada.
-                        </p>
-                        <div class="relative py-10 flex justify-center">
-                            <div class="w-20 h-40 bg-[#151A23] rounded-full border-2 border-white/10 relative overflow-hidden">
-                                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#0081FF] to-[#FF00BC] h-24 animate-bounce"></div>
-                                <div class="absolute top-1/4 left-0 right-0 h-0.5 bg-white/20"></div>
-                                <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-4 text-[8px] font-bold text-white uppercase">Glote</div>
-                            </div>
-                        </div>
-                        <div class="bg-black/20 p-4 rounded-xl border border-white/5 text-xs text-center text-gray-400">
-                            O apoio serve para <span class="text-white">equilibrar</span> essa balança de pressão.
-                        </div>
-                    </div>
-                </div>
-                <!-- slide -->
-                <div class="space-y-6 font-sans">
-                    <div class="text-center mb-8">
-                         <span class="text-[10px] font-black text-[#FF00BC] uppercase tracking-[0.2em]">Verificação Técnica</span>
-                         <h2 class="text-2xl font-black text-white mt-1">Quiz 02: Suporte Vocal</h2>
-                    </div>
-
-                    <div class="space-y-3">
-                        <p class="text-sm text-gray-400 mb-4 px-2">O que define o verdadeiro "Apoio Vocal" (Appoggio)?</p>
-                        
-                        <div class="quiz-option p-4 rounded-2xl bg-[#1A202C] border border-white/5 flex items-center gap-4 cursor-pointer transition-all hover:border-[#FF00BC]/50" data-correct="false">
-                            <div class="option-icon w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
-                                <span class="text-sm font-bold">A</span>
-                            </div>
-                            <p class="text-sm text-white font-medium">Fazer força com o abdome para expulsar o ar.</p>
-                        </div>
-
-                        <div class="quiz-option p-4 rounded-2xl bg-[#1A202C] border border-white/5 flex items-center gap-4 cursor-pointer transition-all hover:border-[#FF00BC]/50" data-correct="true">
-                            <div class="option-icon w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
-                                <span class="text-sm font-bold">B</span>
-                            </div>
-                            <p class="text-sm text-white font-medium">Equilibrar a pressão inspiratória com a expiratória.</p>
-                        </div>
-
-                        <div class="quiz-option p-4 rounded-2xl bg-[#1A202C] border border-white/5 flex items-center gap-4 cursor-pointer transition-all hover:border-[#FF00BC]/50" data-correct="false">
-                            <div class="option-icon w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-gray-500">
-                                <span class="text-sm font-bold">C</span>
-                            </div>
-                            <p class="text-sm text-white font-medium">Prender a respiração para que o ar não saia.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- slide -->
-                <div class="space-y-6 font-sans">
-                    <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
-                        <h3 class="text-xl font-bold text-white mb-4">Gestão do Ar Residual</h3>
-                        <p class="text-sm text-gray-300 leading-relaxed mb-6">
-                            Nunca cante até ficar "roxo" ou sem nada de ar. O final da expiração é onde mora o perigo da <span class="text-red-400 font-bold">tensão laríngea</span>.
-                        </p>
-                        <div class="bg-red-500/10 border border-red-500/20 p-6 rounded-2xl text-center">
-                            <span class="material-symbols-rounded text-4xl text-red-500 mb-3">warning</span>
-                            <p class="text-sm font-bold text-red-200">A Regra dos 20%</p>
-                            <p class="text-xs text-red-300/70 mt-2">Sempre deixe uma reserva de ar. Se você espremer o final, seu pescoço assumirá a carga e você terá pigarro e cansaço.</p>
-                        </div>
-                    </div>
-                </div>
-                <!-- slide -->
-                <div class="space-y-6 font-sans">
-                    <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
-                        <h3 class="text-xl font-bold text-white mb-4">Antagonismo Muscular</h3>
-                        <p class="text-sm text-gray-300 leading-relaxed mb-6">
-                            O apoio é uma <span class="text-[#0081FF] font-bold">Luta Amigável</span>.
-                        </p>
-                        <div class="space-y-3">
-                            <div class="p-4 rounded-xl bg-white/5 flex items-center justify-between">
-                                <span class="text-xs text-gray-300">Músculos Expiratórios</span>
-                                <span class="text-[10px] font-black text-[#FF00BC]">QUEREM FECHAR</span>
-                            </div>
-                            <div class="flex justify-center text-[#6F4CE7]">
-                                <span class="material-symbols-rounded text-3xl">swap_vert</span>
-                            </div>
-                            <div class="p-4 rounded-xl bg-white/5 flex items-center justify-between">
-                                <span class="text-xs text-gray-300">Músculos Inspiratórios</span>
-                                <span class="text-[10px] font-black text-[#0081FF]">QUEREM MANTER ABERTO</span>
-                            </div>
-                        </div>
-                        <p class="text-xs text-gray-500 mt-6 italic text-center">Essa resistência mútua cria a coluna de ar estável.</p>
-                    </div>
-                </div>
-                <!-- slide -->
-                <div class="space-y-6 font-sans">
-                    <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
-                        <h3 class="text-xl font-bold text-white mb-4">O Perigo do Over-Blowing</h3>
-                        <p class="text-sm text-gray-300 leading-relaxed mb-6">
-                            Sabe aquela sensação de "ar demais" que trava a garganta? Isso se chama <span class="text-[#FF00BC] font-bold">Over-Blowing</span>. 
-                        </p>
-                        <div class="p-5 rounded-2xl bg-black/40 border-l-4 border-red-500">
-                             <p class="text-xs text-gray-400">Muita pressão de ar empurra as pregas vocais para se abrirem. O corpo então reage "apertando" o pescoço para não deixar o ar vazar.</p>
-                             <p class="text-xs font-bold text-white mt-3">Resultado: Perda de agudos e rouquidão.</p>
-                        </div>
-                        <div class="mt-8 flex justify-center">
-                            <span class="material-symbols-rounded text-6xl text-gray-700">air_freshener</span>
-                        </div>
-                    </div>
-                </div>
-                <!-- slide -->
-                <div class="space-y-6 font-sans">
-                    <div class="relative overflow-hidden rounded-[40px] bg-gradient-to-br from-[#0081FF] to-[#6F4CE7] p-10 text-center shadow-2xl">
-                        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')] opacity-10"></div>
-                        <div class="relative z-10">
-                            <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-md">
-                                <span class="material-symbols-rounded text-white text-3xl">verified</span>
-                            </div>
-                            <h2 class="text-2xl font-black text-white mb-2">Conclusão: Apoio Orgânico</h2>
-                            <p class="text-sm text-white/80 leading-relaxed mb-8">
-                                A respiração deve se tornar um reflexo automático. Pratique isolado para que, na hora de cantar, sua mente esteja apenas na <span class="text-white font-black underline">EMOÇÃO</span> da música.
-                            </p>
-                            <button class="w-full py-4 bg-white text-[#0081FF] font-black rounded-2xl uppercase tracking-widest text-xs shadow-xl active:scale-95 transition-transform" onclick="window.location.reload()">
-                                Finalizar Módulo
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                `
-            }
-        ]
-    },
+    // --- FASE 2: O MECANISMO E A CONEXÃO (O EQUILÍBRIO) ---
     {
         id: 'm3',
-        number: '05',
+        number: '04',
         title: 'Técnica de Emissão',
         subtitle: 'Registros e Agilidade',
         description: 'O núcleo da agilidade e controle vocal.',
         topics: [
-            { id: '3.1', title: 'Registro de Peito (M1)', description: 'Fortalecimento do TA.' },
-            { id: '3.2', title: 'Registro de Cabeça (M2)', description: 'Estiramento via CT.' },
-            { id: '3.3', title: 'Mix Vocal (Bridge)', description: 'Eliminando a quebra vocal.' },
-            { id: '3.4', title: 'Agilidade', description: 'Escalas e precisão.' }
-        ]
-    },
-    {
-        id: 'm4',
-        number: '06',
-        title: 'Ressonância e Articulação',
-        subtitle: 'Cor e Projeção',
-        description: 'Onde o som ganha identidade.',
-        topics: [
-            { id: '4.1', title: 'Ajustes de Trato Vocal', description: 'Posicionamento de laringe e palato.' },
-            { id: '4.2', title: 'Dicção e Fonética', description: 'Vowel Shaping, Legato e Staccato.' },
-            { id: '4.3', title: 'Projeção (Twang)', description: 'Ganho de volume sem esforço.' }
+            {
+                id: '3.1',
+                title: 'Registro de Peito (M1)',
+                description: 'Fortalecimento do TA.',
+                content: `
+          <div class="space-y-6">
+            <div class="bg-gradient-to-br from-[#0081FF]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
+              <div class="w-16 h-16 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] mb-8">
+                <span class="material-symbols-rounded text-4xl">fitness_center</span>
+              </div>
+              <h3 class="text-3xl font-black text-white mb-6 tracking-tighter">O Conceito: Registro de Peito (M1)</h3>
+              <p class="text-gray-300 leading-relaxed text-lg">
+                O M1 é a nossa <strong>"base"</strong>. Aqui, as pregas vocais estão mais curtas e grossas. O foco não é gritar, mas sim encontrar uma adução (fechamento) eficiente.
+              </p>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                <h4 class="text-[#0081FF] font-black uppercase tracking-widest text-xs flex items-center gap-2">
+                    <span class="material-symbols-rounded text-sm">psychology</span>
+                    Objetivo
+                </h4>
+                <p class="text-gray-300 text-sm">
+                    Desenvolver a musculatura <strong>Tireoaritenóidea (TA)</strong> para garantir uma voz firme, estável e com corpo.
+                </p>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
+                        <span class="material-symbols-rounded">play_circle</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">Exercício Prático: Adução Firme</h3>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-6">
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] text-xs font-bold shrink-0 mt-0.5">1</div>
+                            <p class="text-gray-300 text-sm">Utilize a consoante <strong>"G"</strong> (fricativa sonora) para ajudar no fechamento das pregas.</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] text-xs font-bold shrink-0 mt-0.5">2</div>
+                            <p class="text-gray-300 text-sm">Cante uma escala de 3 notas (Do-Re-Mi-Re-Do) usando a sílaba <strong>"GA"</strong>.</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] text-xs font-bold shrink-0 mt-0.5">3</div>
+                            <p class="text-gray-300 text-sm">Mantenha uma intenção de fala firme, como se estivesse a dizer um <strong>"NÃO" decidido</strong>.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-black/40 border border-white/5 rounded-2xl p-5 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-black text-gray-500 uppercase tracking-widest">Player de Exemplo</span>
+                            <span class="px-2 py-1 rounded-md bg-[#0081FF]/10 text-[#0081FF] text-[10px] font-bold uppercase">M1 / TA</span>
+                        </div>
+                        <div class="flex items-center gap-4 player-container">
+                            <button class="play-example-btn w-14 h-14 rounded-2xl bg-[#0081FF] flex items-center justify-center text-white shadow-lg active:scale-95 transition-transform" data-src="https://willmakesongs.s3.us-east-005.backblazeb2.com/academia/audio/m1_example.mp3">
+                                <span class="material-symbols-rounded text-3xl ml-1">play_arrow</span>
+                            </button>
+                            <div class="flex-1 space-y-2">
+                                <div class="flex items-end gap-1 h-8 opacity-50 audio-viz">
+                                    <div class="flex-1 bg-white/20 rounded-full" data-base-height="8" style="height: 8px"></div>
+                                    <div class="flex-1 bg-white/20 rounded-full" data-base-height="16" style="height: 16px"></div>
+                                    <div class="flex-1 bg-white/20 rounded-full" data-base-height="24" style="height: 24px"></div>
+                                    <div class="flex-1 bg-white/20 rounded-full" data-base-height="12" style="height: 12px"></div>
+                                    <div class="flex-1 bg-white/20 rounded-full" data-base-height="20" style="height: 20px"></div>
+                                    <div class="flex-1 bg-white/20 rounded-full" data-base-height="14" style="height: 14px"></div>
+                                    <div class="flex-1 bg-white/20 rounded-full" data-base-height="10" style="height: 10px"></div>
+                                    <div class="flex-1 bg-white/20 rounded-full" data-base-height="18" style="height: 18px"></div>
+                                </div>
+                                <p class="text-[10px] text-gray-500 uppercase tracking-widest">Atenção: Ativo somente para assinantes</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                        <span class="material-symbols-rounded">checklist</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">Checkpoint</h3>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                    <div class="checklist-item p-4 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all" data-id="m3_1_c1">
+                        <div class="checkbox-box w-6 h-6 rounded-lg border-2 border-gray-600 flex items-center justify-center transition-all shrink-0">
+                            <span class="material-symbols-rounded text-white text-lg opacity-0 scale-0 check-icon">check</span>
+                        </div>
+                        <p class="text-gray-300 text-sm">Se sentir um "sopro" na voz, aumente a firmeza do "G".</p>
+                    </div>
+                    <div class="checklist-item p-4 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all" data-id="m3_1_c2">
+                        <div class="checkbox-box w-6 h-6 rounded-lg border-2 border-gray-600 flex items-center justify-center transition-all shrink-0">
+                            <span class="material-symbols-rounded text-white text-lg opacity-0 scale-0 check-icon">check</span>
+                        </div>
+                        <p class="text-gray-300 text-sm">Se sentir aperto na garganta, relaxe a mandíbula.</p>
+                    </div>
+                </div>
+
+                <button class="complete-practice-btn w-full py-5 bg-brand-gradient text-white font-black rounded-3xl shadow-xl active:scale-95 transition-all text-sm tracking-widest uppercase mt-4">
+                    Concluir Aula
+                </button>
+            </div>
+        `
+            },
+            {
+                id: '3.2',
+                title: 'Registro de Cabeça (M2)',
+                description: 'Estiramento via CT.',
+                content: `
+          <div class="space-y-6">
+            <div class="bg-gradient-to-br from-[#FF00BC]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-[#FF00BC] blur-[80px] opacity-20"></div>
+              <div class="w-16 h-16 rounded-2xl bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC] mb-8">
+                <span class="material-symbols-rounded text-4xl">auto_awesome</span>
+              </div>
+              <h3 class="text-3xl font-black text-white mb-6 tracking-tighter">O Conceito: Registro de Cabeça (M2)</h3>
+              <p class="text-gray-300 leading-relaxed text-lg">
+                No M2, as pregas vocais são esticadas como cordas de um violino. A massa diminui e o som torna-se mais <strong>flautado</strong>.
+              </p>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                <h4 class="text-[#FF00BC] font-black uppercase tracking-widest text-xs flex items-center gap-2">
+                    <span class="material-symbols-rounded text-sm">psychology</span>
+                    Objetivo
+                </h4>
+                <p class="text-gray-300 text-sm">
+                    Ativar o músculo <strong>Cricotireóideo (CT)</strong> para alcançar agudos leves, estáveis e sem esforço laríngeo.
+                </p>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-2xl bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC]">
+                        <span class="material-symbols-rounded">play_circle</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">Exercício Prático: Som do Falsete Conectado</h3>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-6">
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC] text-xs font-bold shrink-0 mt-0.5">1</div>
+                            <p class="text-gray-300 text-sm">Utilize a vogal <strong>"U"</strong>, que naturalmente favorece o estiramento das pregas e o abaixamento da laringe.</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC] text-xs font-bold shrink-0 mt-0.5">2</div>
+                            <p class="text-gray-300 text-sm">Faça um <strong>glissando descendente</strong> (de cima para baixo) começando numa nota aguda confortável.</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC] text-xs font-bold shrink-0 mt-0.5">3</div>
+                            <p class="text-gray-300 text-sm">Imite o som de uma coruja ou um fantasma: <strong>"HUUUUU"</strong>.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-black/40 border border-white/5 rounded-2xl p-5 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-black text-gray-500 uppercase tracking-widest">Player de Exemplo</span>
+                            <span class="px-2 py-1 rounded-md bg-[#FF00BC]/10 text-[#FF00BC] text-[10px] font-bold uppercase">M2 / CT</span>
+                        </div>
+                        <div class="flex items-center gap-4 player-container">
+                            <button class="play-example-btn w-14 h-14 rounded-2xl bg-[#FF00BC] flex items-center justify-center text-white shadow-lg active:scale-95 transition-transform" data-src="https://willmakesongs.s3.us-east-005.backblazeb2.com/academia/audio/m2_example.mp3">
+                                <span class="material-symbols-rounded text-3xl ml-1">play_arrow</span>
+                            </button>
+                            <div class="flex-1 space-y-2">
+                                <div class="flex items-end gap-1 h-8 opacity-50 audio-viz">
+                                    <div class="flex-1 bg-white/20 rounded-full" data-base-height="12" style="height: 12px"></div>
+                                    <div class="flex-1 bg-white/20 rounded-full" data-base-height="24" style="height: 24px"></div>
+                                    <div class="flex-1 bg-white/20 rounded-full" data-base-height="18" style="height: 18px"></div>
+                                    <div class="flex-1 bg-white/20 rounded-full" data-base-height="14" style="height: 14px"></div>
+                                    <div class="flex-1 bg-white/20 rounded-full" data-base-height="22" style="height: 22px"></div>
+                                    <div class="flex-1 bg-white/20 rounded-full" data-base-height="10" style="height: 10px"></div>
+                                    <div class="flex-1 bg-white/20 rounded-full" data-base-height="28" style="height: 28px"></div>
+                                    <div class="flex-1 bg-white/20 rounded-full" data-base-height="16" style="height: 16px"></div>
+                                </div>
+                                <p class="text-[10px] text-gray-500 uppercase tracking-widest">Atenção: Ativo somente para assinantes</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                        <span class="material-symbols-rounded">checklist</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">Checkpoint</h3>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                    <div class="checklist-item p-4 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all" data-id="m3_2_c1">
+                        <div class="checkbox-box w-6 h-6 rounded-lg border-2 border-gray-600 flex items-center justify-center transition-all shrink-0">
+                            <span class="material-symbols-rounded text-white text-lg opacity-0 scale-0 check-icon">check</span>
+                        </div>
+                        <p class="text-gray-300 text-sm">O foco é a leveza. Não tente colocar volume aqui.</p>
+                    </div>
+                    <div class="checklist-item p-4 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all" data-id="m3_2_c2">
+                        <div class="checkbox-box w-6 h-6 rounded-lg border-2 border-gray-600 flex items-center justify-center transition-all shrink-0">
+                            <span class="material-symbols-rounded text-white text-lg opacity-0 scale-0 check-icon">check</span>
+                        </div>
+                        <p class="text-gray-300 text-sm">O som deve ser limpo e sem ar excessivo.</p>
+                    </div>
+                </div>
+
+                <button class="complete-practice-btn w-full py-5 bg-brand-gradient text-white font-black rounded-3xl shadow-xl active:scale-95 transition-all text-sm tracking-widest uppercase mt-4">
+                    Concluir Aula
+                </button>
+            </div>
+        `
+            },
+            {
+                id: '3.4',
+                title: 'Agilidade',
+                description: 'Escalas e precisão.',
+                content: `
+          <div class="space-y-6">
+            <div class="bg-gradient-to-br from-[#0081FF]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
+              <div class="w-16 h-16 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] mb-8">
+                <span class="material-symbols-rounded text-4xl">speed</span>
+              </div>
+              <h3 class="text-3xl font-black text-white mb-6 tracking-tighter">O Conceito: Agilidade Vocal</h3>
+              <p class="text-gray-300 leading-relaxed text-lg">
+                A agilidade é o resultado de uma <strong>laringe livre</strong> e um fluxo de ar constante. O segredo é deixar as notas fluírem sobre o sopro, sem "golpear" cada uma.
+              </p>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                <h4 class="text-[#0081FF] font-black uppercase tracking-widest text-xs flex items-center gap-2">
+                    <span class="material-symbols-rounded text-sm">psychology</span>
+                    Objetivo
+                </h4>
+                <p class="text-gray-300 text-sm">
+                    Treinar a resposta motora fina para executar passagens rápidas sem perder a afinação ou a qualidade do registro.
+                </p>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
+                        <span class="material-symbols-rounded">play_circle</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">Exercício Prático: Velocidade e Articulação</h3>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-6">
+                    <div class="space-y-4">
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] text-xs font-bold shrink-0 mt-0.5">1</div>
+                            <p class="text-gray-300 text-sm">Escolha uma <strong>escala pentatónica</strong> simples.</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] text-xs font-bold shrink-0 mt-0.5">2</div>
+                            <p class="text-gray-300 text-sm">Utilize a sílaba <strong>"VI"</strong> (o "V" ajuda a manter a pressão e o "I" ajuda na ressonância alta).</p>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-6 h-6 rounded-full bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] text-xs font-bold shrink-0 mt-0.5">3</div>
+                            <p class="text-gray-300 text-sm">Comece devagar e aumente a velocidade gradualmente.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-black/40 border border-white/5 rounded-2xl p-5 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-black text-gray-500 uppercase tracking-widest">Controle de Agilidade</span>
+                            <span class="px-2 py-1 rounded-md bg-[#0081FF]/10 text-[#0081FF] text-[10px] font-bold uppercase">Tempo Real</span>
+                        </div>
+                        
+                        <div class="flex flex-col gap-6 player-container">
+                            <div class="flex items-center gap-4">
+                                <button class="play-example-btn w-14 h-14 rounded-2xl bg-[#0081FF] flex items-center justify-center text-white shadow-lg active:scale-95 transition-transform" data-src="https://willmakesongs.s3.us-east-005.backblazeb2.com/academia/audio/agility_example.mp3">
+                                    <span class="material-symbols-rounded text-3xl ml-1">play_arrow</span>
+                                </button>
+                                <div class="flex-1 space-y-2">
+                                    <div class="flex items-end gap-1 h-8 opacity-50 audio-viz">
+                                        <div class="flex-1 bg-white/20 rounded-full" data-base-height="8" style="height: 8px"></div>
+                                        <div class="flex-1 bg-white/20 rounded-full" data-base-height="20" style="height: 20px"></div>
+                                        <div class="flex-1 bg-white/20 rounded-full" data-base-height="32" style="height: 32px"></div>
+                                        <div class="flex-1 bg-white/20 rounded-full" data-base-height="16" style="height: 16px"></div>
+                                        <div class="flex-1 bg-white/20 rounded-full" data-base-height="24" style="height: 24px"></div>
+                                        <div class="flex-1 bg-white/20 rounded-full" data-base-height="12" style="height: 12px"></div>
+                                        <div class="flex-1 bg-white/20 rounded-full" data-base-height="18" style="height: 18px"></div>
+                                        <div class="flex-1 bg-white/20 rounded-full" data-base-height="10" style="height: 10px"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white/5 rounded-xl p-3 border border-white/5">
+                                <p class="text-[10px] text-gray-400 uppercase tracking-widest text-center mb-3 font-bold">Ajuste de Velocidade (BPM)</p>
+                                <div class="grid grid-cols-4 gap-2">
+                                    <button class="speed-btn py-2 rounded-lg bg-black/40 text-white text-xs font-bold border border-white/5 active:bg-[#0081FF] transition-colors" data-speed="0.5">0.5x</button>
+                                    <button class="speed-btn py-2 rounded-lg bg-black/40 text-white text-xs font-bold border border-white/5 active:bg-[#0081FF] transition-colors" data-speed="0.75">0.75x</button>
+                                    <button class="speed-btn py-2 rounded-lg bg-black/40 text-white text-xs font-bold border border-white/5 active:bg-[#0081FF] transition-colors" data-speed="1.0">1.0x</button>
+                                    <button class="speed-btn py-2 rounded-lg bg-black/40 text-white text-xs font-bold border border-white/5 active:bg-[#0081FF] transition-colors" data-speed="1.25">1.25x</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                        <span class="material-symbols-rounded">checklist</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">Checkpoint</h3>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                    <div class="checklist-item p-4 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all" data-id="m3_4_c1">
+                        <div class="checkbox-box w-6 h-6 rounded-lg border-2 border-gray-600 flex items-center justify-center transition-all shrink-0">
+                            <span class="material-symbols-rounded text-white text-lg opacity-0 scale-0 check-icon">check</span>
+                        </div>
+                        <p class="text-gray-300 text-sm">A precisão vem antes da velocidade.</p>
+                    </div>
+                    <div class="checklist-item p-4 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all" data-id="m3_4_c2">
+                        <div class="checkbox-box w-6 h-6 rounded-lg border-2 border-gray-600 flex items-center justify-center transition-all shrink-0">
+                            <span class="material-symbols-rounded text-white text-lg opacity-0 scale-0 check-icon">check</span>
+                        </div>
+                        <p class="text-gray-300 text-sm">Se as notas ficarem "borradas", volte ao tempo mais lento.</p>
+                    </div>
+                </div>
+
+                <button class="complete-practice-btn w-full py-5 bg-brand-gradient text-white font-black rounded-3xl shadow-xl active:scale-95 transition-all text-sm tracking-widest uppercase mt-4">
+                    Concluir Aula
+                </button>
+            </div>
+        `
+            }
         ]
     },
     {
         id: 'm5',
-        number: '07',
+        number: '05',
         title: 'Mudança de Registro Vocal',
         subtitle: 'A Arte da Conexão',
         description: 'Coordenação neuromuscular para transitar entre registros sem quebras.',
@@ -2441,20 +2744,20 @@ export const MODULES: Module[] = [
                 <div class="absolute top-0 right-0 w-32 h-32 bg-[#FF00BC] blur-[80px] opacity-10"></div>
                 <div class="relative z-10">
                    <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                      <span class="material-symbols-rounded text-[#FF00BC]">psychology</span>
-                      O que é esta técnica?
+                       <span class="material-symbols-rounded text-[#FF00BC]">psychology</span>
+                       O que é esta técnica?
                    </h3>
                    <p class="text-sm text-gray-300 leading-relaxed mb-4">
-                      A Mudança de Registro é a coordenação neuromuscular que permite ao cantor transitar entre diferentes ajustes laríngeos sem quebras, fendas ou tensões. Assita dominar a "Terceira Via".
+                        A Transição de Registro é a coordenação neuromuscular que permite ao cantor transitar entre diferentes ajustes laríngeos sem quebras, fendas ou tensões. Assista dominar a "Terceira Via".
                    </p>
                    <div class="bg-black/20 p-4 rounded-xl border border-white/5">
-                      <strong class="text-[#FF00BC] text-xs uppercase tracking-wide block mb-2">Fisiologia</strong>
-                      <p class="text-sm text-gray-300">
-                         Trata-se da transição de dominância entre o músculo <strong>TA</strong> (Tireoaritenoideo - voz de peito) e o músculo <strong>CT</strong> (Cricotireoideo - voz de cabeça).
-                      </p>
-                      <p class="text-sm text-gray-300 mt-2">
-                         O domínio resulta na <strong>Voz Mista (Mixed Voice)</strong>, onde corpo (massa) e brilho (alongamento) se fundem.
-                      </p>
+                       <strong class="text-[#FF00BC] text-xs uppercase tracking-wide block mb-2">Fisiologia</strong>
+                       <p class="text-sm text-gray-300">
+                          Trata-se da transição de dominância entre o músculo <strong>TA</strong> (Tireoaritenoideo - voz de peito) e o músculo <strong>CT</strong> (Cricotireoideo - voz de cabeça).
+                       </p>
+                       <p class="text-sm text-gray-300 mt-2">
+                          O domínio resulta na <strong>Voz Mista (Mixed Voice)</strong>, onde corpo (massa) e brilho (alongamento) se fundem.
+                       </p>
                    </div>
                 </div>
              </div>
@@ -2474,10 +2777,10 @@ export const MODULES: Module[] = [
                       <strong class="text-[#6F4CE7] text-sm block mb-1">Apoio e Pressão Subglótica</strong>
                       <p class="text-xs text-gray-400">O fluxo de ar constante dá à laringe a "permissão" para mudar de registro sem travar.</p>
                    </div>
-                   <div class="relative pl-4 border-l-2 border-[#6F4CE7]/30">
-                      <strong class="text-[#6F4CE7] text-sm block mb-1">Vowel Modification</strong>
-                      <p class="text-xs text-gray-400">A técnica de "escurecer" ou fechar levemente as vogais no passaggio para evitar o grito.</p>
-                   </div>
+                    <div class="relative pl-4 border-l-2 border-[#6F4CE7]/30">
+                       <strong class="text-[#6F4CE7] text-sm block mb-1">Ajuste de Vogais (Vowel modification)</strong>
+                       <p class="text-xs text-gray-400">A técnica de "escurecer" ou fechar levemente as vogais na transição para evitar o grito.</p>
+                    </div>
                 </div>
              </div>
           </div>
@@ -2485,7 +2788,39 @@ export const MODULES: Module[] = [
             },
             {
                 id: '5.2',
-                title: '2. Prática Guiada',
+                title: '2. Mix Vocal (Bridge)',
+                description: 'O equilíbrio entre massa e alongamento (eliminando a quebra).',
+                content: `
+          <div class="space-y-8 font-sans">
+             <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-10"></div>
+                <div class="relative z-10">
+                    <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-[#0081FF]">gradient</span>
+                        O Que é a Voz Mista?
+                    </h3>
+                    <p class="text-sm text-gray-300 leading-relaxed">
+                        A Voz Mista não é um "terceiro lugar" físico, mas uma coordenação onde os músculos de peito (TA) e cabeça (CT) trabalham em equilíbrio. É a ponte que elimina a quebra vocal.
+                    </p>
+                </div>
+             </div>
+
+             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-black/20 p-4 rounded-xl border border-white/5">
+                   <strong class="text-[#0081FF] text-xs uppercase block mb-1">Sensação</strong>
+                   <p class="text-xs text-gray-400">Som com a facilidade do agudo, mas com a ressonância e "corpo" do grave.</p>
+                </div>
+                <div class="bg-black/20 p-4 rounded-xl border border-white/5">
+                   <strong class="text-[#FF00BC] text-xs uppercase block mb-1">Objetivo</strong>
+                   <p class="text-xs text-gray-400">Navegar por toda a extensão sem que o ouvinte perceba a mudança de registro.</p>
+                </div>
+             </div>
+          </div>
+        `
+            },
+            {
+                id: '5.3',
+                title: '3. Prática Guiada',
                 description: 'Exercícios de conexão e mix.',
                 content: `
           <div class="space-y-8 font-sans">
@@ -2507,7 +2842,7 @@ export const MODULES: Module[] = [
                 </div>
 
                 <div class="bg-black/20 p-4 rounded-xl border border-white/5">
-                   <strong class="text-white text-xs block mb-1">Exercício: Lip/Tongue Trill</strong>
+                   <strong class="text-white text-xs block mb-1">Exercício: Vibração</strong>
                    <p class="text-xs text-gray-300">Vibração de lábios ou língua em glissando. Observe a ausência de "pulos" no som.</p>
                 </div>
              </div>
@@ -2564,32 +2899,32 @@ export const MODULES: Module[] = [
         `
             },
             {
-                id: '5.3',
-                title: '3. Diagnóstico de Erros Comuns',
+                id: '5.4',
+                title: '4. Diagnóstico de Erros Comuns',
                 description: 'O que evitar na prática.',
                 content: `
           <div class="space-y-6 font-sans">
              <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
                 <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                   <span class="material-symbols-rounded text-red-500">error</span>
+                   <span class="material-symbols-rounded text-[#FF00BC]">error</span>
                    Armadilhas do Passaggio
                 </h3>
                 
                 <div class="space-y-3">
-                   <div class="p-3 border border-red-500/20 bg-red-500/5 rounded-xl">
-                      <strong class="text-red-400 text-sm block mb-1">Soprosidade Excessiva</strong>
+                   <div class="p-3 border border-[#FF00BC]/20 bg-[#FF00BC]/5 rounded-xl">
+                      <strong class="text-[#FF00BC] text-sm block mb-1">Soprosidade Excessiva</strong>
                       <p class="text-xs text-gray-300">
                          Quando o aluno "desiste" da conexão e cai em um falsete puro, sem corpo. Mantenha a adução!
                       </p>
                    </div>
-                   <div class="p-3 border border-red-500/20 bg-red-500/5 rounded-xl">
-                      <strong class="text-red-400 text-sm block mb-1">"Grito" (Pulling Chest)</strong>
+                   <div class="p-3 border border-[#FF00BC]/20 bg-[#FF00BC]/5 rounded-xl">
+                      <strong class="text-[#FF00BC] text-sm block mb-1">"Grito" (Pulling Chest)</strong>
                       <p class="text-xs text-gray-300">
                          Tentar levar o peso do peito para onde a musculatura CT deveria dominar. Resultado: Quebra abrupta.
                       </p>
                    </div>
-                   <div class="p-3 border border-red-500/20 bg-red-500/5 rounded-xl">
-                      <strong class="text-red-400 text-sm block mb-1">Laringe Elevada</strong>
+                   <div class="p-3 border border-[#FF00BC]/20 bg-[#FF00BC]/5 rounded-xl">
+                      <strong class="text-[#FF00BC] text-sm block mb-1">Laringe Elevada</strong>
                       <p class="text-xs text-gray-300">
                          O "estrangulamento" do som. Relaxe a base da língua; se ela subir, a laringe sobe junto e fecha a passagem.
                       </p>
@@ -2602,52 +2937,661 @@ export const MODULES: Module[] = [
         ]
     },
     {
+        id: 'm4',
+        number: '06',
+        title: 'Ressonância e Articulação',
+        subtitle: 'Cor e Projeção',
+        description: 'Onde o som ganha identidade.',
+        topics: [
+            {
+                id: '4.1',
+                title: 'Ajustes de Trato Vocal',
+                description: 'Posicionamento de laringe e palato.',
+                content: `
+          <div class="space-y-6">
+            <div class="bg-gradient-to-br from-[#6F4CE7]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+              <div class="w-16 h-16 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] mb-8">
+                <span class="material-symbols-rounded text-4xl">voice_selection</span>
+              </div>
+              <h3 class="text-3xl font-black text-white mb-6 tracking-tighter">Conceito: O Trato Vocal</h3>
+              <p class="text-gray-300 leading-relaxed text-lg">
+                O trato vocal é a sua <strong>"caixa de som"</strong> natural. Ao ajustar a altura da laringe e a posição do palato (céu da boca), você molda a identidade e a cor da sua voz.
+              </p>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                <h4 class="text-[#6F4CE7] font-black uppercase tracking-widest text-xs flex items-center gap-2">
+                    <span class="material-symbols-rounded text-sm">psychology</span>
+                    Objetivo
+                </h4>
+                <p class="text-gray-300 text-sm">
+                    Aprender a moldar o timbre vocal através do controle consciente da laringe e do palato.
+                </p>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                        <span class="material-symbols-rounded text-2xl">graphic_eq</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">A Prática: O Jogo da Laringe</h3>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-3">
+                        <div class="flex items-center gap-2 text-[#0081FF]">
+                            <span class="material-symbols-rounded text-2xl">south</span>
+                            <span class="font-black uppercase tracking-widest text-xs">Voz Encorpada (Laringe Baixa)</span>
+                        </div>
+                        <p class="text-gray-300 text-sm leading-relaxed">
+                            Pense no início de um <strong>bocejo</strong> ou na voz de um locutor de rádio antigo. Sinta o espaço na garganta aumentar. Gera um som redondo e profundo.
+                        </p>
+                    </div>
+
+                    <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-3">
+                        <div class="flex items-center gap-2 text-[#FF00BC]">
+                            <span class="material-symbols-rounded text-2xl">north</span>
+                            <span class="font-black uppercase tracking-widest text-xs">Voz Brilhante (Laringe Alta)</span>
+                        </div>
+                        <p class="text-gray-300 text-sm leading-relaxed">
+                            Pense em um <strong>sorriso interno</strong>. Sinta o som ficar mais leve e agudo. É a base para estilos como o Pop e o Sertanejo.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                        <span class="material-symbols-rounded text-2xl">checklist</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">Ponto de Verificação</h3>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                    <div class="checklist-item p-4 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all" data-id="m6_1_c1">
+                        <div class="checkbox-box w-6 h-6 rounded-lg border-2 border-gray-600 flex items-center justify-center transition-all shrink-0">
+                            <span class="material-symbols-rounded text-white text-lg opacity-0 scale-0 check-icon">check</span>
+                        </div>
+                        <p class="text-gray-300 text-sm">Consigo mudar a "cor" da nota (escura/clara) sem mudar a altura musical?</p>
+                    </div>
+                    <div class="checklist-item p-4 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all" data-id="m6_1_c2">
+                        <div class="checkbox-box w-6 h-6 rounded-lg border-2 border-gray-600 flex items-center justify-center transition-all shrink-0">
+                            <span class="material-symbols-rounded text-white text-lg opacity-0 scale-0 check-icon">check</span>
+                        </div>
+                        <p class="text-gray-300 text-sm">Sinto o movimento da laringe sem gerar tensão excessiva na língua?</p>
+                    </div>
+                </div>
+
+                <button class="complete-practice-btn w-full py-5 bg-brand-gradient text-white font-black rounded-3xl shadow-xl active:scale-95 transition-all text-sm tracking-widest uppercase mt-4">
+                    Concluir Aula
+                </button>
+            </div>
+        `
+            },
+            {
+                id: '4.2',
+                title: 'Dicção e Fonética',
+                description: 'Ajuste de Vogais, Ligado e Destacado.',
+                content: `
+          <div class="space-y-6">
+            <div class="bg-gradient-to-br from-[#0081FF]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
+              <div class="w-16 h-16 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] mb-8">
+                <span class="material-symbols-rounded text-4xl">spellcheck</span>
+              </div>
+              <h3 class="text-3xl font-black text-white mb-6 tracking-tighter">Articulação e Clareza</h3>
+              <p class="text-gray-300 leading-relaxed text-lg">
+                Articular com clareza sem quebrar o fluxo da música é o segredo da <strong>inteligibilidade</strong>. A voz precisa fluir como um rio enquanto as palavras são desenhadas.
+              </p>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                <h4 class="text-[#0081FF] font-black uppercase tracking-widest text-xs flex items-center gap-2">
+                    <span class="material-symbols-rounded text-sm">psychology</span>
+                    Ajuste de Vogais (Vowel Shaping)
+                </h4>
+                <p class="text-gray-300 text-sm">
+                    Em notas mais altas, vogais muito abertas (como o <strong>"A"</strong>) podem fazer a voz rachar. Arredonde levemente o som (um "A" com intenção de <strong>"O"</strong>) para manter a estabilidade.
+                </p>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
+                        <span class="material-symbols-rounded text-2xl">graphic_eq</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">Canto Ligado vs. Destacado</h3>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-2">
+                        <strong class="text-white text-sm block">Ligado</strong>
+                        <p class="text-gray-400 text-xs italic">"As notas fluem como um rio."</p>
+                        <p class="text-gray-300 text-sm">Não há interrupção no fluxo de ar entre as palavras. A voz permanece conectada.</p>
+                    </div>
+
+                    <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-2">
+                        <strong class="text-white text-sm block">Destacado</strong>
+                        <p class="text-gray-400 text-xs italic">"Notas curtas e precisas."</p>
+                        <p class="text-gray-300 text-sm">Usa impulsos rápidos do abdômen (apoio). Cada nota é um ponto isolado de som.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                        <span class="material-symbols-rounded text-2xl">checklist</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">Ponto de Verificação</h3>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                    <div class="checklist-item p-4 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all" data-id="m6_2_c1">
+                        <div class="checkbox-box w-6 h-6 rounded-lg border-2 border-gray-600 flex items-center justify-center transition-all shrink-0">
+                            <span class="material-symbols-rounded text-white text-lg opacity-0 scale-0 check-icon">check</span>
+                        </div>
+                        <p class="text-gray-300 text-sm">Consigo cantar frases rápidas sem "comer" o final das palavras?</p>
+                    </div>
+                    <div class="checklist-item p-4 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all" data-id="m6_2_c2">
+                        <div class="checkbox-box w-6 h-6 rounded-lg border-2 border-gray-600 flex items-center justify-center transition-all shrink-0">
+                            <span class="material-symbols-rounded text-white text-lg opacity-0 scale-0 check-icon">check</span>
+                        </div>
+                        <p class="text-gray-300 text-sm">Mantenho o fôlego estável durante o canto ligado?</p>
+                    </div>
+                </div>
+
+                <button class="complete-practice-btn w-full py-5 bg-brand-gradient text-white font-black rounded-3xl shadow-xl active:scale-95 transition-all text-sm tracking-widest uppercase mt-4">
+                    Concluir Aula
+                </button>
+            </div>
+        `
+            },
+            {
+                id: '4.3',
+                title: 'Projeção (Brilho Vocal)',
+                description: 'Ganho de volume sem esforço.',
+                content: `
+          <div class="space-y-6">
+            <div class="bg-gradient-to-br from-[#FF00BC]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-[#FF00BC] blur-[80px] opacity-20"></div>
+              <div class="w-16 h-16 rounded-2xl bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC] mb-8">
+                <span class="material-symbols-rounded text-4xl">campaign</span>
+              </div>
+              <h3 class="text-3xl font-black text-white mb-6 tracking-tighter">O Conceito: Brilho Vocal</h3>
+              <p class="text-gray-300 leading-relaxed text-lg">
+                É um ajuste que concentra o som na parte da frente do rosto. É o que permite que sua voz seja ouvida com clareza mesmo com instrumentos altos ao fundo, sem fazer força na garganta.
+              </p>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                <h4 class="text-[#FF00BC] font-black uppercase tracking-widest text-xs flex items-center gap-2">
+                    <span class="material-symbols-rounded text-sm">psychology</span>
+                    A Prática: O Som Metálico
+                </h4>
+                <div class="space-y-3">
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 rounded-full bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC] text-xs font-bold shrink-0 mt-0.5">1</div>
+                        <p class="text-gray-300 text-sm">Imite o som de uma <strong>risada de bruxa</strong> ("Rê-Rê-Rê") ou um choro de bebê bem estridente.</p>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 rounded-full bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC] text-xs font-bold shrink-0 mt-0.5">2</div>
+                        <p class="text-gray-300 text-sm">Sinta o som vibrar na <strong>"máscara" do rosto</strong> (perto do nariz e dentes superiores).</p>
+                    </div>
+                    <div class="flex items-start gap-3">
+                        <div class="w-6 h-6 rounded-full bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC] text-xs font-bold shrink-0 mt-0.5">3</div>
+                        <p class="text-gray-300 text-sm">Aplique essa "frequência metálica" em uma escala simples usando a sílaba <strong>"NÊ"</strong>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
+                        <span class="material-symbols-rounded text-2xl">tips_and_updates</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">Dicas Rápidas 📘</h3>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="bg-white/5 border border-white/10 p-5 rounded-3xl space-y-2">
+                        <div class="flex items-center gap-2 text-[#FF00BC] mb-1">
+                            <span class="material-symbols-rounded text-sm">keyboard_double_arrow_up</span>
+                            <span class="text-[10px] font-black uppercase tracking-widest">O Céu da Boca</span>
+                        </div>
+                        <p class="text-gray-300 text-sm leading-relaxed">
+                            Mantenha o palato mole elevado para evitar que a voz fique "anasalada" demais e perca a beleza do timbre.
+                        </p>
+                    </div>
+
+                    <div class="bg-white/5 border border-white/10 p-5 rounded-3xl space-y-2">
+                        <div class="flex items-center gap-2 text-[#0081FF] mb-1">
+                            <span class="material-symbols-rounded text-sm">sentiment_satisfied</span>
+                            <span class="text-[10px] font-black uppercase tracking-widest">Mandíbula Livre</span>
+                        </div>
+                        <p class="text-gray-300 text-sm leading-relaxed">
+                            Nunca trave os dentes para articular. A clareza vem do movimento da língua e dos lábios, não da força na mandíbula.
+                        </p>
+                    </div>
+
+                    <div class="bg-white/5 border border-white/10 p-5 rounded-3xl space-y-2">
+                        <div class="flex items-center gap-2 text-[#0081FF] mb-1">
+                            <span class="material-symbols-rounded text-sm">gps_fixed</span>
+                            <span class="text-[10px] font-black uppercase tracking-widest">O Foco da Voz</span>
+                        </div>
+                        <p class="text-gray-300 text-sm leading-relaxed">
+                            Imagine que o som nasce na garganta, mas o alvo dele é o seu dente da frente. Isso ajuda na projeção sem esforço.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                        <span class="material-symbols-rounded text-2xl">checklist</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">Ponto de Verificação</h3>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                    <div class="checklist-item p-4 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all" data-id="m6_3_c1">
+                        <div class="checkbox-box w-6 h-6 rounded-lg border-2 border-gray-600 flex items-center justify-center transition-all shrink-0">
+                            <span class="material-symbols-rounded text-white text-lg opacity-0 scale-0 check-icon">check</span>
+                        </div>
+                        <p class="text-gray-300 text-sm">O som soa "cortante" e alto sem que eu precise fazer força?</p>
+                    </div>
+                    <div class="checklist-item p-4 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all" data-id="m6_3_c2">
+                        <div class="checkbox-box w-6 h-6 rounded-lg border-2 border-gray-600 flex items-center justify-center transition-all shrink-0">
+                            <span class="material-symbols-rounded text-white text-lg opacity-0 scale-0 check-icon">check</span>
+                        </div>
+                        <p class="text-gray-300 text-sm">Sinto o espaço na "máscara" do rosto vibrar?</p>
+                    </div>
+                </div>
+
+                <button class="complete-practice-btn w-full py-5 bg-brand-gradient text-white font-black rounded-3xl shadow-xl active:scale-95 transition-all text-sm tracking-widest uppercase mt-4">
+                    Concluir Aula
+                </button>
+            </div>
+        `
+            }
+        ]
+    },
+    // --- FASE 3: DESENVOLVIMENTO E PERFORMANCE (A EXPANSÃO) ---
+    {
         id: 'm6',
-        number: '08',
+        number: '07',
         title: 'Agilidade e Precisão Articulatória',
         subtitle: 'Trava-Línguas',
         description: 'Mantenha a laringe relaxada. Pratique em 3 fases: 1. Sussurrado, 2. Lento/Exagerado, 3. Velocidade Máxima.',
         topics: [
             {
                 id: '6.1',
-                title: 'Instruções Gerais',
-                description: 'Protocolo de Prática (3 Fases)',
+                title: 'Agilidade de Língua (R/T)',
+                description: 'Três pratos de trigo para três tigres tristes.',
                 content: `
-                <div class="space-y-4 font-sans">
-                    <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
-                        <h3 class="text-lg font-bold text-white mb-4">Protocolo de 3 Fases</h3>
-                        <div class="space-y-4">
-                            <div class="flex gap-3">
-                                <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-bold">1</div>
-                                <div>
-                                    <strong class="text-white">Sussurrado (Whisper)</strong>
-                                    <p class="text-sm text-gray-400">Sem som. Foque apenas no movimento muscular exagerado dos lábios e língua.</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-3">
-                                <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-bold">2</div>
-                                <div>
-                                    <strong class="text-white">Lento e Exagerado</strong>
-                                    <p class="text-sm text-gray-400">Adicione som, mas mantenha a velocidade baixíssima. Abra bem a boca.</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-3">
-                                <div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-bold">3</div>
-                                <div>
-                                    <strong class="text-white">Velocidade Máxima</strong>
-                                    <p class="text-sm text-gray-400">Acelere até o seu limite sem perder a clareza de cada consoante.</p>
-                                </div>
+          <div class="space-y-6">
+            <div class="bg-gradient-to-br from-[#6F4CE7]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+              <div class="w-16 h-16 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] mb-8">
+                <span class="material-symbols-rounded text-4xl">record_voice_over</span>
+              </div>
+              <h3 class="text-3xl font-black text-white mb-6 tracking-tighter">Nível 1: Articulação Falada</h3>
+              <p class="text-gray-300 leading-relaxed text-lg italic">
+                "Três pratos de trigo para três tigres tristes."
+              </p>
+              <div class="mt-6 p-4 bg-white/5 rounded-2xl border border-white/10">
+                <p class="text-sm text-gray-300 leading-relaxed">
+                  Recite foque no movimento <strong>exagerado</strong> da ponta da língua contra os dentes (R) e o palato (T). Mantenha o apoio abdominal firme.
+                </p>
+              </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
+                        <span class="material-symbols-rounded text-2xl">music_note</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">Nível 2: O Trava-Língua Cantado</h3>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-6">
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Cante o texto subindo e descendo uma <strong>escala de 5 notas</strong>. Isso coordena a afinação com a agilidade muscular.
+                    </p>
+
+                    <div class="bg-black/40 border border-white/5 rounded-2xl p-5 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-black text-gray-500 uppercase tracking-widest">Escala Base</span>
+                            <span class="px-2 py-1 rounded-md bg-[#0081FF]/10 text-[#0081FF] text-[10px] font-bold uppercase">Agilidade</span>
+                        </div>
+                        <div class="flex items-center gap-4 player-container">
+                            <button class="play-example-btn w-14 h-14 rounded-2xl bg-[#0081FF] flex items-center justify-center text-white shadow-lg active:scale-95 transition-transform" data-src="https://willmakesongs.s3.us-east-005.backblazeb2.com/academia/audio/scale_5_notes.mp3">
+                                <span class="material-symbols-rounded text-3xl ml-1">play_arrow</span>
+                            </button>
+                            <div class="flex-1">
+                                <p class="text-[10px] text-gray-500 uppercase tracking-widest">Atenção: Exemplo de Áudio</p>
                             </div>
                         </div>
                     </div>
                 </div>
-            `
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
+                        <span class="material-symbols-rounded text-2xl">timer</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">Nível 3: Desafio do Metrônomo</h3>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-6">
+                    <p class="text-gray-300 text-sm leading-relaxed text-center">
+                        Mantenha a clareza sem "atropelar" as consoantes conforme a velocidade aumenta.
+                    </p>
+
+                    <div class="player-container space-y-4">
+                        <button class="play-example-btn w-full py-4 bg-[#0081FF] text-white font-black rounded-2xl shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2" data-src="https://willmakesongs.s3.us-east-005.backblazeb2.com/academia/audio/metronome_click.mp3">
+                            <span class="material-symbols-rounded">play_circle</span>
+                            INICIAR TREINO
+                        </button>
+
+                        <div class="grid grid-cols-4 gap-2">
+                            <button class="speed-btn py-3 rounded-xl bg-black/40 text-white text-xs font-black border border-white/5 active:bg-[#0081FF] transition-colors" data-speed="0.5">LENTA</button>
+                            <button class="speed-btn py-3 rounded-xl bg-black/40 text-white text-xs font-black border border-white/5 active:bg-[#0081FF] transition-colors" data-speed="0.75">MÉDIA</button>
+                            <button class="speed-btn py-3 rounded-xl bg-black/40 text-white text-xs font-black border border-white/5 active:bg-[#0081FF] transition-colors" data-speed="1.0">RÁPIDA</button>
+                            <button class="speed-btn py-3 rounded-xl bg-black/40 text-white text-xs font-black border border-white/5 active:bg-[#0081FF] transition-colors" data-speed="1.25">ULTRA</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                        <span class="material-symbols-rounded text-2xl">checklist</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">Ponto de Verificação</h3>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                    <div class="checklist-item p-4 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all" data-id="m7_1_c1">
+                        <div class="checkbox-box w-6 h-6 rounded-lg border-2 border-gray-600 flex items-center justify-center transition-all shrink-0">
+                            <span class="material-symbols-rounded text-white text-lg opacity-0 scale-0 check-icon">check</span>
+                        </div>
+                        <p class="text-gray-300 text-sm">Consigo pronunciar todos os "R" e "T" de forma nítida?</p>
+                    </div>
+                    <div class="checklist-item p-4 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all" data-id="m7_1_c2">
+                        <div class="checkbox-box w-6 h-6 rounded-lg border-2 border-gray-600 flex items-center justify-center transition-all shrink-0">
+                            <span class="material-symbols-rounded text-white text-lg opacity-0 scale-0 check-icon">check</span>
+                        </div>
+                        <p class="text-gray-300 text-sm">Sinto o apoio abdominal sustentando a agilidade?</p>
+                    </div>
+                </div>
+
+                <button class="complete-practice-btn w-full py-5 bg-brand-gradient text-white font-black rounded-3xl shadow-xl active:scale-95 transition-all text-sm tracking-widest uppercase mt-4">
+                    Concluir Aula
+                </button>
+            </div>
+        `
+            },
+            {
+                id: '6.2',
+                title: 'Controle de Lábios (P/B)',
+                description: 'O peito do pé do Pedro é preto.',
+                content: `
+          <div class="space-y-6">
+            <div class="bg-gradient-to-br from-[#FF00BC]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-[#FF00BC] blur-[80px] opacity-20"></div>
+              <div class="w-16 h-16 rounded-2xl bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC] mb-8">
+                <span class="material-symbols-rounded text-4xl">lips</span>
+              </div>
+              <h3 class="text-3xl font-black text-white mb-6 tracking-tighter">Nível 1: Articulação Falada</h3>
+              <p class="text-gray-300 leading-relaxed text-lg italic">
+                "O peito do pé do Pedro é preto."
+              </p>
+              <div class="mt-6 p-4 bg-white/5 rounded-2xl border border-white/10">
+                <p class="text-sm text-gray-300 leading-relaxed">
+                  Foque na explosão das consoantes <strong>bilabiais (P/B)</strong>. O movimento deve nascer na pressão dos lábios, não na garganta.
+                </p>
+              </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-2xl bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC]">
+                        <span class="material-symbols-rounded text-2xl">music_note</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">Nível 2: O Trava-Língua Cantado</h3>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-6">
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Cante o texto em triandês (Do-Mi-Sol) mantendo o <strong>picado (staccato)</strong> bem curto e preciso.
+                    </p>
+
+                    <div class="bg-black/40 border border-white/5 rounded-2xl p-5 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-black text-gray-500 uppercase tracking-widest">Arpejo Base</span>
+                            <span class="px-2 py-1 rounded-md bg-[#FF00BC]/10 text-[#FF00BC] text-[10px] font-bold uppercase">Precisão</span>
+                        </div>
+                        <div class="flex items-center gap-4 player-container">
+                            <button class="play-example-btn w-14 h-14 rounded-2xl bg-[#FF00BC] flex items-center justify-center text-white shadow-lg active:scale-95 transition-transform" data-src="https://willmakesongs.s3.us-east-005.backblazeb2.com/academia/audio/arpegio_staccato.mp3">
+                                <span class="material-symbols-rounded text-3xl ml-1">play_arrow</span>
+                            </button>
+                            <div class="flex-1">
+                                <p class="text-[10px] text-gray-500 uppercase tracking-widest">Atenção: Exemplo de Áudio</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
+                        <span class="material-symbols-rounded text-2xl">timer</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">Nível 3: Desafio do Metrônomo</h3>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-6">
+                    <p class="text-gray-300 text-sm leading-relaxed text-center">
+                        Execute o trava-língua repetidamente sem deixar os lábios "cansarem" ou perderem a vedação.
+                    </p>
+
+                    <div class="player-container space-y-4">
+                        <button class="play-example-btn w-full py-4 bg-[#0081FF] text-white font-black rounded-2xl shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2" data-src="https://willmakesongs.s3.us-east-005.backblazeb2.com/academia/audio/metronome_click.mp3">
+                            <span class="material-symbols-rounded">play_circle</span>
+                            INICIAR TREINO
+                        </button>
+
+                        <div class="grid grid-cols-4 gap-2">
+                            <button class="speed-btn py-3 rounded-xl bg-black/40 text-white text-xs font-black border border-white/5 active:bg-[#0081FF] transition-colors" data-speed="0.5">0.5x</button>
+                            <button class="speed-btn py-3 rounded-xl bg-black/40 text-white text-xs font-black border border-white/5 active:bg-[#0081FF] transition-colors" data-speed="0.75">0.75x</button>
+                            <button class="speed-btn py-3 rounded-xl bg-black/40 text-white text-xs font-black border border-white/5 active:bg-[#0081FF] transition-colors" data-speed="1.0">1.0x</button>
+                            <button class="speed-btn py-3 rounded-xl bg-black/40 text-white text-xs font-black border border-white/5 active:bg-[#0081FF] transition-colors" data-speed="1.25">1.25x</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                        <span class="material-symbols-rounded text-2xl">checklist</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">Ponto de Verificação</h3>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                    <div class="checklist-item p-4 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all" data-id="m7_2_c1">
+                        <div class="checkbox-box w-6 h-6 rounded-lg border-2 border-gray-600 flex items-center justify-center transition-all shrink-0">
+                            <span class="material-symbols-rounded text-white text-lg opacity-0 scale-0 check-icon">check</span>
+                        </div>
+                        <p class="text-gray-300 text-sm">Os lábios estalam de forma clara em cada "P" e "B"?</p>
+                    </div>
+                    <div class="checklist-item p-4 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all" data-id="m7_2_c2">
+                        <div class="checkbox-box w-6 h-6 rounded-lg border-2 border-gray-600 flex items-center justify-center transition-all shrink-0">
+                            <span class="material-symbols-rounded text-white text-lg opacity-0 scale-0 check-icon">check</span>
+                        </div>
+                        <p class="text-gray-300 text-sm">Consigo manter o som curto sem gerar tensão no queixo?</p>
+                    </div>
+                </div>
+
+                <button class="complete-practice-btn w-full py-5 bg-brand-gradient text-white font-black rounded-3xl shadow-xl active:scale-95 transition-all text-sm tracking-widest uppercase mt-4">
+                    Concluir Aula
+                </button>
+            </div>
+        `
+            },
+            {
+                id: '6.3',
+                title: 'Precisão de Sibilantes (S/X)',
+                description: 'O sabiá não sabia que o sábio sabia...',
+                content: `
+          <div class="space-y-6">
+            <div class="bg-gradient-to-br from-[#0081FF]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
+              <div class="w-16 h-16 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] mb-8">
+                <span class="material-symbols-rounded text-4xl">air</span>
+              </div>
+              <h3 class="text-3xl font-black text-white mb-6 tracking-tighter">Nível 1: Articulação Falada</h3>
+              <p class="text-gray-300 leading-relaxed text-sm italic">
+                "O sabiá não sabia que o sábio sabia que o sabiá não sabia assobiar."
+              </p>
+              <div class="mt-6 p-4 bg-white/5 rounded-2xl border border-white/10">
+                <p class="text-sm text-gray-300 leading-relaxed">
+                  Trabalhe o fluxo de ar contínuo através das consoantes <strong>fricativas (S/X)</strong>. Evite que o som escape de uma vez; mantenha a pressão constante.
+                </p>
+              </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
+                        <span class="material-symbols-rounded text-2xl">music_note</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">Nível 2: O Trava-Língua Cantado</h3>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-6">
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Cante a frase mantendo o <strong>legato (ligado)</strong>. O desafio aqui é não interromper o fôlego entre os fonemas.
+                    </p>
+
+                    <div class="bg-black/40 border border-white/5 rounded-2xl p-5 space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-black text-gray-500 uppercase tracking-widest">Escala Ligada</span>
+                            <span class="px-2 py-1 rounded-md bg-[#0081FF]/10 text-[#0081FF] text-[10px] font-bold uppercase">Fluxo</span>
+                        </div>
+                        <div class="flex items-center gap-4 player-container">
+                            <button class="play-example-btn w-14 h-14 rounded-2xl bg-[#0081FF] flex items-center justify-center text-white shadow-lg active:scale-95 transition-transform" data-src="https://willmakesongs.s3.us-east-005.backblazeb2.com/academia/audio/legato_scale.mp3">
+                                <span class="material-symbols-rounded text-3xl ml-1">play_arrow</span>
+                            </button>
+                            <div class="flex-1">
+                                <p class="text-[10px] text-gray-500 uppercase tracking-widest">Atenção: Exemplo de Áudio</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
+                        <span class="material-symbols-rounded text-2xl">timer</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">Nível 3: Desafio do Metrônomo</h3>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-6">
+                    <p class="text-gray-300 text-sm leading-relaxed text-center">
+                        Controle o "chiado" do S para que ele não domine o som da nota, especialmente em velocidades mais altas.
+                    </p>
+
+                    <div class="player-container space-y-4">
+                        <button class="play-example-btn w-full py-4 bg-[#0081FF] text-white font-black rounded-2xl shadow-lg active:scale-95 transition-all flex items-center justify-center gap-2" data-src="https://willmakesongs.s3.us-east-005.backblazeb2.com/academia/audio/metronome_click.mp3">
+                            <span class="material-symbols-rounded">play_circle</span>
+                            INICIAR TREINO
+                        </button>
+
+                        <div class="grid grid-cols-4 gap-2">
+                            <button class="speed-btn py-3 rounded-xl bg-black/40 text-white text-xs font-black border border-white/5 active:bg-[#0081FF] transition-colors" data-speed="0.5">0.5x</button>
+                            <button class="speed-btn py-3 rounded-xl bg-black/40 text-white text-xs font-black border border-white/5 active:bg-[#0081FF] transition-colors" data-speed="0.75">0.75x</button>
+                            <button class="speed-btn py-3 rounded-xl bg-black/40 text-white text-xs font-black border border-white/5 active:bg-[#0081FF] transition-colors" data-speed="1.0">1.0x</button>
+                            <button class="speed-btn py-3 rounded-xl bg-black/40 text-white text-xs font-black border border-white/5 active:bg-[#0081FF] transition-colors" data-speed="1.25">1.25x</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="flex items-center gap-4 mb-2">
+                    <div class="w-12 h-12 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                        <span class="material-symbols-rounded text-2xl">checklist</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">Ponto de Verificação</h3>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                    <div class="checklist-item p-4 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all" data-id="m7_3_c1">
+                        <div class="checkbox-box w-6 h-6 rounded-lg border-2 border-gray-600 flex items-center justify-center transition-all shrink-0">
+                            <span class="material-symbols-rounded text-white text-lg opacity-0 scale-0 check-icon">check</span>
+                        </div>
+                        <p class="text-gray-300 text-sm">O ar flui de forma constante sem "solavancos"?</p>
+                    </div>
+                    <div class="checklist-item p-4 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all" data-id="m7_3_c2">
+                        <div class="checkbox-box w-6 h-6 rounded-lg border-2 border-gray-600 flex items-center justify-center transition-all shrink-0">
+                            <span class="material-symbols-rounded text-white text-lg opacity-0 scale-0 check-icon">check</span>
+                        </div>
+                        <p class="text-gray-300 text-sm">As consoantes "S" estão discretas e não "sopradas"?</p>
+                    </div>
+                </div>
+
+                <button class="complete-practice-btn w-full py-5 bg-brand-gradient text-white font-black rounded-3xl shadow-xl active:scale-95 transition-all text-sm tracking-widest uppercase mt-4">
+                    Concluir Aula
+                </button>
+            </div>
+        `
             }
         ]
     },
     {
         id: 'm7',
-        number: '09',
+        number: '08',
         title: 'Alcançar Notas Altas',
         subtitle: 'ACERTE AQUELA NOTA ALTA',
         description: 'Especialização avançada: domine os agudos com segurança e potência (Método Cheryl Porter).',
@@ -2754,7 +3698,7 @@ export const MODULES: Module[] = [
                 </div>
 
                 <div class="bg-[#1A202C] p-4 rounded-xl border border-white/5 flex gap-4 items-center">
-                   <div class="w-10 h-10 rounded-full bg-yellow-500/20 text-yellow-400 flex items-center justify-center shrink-0">
+                   <div class="w-10 h-10 rounded-full bg-[#6F4CE7]/20 text-[#6F4CE7] flex items-center justify-center shrink-0">
                       <span class="material-symbols-rounded">no_food</span>
                    </div>
                    <div>
@@ -2780,7 +3724,7 @@ export const MODULES: Module[] = [
     },
     {
         id: 'm8',
-        number: '10',
+        number: '09',
         title: 'Voz Forte e Ressonante',
         subtitle: 'Potência e Saúde',
         description: 'Desenvolva força vocal real sem gritar, usando a metodologia de resistência e ressonância.',
@@ -2884,7 +3828,7 @@ export const MODULES: Module[] = [
                 content: `
           <div class="space-y-6 font-sans">
              <div class="bg-gradient-to-br from-[#1A202C] to-[#151a24] p-6 rounded-2xl border border-white/5 text-center">
-                <span class="material-symbols-rounded text-4xl text-green-500 mb-3">spa</span>
+                <span class="material-symbols-rounded text-4xl text-[#0081FF] mb-3">spa</span>
                 <h3 class="text-lg font-bold text-white mb-2">Hora de Relaxar</h3>
                 <p class="text-sm text-gray-300 mb-6">
                    Nunca termine um treino intenso abruptamente. Traga sua voz de volta para a fala com escalas descendentes suaves.
@@ -2896,24 +3840,10 @@ export const MODULES: Module[] = [
             }
         ]
     },
-    {
-        id: 'm10',
-        number: '11',
-        title: 'Repertório & Aplicação',
-        subtitle: 'Biblioteca de Karaokê',
-        description: 'Coloque a técnica em prática com nossa curadoria de Playbacks.',
-        topics: [
-            {
-                id: '10.1_new',
-                title: 'Biblioteca de Karaokê (Acervo)',
-                description: 'Playbacks profissionais para treino.',
-                content: ''
-            }
-        ]
-    },
+    // --- FASE 4: ESTÉTICA E PRÁTICA FINAL (A ARTE) ---
     {
         id: 'm11',
-        number: '12',
+        number: '10',
         title: 'Ornamentos e Agilidade Vocal',
         subtitle: 'Técnica e Estilo',
         description: 'Domine a velocidade, precisão e os ornamentos que refinam sua interpretação.',
@@ -2993,10 +3923,10 @@ export const MODULES: Module[] = [
                 content: `
           <div class="space-y-8 font-sans">
             <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
-               <div class="absolute top-0 right-0 w-32 h-32 bg-[#EE13CA] blur-[80px] opacity-20"></div>
+               <div class="absolute top-0 right-0 w-32 h-32 bg-[#FF00BC] blur-[80px] opacity-20"></div>
                <div class="relative z-10">
                    <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                       <span class="w-8 h-8 rounded-lg bg-[#EE13CA]/20 flex items-center justify-center text-[#EE13CA] text-sm font-bold">1</span>
+                       <span class="w-8 h-8 rounded-lg bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC] text-sm font-bold">1</span>
                        O Floreio de Duas Notas
                    </h3>
                    <p class="text-sm text-gray-300 leading-relaxed">
@@ -3144,22 +4074,37 @@ export const MODULES: Module[] = [
 
             <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
                 <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                    <span class="material-symbols-rounded text-green-500">tips_and_updates</span>
+                    <span class="material-symbols-rounded text-[#0081FF]">tips_and_updates</span>
                     Dicas para o Aluno
                 </h3>
                 <ul class="space-y-4">
                     <li class="flex gap-3 items-start">
-                        <div class="w-1.5 h-1.5 rounded-full bg-green-500 mt-1.5 shrink-0"></div>
+                        <div class="w-1.5 h-1.5 rounded-full bg-[#0081FF] mt-1.5 shrink-0"></div>
                         <p class="text-sm text-gray-300"><b>Paciência:</b> A agilidade vocal é como um treino de academia para os dedos de um pianista. Requer repetição constante.</p>
                     </li>
                     <li class="flex gap-3 items-start">
-                        <div class="w-1.5 h-1.5 rounded-full bg-green-500 mt-1.5 shrink-0"></div>
+                        <div class="w-1.5 h-1.5 rounded-full bg-[#0081FF] mt-1.5 shrink-0"></div>
                         <p class="text-sm text-gray-300"><b>Gravação:</b> Grave seus exercícios. Se a frase soar "borrada", diminua a velocidade do seu treino.</p>
                     </li>
                 </ul>
             </div>
           </div>
         `
+            }
+        ]
+    },
+    {
+        id: 'm10',
+        number: '11',
+        title: 'Repertório & Aplicação',
+        subtitle: 'Biblioteca de Karaokê',
+        description: 'Coloque a técnica em prática com nossa curadoria de Playbacks.',
+        topics: [
+            {
+                id: '10.1_new',
+                title: 'Biblioteca de Karaokê (Acervo)',
+                description: 'Playbacks profissionais para treino.',
+                content: ''
             }
         ]
     },
@@ -3231,15 +4176,15 @@ export const MODULES: Module[] = [
                         <p class="text-xs text-gray-400 mb-4">Respire profundamente por 4s, segure por 4s e solte por 6s. Leia um texto sem pedir desculpas ou se corrigir.</p>
                     </div>
                     <div class="bg-[#1A202C] p-5 rounded-2xl border border-white/5">
-                        <h4 class="text-[#EE13CA] font-bold text-sm mb-3">🚀 Aplicação</h4>
+                        <h4 class="text-[#FF00BC] font-bold text-sm mb-3">🚀 Aplicação</h4>
                         <p class="text-xs text-gray-400">Apresente-se dizendo apenas seu nome e o que faz, sem explicações extras ou justificativas.</p>
                     </div>
                 </div>
 
-                <div class="bg-green-500/10 border border-green-500/20 p-4 rounded-2xl">
-                    <h4 class="text-green-500 font-bold text-[10px] uppercase tracking-widest mb-2">Critério de Avaliação</h4>
+                <div class="bg-[#0081FF]/10 border border-[#0081FF]/20 p-4 rounded-2xl">
+                    <h4 class="text-[#0081FF] font-bold text-[10px] uppercase tracking-widest mb-2">Critério de Avaliação</h4>
                     <div class="flex items-center gap-2">
-                        <span class="material-symbols-rounded text-green-500 text-sm">check_circle</span>
+                        <span class="material-symbols-rounded text-[#0081FF] text-sm">check_circle</span>
                         <p class="text-xs text-white">Conseguiu falar até o fim sem se interromper ou se justificar.</p>
                     </div>
                 </div>
@@ -3279,7 +4224,7 @@ export const MODULES: Module[] = [
                         <p class="text-xs text-gray-400">Ative o corpo e emita vogais longas com intensidade média. Leia um texto variando a intenção emocional.</p>
                     </div>
                     <div class="bg-black/20 p-5 rounded-2xl border border-white/5">
-                        <h4 class="text-[#EE13CA] font-bold text-sm mb-3">🚀 Aplicação</h4>
+                        <h4 class="text-[#FF00BC] font-bold text-sm mb-3">🚀 Aplicação</h4>
                         <p class="text-xs text-gray-400">Grave um vídeo curto sobre algo que você gosta, focando em manter a energia vocal do início ao fim.</p>
                     </div>
                 </div>
@@ -3377,7 +4322,7 @@ export const MODULES: Module[] = [
                     <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
                     <div class="relative z-10">
                         <h3 class="text-xl font-bold text-white mb-1">Arquitetura Corporal</h3>
-                        <p class="text-[11px] text-yellow-500 font-bold italic mb-4 uppercase tracking-widest">"Falar bem não é forçar, é organizar."</p>
+                        <p class="text-[11px] text-[#6F4CE7] font-bold italic mb-4 uppercase tracking-widest">"Falar bem não é forçar, é organizar."</p>
                         <p class="text-xs text-gray-400 leading-relaxed">
                             Postura desalinhada gera voz fraca. Dicção clara depende de articulação consciente. Seu corpo é o instrumento que amplifica sua mensagem.
                         </p>
@@ -3409,20 +4354,20 @@ export const MODULES: Module[] = [
 
                     <div class="bg-[#1A202C] p-5 rounded-2xl border border-white/5">
                         <div class="flex items-center justify-between mb-4">
-                            <h4 class="text-[#EE13CA] font-bold text-sm uppercase">Dicção</h4>
+                            <h4 class="text-[#FF00BC] font-bold text-sm uppercase">Dicção</h4>
                             <span class="text-[10px] text-gray-500 font-medium tracking-tighter">Checklist Técnico</span>
                         </div>
                         <ul class="space-y-2">
                             <li class="flex items-center gap-2 text-xs text-gray-300">
-                                <span class="material-symbols-rounded text-[#EE13CA] text-sm">check_circle</span>
+                                <span class="material-symbols-rounded text-[#FF00BC] text-sm">check_circle</span>
                                 Sentir a vibração nos lábios
                             </li>
                             <li class="flex items-center gap-2 text-xs text-gray-300">
-                                <span class="material-symbols-rounded text-[#EE13CA] text-sm">check_circle</span>
+                                <span class="material-symbols-rounded text-[#FF00BC] text-sm">check_circle</span>
                                 Abrir bem a cavidade bucal
                             </li>
                             <li class="flex items-center gap-2 text-xs text-gray-300">
-                                <span class="material-symbols-rounded text-[#EE13CA] text-sm">check_circle</span>
+                                <span class="material-symbols-rounded text-[#FF00BC] text-sm">check_circle</span>
                                 Pronunciar cada sílaba
                             </li>
                         </ul>
@@ -3432,7 +4377,7 @@ export const MODULES: Module[] = [
                 <!-- Practice Section -->
                 <div class="bg-black/40 p-6 rounded-3xl border border-white/5 space-y-6">
                     <div class="flex items-center gap-3 mb-2">
-                        <span class="material-symbols-rounded text-yellow-500">bolt</span>
+                        <span class="material-symbols-rounded text-[#6F4CE7]">bolt</span>
                         <h4 class="text-white font-bold text-base uppercase tracking-tight">⚡ PRÁTICA (Níveis de Desafio)</h4>
                     </div>
                     
@@ -3447,7 +4392,7 @@ export const MODULES: Module[] = [
 
                         <div class="p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
                              <div class="flex items-center justify-between mb-2">
-                                <span class="text-[9px] px-2 py-0.5 bg-[#EE13CA]/20 text-[#EE13CA] rounded-full font-bold uppercase tracking-tight">Nível 2</span>
+                                <span class="text-[9px] px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full font-bold uppercase tracking-tight">Nível 2</span>
                                 <span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Agilidade</span>
                             </div>
                             <p class="text-xs text-white italic leading-relaxed">"Num ninho de mafagafos, cinco mafagafinhos há! Quem os desmafagafizar, bom desmafagafizador será."</p>
@@ -3455,7 +4400,7 @@ export const MODULES: Module[] = [
 
                         <div class="p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
                              <div class="flex items-center justify-between mb-2">
-                                <span class="text-[9px] px-2 py-0.5 bg-yellow-500/20 text-yellow-500 rounded-full font-bold uppercase tracking-tight">Nível 3</span>
+                                <span class="text-[9px] px-2 py-0.5 bg-[#6F4CE7]/20 text-[#6F4CE7] rounded-full font-bold uppercase tracking-tight">Nível 3</span>
                                 <span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Projeção de Ar</span>
                             </div>
                             <p class="text-xs text-white italic leading-relaxed">"Três pratos de trigo para três tigres tristes."</p>
@@ -3463,7 +4408,7 @@ export const MODULES: Module[] = [
 
                         <div class="p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
                              <div class="flex items-center justify-between mb-2">
-                                <span class="text-[9px] px-2 py-0.5 bg-green-500/20 text-green-500 rounded-full font-bold uppercase tracking-tight">Nível 4</span>
+                                <span class="text-[9px] px-2 py-0.5 bg-[#0081FF]/20 text-[#0081FF] rounded-full font-bold uppercase tracking-tight">Nível 4</span>
                                 <span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">P e T</span>
                             </div>
                             <p class="text-xs text-white italic leading-relaxed">"O pinto pia, a pipa pinga. Pinga a pipa e o pinto pia. Quanto mais o pinto pia, mais a pipa pinga."</p>
@@ -3471,7 +4416,7 @@ export const MODULES: Module[] = [
 
                         <div class="p-4 bg-white/5 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
                              <div class="flex items-center justify-between mb-2">
-                                <span class="text-[9px] px-2 py-0.5 bg-red-500/20 text-red-500 rounded-full font-bold uppercase tracking-tight">Nível 5</span>
+                                <span class="text-[9px] px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full font-bold uppercase tracking-tight">Nível 5</span>
                                 <span class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">O Terror (S e Z)</span>
                             </div>
                             <p class="text-xs text-white italic leading-relaxed">"Casa suja, chão sujo. Se a casa é suja, o chão é sujo. Chão sujo, casa suja."</p>
@@ -3483,7 +4428,7 @@ export const MODULES: Module[] = [
                             <span class="material-symbols-rounded text-6xl text-[#0081FF]">psychology</span>
                         </div>
                         <h5 class="text-white font-bold text-xs mb-4 flex items-center gap-2">
-                             <span class="material-symbols-rounded text-sm text-yellow-500">stars</span>
+                             <span class="material-symbols-rounded text-sm text-[#6F4CE7]">stars</span>
                              Modo Profissional (Ação Estratégica)
                         </h5>
                         <div class="space-y-4 relative z-10 font-medium">
@@ -3537,7 +4482,7 @@ export const MODULES: Module[] = [
                     <p class="text-sm text-gray-300 leading-relaxed mb-6">
                         Comunicação madura é econômica. Pausas são ferramentas poderosas. O silêncio comunica segurança e controle.
                     </p>
-                    <div class="bg-black/40 p-4 rounded-xl border-l-4 border-yellow-500">
+                    <div class="bg-black/40 p-4 rounded-xl border-l-4 border-[#6F4CE7]">
                         <p class="text-xs text-gray-400">"Retire os excessos de 'hã', 'né', 'tá' e movimentos repetitivos."</p>
                     </div>
                 </div>
@@ -3559,7 +4504,7 @@ export const MODULES: Module[] = [
                     <p class="text-sm text-gray-400 mb-8 max-w-xs mx-auto">
                         Pedir desculpas por errar a técnica enfraquece sua mensagem. Mantenha o fluxo. O comunicador forte sustenta a fala até o fim.
                     </p>
-                    <div class="inline-block px-6 py-3 bg-[#EE13CA]/20 border border-[#EE13CA]/40 rounded-full">
+                    <div class="inline-block px-6 py-3 bg-[#FF00BC]/20 border border-[#FF00BC]/40 rounded-full">
                         <span class="text-white font-bold text-xs">DESAFIO FINAL: APRESENTAÇÃO DE 5 MINUTOS SEM CORTES</span>
                     </div>
                 </div>
@@ -3578,37 +4523,9 @@ export const MODULES: Module[] = [
 // VOCALIZES DATA
 // -----------------------------------------------------------
 export const VOCALIZES: Vocalize[] = [
-    // 1. Escala Longa (M1 - Fundamentos)
-    {
-        id: 'v-esc-long',
-        moduleId: 'm1',
-        title: 'Escala longa I-V',
-        category: 'Fundamentos',
-        difficulty: 'Iniciante',
-        duration: '04:30',
-        bpm: 90,
-        key: 'C Major',
-        description: 'Escala fundamental para extensão e controle de fluxo.',
-        audioUrl: `${SINGEO_BASE_URL}scale_long_I_V_high.mp3?v=bust2`,
-        audioUrlMale: `${SINGEO_BASE_URL}scale_long_I_V_low.mp3?v=bust2`,
-        exampleUrl: `${VOCALIZES_BASE_URL}BRRR_1.mp3`
-    },
 
-    // 2. Desaquecimento Reverso (M2 - Aquecimento / M8 - Final)
-    {
-        id: 'v-desaq-m2',
-        moduleId: 'm2',
-        title: 'Desaquecimento Reverso',
-        category: 'Desaquecimento',
-        difficulty: 'Iniciante',
-        duration: '03:45',
-        bpm: 80,
-        key: 'Descendente',
-        description: 'Essencial após o treino. Traga sua voz de volta para a região de fala.',
-        audioUrl: `${SINGEO_BASE_URL}warmup_reverse_high.mp3?v=bust2`,
-        audioUrlMale: `${SINGEO_BASE_URL}warmup_reverse_low.mp3?v=bust2`,
-        exampleUrl: `${VOCALIZES_BASE_URL}BRRR%20DOWN.mp3`
-    },
+
+
 
     // 3. Arpeggio Maior 3x (M3 - Técnica / M8 - Força)
     {

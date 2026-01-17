@@ -351,7 +351,7 @@ export const PianoScreen: React.FC<Props> = ({ onBack, embedded, onPlayNote, onS
                     <div>
                         <h2 className="font-bold text-white text-lg leading-tight">Piano Virtual</h2>
                         <div className="flex items-center gap-2">
-                            <span className={`w-2 h-2 rounded-full ${micPermission === 'granted' ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></span>
+                            <span className={`w-2 h-2 rounded-full ${micPermission === 'granted' ? 'bg-[#0081FF] animate-pulse' : 'bg-[#FF00BC]'}`}></span>
                             <span className="text-[10px] text-gray-400 uppercase tracking-wider font-bold">
                                 {micPermission === 'granted' ? 'Ouvindo Voz' : 'Sem Acesso ao Mic'}
                             </span>
@@ -366,9 +366,9 @@ export const PianoScreen: React.FC<Props> = ({ onBack, embedded, onPlayNote, onS
 
                     {/* Background Feedback Color */}
                     <div className={`absolute inset-0 transition-opacity duration-500
-                        ${feedbackStatus === 'success' ? 'bg-green-500/10' : ''}
-                        ${feedbackStatus === 'low' ? 'bg-yellow-500/5' : ''}
-                        ${feedbackStatus === 'high' ? 'bg-yellow-500/5' : ''}
+                        ${feedbackStatus === 'success' ? 'bg-[#0081FF]/10' : ''}
+                        ${feedbackStatus === 'low' ? 'bg-[#6F4CE7]/5' : ''}
+                        ${feedbackStatus === 'high' ? 'bg-[#6F4CE7]/5' : ''}
                     `}></div>
 
                     <div className={`transition-all duration-200 transform z-10 
@@ -408,7 +408,7 @@ export const PianoScreen: React.FC<Props> = ({ onBack, embedded, onPlayNote, onS
                                                 <span className="material-symbols-rounded">check_circle</span>
                                                 Boa! Afinada.
                                             </p>
-                                            <p className="text-green-500/60 text-xs">Mantenha essa estabilidade!</p>
+                                            <p className="text-[#0081FF]/60 text-xs">Mantenha essa estabilidade!</p>
                                         </div>
                                     )}
 

@@ -255,7 +255,7 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
                   {hasCustomVersion && (
                     <button
                       onClick={handleResetOverride}
-                      className="w-14 h-14 rounded-2xl bg-red-600/10 border border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white transition-all active:scale-95 flex items-center justify-center"
+                      className="w-14 h-14 rounded-2xl bg-[#FF00BC]/10 border border-[#FF00BC]/20 text-[#FF00BC] hover:bg-[#FF00BC] hover:text-white transition-all active:scale-95 flex items-center justify-center"
                       title="Restaurar Padrão"
                     >
                       <RotateCcw size={18} />
@@ -277,7 +277,7 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
           <div className="absolute inset-0 bg-black/95 backdrop-blur-2xl" onClick={() => setIsModalOpen(false)}></div>
           <div className="relative w-full max-w-4xl max-h-[85vh] bg-[#12141c] border border-white/10 rounded-[40px] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-300">
             <div className="p-10 border-b border-white/5 flex items-center justify-between">
-              <h3 className="text-3xl font-black text-white tracking-tighter uppercase">Escolha a <span className="text-blue-500">Qualidade</span></h3>
+              <h3 className="text-3xl font-black text-white tracking-tighter uppercase">Escolha a <span className="text-[#0081FF]">Qualidade</span></h3>
               <button onClick={() => setIsModalOpen(false)} className="w-16 h-16 bg-white/5 rounded-3xl flex items-center justify-center transition-all text-slate-400 active:scale-90">
                 <X size={32} />
               </button>
@@ -286,7 +286,7 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
               {chordCategories.map((category, catIdx) => (
                 <div key={catIdx} className="space-y-8">
                   <div className="flex items-center gap-4">
-                    <h4 className="text-[11px] font-black text-blue-500 uppercase tracking-[0.6em] whitespace-nowrap">{category.label}</h4>
+                    <h4 className="text-[11px] font-black text-[#0081FF] uppercase tracking-[0.6em] whitespace-nowrap">{category.label}</h4>
                     <div className="h-[1px] flex-grow bg-white/5"></div>
                   </div>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
@@ -295,7 +295,7 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
                         key={type.symbol}
                         onClick={() => { setSelectedType(type.symbol); setIsModalOpen(false); if (isEditing) setIsEditing(false); }}
                         className={`px-6 py-6 rounded-[2rem] font-black text-sm transition-all border flex flex-col items-center gap-1 ${selectedType === type.symbol
-                          ? 'bg-blue-600 border-blue-400 text-white shadow-xl shadow-blue-500/30 scale-105'
+                          ? 'bg-blue-600 border-blue-400 text-white shadow-xl shadow-[#0081FF]/30 scale-105'
                           : 'bg-white/5 border-white/5 text-slate-400 hover:bg-white/10'
                           }`}
                       >

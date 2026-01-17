@@ -298,9 +298,9 @@ const AppContent = () => {
       {/* Visitor Warning Toast */}
       {showVisitorWarning && (
         <div className="absolute top-6 left-1/2 -translate-x-1/2 z-50 animate-in slide-in-from-top-4 fade-in duration-300 w-[90%] max-w-sm pointer-events-none">
-          <div className="bg-[#151A23]/90 backdrop-blur-md border border-yellow-500/20 rounded-xl p-4 shadow-2xl flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center shrink-0">
-              <span className="material-symbols-rounded text-yellow-500">timer</span>
+          <div className="bg-[#151A23]/90 backdrop-blur-md border border-[#6F4CE7]/20 rounded-xl p-4 shadow-2xl flex items-center gap-4">
+            <div className="w-10 h-10 rounded-full bg-[#6F4CE7]/20 flex items-center justify-center shrink-0">
+              <span className="material-symbols-rounded text-[#6F4CE7]">timer</span>
             </div>
             <div>
               <h4 className="font-bold text-white text-sm">Faltam 2 minutos</h4>

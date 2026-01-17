@@ -181,13 +181,13 @@ const ChordChart: React.FC<ChordChartProps> = ({
         <button
           onClick={() => setIsPopUpOpen(true)}
           disabled={isInteractive}
-          className={`group flex items-center gap-4 bg-black/40 px-8 py-4 rounded-2xl border border-blue-500/20 hover:border-blue-500/50 transition-all active:scale-95 shadow-xl backdrop-blur-md ${isInteractive ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`group flex items-center gap-4 bg-black/40 px-8 py-4 rounded-2xl border border-[#0081FF]/20 hover:border-[#0081FF]/50 transition-all active:scale-95 shadow-xl backdrop-blur-md ${isInteractive ? 'opacity-50 cursor-not-allowed' : ''}`}
         >
-          <Layers size={18} className="text-blue-500" />
+          <Layers size={18} className="text-[#0081FF]" />
           <div className="flex flex-col items-start">
             <span className="text-[8px] font-black uppercase tracking-[0.3em] text-slate-500">Exibição</span>
             <span className="text-lg font-black text-white tracking-tighter uppercase">
-              MODO: <span className="text-blue-500">{getModeTitle(displayMode)}</span>
+              MODO: <span className="text-[#0081FF]">{getModeTitle(displayMode)}</span>
             </span>
           </div>
         </button>
@@ -206,7 +206,7 @@ const ChordChart: React.FC<ChordChartProps> = ({
         <div className="relative mt-12 sm:mt-16 w-[170px] sm:w-[220px]">
           {/* Fret Indicators (Casa) - Absolutely positioned on the left to not affect centering */}
           <div className="absolute -left-10 sm:-left-16 top-0 bottom-0 flex flex-col pt-3 w-10 sm:w-14 items-end pointer-events-none">
-            <span className="text-blue-500 font-black text-lg sm:text-2xl leading-none">
+            <span className="text-[#0081FF] font-black text-lg sm:text-2xl leading-none">
               {startFret === 1 ? '' : `${startFret}ª`}
             </span>
             <span className="text-[7px] sm:text-[9px] font-black text-slate-600 uppercase tracking-tighter text-right">
@@ -233,11 +233,11 @@ const ChordChart: React.FC<ChordChartProps> = ({
                       onClick={() => isInteractive && onToggleNote && onToggleNote(sIdx, isMuted ? 0 : -1)}
                     >
                       {isMuted ? (
-                        <X size={12} className="text-red-500/60" />
+                        <X size={12} className="text-[#FF00BC]/60" />
                       ) : isOpen ? (
-                        <div className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 flex items-center justify-center shadow-lg ${(getMarkerLabel(sIdx, 0, displayMode) === 'T') ? 'border-orange-500 bg-[#0d1017]' : 'border-green-500 bg-[#0d1017]'
+                        <div className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full border-2 flex items-center justify-center shadow-lg ${(getMarkerLabel(sIdx, 0, displayMode) === 'T') ? 'border-orange-500 bg-[#0d1017]' : 'border-[#0081FF] bg-[#0d1017]'
                           }`}>
-                          <span className={`text-[7px] sm:text-[9px] font-black ${(getMarkerLabel(sIdx, 0, displayMode) === 'T') ? 'text-orange-500' : 'text-green-500'
+                          <span className={`text-[7px] sm:text-[9px] font-black ${(getMarkerLabel(sIdx, 0, displayMode) === 'T') ? 'text-orange-500' : 'text-[#0081FF]'
                             }`}>
                             {getMarkerLabel(sIdx, 0, displayMode)}
                           </span>
@@ -272,7 +272,7 @@ const ChordChart: React.FC<ChordChartProps> = ({
                   >
                     {isInteractive && (
                       <div
-                        className="absolute inset-y-0 -left-4 w-8 hover:bg-blue-500/10 active:bg-blue-500/20 transition-colors z-0"
+                        className="absolute inset-y-0 -left-4 w-8 hover:bg-[#0081FF]/10 active:bg-[#0081FF]/20 transition-colors z-0"
                         onClick={(e) => {
                           if (onToggleNote) {
                             const rect = e.currentTarget.getBoundingClientRect();
@@ -311,7 +311,7 @@ const ChordChart: React.FC<ChordChartProps> = ({
           <div className="relative w-full max-w-md bg-[#12141c] border border-white/10 rounded-[3rem] shadow-[0_50px_100px_rgba(0,0,0,0.8)] overflow-hidden animate-in zoom-in-95 duration-300">
             <div className="p-8 border-b border-white/5 flex items-center justify-between">
               <div>
-                <h3 className="text-2xl font-black text-white tracking-tighter uppercase">Escolha o <span className="text-blue-500">Modo</span></h3>
+                <h3 className="text-2xl font-black text-white tracking-tighter uppercase">Escolha o <span className="text-[#0081FF]">Modo</span></h3>
                 <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mt-1">Dicionário CAGED</p>
               </div>
               <button onClick={() => setIsPopUpOpen(false)} className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center text-slate-400 hover:text-white transition-colors">
@@ -324,7 +324,7 @@ const ChordChart: React.FC<ChordChartProps> = ({
                   key={m}
                   onClick={() => { onModeChange(m); setIsPopUpOpen(false); }}
                   className={`w-full p-6 rounded-[2rem] flex items-center justify-between transition-all active:scale-95 border ${displayMode === m
-                    ? 'bg-blue-600 border-blue-400 text-white shadow-xl shadow-blue-500/30'
+                    ? 'bg-blue-600 border-blue-400 text-white shadow-xl shadow-[#0081FF]/30'
                     : 'bg-white/5 border-white/5 text-slate-400 hover:bg-white/10'
                     }`}
                 >

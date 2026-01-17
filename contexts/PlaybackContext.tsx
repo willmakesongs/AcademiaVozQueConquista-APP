@@ -14,9 +14,10 @@ interface PlaybackContextType {
     isLoading: boolean;
     currentTime: number;
     duration: number;
-    seek: (time: number) => void;
     setPitch: (pitch: number) => void;
+    setPlaybackSpeed: (speed: number) => void;
     pitch: number;
+    playbackSpeed: number;
     activeUrl: string | null;
     isOfflineMode: boolean;
     setOfflineMode: (enabled: boolean) => void;
@@ -38,6 +39,7 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const [isOfflineMode, setIsOfflineMode] = useState(() => localStorage.getItem('offline_mode') === 'true');
     const [downloadProgress, setDownloadProgress] = useState(0);
     const [pitch, setPitchState] = useState(0);
+    const [playbackSpeed, setPlaybackSpeedState] = useState(1);
 
     // Refs
     const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -190,15 +192,20 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
                 // but usually users want time-stretching.
                 // The PREVIOUS implementation used Tone.js playbackRate which changes BOTH pitch and speed (Speed up = chipmunk).
                 // To replicate that:
-                audio.playbackRate = Math.pow(2, p / 12);
-                // "preservesPitch" is true by default on some browsers, false on others.
-                // If we want "Chipmunk effect" (Classic sampler behavior), we must set preservesPitch = false.
                 if (audio.preservesPitch !== undefined) {
-                    audio.preservesPitch = false;
+                    audio.preservesPitch = true; // Default to time-stretching
                 } else if ('mozPreservesPitch' in audio) {
-                    (audio as any).mozPreservesPitch = false;
+                    (audio as any).mozPreservesPitch = true;
                 } else if ('webkitPreservesPitch' in audio) {
-                    (audio as any).webkitPreservesPitch = false;
+                    (audio as any).webkitPreservesPitch = true;
+                }
+
+                // Apply initial playbackRate based on speed and pitch
+                audio.playbackRate = playbackSpeed * Math.pow(2, p / 12);
+
+                // If pitch is non-zero, disable preservesPitch to mimick chipmunk
+                if (p !== 0) {
+                    if (audio.preservesPitch !== undefined) audio.preservesPitch = false;
                 }
 
                 await audio.play();
@@ -268,9 +275,22 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setPitchState(p);
         const audio = audioRef.current;
         if (audio) {
-            audio.playbackRate = Math.pow(2, p / 12);
+            if (p !== 0) {
+                if (audio.preservesPitch !== undefined) audio.preservesPitch = false;
+            } else {
+                if (audio.preservesPitch !== undefined) audio.preservesPitch = true;
+            }
+            audio.playbackRate = playbackSpeed * Math.pow(2, p / 12);
         }
-    }, []);
+    }, [playbackSpeed]);
+
+    const setPlaybackSpeed = useCallback((s: number) => {
+        setPlaybackSpeedState(s);
+        const audio = audioRef.current;
+        if (audio) {
+            audio.playbackRate = s * Math.pow(2, pitch / 12);
+        }
+    }, [pitch]);
 
     const downloadAll = useCallback(async () => {
         setIsLoading(true);
@@ -326,7 +346,9 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             duration,
             seek,
             setPitch,
+            setPlaybackSpeed,
             pitch,
+            playbackSpeed,
             activeUrl,
             isOfflineMode,
             setOfflineMode,

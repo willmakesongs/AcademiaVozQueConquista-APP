@@ -127,7 +127,7 @@ const Navigation: React.FC<NavigationProps> = ({ onViewChange, currentView, metr
               </div>
               <button
                 onClick={onToggleMetronome}
-                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 ${metronomeState.isPlaying ? 'bg-red-500/10 text-red-500' : 'bg-[#007AFF] text-white'}`}
+                className={`px-4 py-2 rounded-xl text-xs font-bold transition-all active:scale-95 ${metronomeState.isPlaying ? 'bg-[#FF00BC]/10 text-[#FF00BC]' : 'bg-[#007AFF] text-white'}`}
               >
                 {metronomeState.isPlaying ? 'Pausar' : 'Ativar'}
               </button>

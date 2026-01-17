@@ -151,7 +151,7 @@ export const LoginScreen: React.FC = () => {
           <h1 className="text-3xl font-bold text-white tracking-tight mb-2 text-center">
             LORENA PIMENTEL
           </h1>
-          <p className="text-[#EE13CA] font-semibold tracking-wider text-[11px] uppercase">
+          <p className="text-[#FF00BC] font-semibold tracking-wider text-[11px] uppercase">
             Academia Voz Que Conquista
           </p>
         </div>
@@ -239,7 +239,7 @@ export const LoginScreen: React.FC = () => {
                 placeholder="Senha Mestre (Admin)"
                 value={adminCode}
                 onChange={(e) => setAdminCode(e.target.value)}
-                className="w-full h-14 bg-[#151A23] border border-red-500/30 rounded-2xl pl-12 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-purple-500 focus:bg-[#1A202C] transition-all"
+                className="w-full h-14 bg-[#151A23] border border-[#FF00BC]/30 rounded-2xl pl-12 pr-4 text-white placeholder-gray-600 focus:outline-none focus:border-purple-500 focus:bg-[#1A202C] transition-all"
                 required
               />
             </div>
@@ -288,8 +288,8 @@ export const LoginScreen: React.FC = () => {
 
           {/* Messages */}
           {error && (
-            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-200 text-xs flex gap-3 items-start animate-in zoom-in-95">
-              <span className="material-symbols-rounded text-red-500 text-sm mt-0.5">error</span>
+            <div className="p-4 rounded-xl bg-[#FF00BC]/10 border border-[#FF00BC]/20 text-red-200 text-xs flex gap-3 items-start animate-in zoom-in-95">
+              <span className="material-symbols-rounded text-[#FF00BC] text-sm mt-0.5">error</span>
               <div className="flex-1">
                 <p className="font-semibold">{error}</p>
 
@@ -297,7 +297,7 @@ export const LoginScreen: React.FC = () => {
                   <button
                     type="button"
                     onClick={switchToLogin}
-                    className="mt-3 px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-white rounded-lg w-full text-xs font-bold transition-colors flex items-center justify-center gap-2"
+                    className="mt-3 px-4 py-2 bg-[#FF00BC]/20 hover:bg-[#FF00BC]/30 text-white rounded-lg w-full text-xs font-bold transition-colors flex items-center justify-center gap-2"
                   >
                     <span className="material-symbols-rounded text-sm">login</span>
                     Fazer Login
@@ -305,7 +305,7 @@ export const LoginScreen: React.FC = () => {
                 )}
 
                 {showTroubleshoot && !emailExistsError && (
-                  <div className="mt-2 pt-2 border-t border-red-500/20">
+                  <div className="mt-2 pt-2 border-t border-[#FF00BC]/20">
                     <p className="text-[10px] text-red-400 mb-1 font-bold">DICA DE SUPORTE:</p>
                     <p className="text-[10px] opacity-80 mb-1">Verifique sua conexão ou se o bloqueador de anúncios não está impedindo o login.</p>
                   </div>
@@ -315,8 +315,8 @@ export const LoginScreen: React.FC = () => {
           )}
 
           {successMsg && (
-            <div className="p-4 rounded-xl bg-green-500/10 border border-green-500/20 text-green-200 text-xs flex gap-3 items-center animate-in zoom-in-95">
-              <span className="material-symbols-rounded text-green-500">check_circle</span>
+            <div className="p-4 rounded-xl bg-[#0081FF]/10 border border-[#0081FF]/20 text-green-200 text-xs flex gap-3 items-center animate-in zoom-in-95">
+              <span className="material-symbols-rounded text-[#0081FF]">check_circle</span>
               {successMsg}
             </div>
           )}

@@ -147,7 +147,7 @@ export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
                 <div className="px-6 pt-12 pb-4 flex justify-between items-center border-b border-white/5 bg-[#151A23] shrink-0">
                     <button
                         onClick={() => signOut()}
-                        className="text-red-500 font-bold text-xs uppercase tracking-wider hover:text-red-400 transition-colors"
+                        className="text-[#FF00BC] font-bold text-xs uppercase tracking-wider hover:text-red-400 transition-colors"
                     >
                         Sair
                     </button>

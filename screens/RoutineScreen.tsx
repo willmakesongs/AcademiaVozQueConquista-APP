@@ -296,7 +296,7 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
                                 e.stopPropagation();
                                 handleDeleteRequest(task);
                               }}
-                              className="w-full text-left px-4 py-3 text-xs font-bold text-red-400 hover:bg-red-500/10 flex items-center gap-2"
+                              className="w-full text-left px-4 py-3 text-xs font-bold text-red-400 hover:bg-[#FF00BC]/10 flex items-center gap-2"
                             >
                               <span className="material-symbols-rounded text-sm">delete</span>
                               Excluir
@@ -435,8 +435,8 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
       {taskToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="w-full max-w-sm bg-[#1A202C] rounded-2xl border border-white/10 shadow-2xl p-6 animate-in zoom-in-95 duration-200 text-center">
-            <div className="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">
-              <span className="material-symbols-rounded text-3xl text-red-500">delete</span>
+            <div className="w-16 h-16 bg-[#FF00BC]/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-[#FF00BC]/20">
+              <span className="material-symbols-rounded text-3xl text-[#FF00BC]">delete</span>
             </div>
             <h3 className="text-lg font-bold text-white mb-2">Excluir Tarefa?</h3>
             <p className="text-sm text-gray-400 mb-6">
@@ -451,7 +451,7 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
               </button>
               <button
                 onClick={confirmDelete}
-                className="flex-1 py-3 rounded-xl bg-red-500 text-white font-bold hover:bg-red-600 transition-colors shadow-lg shadow-red-900/20"
+                className="flex-1 py-3 rounded-xl bg-[#FF00BC] text-white font-bold hover:bg-[#FF00BC] transition-colors shadow-lg shadow-red-900/20"
               >
                 Sim, Excluir
               </button>
