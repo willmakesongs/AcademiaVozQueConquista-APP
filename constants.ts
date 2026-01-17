@@ -1,4 +1,4 @@
-import { Vocalize, User, StudentSummary, Appointment, Module, TwisterExercise } from './types';
+import { Vocalize, User, StudentSummary, Appointment, Module, TwisterExercise, Task } from './types';
 
 // CONFIGURAÇÃO GLOBAL: Desativar todos os players para manutenção/assinantes
 export const DISABLE_ALL_PLAYERS = false;
@@ -179,10 +179,1329 @@ export const MODULES: Module[] = [
         description: 'A base teórica indispensável: Respiração, Fonação, Ressonância e Postura.',
         icon: 'menu_book',
         topics: [
-            { id: '1.1_t', title: 'Respiração', description: 'O combustível da voz.' },
-            { id: '1.2_t', title: 'Fonação', description: 'A criação do som.' },
-            { id: '1.3_t', title: 'Ressonância', description: 'O amplificador natural.' },
-            { id: '1.4_t', title: 'Registros e Postura', description: 'Equilíbrio e sustentação.' },
+            {
+                id: '1.1_t',
+                title: 'Respiração',
+                description: 'O combustível da voz.',
+                content: `
+          <div class="space-y-6">
+            <div class="bg-gradient-to-br from-[#0081FF]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
+              <div class="w-16 h-16 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] mb-8">
+                <span class="material-symbols-rounded text-4xl">air</span>
+              </div>
+              <h3 class="text-3xl font-black text-white mb-6 tracking-tighter">O Pilar da Voz</h3>
+              <p class="text-gray-300 leading-relaxed text-lg">
+                A respiração é a <strong>espinha dorsal</strong> do canto. Ela pode definir o sucesso ou o fracasso de uma performance vocal, pois é o alicerce sobre o qual todos os outros elementos técnicos são construídos.
+              </p>
+            </div>
+            <div class="p-6 bg-white/5 rounded-3xl border border-white/5">
+                <p class="text-gray-400 italic text-center">
+                    "Compreender e dominar o poder de uma respiração eficiente é o primeiro passo para desbloquear todo o seu potencial vocal."
+                </p>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                    <span class="material-symbols-rounded">biotech</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">O Mecanismo Biológico</h3>
+            </div>
+            
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 relative overflow-hidden">
+                <p class="text-gray-300 leading-relaxed mb-6 text-lg">
+                    Enquanto você lê este texto, seu corpo realiza o ato de respirar de forma automática — um processo que repetimos cerca de <strong>22 mil vezes ao dia</strong>.
+                </p>
+                
+                <div class="bg-black/40 p-5 rounded-2xl border-l-4 border-[#6F4CE7] space-y-3">
+                    <p class="text-sm text-gray-400">
+                        Embora pareça simples, diversos grupos musculares precisam atuar em conjunto a cada ciclo respiratório.
+                    </p>
+                    <p class="text-white font-bold">
+                        Toda inspiração funcional começa pelo diafragma.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-gradient-to-r from-[#6F4CE7]/10 to-transparent p-6 rounded-3xl border border-white/5">
+                <p class="text-sm text-gray-300 italic">
+                    Este músculo em forma de cúpula, localizado abaixo dos pulmões, desempenha o papel central no canto.
+                </p>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC]">
+                    <span class="material-symbols-rounded">expand</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">A Inspiração e a Expansão</h3>
+            </div>
+
+            <div class="grid gap-4">
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5">
+                    <p class="text-gray-300 leading-relaxed mb-4">
+                        Ao inspirar, o <strong>diafragma se contrai, achata-se e desce</strong>. Os pulmões acompanham esse movimento, expandindo-se para baixo.
+                    </p>
+                    <p class="text-sm text-gray-400">
+                        Como resultado, a pressão interna diminui, criando um vácuo. Esse desequilíbrio gera uma entrada rápida de ar pelo nariz ou boca.
+                    </p>
+                </div>
+
+                <div class="bg-[#FF00BC]/10 border border-[#FF00BC]/20 p-6 rounded-3xl">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="material-symbols-rounded text-[#FF00BC]">lightbulb</span>
+                        <h4 class="font-bold text-[#FF00BC] uppercase tracking-widest text-xs">Nota Prática</h4>
+                    </div>
+                    <p class="text-sm text-pink-100/80 leading-relaxed">
+                        Você notará que o abdome se projeta para fora na inspiração. Isso ocorre devido ao deslocamento das vísceras pelo movimento descendente do diafragma, e <strong>não porque o ar "foi para a barriga"</strong>.
+                    </p>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-8">
+            <div class="text-center">
+                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                    <span class="material-symbols-rounded text-4xl">quiz</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Fixação I</h3>
+                <p class="text-gray-400 text-sm mt-2">Teste seus conhecimentos antes de seguir.</p>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-white font-bold text-lg text-center px-4">Qual estrutura é crucial para iniciar a inspiração de forma eficiente?</p>
+                
+                <div class="grid gap-3">
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10 active:scale-[0.98]" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">A</div>
+                        <span class="text-gray-300 font-medium">Peito</span>
+                    </button>
+                    
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10 active:scale-[0.98]" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">B</div>
+                        <span class="text-gray-300 font-medium">Costas</span>
+                    </button>
+
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10 active:scale-[0.98]" data-correct="true">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">C</div>
+                        <span class="text-gray-300 font-medium font-bold">Diafragma</span>
+                    </button>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
+                    <span class="material-symbols-rounded">speed</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">A Expiração Controlada</h3>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                <p class="text-gray-300 leading-relaxed text-lg">
+                    Com os pulmões cheios, você tem o <strong>combustível</strong> para o canto. Na expiração passiva, o diafragma relaxa e sobe, expulsando o ar.
+                </p>
+                <div class="h-px bg-white/5 w-full"></div>
+                <p class="text-white font-bold leading-relaxed">
+                    No canto, a chave é controlar o ritmo e a força dessa saída. É aqui que entram os músculos abdominais.
+                </p>
+                <p class="text-sm text-gray-400">
+                    Eles ajudam a regular o fluxo, agindo como um freio contra a subida repentina do diafragma, evitando que o ar escape de uma só vez.
+                </p>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                    <span class="material-symbols-rounded">fitness_center</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">O Conceito de Apoio</h3>
+            </div>
+
+            <div class="bg-gradient-to-br from-[#1A202C] to-black p-6 rounded-3xl border border-white/5 space-y-6">
+                <div class="space-y-2">
+                    <h4 class="text-[#6F4CE7] font-black uppercase tracking-widest text-[10px]">Resistência Sutil</h4>
+                    <p class="text-gray-300 leading-relaxed">
+                        Resistir às forças elásticas de retração do diafragma é um engajamento muscular sutil e natural. <strong>Não queremos uma contração rígida</strong> para uma emissão suave.
+                    </p>
+                </div>
+
+                <div class="p-5 bg-white/5 rounded-2xl border border-white/5">
+                    <h4 class="text-[#FF00BC] font-black uppercase tracking-widest text-[10px] mb-2">Compressão de Ar</h4>
+                    <p class="text-gray-300 leading-relaxed text-sm">
+                        Além de frear o diafragma, os músculos abdominais podem exercer pressão para criar compressão. Essa técnica é <strong>essencial para estilos intensos e potentes</strong>.
+                    </p>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-orange-500/20 flex items-center justify-center text-orange-500">
+                    <span class="material-symbols-rounded">compress</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Gerenciando o Ar Restante</h3>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 relative">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-orange-500 blur-[60px] opacity-10"></div>
+                <p class="text-gray-300 leading-relaxed text-lg mb-6">
+                    Quando você está prestes a ficar sem ar, a musculatura abdominal atua <strong>"espremendo" suavemente</strong> o volume residual para manter o fluxo constante.
+                </p>
+                
+                <div class="bg-black/40 p-5 rounded-2xl border-l-4 border-orange-500">
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Quanto menos ar resta, maior deve ser o engajamento muscular para garantir que a pressão necessária não caia, mantendo o <strong>volume e a estabilidade</strong> da nota.
+                    </p>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-8">
+            <div class="text-center">
+                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                    <span class="material-symbols-rounded text-4xl">quiz</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Fixação II</h3>
+                <p class="text-gray-400 text-sm mt-2">Segunda rodada de perguntas.</p>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-white font-bold text-lg text-center px-4">Quando você deve contrair deliberadamente a musculatura abdominal durante a expiração?</p>
+                
+                <div class="grid gap-3">
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10 active:scale-[0.98]" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">A</div>
+                        <span class="text-gray-300 font-medium">Quando busca uma liberação de ar mais gradual.</span>
+                    </button>
+                    
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10 active:scale-[0.98]" data-correct="true">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">B</div>
+                        <span class="text-gray-300 font-medium font-bold">Quando busca maior pressão de ar para intensidade.</span>
+                    </button>
+
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10 active:scale-[0.98]" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">C</div>
+                        <span class="text-gray-300 font-medium">Sempre.</span>
+                    </button>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-green-500/20 flex items-center justify-center text-green-500">
+                    <span class="material-symbols-rounded">balance</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">A Importância do Equilíbrio</h3>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                <p class="text-gray-300 leading-relaxed">
+                    É fundamental notar que, embora o abdome seja protagonista, os <strong>músculos das costelas (intercostais) e das costas</strong> também contribuem para a regulação do fluxo de ar.
+                </p>
+                
+                <div class="grid grid-cols-2 gap-3 mt-4">
+                    <div class="bg-black/40 p-4 rounded-2xl text-center border border-white/5">
+                        <span class="text-[10px] text-green-500 font-black uppercase tracking-widest block mb-1">Custo-Lateral</span>
+                        <p class="text-[11px] text-gray-400">Expansão das costelas.</p>
+                    </div>
+                    <div class="bg-black/40 p-4 rounded-2xl text-center border border-white/5">
+                        <span class="text-[10px] text-green-500 font-black uppercase tracking-widest block mb-1">Dorsal</span>
+                        <p class="text-[11px] text-gray-400">Suporte das costas.</p>
+                    </div>
+                </div>
+
+                <p class="text-sm text-gray-400 pt-4 leading-relaxed">
+                    Um bom apoio vocal significa utilizar todos esses músculos de forma equilibrada, garantindo volume, pressão e constância. 
+                </p>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-red-500/20 flex items-center justify-center text-red-500">
+                    <span class="material-symbols-rounded">warning</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter text-red-100">O Perigo da Falta de Apoio</h3>
+            </div>
+
+            <div class="bg-red-950/20 border border-red-500/20 p-6 rounded-3xl space-y-6">
+                <p class="text-red-100/80 leading-relaxed">
+                    A falta de apoio vocal leva a um erro comum: a <strong>sobrecarga da garganta</strong>. Sem o controle muscular do tronco, o cantor acaba utilizando a laringe para regular o ar.
+                </p>
+                
+                <div class="bg-black/60 p-5 rounded-2xl space-y-3 border border-red-500/10">
+                    <h4 class="text-red-500 font-bold text-xs uppercase tracking-widest">Consequências:</h4>
+                    <ul class="text-sm text-gray-300 space-y-2">
+                        <li class="flex gap-2">
+                            <span class="text-red-500">•</span> Timbre estrangulado.
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="text-red-500">•</span> Fadiga vocal rápida.
+                        </li>
+                        <li class="flex gap-2">
+                            <span class="text-red-500">•</span> Risco de lesões nas pregas vocais.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-blue-500/20 flex items-center justify-center text-blue-500">
+                    <span class="material-symbols-rounded">psychology</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Prática vs. Performance</h3>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                <p class="text-gray-300 leading-relaxed">
+                    Por que não aprender a respirar diretamente enquanto cantamos músicas complexas? Porque controlar a técnica durante o canto é <strong>extremamente difícil</strong>.
+                </p>
+                <p class="text-sm text-gray-400">
+                    Sua mente estará focada na interpretação, letra e melodia. A abordagem eficaz é <strong>isolar o treinamento muscular</strong>.
+                </p>
+                
+                <div class="p-5 bg-blue-500/10 rounded-2xl border border-blue-500/20">
+                    <p class="text-sm text-blue-100/90 italic">
+                        Ao praticar exercícios específicos, você internaliza o movimento até que ele se torne uma resposta automática (Memória Muscular).
+                    </p>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="bg-brand-gradient p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden text-center">
+                <div class="absolute top-0 left-0 w-full h-full bg-[url('${MINIMALIST_LOGO_URL}')] opacity-5 bg-center bg-no-repeat bg-contain scale-150"></div>
+                <div class="relative z-10">
+                    <div class="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-white mx-auto mb-6">
+                        <span class="material-symbols-rounded text-4xl">emoji_events</span>
+                    </div>
+                    <h3 class="text-3xl font-black text-white mb-4 tracking-tighter">Conclusão do Módulo</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        Dominamos a técnica em exercícios isolados para que, no palco, o apoio aconteça de forma orgânica.
+                    </p>
+                    <div class="bg-black/20 p-4 rounded-2xl backdrop-blur-sm border border-white/10">
+                        <p class="text-xs text-white font-bold uppercase tracking-widest">
+                            Foque apenas na arte de comunicar através da música.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="w-full py-5 bg-[#1A202C] text-white font-black rounded-3xl border border-white/10 hover:bg-white/5 transition-all text-sm tracking-widest uppercase flex items-center justify-center gap-3" onclick="window.location.reload()">
+                <span class="material-symbols-rounded">check_circle</span>
+                Concluir Tópico
+            </button>
+          </div>
+        `
+            },
+            {
+                id: '1.2_t',
+                title: 'Fonação',
+                description: 'A criação do som.',
+                content: `
+          <div class="space-y-6">
+            <div class="bg-gradient-to-br from-[#6F4CE7]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+              <div class="w-16 h-16 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] mb-8">
+                <span class="material-symbols-rounded text-4xl">record_voice_over</span>
+              </div>
+              <h3 class="text-3xl font-black text-white mb-6 tracking-tighter">Introdução à Fonação</h3>
+              <p class="text-gray-300 leading-relaxed text-lg">
+                Agora que já conhecemos o funcionamento interno da respiração, podemos avançar para a criação do som através da <strong>fonação</strong>.
+              </p>
+            </div>
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5">
+                <p class="text-gray-300 leading-relaxed text-sm">
+                    De forma simples, fonação refere-se à produção de som pelas suas <strong>pregas vocais</strong>. Tal como uma vela precisa do vento para mover o barco, suas pregas precisam de um fluxo constante de ar para produzir som.
+                </p>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
+                    <span class="material-symbols-rounded">graphic_eq</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">O Mecanismo da Vibração</h3>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                <p class="text-gray-300 leading-relaxed">
+                    Imagine o seguinte: quando você expira, o ar dos pulmões passa rapidamente pelas pregas vocais. Se elas estiverem próximas, elas começam a <strong>vibrar</strong>.
+                </p>
+                
+                <div class="grid grid-cols-2 gap-4 mt-2">
+                    <div class="bg-black/40 p-4 rounded-2xl border border-white/5 text-center">
+                        <p class="text-[10px] text-white font-bold uppercase tracking-widest">Abdução</p>
+                        <p class="text-[9px] text-gray-500">Abertas: Para respirar</p>
+                    </div>
+                    <div class="bg-black/40 p-4 rounded-2xl border border-white/5 text-center">
+                        <p class="text-[10px] text-white font-bold uppercase tracking-widest">Adução</p>
+                        <p class="text-[9px] text-gray-500">Fechadas: Para som</p>
+                    </div>
+                </div>
+
+                <p class="text-xs text-gray-400 italic">
+                    Muito parecido com uma corda de violão oscilando, essa vibração produz ondas sonoras que viajam pelo seu trato vocal.
+                </p>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                    <span class="material-symbols-rounded">settings_accessibility</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Controle e Musculatura</h3>
+            </div>
+
+            <div class="bg-gradient-to-br from-[#1A202C] to-black p-6 rounded-3xl border border-white/5 space-y-4">
+                <p class="text-gray-300 leading-relaxed">
+                    Dentro da laringe, existem diversas cartilagens que sustentam as pregas vocais. Elas são controladas por músculos que afetam o <strong>fechamento, comprimento e tensão</strong>.
+                </p>
+                
+                <div class="bg-[#6F4CE7]/10 p-5 rounded-2xl border border-[#6F4CE7]/20">
+                    <p class="text-sm text-gray-300">
+                        As próprias pregas vocais contêm músculos que podem se contrair para ajustar sua rigidez, permitindo criar diferentes qualidades vocais e intensidades.
+                    </p>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-8">
+            <div class="text-center">
+                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                    <span class="material-symbols-rounded text-4xl">quiz</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Fixação I</h3>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-white font-bold text-lg text-center px-4">O que faz as pregas vocais vibrarem?</p>
+                
+                <div class="grid gap-3">
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">A</div>
+                        <span class="text-gray-300 font-medium">As próprias pregas vocais.</span>
+                    </button>
+                    
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="true">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">B</div>
+                        <span class="text-gray-300 font-medium font-bold">O ar proveniente da expiração.</span>
+                    </button>
+
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">C</div>
+                        <span class="text-gray-300 font-medium">O movimento da laringe.</span>
+                    </button>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC]">
+                    <span class="material-symbols-rounded">settings_input_component</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Clareza, Extensão e Ajustes</h3>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                <div class="space-y-2">
+                    <h4 class="text-[#FF00BC] font-black uppercase tracking-widest text-[10px]">A Afinação</h4>
+                    <p class="text-gray-300 leading-relaxed text-sm">
+                        Pregas <strong>curtas e grossas</strong> vibram mais devagar, produzindo sons <strong>graves</strong>. Pregas <strong>longas e finas</strong> vibram mais rápido, produzindo sons <strong>agudos</strong>.
+                    </p>
+                </div>
+
+                <div class="p-4 bg-black/40 rounded-2xl border border-white/5">
+                    <h4 class="text-[#0081FF] font-black uppercase tracking-widest text-[10px] mb-2">A Clareza</h4>
+                    <p class="text-[11px] text-gray-400 leading-relaxed">
+                        Se aproximadas sem fechar totalmente, o tom fica <strong>soproso</strong>. O fechamento total impede o som. A claridade vem do equilíbrio ideal.
+                    </p>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-orange-500/20 flex items-center justify-center text-orange-500">
+                    <span class="material-symbols-rounded">visibility</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">A Laringe na Prática</h3>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-6">
+                <div class="space-y-3">
+                    <p class="text-gray-300 leading-relaxed">
+                        Experimente bocejar enquanto coloca o dedo na garganta. Você sentirá sua laringe <strong>descer drasticamente</strong>.
+                    </p>
+                    <div class="bg-orange-500/10 p-4 rounded-xl border border-orange-500/20 text-xs text-orange-200">
+                        <strong>Laringe Baixada:</strong> Alonga as pregas vocais e escurece o timbre.
+                    </div>
+                    <div class="bg-blue-500/10 p-4 rounded-xl border border-blue-500/20 text-xs text-blue-200">
+                        <strong>Laringe Elevada:</strong> Encurta as pregas e torna o som mais brilhante (ou metálico).
+                    </div>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-8">
+            <div class="text-center">
+                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                    <span class="material-symbols-rounded text-4xl">quiz</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Fixação II</h3>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-white font-bold text-lg text-center px-4">Qual configuração das pregas vocais leva a um tom soproso?</p>
+                
+                <div class="grid gap-3">
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">A</div>
+                        <span class="text-gray-300 font-medium">Fechamento firme (tenso).</span>
+                    </button>
+                    
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="true">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">B</div>
+                        <span class="text-gray-300 font-medium font-bold">Fechamento frouxo.</span>
+                    </button>
+
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">C</div>
+                        <span class="text-gray-300 font-medium">Abertas.</span>
+                    </button>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="bg-brand-gradient p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden text-center">
+                <div class="relative z-10">
+                    <div class="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-white mx-auto mb-6">
+                        <span class="material-symbols-rounded text-4xl">emoji_events</span>
+                    </div>
+                    <h3 class="text-3xl font-black text-white mb-4 tracking-tighter">Conclusão e Treinamento</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        Com a prática, você internaliza esses ajustes através dos <strong>vocalizes</strong>, construindo memória muscular duradoura.
+                    </p>
+                    <div class="bg-black/20 p-4 rounded-2xl backdrop-blur-sm border border-white/10">
+                        <p class="text-xs text-white font-bold uppercase tracking-widest">
+                            Encontre seu timbre ideal sem esforço.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="w-full py-5 bg-[#1A202C] text-white font-black rounded-3xl border border-white/10 hover:bg-white/5 transition-all text-sm tracking-widest uppercase flex items-center justify-center gap-3" onclick="window.location.reload()">
+                <span class="material-symbols-rounded">check_circle</span>
+                Concluir Tópico
+            </button>
+          </div>
+        `
+            },
+            {
+                id: '1.3_t',
+                title: 'Ressonância',
+                description: 'O amplificador natural.',
+                content: `
+          <div class="space-y-6">
+            <div class="bg-gradient-to-br from-[#10B981]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-[#10B981] blur-[80px] opacity-20"></div>
+              <div class="w-16 h-16 rounded-2xl bg-[#10B981]/20 flex items-center justify-center text-[#10B981] mb-8">
+                <span class="material-symbols-rounded text-4xl">campaign</span>
+              </div>
+              <h3 class="text-3xl font-black text-white mb-6 tracking-tighter">O Que é Ressonância?</h3>
+              <p class="text-gray-300 leading-relaxed text-lg">
+                Se você pudesse retirar suas pregas vocais e tentar cantar, ouviria apenas um zumbido fraco. A mágica que transforma esse zumbido em um tom pleno é a <strong>ressonância</strong>.
+              </p>
+            </div>
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                <p class="text-gray-300 leading-relaxed text-sm">
+                    Quando a onda sonora coincide com a <strong>frequência natural</strong> de uma cavidade, o ar ali dentro vibra intensamente, amplificando o som significativamente.
+                </p>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
+                    <span class="material-symbols-rounded">humidity_mid</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">O Exemplo do Balanço</h3>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 relative overflow-hidden">
+                <p class="text-gray-300 leading-relaxed text-lg mb-6">
+                    Pense nisso como o ato de empurrar um balanço.
+                </p>
+                <div class="bg-black/40 p-5 rounded-2xl border-l-4 border-[#0081FF]">
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Se você empurrar o balanço no <strong>ritmo perfeito</strong> — o ritmo em que ele já balança naturalmente — o balanço irá muito mais alto com muito menos esforço.
+                    </p>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-8">
+            <div class="text-center">
+                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                    <span class="material-symbols-rounded text-4xl">quiz</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Fixação I</h3>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-white font-bold text-lg text-center px-4">O que acontece se uma onda sonora coincide com a frequência natural do ressonador?</p>
+                
+                <div class="grid gap-3">
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">A</div>
+                        <span class="text-gray-300 font-medium">Ela é atenuada.</span>
+                    </button>
+                    
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="true">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">B</div>
+                        <span class="text-gray-300 font-medium font-bold">Ela é amplificada.</span>
+                    </button>
+
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">C</div>
+                        <span class="text-gray-300 font-medium">Ela permanece igual.</span>
+                    </button>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC]">
+                    <span class="material-symbols-rounded">music_note</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Timbre e Identidade Vocal</h3>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                <p class="text-gray-300 leading-relaxed">
+                    Por que um piano soa diferente de um violão tocando a mesma nota? Essa diferença é o <strong>timbre</strong>.
+                </p>
+                <p class="text-sm text-gray-400">
+                    O tamanho e a forma do seu trato vocal determinam quais <strong>harmônicos</strong> serão amplificados, criando sua assinatura sonora única.
+                </p>
+                <div class="p-4 bg-[#FF00BC]/10 rounded-2xl border border-[#FF00BC]/20">
+                    <p class="text-xs text-pink-100/90 italic text-center">
+                        Nenhum som no mundo real consiste em apenas uma única frequência; ele é uma mistura rica de múltiplas ondas.
+                    </p>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#10B981]/20 flex items-center justify-center text-[#10B981]">
+                    <span class="material-symbols-rounded">auto_awesome</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Benefícios da Ressonância</h3>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4">
+                <div class="bg-[#1A202C] p-5 rounded-3xl border border-white/5 flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-[#10B981]/10 flex items-center justify-center text-[#10B981] flex-shrink-0">
+                        <span class="material-symbols-rounded">bolt</span>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold text-sm">Projeção sem Esforço</h4>
+                        <p class="text-xs text-gray-400">Torna a voz potente sem aumentar o desgaste das pregas vocais.</p>
+                    </div>
+                </div>
+                <div class="bg-[#1A202C] p-5 rounded-3xl border border-white/5 flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-[#6F4CE7]/10 flex items-center justify-center text-[#6F4CE7] flex-shrink-0">
+                        <span class="material-symbols-rounded">palette</span>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold text-sm">Riqueza Tonal</h4>
+                        <p class="text-xs text-gray-400">Proporciona à voz um tom mais agradável, encorpado e rico.</p>
+                    </div>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-8">
+            <div class="text-center">
+                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                    <span class="material-symbols-rounded text-4xl">quiz</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Fixação II</h3>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-white font-bold text-lg text-center px-4">Como a ressonância influencia sua voz?</p>
+                
+                <div class="grid gap-3">
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="true">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">A</div>
+                        <span class="text-gray-300 font-medium font-bold">Amplifica harmônicos agradáveis.</span>
+                    </button>
+                    
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">B</div>
+                        <span class="text-gray-300 font-medium">Adiciona "drive" ou rugosidade à voz.</span>
+                    </button>
+
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">C</div>
+                        <span class="text-gray-300 font-medium">Faz a voz soar soprosa.</span>
+                    </button>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-orange-500/20 flex items-center justify-center text-orange-500">
+                    <span class="material-symbols-rounded">tune</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Ajustando o Trato Vocal</h3>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                <p class="text-gray-300 leading-relaxed">
+                    Diferente de outros instrumentos, os ressonadores da sua voz sugerem ajustes <strong>dinâmicos</strong>. 
+                </p>
+                <div class="bg-black/40 p-5 rounded-2xl border border-white/5">
+                    <h4 class="text-orange-500 font-bold text-xs uppercase tracking-widest mb-2">Garganta Aberta</h4>
+                    <p class="text-xs text-gray-400 leading-relaxed">
+                        Ter uma garganta alargada (espaço faríngeo) é crucial. A <strong>tensão</strong> é a maior barreira, pois estreita o canal e mata a ressonância.
+                    </p>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-8">
+            <div class="text-center">
+                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                    <span class="material-symbols-rounded text-4xl">quiz</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Fixação III</h3>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-white font-bold text-lg text-center px-4">Qual fator é o mais importante para melhorar a ressonância no canto?</p>
+                
+                <div class="grid gap-3">
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="true">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">A</div>
+                        <span class="text-gray-300 font-medium font-bold">Uma garganta aberta e alargada.</span>
+                    </button>
+                    
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">B</div>
+                        <span class="text-gray-300 font-medium">Uma língua relaxada.</span>
+                    </button>
+
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">C</div>
+                        <span class="text-gray-300 font-medium">Lábios arredondados.</span>
+                    </button>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                    <span class="material-symbols-rounded">keyboard_double_arrow_up</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">O Palato Mole</h3>
+            </div>
+
+            <div class="bg-gradient-to-br from-[#1A202C] to-black p-6 rounded-3xl border border-white/5 space-y-4">
+                <p class="text-gray-300 leading-relaxed text-sm">
+                    O próximo passo é a elevação do <strong>palato mole</strong> (o "céu da boca" posterior). Elevá-lo cria um espaço extra precioso para o som reverberar.
+                </p>
+                <div class="p-5 bg-[#6F4CE7]/10 rounded-2xl border border-[#6F4CE7]/20">
+                    <h4 class="text-[#6F4CE7] font-bold text-xs uppercase tracking-widest mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-sm">lightbulb</span> Dica Prática
+                    </h4>
+                    <p class="text-xs text-blue-100/80 italic">
+                        Imagine o frescor de uma bala de hortelã ao inspirar. Essa abertura que você sente é seu palato mole se elevando.
+                    </p>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="bg-brand-gradient p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden text-center">
+                <div class="relative z-10">
+                    <div class="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-white mx-auto mb-6">
+                        <span class="material-symbols-rounded text-4xl">emoji_events</span>
+                    </div>
+                    <h3 class="text-3xl font-black text-white mb-4 tracking-tighter">Exercícios de Controle</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        Use o <strong>"sorriso interno"</strong> e um espelho para observar o movimento do palato mole até dominá-lo conscientemente.
+                    </p>
+                    <div class="bg-black/20 p-4 rounded-2xl backdrop-blur-sm border border-white/10">
+                        <p class="text-xs text-white font-bold uppercase tracking-widest">
+                            Transforme seu zumbido em uma voz poderosa.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="w-full py-5 bg-[#1A202C] text-white font-black rounded-3xl border border-white/10 hover:bg-white/5 transition-all text-sm tracking-widest uppercase flex items-center justify-center gap-3" onclick="window.location.reload()">
+                <span class="material-symbols-rounded">check_circle</span>
+                Concluir Tópico
+            </button>
+          </div>
+        `
+            },
+            {
+                id: '1.4_t',
+                title: 'Registros Vocais',
+                description: 'Grave, Médio e Agudo.',
+                content: `
+          <div class="space-y-6">
+            <div class="bg-gradient-to-br from-[#6F4CE7]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+              <div class="w-16 h-16 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] mb-8">
+                <span class="material-symbols-rounded text-4xl">layers</span>
+              </div>
+              <h3 class="text-3xl font-black text-white mb-6 tracking-tighter">Desmistificando a Ressonância</h3>
+              <p class="text-gray-300 leading-relaxed text-lg">
+                Vamos esclarecer um erro comum: a voz de peito não ressoa no peito, nem a de cabeça na cabeça. Essas são apenas <strong>sensações vibratórias</strong>.
+              </p>
+            </div>
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5">
+                <p class="text-gray-300 leading-relaxed text-sm">
+                    A verdadeira estrela são as <strong>pregas vocais</strong>. Registros referem-se a mecanismos distintos de produção sonora realizados diretamente por elas.
+                </p>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-8">
+            <div class="text-center">
+                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                    <span class="material-symbols-rounded text-4xl">quiz</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Origem</h3>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-white font-bold text-lg text-center px-4">De onde se origina o som da voz de peito?</p>
+                
+                <div class="grid gap-3">
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">A</div>
+                        <span class="text-gray-300 font-medium">Peito</span>
+                    </button>
+                    
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">B</div>
+                        <span class="text-gray-300 font-medium">Cabeça</span>
+                    </button>
+
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="true">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">C</div>
+                        <span class="text-gray-300 font-medium font-bold">Pregas Vocais</span>
+                    </button>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
+                    <span class="material-symbols-rounded">search</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Como encontrar os registros</h3>
+            </div>
+
+            <div class="grid gap-4">
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5">
+                    <h4 class="text-[#0081FF] font-black uppercase tracking-widest text-[10px] mb-2">Voz de Peito</h4>
+                    <p class="text-gray-300 leading-relaxed text-sm">
+                        Grite um <strong>"Ei!"</strong> bem alto, como se chamasse alguém distante. Sinta a firmeza do som.
+                    </p>
+                </div>
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5">
+                    <h4 class="text-[#FF00BC] font-black uppercase tracking-widest text-[10px] mb-2">Voz de Cabeça</h4>
+                    <p class="text-gray-300 leading-relaxed text-sm">
+                        Imite um <strong>"Uhu!"</strong> agudo, como em uma montanha-russa. Note a leveza.
+                    </p>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                    <span class="material-symbols-rounded">biotech</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">A Fisiologia dos Registros</h3>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-6">
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold text-white border-l-2 border-[#6F4CE7] pl-3 uppercase">Peito (Vibrando com Massa)</h4>
+                    <p class="text-xs text-gray-400">Pregas espessas, contato firme e longo. Fechamento mais forte na base.</p>
+                </div>
+                <div class="h-px bg-white/5"></div>
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold text-white border-l-2 border-[#FF00BC] pl-3 uppercase">Cabeça (Vibrando com Menos Massa)</h4>
+                    <p class="text-xs text-gray-400">Pregas finas, contato suave e curto. Fechamento mais forte no topo.</p>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#10B981]/20 flex items-center justify-center text-[#10B981]">
+                    <span class="material-symbols-rounded">straighten</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Registros e Extensão</h3>
+            </div>
+
+            <div class="bg-gradient-to-br from-[#1A202C] to-black p-6 rounded-3xl border border-white/5">
+                <p class="text-gray-300 leading-relaxed text-lg text-center font-medium">
+                    Os registros <strong>não são exclusivos</strong> para certas notas.
+                </p>
+                <p class="text-sm text-gray-500 mt-4 text-center leading-relaxed">
+                    Muitas notas podem ser cantadas em ambos, mas certas frequências são naturalmente mais fáceis em um registro específico.
+                </p>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-8">
+            <div class="text-center">
+                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                    <span class="material-symbols-rounded text-4xl">quiz</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Adequação</h3>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-white font-bold text-lg text-center px-4">Qual registro é mais adequado para notas graves?</p>
+                
+                <div class="grid gap-3">
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="true">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">A</div>
+                        <span class="text-gray-300 font-medium font-bold">Peito</span>
+                    </button>
+                    
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">B</div>
+                        <span class="text-gray-300 font-medium">Cabeça</span>
+                    </button>
+
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">C</div>
+                        <span class="text-gray-300 font-medium">Ambos são igualmente adequados</span>
+                    </button>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-red-500/20 flex items-center justify-center text-red-500">
+                    <span class="material-symbols-rounded">fitness_center</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">O Esforço nos Agudos</h3>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                <p class="text-gray-300 leading-relaxed">
+                    Cantar notas agudas com pregas grossas (como na voz de peito) exige um <strong>estiramento extremo</strong> e grande engajamento muscular.
+                </p>
+                <div class="p-4 bg-red-500/10 rounded-2xl border border-red-500/20">
+                    <p class="text-xs text-red-200 italic">
+                        Isso é rapidamente cansativo e pode gerar fadiga vocal severa. A voz de cabeça é naturalmente mais apropriada para o agudo.
+                    </p>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC]">
+                    <span class="material-symbols-rounded">call_split</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">O Passaggio (A Passagem)</h3>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5">
+                <p class="text-gray-300 leading-relaxed mb-4">
+                    Sabe aquela "quebra" ou pulo na voz ao trocar de registro? Chamamos isso de <strong>passaggio</strong>.
+                </p>
+                <div class="bg-black/40 p-4 rounded-xl border-l-4 border-[#FF00BC]">
+                    <p class="text-xs text-gray-400">
+                        Isso ocorre devido ao equilíbrio de <strong>pressão</strong> entre o que vem dos pulmões e a contrapressão acima da laringe.
+                    </p>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
+                    <span class="material-symbols-rounded">compress</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Pressão Glótica</h3>
+            </div>
+
+            <div class="grid grid-cols-1 gap-3">
+                <div class="bg-[#1A202C] p-4 rounded-2xl border border-white/5">
+                    <h4 class="text-[10px] text-blue-400 font-black uppercase mb-1">Subglótica (Abaixo)</h4>
+                    <p class="text-[11px] text-gray-300">Vem dos pulmões, controlada pelos músculos respiratórios.</p>
+                </div>
+                <div class="bg-[#1A202C] p-4 rounded-2xl border border-white/5">
+                    <h4 class="text-[10px] text-pink-400 font-black uppercase mb-1">Supraglótica (Acima)</h4>
+                    <p class="text-[11px] text-gray-300">Contrapressão formada pelo estreitamento da via aérea acima da laringe.</p>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-brand-gradient flex items-center justify-center text-white">
+                    <span class="material-symbols-rounded">gradient</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Voz Mista (Mix)</h3>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                <p class="text-gray-300 leading-relaxed">
+                    É o estado intermediário onde ajustamos sutilmente os músculos e a pressão para <strong>misturar suavemente</strong> os registros.
+                </p>
+                <p class="text-sm text-gray-500 italic">
+                    É a chave para cantar notas altas com a firmeza do peito e a facilidade da cabeça.
+                </p>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-8">
+            <div class="text-center">
+                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                    <span class="material-symbols-rounded text-4xl">quiz</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Ajuste</h3>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-white font-bold text-lg text-center px-4">O que devemos ajustar gradualmente para evitar que a voz quebre?</p>
+                
+                <div class="grid gap-3">
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">A</div>
+                        <span class="text-gray-300 font-medium">Volume de ar</span>
+                    </button>
+                    
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="true">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">B</div>
+                        <span class="text-gray-300 font-medium font-bold">Engajamento muscular e pressão</span>
+                    </button>
+
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">C</div>
+                        <span class="text-gray-300 font-medium">Articulação e ressonância</span>
+                    </button>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="bg-brand-gradient p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden text-center">
+                <div class="relative z-10">
+                    <div class="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-white mx-auto mb-6">
+                        <span class="material-symbols-rounded text-4xl">emoji_events</span>
+                    </div>
+                    <h3 class="text-3xl font-black text-white mb-4 tracking-tighter">Benefícios da Mista</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        A voz mista expande sua extensão e protege sua saúde vocal através de exercícios como o <strong>ETVSO</strong>.
+                    </p>
+                    <div class="bg-black/20 p-4 rounded-2xl backdrop-blur-sm border border-white/10">
+                        <p class="text-xs text-white font-bold uppercase tracking-widest">
+                            Estabilize sua voz e conquiste os agudos.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="w-full py-5 bg-[#1A202C] text-white font-black rounded-3xl border border-white/10 hover:bg-white/5 transition-all text-sm tracking-widest uppercase flex items-center justify-center gap-3" onclick="window.location.reload()">
+                <span class="material-symbols-rounded">check_circle</span>
+                Concluir Tópico
+            </button>
+          </div>
+        `
+            },
+            {
+                id: '1.5_t',
+                title: 'Postura',
+                description: 'A base física do canto.',
+                content: `
+          <div class="space-y-6">
+            <div class="bg-gradient-to-br from-amber-500/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500 blur-[80px] opacity-20"></div>
+              <div class="w-16 h-16 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-500 mb-8">
+                <span class="material-symbols-rounded text-4xl">accessibility_new</span>
+              </div>
+              <h3 class="text-3xl font-black text-white mb-6 tracking-tighter">A Base do Canto</h3>
+              <p class="text-gray-300 leading-relaxed text-lg">
+                A postura é o portal que prepara seu corpo para cantar. Ela garante que a <strong>respiração, fonação e ressonância</strong> funcionem em seu potencial máximo.
+              </p>
+            </div>
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5">
+                <p class="text-gray-300 leading-relaxed text-sm">
+                    Um desequilíbrio força o corpo a compensar a instabilidade, desviando músculos de sua função primária, como o <strong>suporte respiratório (apoio)</strong>.
+                </p>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
+                    <span class="material-symbols-rounded">vertical_align_center</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Alinhamento e Capacidade</h3>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                <p class="text-gray-300 leading-relaxed">
+                    O bom alinhamento ocorre quando a <strong>cabeça, o pescoço e a coluna</strong> estão em uma linha reta.
+                </p>
+                <div class="bg-black/40 p-4 rounded-2xl border-l-4 border-[#0081FF]">
+                    <p class="text-xs text-gray-400">
+                        Com alinhamento pobre, a caixa torácica fica restrita, impedindo a expansão total dos pulmões e a descida do diafragma.
+                    </p>
+                </div>
+                <div class="p-4 bg-blue-500/10 rounded-2xl border border-blue-500/20">
+                    <h4 class="text-blue-400 font-bold text-[10px] uppercase mb-1">Teste Prático</h4>
+                    <p class="text-[11px] text-gray-300">Curve-se até o peito tocar as pernas e tente inspirar. Compare com a posição ereta. A diferença é nítida!</p>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-amber-500/20 flex items-center justify-center text-amber-500">
+                    <span class="material-symbols-rounded">foundation</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">A Base: Pés e Quadril</h3>
+            </div>
+
+            <div class="grid grid-cols-1 gap-3">
+                <div class="bg-[#1A202C] p-5 rounded-3xl border border-white/5 flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-500 flex-shrink-0 text-sm font-bold">Pés</div>
+                    <p class="text-xs text-gray-400">Alinhados à largura dos ombros. Peso levemente para a frente.</p>
+                </div>
+                <div class="bg-[#1A202C] p-5 rounded-3xl border border-white/5 flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500 flex-shrink-0 text-sm font-bold">Joelhos</div>
+                    <p class="text-xs text-gray-400">Levemente relaxados (destravados) para não desalinharem a coluna.</p>
+                </div>
+                <div class="bg-[#1A202C] p-5 rounded-3xl border border-white/5 flex items-center gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-yellow-500/10 flex items-center justify-center text-yellow-500 flex-shrink-0 text-sm font-bold">Quadril</div>
+                    <p class="text-xs text-gray-400">Alinhado aos joelhos, sem inclinações excessivas.</p>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                    <span class="material-symbols-rounded">person_pin</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Tronco e Ombros</h3>
+            </div>
+
+            <div class="bg-gradient-to-br from-[#1A202C] to-black p-6 rounded-3xl border border-white/5 space-y-4">
+                <div class="space-y-2">
+                    <h4 class="text-[#6F4CE7] font-black uppercase tracking-widest text-[10px]">Peito Elevado</h4>
+                    <p class="text-gray-300 leading-relaxed text-sm">
+                        Eleve suavemente o peito para cima e levemente para frente para respeitar a curvatura natural da coluna.
+                    </p>
+                </div>
+                <div class="p-5 bg-white/5 rounded-2xl border border-white/5">
+                    <h4 class="text-[#FF00BC] font-black uppercase tracking-widest text-[10px] mb-2">Check de Ombros</h4>
+                    <p class="text-gray-300 leading-relaxed text-xs">
+                        Devem estar relaxados e alinhados com as orelhas. Uma linha vertical do lóbulo deve passar pelo centro do ombro.
+                    </p>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-red-500/20 flex items-center justify-center text-red-500">
+                    <span class="material-symbols-rounded">eject</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter text-red-100">O Erro da Cabeça Erguida</h3>
+            </div>
+
+            <div class="bg-red-950/20 border border-red-500/20 p-6 rounded-3xl space-y-4">
+                <p class="text-red-100/80 leading-relaxed text-sm">
+                    Muitos cantores inclinam a cabeça para cima nos agudos. Isso <strong>não ajuda</strong> a técnica; apenas cria tensão no pescoço e na laringe.
+                </p>
+                <div class="bg-black/60 p-4 rounded-xl border border-red-500/10">
+                    <p class="text-[10px] text-gray-400 leading-relaxed">
+                        A técnica correta para o agudo não exige essa inclinação. Mantenha o olhar no horizonte para evitar fadiga.
+                    </p>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-8">
+            <div class="text-center">
+                <div class="w-20 h-20 rounded-full bg-yellow-500/10 flex items-center justify-center text-yellow-500 mx-auto mb-4 border border-yellow-500/20">
+                    <span class="material-symbols-rounded text-4xl">quiz</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Quiz de Fixação</h3>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-white font-bold text-lg text-center px-4">Qual parte do corpo deve permanecer totalmente relaxada?</p>
+                
+                <div class="grid gap-3">
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="true">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">A</div>
+                        <span class="text-gray-300 font-medium font-bold">Ombros</span>
+                    </button>
+                    
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">B</div>
+                        <span class="text-gray-300 font-medium">Peito</span>
+                    </button>
+
+                    <button class="quiz-option w-full p-5 rounded-2xl border border-white/5 bg-white/5 flex items-center gap-4 transition-all hover:bg-white/10" data-correct="false">
+                        <div class="option-icon w-8 h-8 rounded-full border border-white/20 flex items-center justify-center text-gray-500">C</div>
+                        <span class="text-gray-300 font-medium">Costas</span>
+                    </button>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="bg-brand-gradient p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden text-center">
+                <div class="relative z-10">
+                    <div class="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-white mx-auto mb-6">
+                        <span class="material-symbols-rounded text-4xl">emoji_events</span>
+                    </div>
+                    <h3 class="text-3xl font-black text-white mb-4 tracking-tighter">Cantar Sentado vs. Em Pé</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        Cantar em pé é ideal para o apoio, mas se estiver sentado, mantenha as costas retas para evitar o arredondamento (cifose).
+                    </p>
+                    <div class="bg-black/20 p-4 rounded-2xl backdrop-blur-sm border border-white/10">
+                        <p class="text-xs text-white font-bold uppercase tracking-widest">
+                            Use o espelho para garantir o alinhamento ideal.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="w-full py-5 bg-[#1A202C] text-white font-black rounded-3xl border border-white/10 hover:bg-white/5 transition-all text-sm tracking-widest uppercase flex items-center justify-center gap-3" onclick="window.location.reload()">
+                <span class="material-symbols-rounded">check_circle</span>
+                Concluir Tópico
+            </button>
+          </div>
+        `
+            },
         ]
     },
     {
