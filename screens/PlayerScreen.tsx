@@ -514,7 +514,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
             <button
               onClick={togglePlay}
               disabled={isPlaybackLoading || (DISABLE_ALL_PLAYERS && !isAdmin)}
-              className="relative flex items-center justify-center w-48 h-48 mb-8 hover:scale-[1.02] active:scale-95 transition-transform group"
+              className="relative flex items-center justify-center w-60 h-60 mb-8 hover:scale-[1.02] active:scale-95 transition-transform group"
             >
               {/* Outer Glow */}
               <div
@@ -527,7 +527,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
 
               {/* Main Circle */}
               <div
-                className="relative z-10 w-32 h-32 rounded-full flex flex-col items-center justify-center transition-all duration-[100ms] border-4 border-white/10"
+                className="relative z-10 w-40 h-40 rounded-full flex flex-col items-center justify-center transition-all duration-[100ms] border-4 border-white/10"
                 style={{
                   background: preparationTime > 0
                     ? 'radial-gradient(circle, #1A202C 0%, #2D3748 100%)'
@@ -535,30 +535,30 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                       ? 'radial-gradient(circle, #0081FF 0%, #6F4CE7 100%)'
                       : 'radial-gradient(circle, #FF00BC 0%, #610047 100%)'),
                   transform: preparationTime > 0 ? 'scale(1)' : `scale(${localBreathingTime < 5 ? 0.8 + (localBreathingTime / 5) * 0.4 : 1.2 - ((localBreathingTime - 5) / selectedBreathingTime) * 0.4})`,
-                  boxShadow: `0 0 40px ${preparationTime > 0 ? '#6F4CE740' : (localBreathingTime < 5 ? '#0081FF60' : '#FF00BC60')}`
+                  boxShadow: `0 0 60px ${preparationTime > 0 ? '#6F4CE740' : (localBreathingTime < 5 ? '#0081FF60' : '#FF00BC60')}`
                 }}
               >
                 {!isPlayingState && !isPlaybackLoading && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-full backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span className="material-symbols-rounded text-white text-4xl">play_arrow</span>
+                    <span className="material-symbols-rounded text-white text-5xl">play_arrow</span>
                   </div>
                 )}
 
                 {preparationTime > 0 ? (
                   <>
-                    <span className="text-white/60 font-black text-xs uppercase tracking-widest mb-1">
+                    <span className="text-white/60 font-black text-[10px] uppercase tracking-widest mb-1">
                       Prepáre-se
                     </span>
-                    <span className="text-white font-mono text-4xl font-black">
+                    <span className="text-white font-mono text-5xl font-black">
                       {Math.ceil(preparationTime)}
                     </span>
                   </>
                 ) : (
                   <>
-                    <span className="text-white font-black text-sm uppercase tracking-tighter mt-4">
+                    <span className="text-white font-black text-base uppercase tracking-tighter mt-4">
                       {localBreathingTime < 5 ? 'Inspire' : 'Expire'}
                     </span>
-                    <span className="text-white/80 font-mono text-2xl mt-2 font-black">
+                    <span className="text-white/80 font-mono text-3xl mt-2 font-black">
                       {Math.ceil(localBreathingTime < 5 ? 5 - localBreathingTime : selectedBreathingTime - (localBreathingTime - 5))}s
                     </span>
                   </>
@@ -566,19 +566,19 @@ input[type = 'range']:: -webkit - slider - runnable - track {
               </div>
 
               {/* Progress Ring */}
-              <svg className="absolute inset-0 w-48 h-48 -rotate-90">
+              <svg className="absolute inset-0 w-60 h-60 -rotate-90">
                 <circle
-                  cx="96"
-                  cy="96"
-                  r="88"
+                  cx="120"
+                  cy="120"
+                  r="110"
                   fill="none"
                   stroke="white"
-                  strokeWidth="2"
-                  strokeDasharray="553"
+                  strokeWidth="2.5"
+                  strokeDasharray="691"
                   strokeDashoffset={
                     preparationTime > 0
-                      ? 553 - (553 * (preparationTime / 2))
-                      : 553 - (553 * (localBreathingTime / (5 + selectedBreathingTime)))
+                      ? 691 - (691 * (preparationTime / 2))
+                      : 691 - (691 * (localBreathingTime / (5 + selectedBreathingTime)))
                   }
                   className="opacity-10"
                 />
