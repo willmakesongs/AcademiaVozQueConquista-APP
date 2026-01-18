@@ -485,7 +485,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
               <p className="text-[11px] uppercase text-[#6F4CE7] font-black tracking-[0.2em] leading-none pt-0.5">Objetivo Técnico</p>
             </div>
 
-            <p className="text-white/90 text-[13px] leading-relaxed font-medium mb-4">
+            <p className="text-white/90 text-[15px] leading-relaxed font-medium mb-4">
               {vocalize.id === 'v-sopro-continuo' && "Desenvolver o apoio e a pressão de ar constante através da técnica do 'S' sustentado."}
               {vocalize.id === 'v-pulsos-ar' && "Fortalecer o apoio diafragmático ao ativar o abdômen durante a expiração pulsada."}
               {vocalize.id === 'v-hoo-grave' && "Internalizar a vocalização com a garganta aberta para eliminar o hábito de fechamento ou aperto na garganta."}
@@ -499,7 +499,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
               </div>
               <div className="flex-1">
                 <p className="text-[10px] uppercase text-gray-500 font-bold tracking-widest mb-1">Como Praticar</p>
-                <p className="text-gray-400 text-[12px] leading-relaxed">
+                <p className="text-gray-400 text-[14px] leading-relaxed">
                   {vocalize.id === 'v-sopro-continuo' && "Inspire pelo nariz enchendo a parte baixa (abdômen) e solte o ar fazendo um som de 'S' (como uma bexiga furada) o mais constante possível."}
                   {vocalize.id === 'v-pulsos-ar' && "Faça pulsos curtos e firmes com o som de 'S'. Cada pulso deve vir de uma contração rápida do abdômen, sem tensão na garganta."}
                   {vocalize.id === 'v-hoo-grave' && "Cante a nota mais grave que conseguir de forma confortável, with bastante fluxo de ar. Preste atenção ao movimento da sua barriga."}
