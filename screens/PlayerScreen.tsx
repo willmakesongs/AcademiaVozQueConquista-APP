@@ -661,10 +661,10 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                       style={{
                         height: activeSource === 'example' && isPlaying
                           ? `${(barHeights[index] / 140) * 50}px`
-                          : `${(bar.baseHeight / 100) * 35}px`, // Increased static size for visibility
-                        backgroundColor: activeSource === 'example' && isPlaying ? bar.color : '#FFFFFF25', // Brighter static color
-                        boxShadow: activeSource === 'example' && isPlaying ? `0 0 12px ${bar.color}60` : 'none',
-                        opacity: activeSource === 'example' && isPlaying ? 1 : 0.6
+                          : `${(bar.baseHeight / 100) * 35}px`,
+                        backgroundColor: bar.color, // Full brand colors even when static
+                        boxShadow: activeSource === 'example' && isPlaying ? `0 0 12px ${bar.color}60` : `0 0 8px ${bar.color}30`,
+                        opacity: 1 // Full opacity for "lit" look
                       }}
                     />
                   ))}
@@ -695,13 +695,14 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                     {logoConfig.map((bar, index) => (
                       <div
                         key={index}
-                        className="w-1 rounded-full transition-all duration-300"
+                        className="w-1.5 rounded-full transition-all duration-300"
                         style={{
                           height: activeSource === 'example' && isPlaying
                             ? `${(barHeights[index] / 140) * 40}px`
-                            : `${(bar.baseHeight / 100) * 28}px`, // Increased static size
-                          backgroundColor: activeSource === 'example' && isPlaying ? bar.color : '#FFFFFF20', // Brighter static
-                          opacity: activeSource === 'example' && isPlaying ? 1 : 0.5
+                            : `${(bar.baseHeight / 100) * 28}px`,
+                          backgroundColor: bar.color,
+                          boxShadow: activeSource === 'example' && isPlaying ? `0 0 10px ${bar.color}50` : `0 0 6px ${bar.color}20`,
+                          opacity: 1
                         }}
                       />
                     ))}
