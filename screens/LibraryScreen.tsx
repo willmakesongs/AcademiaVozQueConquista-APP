@@ -376,6 +376,20 @@ export const LibraryScreen: React.FC<Props> = ({
       }
       return;
     }
+
+    // 6. Lógica do Botão de Iniciar Vocalize (Abre o Player Principal)
+    const startVqcBtn = target.closest('.start-vocalize-btn');
+    if (startVqcBtn) {
+      e.preventDefault();
+      const vocalizeId = startVqcBtn.getAttribute('data-id');
+      if (vocalizeId) {
+        const found = VOCALIZES.find(v => v.id === vocalizeId);
+        if (found) {
+          onPlayVocalize(found);
+        }
+      }
+      return;
+    }
   };
 
   const toggleModule = (id: string, isLocked: boolean) => {

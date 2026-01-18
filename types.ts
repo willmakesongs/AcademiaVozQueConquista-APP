@@ -30,6 +30,7 @@ export interface Vocalize {
   audioUrl?: string;
   audioUrlMale?: string;
   exampleUrl?: string;
+  isBreathing?: boolean;
 }
 
 export interface TwisterExercise {

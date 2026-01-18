@@ -4516,6 +4516,740 @@ export const MODULES: Module[] = [
           `
             }
         ]
+    },
+    {
+        id: 'm_vqc_pro',
+        courseId: 'canto',
+        number: '11',
+        title: 'Vocalizes VQC Pró',
+        subtitle: 'Domínio de Escalas',
+        description: 'Treinamento vocal avançado com foco em precisão tonal e agilidade.',
+        icon: 'dynamic_feed',
+        topics: [
+            {
+                id: 'vqc_pro_1',
+                title: 'Escalas Maiores',
+                description: 'Familiarização e controle das escalas maiores.',
+                content: `
+            <div class="space-y-6">
+                <div class="bg-gradient-to-br from-[#6F4CE7]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">Escala Maior Ascendente</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
+                        <span class="text-[11px] text-gray-400 font-medium">Familiarização tonal</span>
+                    </div>
+                    
+                    <div class="mb-8 py-4 flex justify-center">
+                         <div class="flex flex-col-reverse gap-2 items-start">
+                            <div class="h-1.5 w-8 bg-white/10 rounded-full"></div>
+                            <div class="h-1.5 w-8 bg-white/20 rounded-full translate-x-4"></div>
+                            <div class="h-1.5 w-8 bg-white/30 rounded-full translate-x-8"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF]/40 rounded-full translate-x-12"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF]/60 rounded-full translate-x-16"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF]/80 rounded-full translate-x-20"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF] rounded-full translate-x-24"></div>
+                         </div>
+                    </div>
+
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
+                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
+                        <p class="text-sm text-gray-300 leading-relaxed">Cante a escala maior de forma ascendente usando solfejo ou a vogal de sua preferência.</p>
+                    </div>
+
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="vqc-major-asc">
+                        <span class="material-symbols-rounded text-2xl">play_circle</span>
+                        INICIAR EXERCÍCIO
+                    </button>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="bg-gradient-to-br from-[#6F4CE7]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">Escala Maior Descendente</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
+                        <span class="text-[11px] text-gray-400 font-medium">Controle de suporte</span>
+                    </div>
+                    
+                    <div class="mb-8 py-4 flex justify-center">
+                         <div class="flex flex-col gap-2 items-start">
+                            <div class="h-1.5 w-8 bg-[#0081FF] rounded-full"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF]/80 rounded-full translate-x-4"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF]/60 rounded-full translate-x-8"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF]/40 rounded-full translate-x-12"></div>
+                            <div class="h-1.5 w-8 bg-white/30 rounded-full translate-x-16"></div>
+                            <div class="h-1.5 w-8 bg-white/20 rounded-full translate-x-20"></div>
+                            <div class="h-1.5 w-8 bg-white/10 rounded-full translate-x-24"></div>
+                         </div>
+                    </div>
+
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
+                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
+                        <p class="text-sm text-gray-300 leading-relaxed">Cante a escala maior de forma descendente focando na precisão dos intervalos e no suporte estável.</p>
+                    </div>
+
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="vqc-major-desc">
+                        <span class="material-symbols-rounded text-2xl">play_circle</span>
+                        INICIAR EXERCÍCIO
+                    </button>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="bg-gradient-to-br from-[#6F4CE7]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">Intervalos Escala Maior (Asc)</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
+                        <span class="text-[11px] text-gray-400 font-medium">Precisão intervalar</span>
+                    </div>
+                    
+                    <div class="mb-8 py-4 flex justify-center">
+                         <div class="flex flex-col-reverse gap-2 items-start">
+                            <div class="h-1.5 w-8 bg-[#0081FF] rounded-full"></div>
+                            <div class="h-1.5 w-8 bg-white/20 rounded-full translate-x-12"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF] rounded-full"></div>
+                            <div class="h-1.5 w-8 bg-white/20 rounded-full translate-x-8"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF] rounded-full"></div>
+                            <div class="h-1.5 w-8 bg-white/20 rounded-full translate-x-4"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF] rounded-full"></div>
+                         </div>
+                    </div>
+
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
+                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
+                        <p class="text-sm text-gray-300 leading-relaxed">Cante os graus da escala retornando sempre à tônica para fixar a referência tonal.</p>
+                    </div>
+
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="vqc-major-int-asc">
+                        <span class="material-symbols-rounded text-2xl">play_circle</span>
+                        INICIAR EXERCÍCIO
+                    </button>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="bg-gradient-to-br from-[#6F4CE7]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">Intervalos Escala Maior (Desc)</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
+                        <span class="text-[11px] text-gray-400 font-medium">Agilidade vocal</span>
+                    </div>
+                    
+                    <div class="mb-8 py-4 flex justify-center">
+                         <div class="flex flex-col gap-2 items-start">
+                            <div class="h-1.5 w-8 bg-[#0081FF] rounded-full translate-x-24"></div>
+                            <div class="h-1.5 w-8 bg-white/20 rounded-full translate-x-4"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF] rounded-full translate-x-20"></div>
+                            <div class="h-1.5 w-8 bg-white/20 rounded-full translate-x-4"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF] rounded-full translate-x-16"></div>
+                            <div class="h-1.5 w-8 bg-white/20 rounded-full translate-x-4"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF] rounded-full translate-x-12"></div>
+                         </div>
+                    </div>
+
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
+                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
+                        <p class="text-sm text-gray-300 leading-relaxed">Cante os intervalos descendentes da escala mantendo a estabilidade e precisão.</p>
+                    </div>
+
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="vqc-major-int-desc">
+                        <span class="material-symbols-rounded text-2xl">play_circle</span>
+                        INICIAR EXERCÍCIO
+                    </button>
+                </div>
+            </div>
+          `
+            },
+            {
+                id: 'vqc_pro_2',
+                title: 'Escalas Menores',
+                description: 'Familiarização e controle das escalas menores.',
+                content: `
+            <div class="space-y-6">
+                <div class="bg-gradient-to-br from-[#0081FF]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
+                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">Escala Menor Ascendente</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
+                        <span class="text-[11px] text-gray-400 font-medium">Percepção de modo menor</span>
+                    </div>
+                    
+                    <div class="mb-8 py-4 flex justify-center">
+                         <div class="flex flex-col-reverse gap-2 items-start">
+                            <div class="h-1.5 w-8 bg-white/10 rounded-full"></div>
+                            <div class="h-1.5 w-8 bg-white/20 rounded-full translate-x-4"></div>
+                            <div class="h-1.5 w-8 bg-[#FF00BC]/60 rounded-full translate-x-8"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF]/40 rounded-full translate-x-12"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF]/60 rounded-full translate-x-16"></div>
+                            <div class="h-1.5 w-8 bg-[#FF00BC]/40 rounded-full translate-x-20"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF] rounded-full translate-x-24"></div>
+                         </div>
+                    </div>
+
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
+                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
+                        <p class="text-sm text-gray-300 leading-relaxed">Foque na sonoridade da terça menor e da sexta menor durante a execução.</p>
+                    </div>
+
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="vqc-minor-asc">
+                        <span class="material-symbols-rounded text-2xl">play_circle</span>
+                        INICIAR EXERCÍCIO
+                    </button>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="bg-gradient-to-br from-[#0081FF]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
+                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">Escala Menor Descendente</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
+                        <span class="text-[11px] text-gray-400 font-medium">Memória muscular menor</span>
+                    </div>
+                    
+                    <div class="mb-8 py-4 flex justify-center">
+                         <div class="flex flex-col gap-2 items-start">
+                            <div class="h-1.5 w-8 bg-[#0081FF] rounded-full"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF]/80 rounded-full translate-x-4"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF]/60 rounded-full translate-x-8"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF]/40 rounded-full translate-x-12"></div>
+                            <div class="h-1.5 w-8 bg-white/30 rounded-full translate-x-16"></div>
+                            <div class="h-1.5 w-8 bg-white/20 rounded-full translate-x-20"></div>
+                            <div class="h-1.5 w-8 bg-white/10 rounded-full translate-x-24"></div>
+                         </div>
+                    </div>
+
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
+                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
+                        <p class="text-sm text-gray-300 leading-relaxed">Cante a escala menor de cima para baixo com foco na afinação das notas alteradas.</p>
+                    </div>
+
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="vqc-minor-desc">
+                        <span class="material-symbols-rounded text-2xl">play_circle</span>
+                        INICIAR EXERCÍCIO
+                    </button>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="bg-gradient-to-br from-[#0081FF]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
+                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">Intervalos Escala Menor (Asc)</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
+                        <span class="text-[11px] text-gray-400 font-medium">Conexão de graus</span>
+                    </div>
+                    
+                    <div class="mb-8 py-4 flex justify-center">
+                         <div class="flex flex-col-reverse gap-2 items-start">
+                            <div class="h-1.5 w-8 bg-[#0081FF] rounded-full"></div>
+                            <div class="h-1.5 w-8 bg-white/20 rounded-full translate-x-12"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF] rounded-full"></div>
+                            <div class="h-1.5 w-8 bg-white/20 rounded-full translate-x-8"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF] rounded-full"></div>
+                            <div class="h-1.5 w-8 bg-white/20 rounded-full translate-x-4"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF] rounded-full"></div>
+                         </div>
+                    </div>
+
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
+                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
+                        <p class="text-sm text-gray-300 leading-relaxed">Pratique os saltos dentro da tonalidade menor focando na fluidez da conexão.</p>
+                    </div>
+
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="vqc-minor-int-asc">
+                        <span class="material-symbols-rounded text-2xl">play_circle</span>
+                        INICIAR EXERCÍCIO
+                    </button>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="bg-gradient-to-br from-[#0081FF]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
+                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">Intervalos Escala Menor (Desc)</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
+                        <span class="text-[11px] text-gray-400 font-medium">Refinamento auditivo</span>
+                    </div>
+                    
+                    <div class="mb-8 py-4 flex justify-center">
+                         <div class="flex flex-col gap-2 items-start">
+                            <div class="h-1.5 w-8 bg-[#0081FF] rounded-full translate-x-24"></div>
+                            <div class="h-1.5 w-8 bg-white/20 rounded-full translate-x-4"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF] rounded-full translate-x-20"></div>
+                            <div class="h-1.5 w-8 bg-white/20 rounded-full translate-x-4"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF] rounded-full translate-x-16"></div>
+                            <div class="h-1.5 w-8 bg-white/20 rounded-full translate-x-4"></div>
+                            <div class="h-1.5 w-8 bg-[#0081FF] rounded-full translate-x-12"></div>
+                         </div>
+                    </div>
+
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
+                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
+                        <p class="text-sm text-gray-300 leading-relaxed">Controle laríngeo nos saltos descendentes menores para evitar tensões desnecessárias.</p>
+                    </div>
+
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="vqc-minor-int-desc">
+                        <span class="material-symbols-rounded text-2xl">play_circle</span>
+                        INICIAR EXERCÍCIO
+                    </button>
+                </div>
+            </div>
+          `
+            },
+            {
+                id: 'vqc_pro_3',
+                title: 'Agilidade, Arpejos e Saltos',
+                description: 'Arpejos, saltos de oitava e escalas pentatônicas.',
+                content: `
+            <div class="space-y-6">
+                <div class="bg-gradient-to-br from-[#6F4CE7]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">Tríade Maior (Arpejo)</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
+                        <span class="text-[11px] text-gray-400 font-medium tracking-tight">Estabilidade nos graus I, III e V</span>
+                    </div>
+
+                    <div class="p-4 bg-white/5 rounded-2xl border border-white/5 mb-6 flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                            <span class="material-symbols-rounded text-xl">play_circle</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Vídeo Aula</p>
+                            <p class="text-xs text-white">Explicação técnica (1 min)</p>
+                        </div>
+                        <button class="px-4 py-2 bg-white/5 rounded-xl text-[10px] font-bold text-white uppercase hover:bg-white/10 transition-colors">Assistir</button>
+                    </div>
+
+                    <div class="mb-8 py-4 flex justify-center">
+                         <div class="flex items-end gap-3 h-20">
+                            <div class="w-8 bg-[#0081FF] rounded-t-lg" style="height: 30%"></div>
+                            <div class="w-8 bg-[#0081FF]/60 rounded-t-lg" style="height: 60%"></div>
+                            <div class="w-8 bg-[#0081FF] rounded-t-lg" style="height: 90%"></div>
+                         </div>
+                    </div>
+
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
+                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
+                        <p class="text-sm text-gray-300 leading-relaxed">Foque na precisão do salto de terça e quinta. Use a vogal <b class="text-[#FF00BC]">"U"</b> para controle.</p>
+                    </div>
+
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="vqc-triad-major">
+                        <span class="material-symbols-rounded text-2xl">play_circle</span>
+                        INICIAR EXERCÍCIO
+                    </button>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="bg-gradient-to-br from-[#6F4CE7]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">Tríade Menor (Arpejo)</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
+                        <span class="text-[11px] text-gray-400 font-medium tracking-tight">Percepção do modo menor</span>
+                    </div>
+
+                    <div class="p-4 bg-white/5 rounded-2xl border border-white/5 mb-6 flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                            <span class="material-symbols-rounded text-xl">play_circle</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Vídeo Aula</p>
+                            <p class="text-xs text-white">Explicação técnica (1 min)</p>
+                        </div>
+                        <button class="px-4 py-2 bg-white/5 rounded-xl text-[10px] font-bold text-white uppercase hover:bg-white/10 transition-colors">Assistir</button>
+                    </div>
+
+                    <div class="mb-8 py-4 flex justify-center">
+                         <div class="flex items-end gap-3 h-20">
+                            <div class="w-8 bg-[#FF00BC] rounded-t-lg" style="height: 30%"></div>
+                            <div class="w-8 bg-[#0081FF]/60 rounded-t-lg" style="height: 55%"></div>
+                            <div class="w-8 bg-[#FF00BC] rounded-t-lg" style="height: 90%"></div>
+                         </div>
+                    </div>
+
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
+                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
+                        <p class="text-sm text-gray-300 leading-relaxed">Atenção à terça menor para não "achatar" a afinação. Mantenha a clareza harmônica.</p>
+                    </div>
+
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="vqc-triad-minor">
+                        <span class="material-symbols-rounded text-2xl">play_circle</span>
+                        INICIAR EXERCÍCIO
+                    </button>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="bg-gradient-to-br from-[#6F4CE7]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">Salto de Oitava (Asc/Desc)</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
+                        <span class="text-[11px] text-gray-400 font-medium tracking-tight">Expansão de extensão</span>
+                    </div>
+
+                    <div class="p-4 bg-white/5 rounded-2xl border border-white/5 mb-6 flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                            <span class="material-symbols-rounded text-xl">play_circle</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Vídeo Aula</p>
+                            <p class="text-xs text-white">Explicação técnica (1 min)</p>
+                        </div>
+                        <button class="px-4 py-2 bg-white/5 rounded-xl text-[10px] font-bold text-white uppercase hover:bg-white/10 transition-colors">Assistir</button>
+                    </div>
+
+                    <div class="mb-8 py-4 flex justify-center">
+                         <div class="flex items-end gap-12 h-20">
+                            <div class="w-10 bg-[#0081FF] rounded-t-xl" style="height: 30%"></div>
+                            <div class="w-10 bg-[#FF00BC] rounded-t-xl" style="height: 100%"></div>
+                         </div>
+                    </div>
+
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
+                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
+                        <p class="text-sm text-gray-300 leading-relaxed">Mantenha a laringe estável. Não "empurre" a nota aguda; deixe o ar fluir livremente.</p>
+                    </div>
+
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="vqc-octave-jump">
+                        <span class="material-symbols-rounded text-2xl">play_circle</span>
+                        INICIAR EXERCÍCIO
+                    </button>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="bg-gradient-to-br from-[#6F4CE7]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">Arpejo Maior com Sétima</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
+                        <span class="text-[11px] text-gray-400 font-medium tracking-tight">Introdução às tétrades</span>
+                    </div>
+
+                    <div class="p-4 bg-white/5 rounded-2xl border border-white/5 mb-6 flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                            <span class="material-symbols-rounded text-xl">play_circle</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Vídeo Aula</p>
+                            <p class="text-xs text-white">Explicação técnica (1 min)</p>
+                        </div>
+                        <button class="px-4 py-2 bg-white/5 rounded-xl text-[10px] font-bold text-white uppercase hover:bg-white/10 transition-colors">Assistir</button>
+                    </div>
+
+                    <div class="mb-8 py-4 flex justify-center">
+                         <div class="flex items-end gap-3 h-20">
+                            <div class="w-7 bg-[#0081FF] rounded-t-md" style="height: 25%"></div>
+                            <div class="w-7 bg-[#0081FF]/80 rounded-t-md" style="height: 50%"></div>
+                            <div class="w-7 bg-[#0081FF]/60 rounded-t-md" style="height: 75%"></div>
+                            <div class="w-7 bg-[#0081FF] rounded-t-md" style="height: 100%"></div>
+                         </div>
+                    </div>
+
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
+                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
+                        <p class="text-sm text-gray-300 leading-relaxed">Execute cada nota com clareza absoluta, especialmente a sétima maior.</p>
+                    </div>
+
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="vqc-arpeggio-maj7">
+                        <span class="material-symbols-rounded text-2xl">play_circle</span>
+                        INICIAR EXERCÍCIO
+                    </button>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="bg-gradient-to-br from-[#6F4CE7]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">Pentatônica Maior</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
+                        <span class="text-[11px] text-gray-400 font-medium tracking-tight">Agilidade e Articulação</span>
+                    </div>
+
+                    <div class="p-4 bg-white/5 rounded-2xl border border-white/5 mb-6 flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                            <span class="material-symbols-rounded text-xl">play_circle</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Vídeo Aula</p>
+                            <p class="text-xs text-white">Explicação técnica (1 min)</p>
+                        </div>
+                        <button class="px-4 py-2 bg-white/5 rounded-xl text-[10px] font-bold text-white uppercase hover:bg-white/10 transition-colors">Assistir</button>
+                    </div>
+
+                    <div class="mb-8 py-4 flex justify-center">
+                         <div class="flex items-end gap-2 h-16">
+                            <div class="w-5 bg-[#0081FF] rounded-t-sm" style="height: 20%"></div>
+                            <div class="w-5 bg-[#0081FF] rounded-t-sm" style="height: 40%"></div>
+                            <div class="w-5 bg-[#0081FF] rounded-t-sm" style="height: 60%"></div>
+                            <div class="w-5 bg-[#0081FF] rounded-t-sm" style="height: 80%"></div>
+                            <div class="w-5 bg-[#0081FF] rounded-t-sm" style="height: 100%"></div>
+                         </div>
+                    </div>
+
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
+                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
+                        <p class="text-sm text-gray-300 leading-relaxed">Comece devagar e aumente a velocidade gradualmente conforme a dicção ficar clara.</p>
+                    </div>
+
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="vqc-pentatonic-major">
+                        <span class="material-symbols-rounded text-2xl">play_circle</span>
+                        INICIAR EXERCÍCIO
+                    </button>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="bg-gradient-to-br from-[#6F4CE7]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">Pentatônica Menor (Blues/Pop)</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
+                        <span class="text-[11px] text-gray-400 font-medium tracking-tight">Estilo e Percepção</span>
+                    </div>
+
+                    <div class="p-4 bg-white/5 rounded-2xl border border-white/5 mb-6 flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                            <span class="material-symbols-rounded text-xl">play_circle</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Vídeo Aula</p>
+                            <p class="text-xs text-white">Explicação técnica (1 min)</p>
+                        </div>
+                        <button class="px-4 py-2 bg-white/5 rounded-xl text-[10px] font-bold text-white uppercase hover:bg-white/10 transition-colors">Assistir</button>
+                    </div>
+
+                    <div class="mb-8 py-4 flex justify-center">
+                         <div class="flex items-end gap-2 h-16">
+                            <div class="w-5 bg-[#FF00BC] rounded-t-sm" style="height: 20%"></div>
+                            <div class="w-5 bg-[#FF00BC] rounded-t-sm" style="height: 50%"></div>
+                            <div class="w-5 bg-[#FF00BC] rounded-t-sm" style="height: 60%"></div>
+                            <div class="w-5 bg-[#FF00BC] rounded-t-sm" style="height: 85%"></div>
+                            <div class="w-5 bg-[#FF00BC] rounded-t-sm" style="height: 100%"></div>
+                         </div>
+                    </div>
+
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
+                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
+                        <p class="text-sm text-gray-300 leading-relaxed">Utilize fonemas como <b class="text-[#FF00BC]">"Yeah"</b> ou <b class="text-[#FF00BC]">"Na"</b> para dar estilo ao exercício.</p>
+                    </div>
+
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="vqc-pentatonic-minor">
+                        <span class="material-symbols-rounded text-2xl">play_circle</span>
+                        INICIAR EXERCÍCIO
+                    </button>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="bg-gradient-to-br from-[#6F4CE7]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">Cromatismo</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
+                        <span class="text-[11px] text-gray-400 font-medium tracking-tight">Refino de afinação</span>
+                    </div>
+
+                    <div class="p-4 bg-white/5 rounded-2xl border border-white/5 mb-6 flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                            <span class="material-symbols-rounded text-xl">play_circle</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Vídeo Aula</p>
+                            <p class="text-xs text-white">Explicação técnica (1 min)</p>
+                        </div>
+                        <button class="px-4 py-2 bg-white/5 rounded-xl text-[10px] font-bold text-white uppercase hover:bg-white/10 transition-colors">Assistir</button>
+                    </div>
+
+                    <div class="mb-8 py-4 flex justify-center">
+                         <div class="flex items-end gap-1 h-12">
+                            <div class="w-3 bg-white/10 rounded-t-[2px]" style="height: 20%"></div>
+                            <div class="w-3 bg-white/20 rounded-t-[2px]" style="height: 30%"></div>
+                            <div class="w-3 bg-white/30 rounded-t-[2px]" style="height: 40%"></div>
+                            <div class="w-3 bg-white/40 rounded-t-[2px]" style="height: 50%"></div>
+                            <div class="w-3 bg-white/50 rounded-t-[2px]" style="height: 60%"></div>
+                            <div class="w-3 bg-white/60 rounded-t-[2px]" style="height: 70%"></div>
+                            <div class="w-3 bg-white/70 rounded-t-[2px]" style="height: 80%"></div>
+                            <div class="w-3 bg-white/80 rounded-t-[2px]" style="height: 90%"></div>
+                            <div class="w-3 bg-white rounded-t-[2px]" style="height: 100%"></div>
+                         </div>
+                    </div>
+
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
+                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
+                        <p class="text-sm text-gray-300 leading-relaxed">Exige máxima atenção auditiva para não "escorregar" entre os semitons.</p>
+                    </div>
+
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="vqc-chromatism">
+                        <span class="material-symbols-rounded text-2xl">play_circle</span>
+                        INICIAR EXERCÍCIO
+                    </button>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <div class="bg-gradient-to-br from-[#6F4CE7]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">Saltos de 4ª e 5ª Justas</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
+                        <span class="text-[11px] text-gray-400 font-medium tracking-tight">Ataque de nota</span>
+                    </div>
+
+                    <div class="p-4 bg-white/5 rounded-2xl border border-white/5 mb-6 flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-full bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                            <span class="material-symbols-rounded text-xl">play_circle</span>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Vídeo Aula</p>
+                            <p class="text-xs text-white">Explicação técnica (1 min)</p>
+                        </div>
+                        <button class="px-4 py-2 bg-white/5 rounded-xl text-[10px] font-bold text-white uppercase hover:bg-white/10 transition-colors">Assistir</button>
+                    </div>
+
+                    <div class="mb-8 py-4 flex justify-center">
+                         <div class="flex items-end gap-12 h-20">
+                            <div class="w-10 bg-[#0081FF] rounded-t-xl" style="height: 40%"></div>
+                            <div class="w-10 bg-[#0081FF] rounded-t-xl" style="height: 90%"></div>
+                         </div>
+                    </div>
+
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
+                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
+                        <p class="text-sm text-gray-300 leading-relaxed">Ideal para treinar o ataque de nota limpo em intervalos justos. Fortaleça o apoio.</p>
+                    </div>
+
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="vqc-jump-5th-4th">
+                        <span class="material-symbols-rounded text-2xl">play_circle</span>
+                        INICIAR EXERCÍCIO
+                    </button>
+                </div>
+            </div>
+          `
+            }
+        ]
+    },
+    {
+        id: 'm_resp_vocalize',
+        number: '12',
+        title: 'Vocalize - Respiração',
+        subtitle: 'Treino de Respiração',
+        description: 'Exercícios fundamentais para o controle de ar e apoio.',
+        icon: 'air',
+        topics: [
+            {
+                id: 'resp_exercises',
+                title: 'Exercícios de Respiração',
+                description: 'Três exercícios práticos para controle de fôlego.',
+                content: `
+            <div class="space-y-6">
+                <!-- Sopro Contínuo -->
+                <div class="bg-gradient-to-br from-[#0081FF]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
+                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">1. Sopro Contínuo</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
+                        <span class="text-[11px] text-gray-400 font-medium">Apoio e pressão de ar constante</span>
+                    </div>
+
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
+                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
+                        <p class="text-sm text-gray-300 leading-relaxed">Inspire profundamente e expire de forma estável produzindo um som de "S" contínuo. Observe seu abdômen se expandindo naturalmente na inspiração.</p>
+                    </div>
+
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="v-sopro-continuo">
+                        <span class="material-symbols-rounded text-2xl">play_circle</span>
+                        INICIAR EXERCÍCIO
+                    </button>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <!-- Pulsos de Ar -->
+                <div class="bg-gradient-to-br from-[#6F4CE7]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">2. Pulsos de Ar</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
+                        <span class="text-[11px] text-gray-400 font-medium tracking-tight">Ativar abdômen / Fortalecer apoio</span>
+                    </div>
+
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
+                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
+                        <p class="text-sm text-gray-300 leading-relaxed">Inspire profundamente e expire em rajadas curtas e controladas. Seu trato vocal deve estar aberto e relaxado. Controle os impulsos de ar via abdômen.</p>
+                    </div>
+
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="v-pulsos-ar">
+                        <span class="material-symbols-rounded text-2xl">play_circle</span>
+                        INICIAR EXERCÍCIO
+                    </button>
+                </div>
+            </div>
+
+            <!-- slide -->
+
+            <div class="space-y-6">
+                <!-- Hoo Grave -->
+                <div class="bg-gradient-to-br from-[#FF00BC]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#FF00BC] blur-[80px] opacity-20"></div>
+                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">3. "Hoo" Grave</h3>
+                    <div class="flex items-center gap-2 mb-6">
+                        <span class="px-2 py-0.5 bg-[#0081FF]/20 text-[#0081FF] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
+                        <span class="text-[11px] text-gray-400 font-medium tracking-tight">Garganta aberta / Fluxo de ar</span>
+                    </div>
+
+                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
+                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
+                        <p class="text-sm text-gray-300 leading-relaxed">Cante a nota mais grave que conseguir de forma confortável, com bastante fluxo de ar. Preste atenção ao movimento da sua barriga.</p>
+                    </div>
+
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="v-hoo-grave">
+                        <span class="material-symbols-rounded text-2xl">play_circle</span>
+                        INICIAR EXERCÍCIO
+                    </button>
+                </div>
+            </div>
+          `
+            }
+        ]
     }
 ];
 
@@ -4523,8 +5257,282 @@ export const MODULES: Module[] = [
 // VOCALIZES DATA
 // -----------------------------------------------------------
 export const VOCALIZES: Vocalize[] = [
+    // --- MÓDULO: DOMÍNIO DE ESCALAS (VQC PRÓ) ---
+    {
+        id: 'vqc-major-asc',
+        moduleId: 'm_vqc_pro',
+        title: 'Escala Maior Ascendente',
+        category: 'Técnica',
+        difficulty: 'Iniciante',
+        duration: '04:00',
+        bpm: 100,
+        key: 'C Major',
+        description: 'Familiarização com a sonoridade e estrutura da escala maior.',
+        audioUrl: `${VOCALIZES_BASE_URL}vqc_major_asc_H.mp3`,
+        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_major_asc_L.mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}vqc_major_asc_example.mp3`
+    },
+    {
+        id: 'vqc-major-desc',
+        moduleId: 'm_vqc_pro',
+        title: 'Escala Maior Descendente',
+        category: 'Técnica',
+        difficulty: 'Iniciante',
+        duration: '04:00',
+        bpm: 100,
+        key: 'C Major',
+        description: 'Controle de afinação e suporte na descida da escala maior.',
+        audioUrl: `${VOCALIZES_BASE_URL}vqc_major_desc_H.mp3`,
+        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_major_desc_L.mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}vqc_major_desc_example.mp3`
+    },
+    {
+        id: 'vqc-major-int-asc',
+        moduleId: 'm_vqc_pro',
+        title: 'Intervalos Escala Maior (Asc)',
+        category: 'Agilidade',
+        difficulty: 'Intermediário',
+        duration: '04:30',
+        bpm: 110,
+        key: 'C Major',
+        description: 'Fortalecer a percepção dos graus e intervalos dentro da escala maior.',
+        audioUrl: `${VOCALIZES_BASE_URL}vqc_major_int_asc_H.mp3`,
+        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_major_int_asc_L.mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}vqc_major_int_asc_example.mp3`
+    },
+    {
+        id: 'vqc-major-int-desc',
+        moduleId: 'm_vqc_pro',
+        title: 'Intervalos Escala Maior (Desc)',
+        category: 'Agilidade',
+        difficulty: 'Intermediário',
+        duration: '04:30',
+        bpm: 110,
+        key: 'C Major',
+        description: 'Agilidade e precisão intervalar na região descendente.',
+        audioUrl: `${VOCALIZES_BASE_URL}vqc_major_int_desc_H.mp3`,
+        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_major_int_desc_L.mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}vqc_major_int_desc_example.mp3`
+    },
+    {
+        id: 'vqc-minor-asc',
+        moduleId: 'm_vqc_pro',
+        title: 'Escala Menor Ascendente',
+        category: 'Técnica',
+        difficulty: 'Iniciante',
+        duration: '04:00',
+        bpm: 100,
+        key: 'A Minor',
+        description: 'Familiarização com a sonoridade da escala menor (Natural).',
+        audioUrl: `${VOCALIZES_BASE_URL}vqc_minor_asc_H.mp3`,
+        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_minor_asc_L.mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}vqc_minor_asc_example.mp3`
+    },
+    {
+        id: 'vqc-minor-desc',
+        moduleId: 'm_vqc_pro',
+        title: 'Escala Menor Descendente',
+        category: 'Técnica',
+        difficulty: 'Iniciante',
+        duration: '04:00',
+        bpm: 100,
+        key: 'A Minor',
+        description: 'Consolidação da memória muscular para a escala menor.',
+        audioUrl: `${VOCALIZES_BASE_URL}vqc_minor_desc_H.mp3`,
+        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_minor_desc_L.mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}vqc_minor_desc_example.mp3`
+    },
+    {
+        id: 'vqc-minor-int-asc',
+        moduleId: 'm_vqc_pro',
+        title: 'Intervalos Escala Menor (Asc)',
+        category: 'Agilidade',
+        difficulty: 'Intermediário',
+        duration: '04:30',
+        bpm: 110,
+        key: 'A Minor',
+        description: 'Percepção e execução dos graus da escala menor.',
+        audioUrl: `${VOCALIZES_BASE_URL}vqc_minor_int_asc_H.mp3`,
+        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_minor_int_asc_L.mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}vqc_minor_int_asc_example.mp3`
+    },
+    {
+        id: 'vqc-minor-int-desc',
+        moduleId: 'm_vqc_pro',
+        title: 'Intervalos Escala Menor (Desc)',
+        category: 'Agilidade',
+        difficulty: 'Intermediário',
+        duration: '04:30',
+        bpm: 110,
+        key: 'A Minor',
+        description: 'Refinamento auditivo e técnico da escala menor.',
+        audioUrl: `${VOCALIZES_BASE_URL}vqc_minor_int_desc_H.mp3`,
+        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_minor_int_desc_L.mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}vqc_minor_int_desc_example.mp3`
+    },
+    // --- MÓDULO: AGILIDADE, ARPEJOS E SALTOS (VQC PRÓ) ---
+    {
+        id: 'vqc-triad-major',
+        moduleId: 'm_vqc_pro',
+        title: 'Tríade Maior (Arpejo)',
+        category: 'Arpejo',
+        difficulty: 'Intermediário',
+        duration: '04:30',
+        bpm: 110,
+        key: 'C Major',
+        description: 'Estabilidade nos graus I, III e V.',
+        audioUrl: `${VOCALIZES_BASE_URL}vqc_triad_major_H.mp3`,
+        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_triad_major_L.mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}vqc_triad_major_example.mp3`
+    },
+    {
+        id: 'vqc-triad-minor',
+        moduleId: 'm_vqc_pro',
+        title: 'Tríade Menor (Arpejo)',
+        category: 'Arpejo',
+        difficulty: 'Intermediário',
+        duration: '04:30',
+        bpm: 110,
+        key: 'A Minor',
+        description: 'Percepção do modo menor em saltos.',
+        audioUrl: `${VOCALIZES_BASE_URL}vqc_triad_minor_H.mp3`,
+        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_triad_minor_L.mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}vqc_triad_minor_example.mp3`
+    },
+    {
+        id: 'vqc-octave-jump',
+        moduleId: 'm_vqc_pro',
+        title: 'Salto de Oitava (Asc/Desc)',
+        category: 'Salto',
+        difficulty: 'Avançado',
+        duration: '05:00',
+        bpm: 100,
+        key: 'C Major',
+        description: 'Expansão de extensão e registro.',
+        audioUrl: `${VOCALIZES_BASE_URL}vqc_octave_jump_H.mp3`,
+        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_octave_jump_L.mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}vqc_octave_jump_example.mp3`
+    },
+    {
+        id: 'vqc-arpeggio-maj7',
+        moduleId: 'm_vqc_pro',
+        title: 'Arpejo Maior com Sétima',
+        category: 'Arpejo',
+        difficulty: 'Avançado',
+        duration: '05:00',
+        bpm: 110,
+        key: 'C Maj7',
+        description: 'Introdução à harmonia de tétrades.',
+        audioUrl: `${VOCALIZES_BASE_URL}vqc_arpeggio_maj7_H.mp3`,
+        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_arpeggio_maj7_L.mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}vqc_arpeggio_maj7_example.mp3`
+    },
+    {
+        id: 'vqc-pentatonic-major',
+        moduleId: 'm_vqc_pro',
+        title: 'Pentatônica Maior (Agilidade)',
+        category: 'Agilidade',
+        difficulty: 'Intermediário',
+        duration: '04:00',
+        bpm: 120,
+        key: 'C Major',
+        description: 'Fluidez e articulação rápida.',
+        audioUrl: `${VOCALIZES_BASE_URL}vqc_pentatonic_major_H.mp3`,
+        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_pentatonic_major_L.mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}vqc_pentatonic_major_example.mp3`
+    },
+    {
+        id: 'vqc-pentatonic-minor',
+        moduleId: 'm_vqc_pro',
+        title: 'Pentatônica Menor (Blues/Pop)',
+        category: 'Agilidade',
+        difficulty: 'Intermediário',
+        duration: '04:00',
+        bpm: 120,
+        key: 'A Minor',
+        description: 'Estilo e controle de intervalos de quarta.',
+        audioUrl: `${VOCALIZES_BASE_URL}vqc_pentatonic_minor_H.mp3`,
+        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_pentatonic_minor_L.mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}vqc_pentatonic_minor_example.mp3`
+    },
+    {
+        id: 'vqc-chromatism',
+        moduleId: 'm_vqc_pro',
+        title: 'Cromatismo (Semiconsonância)',
+        category: 'Técnica',
+        difficulty: 'Avançado',
+        duration: '04:00',
+        bpm: 90,
+        key: 'Chromatice',
+        description: 'Refino da percepção de semitons.',
+        audioUrl: `${VOCALIZES_BASE_URL}vqc_chromatism_H.mp3`,
+        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_chromatism_L.mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}vqc_chromatism_example.mp3`
+    },
+    {
+        id: 'vqc-jump-5th-4th',
+        moduleId: 'm_vqc_pro',
+        title: 'Salto de Quinta e Quarta',
+        category: 'Salto',
+        difficulty: 'Intermediário',
+        duration: '04:00',
+        bpm: 100,
+        key: 'C Major',
+        description: 'Fortalecimento do apoio diafragmático.',
+        audioUrl: `${VOCALIZES_BASE_URL}vqc_jump_5th_4th_H.mp3`,
+        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_jump_5th_4th_L.mp3`,
+        exampleUrl: `${VOCALIZES_BASE_URL}vqc_jump_5th_4th_example.mp3`
+    },
 
 
+
+
+    // --- MÓDULO: VOCALIZE - RESPIRAÇÃO ---
+    {
+        id: 'v-sopro-continuo',
+        moduleId: 'm_resp_vocalize',
+        title: 'Sopro Contínuo ("S" Sustentado)',
+        category: 'Respiração',
+        difficulty: 'Iniciante',
+        duration: '02:00',
+        bpm: 60,
+        key: 'N/A',
+        description: 'Desenvolver o apoio e a pressão de ar constante.',
+        audioUrl: '',
+        audioUrlMale: '',
+        exampleUrl: 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/VOCALIZES+VQC+PRO/Exemplo-Sssss.mp3',
+        isBreathing: true
+    },
+    {
+        id: 'v-pulsos-ar',
+        moduleId: 'm_resp_vocalize',
+        title: 'Pulsos de Ar ("S" em Estacato)',
+        category: 'Respiração',
+        difficulty: 'Iniciante',
+        duration: '02:00',
+        bpm: 80,
+        key: 'N/A',
+        description: 'Fortalecer o apoio ao ativar o abdômen durante a expiração pulsada.',
+        audioUrl: '',
+        audioUrlMale: '',
+        exampleUrl: 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/VOCALIZES+VQC+PRO/Exemplo+Sopro+Stacato.mp3',
+        isBreathing: true
+    },
+    {
+        id: 'v-hoo-grave',
+        moduleId: 'm_resp_vocalize',
+        title: '"Hoo" Grave',
+        category: 'Respiração',
+        difficulty: 'Iniciante',
+        duration: '02:00',
+        bpm: 60,
+        key: 'Grave',
+        description: 'Internalizar a vocalização com a garganta aberta.',
+        audioUrl: '',
+        audioUrlMale: '',
+        exampleUrl: 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/VOCALIZES+VQC+PRO/Exemplo+Hooo.mp3',
+        isBreathing: true
+    },
 
 
     // 3. Arpeggio Maior 3x (M3 - Técnica / M8 - Força)
