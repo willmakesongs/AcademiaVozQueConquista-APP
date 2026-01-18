@@ -5168,7 +5168,7 @@ export const MODULES: Module[] = [
     {
         id: 'm_resp_vocalize',
         number: '12',
-        title: 'Vocalize - Respiração',
+        title: 'Exercícios de Respiração',
         subtitle: 'Treino de Respiração',
         description: 'Exercícios fundamentais para o controle de ar e apoio.',
         icon: 'air',
