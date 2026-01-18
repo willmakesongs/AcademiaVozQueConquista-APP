@@ -502,7 +502,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                 <p className="text-gray-400 text-[14px] leading-relaxed">
                   {vocalize.id === 'v-sopro-continuo' && "Inspire pelo nariz enchendo a parte baixa (abdômen) e solte o ar fazendo um som de 'S' (como uma bexiga furada) o mais constante possível."}
                   {vocalize.id === 'v-pulsos-ar' && "Faça pulsos curtos e firmes com o som de 'S'. Cada pulso deve vir de uma contração rápida do abdômen, sem tensão na garganta."}
-                  {vocalize.id === 'v-hoo-grave' && "Cante a nota mais grave que conseguir de forma confortável, with bastante fluxo de ar. Preste atenção ao movimento da sua barriga."}
+                  {vocalize.id === 'v-hoo-grave' && "Cante a nota mais grave que conseguir de forma confortável, com bastante fluxo de ar. Preste atenção ao movimento da sua barriga."}
                 </p>
               </div>
             </div>
