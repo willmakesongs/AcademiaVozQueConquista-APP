@@ -169,7 +169,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
 
         // Handle Main Cycle
         setLocalBreathingTime(prev => {
-          const cycleTotal = 4 + selectedBreathingTime;
+          const cycleTotal = 5 + selectedBreathingTime;
           const newValue = (prev + 0.1) % cycleTotal;
 
           // Tick/Bell Logic
@@ -226,6 +226,41 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     } catch (e) {
       console.error('Bell logic failed', e);
     }
+  };
+
+  const playCowbell = () => {
+    try {
+      if (!audioCtxRef.current) audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const ctx = audioCtxRef.current;
+      if (ctx.state === 'suspended') ctx.resume();
+
+      // TR-808 style cowbell frequencies
+      const f1 = 540;
+      const f2 = 800;
+
+      [f1, f2].forEach(freq => {
+        const osc = ctx.createOscillator();
+        const envelope = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(freq, ctx.currentTime);
+        filter.Q.setValueAtTime(10, ctx.currentTime);
+
+        envelope.gain.setValueAtTime(0.1, ctx.currentTime);
+        envelope.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+
+        osc.connect(filter);
+        filter.connect(envelope);
+        envelope.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + 0.3);
+      });
+    } catch (e) { console.error('Cowbell synthesis failed', e); }
   };
 
   // Sincroniza visualizador se já estiver tocando ao abrir a tela
@@ -476,13 +511,17 @@ input[type = 'range']:: -webkit - slider - runnable - track {
 
         <div className="h-48 flex items-end justify-center gap-2 shrink-0 relative z-10 my-8">
           {vocalize?.isBreathing ? (
-            <div className="relative flex items-center justify-center w-48 h-48 mb-8">
+            <button
+              onClick={togglePlay}
+              disabled={isPlaybackLoading || (DISABLE_ALL_PLAYERS && !isAdmin)}
+              className="relative flex items-center justify-center w-48 h-48 mb-8 hover:scale-[1.02] active:scale-95 transition-transform group"
+            >
               {/* Outer Glow */}
               <div
                 className="absolute inset-0 rounded-full blur-3xl opacity-20 transition-all duration-300"
                 style={{
-                  backgroundColor: preparationTime > 0 ? '#6F4CE7' : (localBreathingTime < 4 ? '#0081FF' : '#FF00BC'),
-                  transform: preparationTime > 0 ? 'scale(1)' : `scale(${localBreathingTime < 4 ? 0.8 + (localBreathingTime / 4) * 0.4 : 1.2 - ((localBreathingTime - 4) / selectedBreathingTime) * 0.4})`
+                  backgroundColor: preparationTime > 0 ? '#6F4CE7' : (localBreathingTime < 5 ? '#0081FF' : '#FF00BC'),
+                  transform: preparationTime > 0 ? 'scale(1)' : `scale(${localBreathingTime < 5 ? 0.8 + (localBreathingTime / 5) * 0.4 : 1.2 - ((localBreathingTime - 5) / selectedBreathingTime) * 0.4})`
                 }}
               ></div>
 
@@ -492,13 +531,19 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                 style={{
                   background: preparationTime > 0
                     ? 'radial-gradient(circle, #1A202C 0%, #2D3748 100%)'
-                    : (localBreathingTime < 4
+                    : (localBreathingTime < 5
                       ? 'radial-gradient(circle, #0081FF 0%, #6F4CE7 100%)'
                       : 'radial-gradient(circle, #FF00BC 0%, #610047 100%)'),
-                  transform: preparationTime > 0 ? 'scale(1)' : `scale(${localBreathingTime < 4 ? 0.8 + (localBreathingTime / 4) * 0.4 : 1.2 - ((localBreathingTime - 4) / selectedBreathingTime) * 0.4})`,
-                  boxShadow: `0 0 40px ${preparationTime > 0 ? '#6F4CE740' : (localBreathingTime < 4 ? '#0081FF60' : '#FF00BC60')}`
+                  transform: preparationTime > 0 ? 'scale(1)' : `scale(${localBreathingTime < 5 ? 0.8 + (localBreathingTime / 5) * 0.4 : 1.2 - ((localBreathingTime - 5) / selectedBreathingTime) * 0.4})`,
+                  boxShadow: `0 0 40px ${preparationTime > 0 ? '#6F4CE740' : (localBreathingTime < 5 ? '#0081FF60' : '#FF00BC60')}`
                 }}
               >
+                {!isPlayingState && !isPlaybackLoading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-full backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="material-symbols-rounded text-white text-4xl">play_arrow</span>
+                  </div>
+                )}
+
                 {preparationTime > 0 ? (
                   <>
                     <span className="text-white/60 font-black text-xs uppercase tracking-widest mb-1">
@@ -510,14 +555,11 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                   </>
                 ) : (
                   <>
-                    <span className="material-symbols-rounded text-white text-4xl mb-1">
-                      {localBreathingTime < 4 ? 'expand_content' : 'collapse_content'}
+                    <span className="text-white font-black text-sm uppercase tracking-tighter mt-4">
+                      {localBreathingTime < 5 ? 'Inspire' : 'Expire'}
                     </span>
-                    <span className="text-white font-black text-sm uppercase tracking-tighter">
-                      {localBreathingTime < 4 ? 'Inspire' : 'Expire'}
-                    </span>
-                    <span className="text-white/80 font-mono text-2xl mt-4 font-black">
-                      {Math.ceil(localBreathingTime < 4 ? 4 - localBreathingTime : selectedBreathingTime - (localBreathingTime - 4))}s
+                    <span className="text-white/80 font-mono text-2xl mt-2 font-black">
+                      {Math.ceil(localBreathingTime < 5 ? 5 - localBreathingTime : selectedBreathingTime - (localBreathingTime - 5))}s
                     </span>
                   </>
                 )}
@@ -536,12 +578,12 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                   strokeDashoffset={
                     preparationTime > 0
                       ? 553 - (553 * (preparationTime / 2))
-                      : 553 - (553 * (localBreathingTime / (4 + selectedBreathingTime)))
+                      : 553 - (553 * (localBreathingTime / (5 + selectedBreathingTime)))
                   }
                   className="opacity-10"
                 />
               </svg>
-            </div>
+            </button>
           ) : (
             logoConfig.map((bar, index) => (
               <div
@@ -756,35 +798,39 @@ input[type = 'range']:: -webkit - slider - runnable - track {
             <span className="material-symbols-rounded text-3xl">skip_previous</span>
           </button>
 
-          <button
-            onClick={() => { seek(Math.max(0, currentTime - 5)); }}
-            disabled={isPlaybackLoading}
-            className="text-gray-400 hover:text-white transition-colors disabled:opacity-30"
-          >
-            <span className="material-symbols-rounded text-3xl">replay_5</span>
-          </button>
+          {!vocalize?.isBreathing && (
+            <>
+              <button
+                onClick={() => { seek(Math.max(0, currentTime - 5)); }}
+                disabled={isPlaybackLoading}
+                className="text-gray-400 hover:text-white transition-colors disabled:opacity-30"
+              >
+                <span className="material-symbols-rounded text-3xl">replay_5</span>
+              </button>
 
-          <button
-            onClick={togglePlay}
-            disabled={isPlaybackLoading || (DISABLE_ALL_PLAYERS && !isAdmin)}
-            className={`w-20 h-20 rounded-full bg-brand-gradient flex items-center justify-center shadow-[0_10px_30px_rgba(238,19,202,0.4)] hover:scale-105 transition-transform active:scale-95 ${isPlaybackLoading || (DISABLE_ALL_PLAYERS && !isAdmin) ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
-          >
-            {isPlaybackLoading ? (
-              <span className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-            ) : (
-              <span className="material-symbols-rounded text-4xl text-white fill-current">
-                {isPlayingState ? 'pause' : 'play_arrow'}
-              </span>
-            )}
-          </button>
+              <button
+                onClick={togglePlay}
+                disabled={isPlaybackLoading || (DISABLE_ALL_PLAYERS && !isAdmin)}
+                className={`w-20 h-20 rounded-full bg-brand-gradient flex items-center justify-center shadow-[0_10px_30px_rgba(238,19,202,0.4)] hover:scale-105 transition-transform active:scale-95 ${isPlaybackLoading || (DISABLE_ALL_PLAYERS && !isAdmin) ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+              >
+                {isPlaybackLoading ? (
+                  <span className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                ) : (
+                  <span className="material-symbols-rounded text-4xl text-white fill-current">
+                    {isPlayingState ? 'pause' : 'play_arrow'}
+                  </span>
+                )}
+              </button>
 
-          <button
-            onClick={() => { seek(Math.min(duration, currentTime + 5)); }}
-            disabled={isPlaybackLoading}
-            className="text-gray-400 hover:text-white transition-colors disabled:opacity-30"
-          >
-            <span className="material-symbols-rounded text-3xl">forward_5</span>
-          </button>
+              <button
+                onClick={() => { seek(Math.min(duration, currentTime + 5)); }}
+                disabled={isPlaybackLoading}
+                className="text-gray-400 hover:text-white transition-colors disabled:opacity-30"
+              >
+                <span className="material-symbols-rounded text-3xl">forward_5</span>
+              </button>
+            </>
+          )}
 
           <button
             onClick={onNext}
