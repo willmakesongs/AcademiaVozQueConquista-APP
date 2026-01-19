@@ -802,22 +802,11 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                           : 'bg-white/5 border-white/10 opacity-70 hover:opacity-100 hover:border-white/20'
                           }`}
                       >
-                        <div className="flex items-end justify-center gap-[3.5px] h-8 relative z-10 translate-y-0.5">
-                          {activeConfig.map((bar, index) => (
-                            <div
-                              key={index}
-                              className="w-1.5 rounded-full transition-all duration-300"
-                              style={{
-                                height: activeSource === 'female' && isPlaying
-                                  ? `${(barHeights[index] / 140) * 40}px`
-                                  : `${(bar.baseHeight / 100) * 28}px`,
-                                backgroundColor: bar.color,
-                                boxShadow: activeSource === 'female' && isPlaying ? `0 0 10px ${bar.color}50` : `0 0 6px ${bar.color}20`,
-                                opacity: 1
-                              }}
-                            />
-                          ))}
-                        </div>
+                        <img
+                          src={MINIMALIST_LOGO_URL}
+                          alt="VQC Logo"
+                          className={`w-12 h-12 object-contain transition-all duration-500 ${activeSource === 'female' && isPlaying ? 'brightness-125 drop-shadow-[0_0_8px_rgba(0,129,255,0.6)]' : 'opacity-80 grayscale'}`}
+                        />
                       </button>
                       <span className={`text-[11px] uppercase font-black tracking-[0.2em] ${activeSource === 'female' && isPlaying ? 'text-white' : 'text-gray-500'}`}>Iniciar Exercício</span>
                     </div>
