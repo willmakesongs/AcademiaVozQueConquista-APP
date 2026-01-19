@@ -27,7 +27,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
   const { pitch: globalPitch } = usePlayback();
   const [pitch, setPitch] = useState(globalPitch);
 
-  const [barHeights, setBarHeights] = useState<number[]>([70, 35, 25, 85, 45, 25]);
+  const [barHeights, setBarHeights] = useState<number[]>([70, 35, 25, 85, 45, 25]); // Will be synced by effect
   const [isPlayingState, setIsPlayingState] = useState(false);
   const [touchStart, setTouchStart] = useState<{ x: number, y: number } | null>(null);
   const [touchEnd, setTouchEnd] = useState<{ x: number, y: number } | null>(null);
@@ -55,6 +55,27 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     { color: '#FF00BC', baseHeight: 45 },
     { color: '#FF00BC', baseHeight: 25 },
   ];
+
+  const scaleConfig = [
+    { color: '#0081FF', baseHeight: 20 },
+    { color: '#0081FF', baseHeight: 30 },
+    { color: '#0081FF', baseHeight: 40 },
+    { color: '#6F4CE7', baseHeight: 50 },
+    { color: '#6F4CE7', baseHeight: 60 },
+    { color: '#9333EA', baseHeight: 70 },
+    { color: '#FF00BC', baseHeight: 85 },
+    { color: '#FF00BC', baseHeight: 100 },
+  ];
+
+  const activeConfig = vocalize?.id === 'vqc-major-asc' ? scaleConfig : logoConfig;
+  const activeConfigRef = useRef(activeConfig);
+
+  // Sync ref with activeConfig
+  useEffect(() => {
+    activeConfigRef.current = activeConfig;
+    setBarHeights(activeConfig.map(b => b.baseHeight));
+  }, [activeConfig]);
+
 
   // Cálculo da taxa de reprodução baseada nos semitons
   const playbackRate = Math.pow(2, pitch / 12);
@@ -138,7 +159,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
         clearInterval(animationIntervalRef.current);
         animationIntervalRef.current = null;
       }
-      setBarHeights(logoConfig.map(b => b.baseHeight));
+      setBarHeights(activeConfigRef.current.map(b => b.baseHeight));
     } else if ((isPlaying || isPlayingState) && !animationIntervalRef.current) {
       startVisualizer();
     }
@@ -273,7 +294,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
   const stopAudio = () => {
     stopPlayback();
     if (animationIntervalRef.current) clearInterval(animationIntervalRef.current);
-    setBarHeights(logoConfig.map(b => b.baseHeight));
+    setBarHeights(activeConfigRef.current.map(b => b.baseHeight));
   };
 
   const resetPlayback = () => {
@@ -283,11 +304,17 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
   const startVisualizer = () => {
     if (animationIntervalRef.current) clearInterval(animationIntervalRef.current);
     animationIntervalRef.current = window.setInterval(() => {
-      setBarHeights(prev => prev.map((h, i) => {
-        const base = logoConfig[i].baseHeight;
-        const randomScale = 0.5 + Math.random() * 1.5;
-        return Math.max(15, Math.min(140, base * randomScale));
-      }));
+      setBarHeights(prev => {
+        const config = activeConfigRef.current;
+        // Ensure prev has correct length, if not, reset reset to base
+        if (prev.length !== config.length) return config.map(c => c.baseHeight);
+
+        return prev.map((h, i) => {
+          const base = config[i].baseHeight;
+          const randomScale = 0.5 + Math.random() * 1.5;
+          return Math.max(15, Math.min(140, base * randomScale));
+        });
+      });
     }, 80);
   };
 
@@ -366,7 +393,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
         clearInterval(animationIntervalRef.current);
         animationIntervalRef.current = null;
       }
-      setBarHeights(logoConfig.map(b => b.baseHeight));
+      setBarHeights(activeConfigRef.current.map(b => b.baseHeight));
     } else {
       setActiveAudioUrl(targetUrl);
       setActiveSource(type);
@@ -559,7 +586,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
               </svg>
             </button>
           ) : (
-            logoConfig.map((bar, index) => (
+            activeConfig.map((bar, index) => (
               <div
                 key={index}
                 className="w-3 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-[80ms] ease-linear"
@@ -628,7 +655,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
               >
                 {/* Internal Logo / Visualizer */}
                 <div className="flex items-end justify-center gap-[4.5px] h-10 relative z-10 translate-y-0.5">
-                  {logoConfig.map((bar, index) => (
+                  {activeConfig.map((bar, index) => (
                     <div
                       key={index}
                       className="w-1.5 rounded-full transition-all duration-300"
@@ -666,7 +693,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                     }`}
                 >
                   <div className="flex items-end justify-center gap-[3.5px] h-8 relative z-10 translate-y-0.5">
-                    {logoConfig.map((bar, index) => (
+                    {activeConfig.map((bar, index) => (
                       <div
                         key={index}
                         className="w-1.5 rounded-full transition-all duration-300"
@@ -700,7 +727,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                           }`}
                       >
                         <div className="flex items-end justify-center gap-[3.5px] h-8 relative z-10 translate-y-0.5">
-                          {logoConfig.map((bar, index) => (
+                          {activeConfig.map((bar, index) => (
                             <div
                               key={index}
                               className="w-1.5 rounded-full transition-all duration-300"
