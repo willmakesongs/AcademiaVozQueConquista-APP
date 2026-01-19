@@ -698,31 +698,30 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                   <div className="flex justify-center flex-1">
                     <div className="flex flex-col items-center gap-3">
                       <button
-                        onClick={() => handleTrain('female' as any)} // Reusing 'female' type or add 'single' logic if needed, but 'female' often maps to default audioUrl in legacy logic? No, check handleTrain.
-                        // Actually handleTrain uses 'female' -> audioUrl, 'male' -> audioUrlMale?? No, let's check handleTrain again.
-                        // handleTrain maps: 'male'->audioUrlMale, 'example'->exampleUrl, else->audioUrl.
-                        // So passing 'female' might play audioUrl if audioUrlMale is missing?
-                        // Let's check handleTrain implementation:
-                        // if (type === 'male') targetUrl = vocalize.audioUrlMale;
-                        // else if (type === 'example') targetUrl = vocalize.exampleUrl;
-                        // else targetUrl = vocalize.audioUrl;
-                        // So ANY type other than 'male' or 'example' plays `audioUrl`.
-                        // passing 'single' (or just keeping 'female' effectively plays audioUrl if audioUrlMale is missing?)
-                        // Wait, 'female' is not explicitly 'else'.
-                        // Let's modify handleTrain to be clearer or just pass 'female' which is fine given the 'else' block
-                        // BUT visual feedback depends on activeSource === 'female'.
-                        // Let's use 'single' for clarity if possible, but 'female' works.
-                        // Let's use 'female' but check visual label.
-                        className={`relative w-28 h-28 rounded-full flex flex-col items-center justify-center transition-all border-4 ${activeSource === 'female' && isPlaying
-                          ? 'bg-[#0081FF]/20 border-[#0081FF] shadow-[0_0_20px_rgba(0,129,255,0.3)]'
-                          : 'bg-white/5 border-white/5 opacity-50 hover:opacity-100'
+                        onClick={() => handleTrain('female')}
+                        className={`relative w-24 h-24 rounded-full flex flex-col items-center justify-center transition-all duration-700 border-[3px] overflow-hidden shadow-xl ${activeSource === 'female' && isPlaying
+                          ? 'bg-[#1A202C] border-[#0081FF] shadow-[#0081FF]/40 scale-105'
+                          : 'bg-white/5 border-white/10 opacity-70 hover:opacity-100 hover:border-white/20'
                           }`}
                       >
-                        <div className={`w-14 h-14 rounded-full flex items-center justify-center ${activeSource === 'female' && isPlaying ? 'bg-[#0081FF] text-white' : 'bg-white/10 text-gray-400'}`}>
-                          <span className="material-symbols-rounded text-3xl">play_arrow</span>
+                        <div className="flex items-end justify-center gap-[3.5px] h-8 relative z-10 translate-y-0.5">
+                          {logoConfig.map((bar, index) => (
+                            <div
+                              key={index}
+                              className="w-1.5 rounded-full transition-all duration-300"
+                              style={{
+                                height: activeSource === 'female' && isPlaying
+                                  ? `${(barHeights[index] / 140) * 40}px`
+                                  : `${(bar.baseHeight / 100) * 28}px`,
+                                backgroundColor: bar.color,
+                                boxShadow: activeSource === 'female' && isPlaying ? `0 0 10px ${bar.color}50` : `0 0 6px ${bar.color}20`,
+                                opacity: 1
+                              }}
+                            />
+                          ))}
                         </div>
                       </button>
-                      <span className={`text-[12px] uppercase font-black tracking-widest ${activeSource === 'female' && isPlaying ? 'text-white' : 'text-gray-500'}`}>Iniciar Exercício</span>
+                      <span className={`text-[11px] uppercase font-black tracking-[0.2em] ${activeSource === 'female' && isPlaying ? 'text-white' : 'text-gray-500'}`}>Iniciar Exercício</span>
                     </div>
                   </div>
                 ) : (
