@@ -5345,10 +5345,9 @@ export const VOCALIZES: Vocalize[] = [
         duration: '04:00',
         bpm: 100,
         key: 'A Minor',
-        description: 'Consolidação da memória muscular para a escala menor.',
-        audioUrl: `${VOCALIZES_BASE_URL}vqc_minor_desc_H.mp3`,
-        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_minor_desc_L.mp3`,
-        exampleUrl: `${VOCALIZES_BASE_URL}vqc_minor_desc_example.mp3`
+        description: 'Escala Menor Descendente: [Meta: Memória muscular menor] - Instrução: Execução descendente precisa.',
+        audioUrl: 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/VOCALIZES+VQC+PRO/Escala+Menor+Descendente.mp3',
+        exampleUrl: 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/VOCALIZES+VQC+PRO/Exemplo+Escala+Menor+Descendente.mp3'
     },
     {
         id: 'vqc-minor-int-asc',
