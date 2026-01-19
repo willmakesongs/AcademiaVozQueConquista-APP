@@ -484,7 +484,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
 
 
 
-        <div className="h-48 flex items-end justify-center gap-2 shrink-0 relative z-10 my-8">
+        <div className={`${vocalize?.isBreathing ? 'h-72 items-center' : 'h-48 items-end'} flex justify-center gap-2 shrink-0 relative z-10 my-8 transition-all duration-500`}>
           {vocalize?.isBreathing ? (
             <button
               onClick={togglePlay}
