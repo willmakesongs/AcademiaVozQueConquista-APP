@@ -57,14 +57,14 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
   ];
 
   const scaleConfig = [
-    { color: '#0081FF', baseHeight: 20 },
-    { color: '#0081FF', baseHeight: 30 },
-    { color: '#0081FF', baseHeight: 40 },
-    { color: '#6F4CE7', baseHeight: 50 },
-    { color: '#6F4CE7', baseHeight: 60 },
-    { color: '#9333EA', baseHeight: 70 },
-    { color: '#FF00BC', baseHeight: 85 },
-    { color: '#FF00BC', baseHeight: 100 },
+    { color: '#0081FF', baseHeight: 20, label: 'Dó' },
+    { color: '#0055D4', baseHeight: 30, label: 'Re' },
+    { color: '#002B7F', baseHeight: 40, label: 'Mi' },
+    { color: '#4B369D', baseHeight: 50, label: 'Fa' },
+    { color: '#6F4CE7', baseHeight: 60, label: 'Sol' },
+    { color: '#9333EA', baseHeight: 70, label: 'La' },
+    { color: '#C026D3', baseHeight: 85, label: 'Si' },
+    { color: '#FF00BC', baseHeight: 100, label: 'Dó' },
   ];
 
   const activeConfig = vocalize?.id === 'vqc-major-asc' ? scaleConfig : logoConfig;
@@ -510,7 +510,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
 
 
 
-        <div className={`${vocalize?.isBreathing ? 'h-72 items-center' : 'h-48 items-end'} flex justify-center gap-2 shrink-0 relative z-10 my-8 transition-all duration-500`}>
+        <div className={`${vocalize?.isBreathing ? 'h-72 items-center' : 'h-52 items-end'} flex justify-center ${vocalize?.id === 'vqc-major-asc' ? 'gap-3' : 'gap-2'} shrink-0 relative z-10 my-8 transition-all duration-500`}>
           {vocalize?.isBreathing ? (
             <button
               onClick={togglePlay}
@@ -587,16 +587,24 @@ input[type = 'range']:: -webkit - slider - runnable - track {
             </button>
           ) : (
             activeConfig.map((bar, index) => (
-              <div
-                key={index}
-                className="w-3 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-[80ms] ease-linear"
-                style={{
-                  backgroundColor: bar.color,
-                  height: `${barHeights[index] * 0.6}px`,
-                  boxShadow: isPlayingState ? `0 0 15px ${bar.color}60` : 'none',
-                  opacity: isPlayingState ? 1 : 0.6
-                }}
-              ></div>
+              <div key={index} className="flex flex-col items-center gap-2">
+                {/* Note Label */}
+                {(bar as any).label && (
+                  <span className={`text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${isPlayingState ? 'text-white translate-y-0 opacity-100' : 'text-transparent translate-y-4 opacity-0'}`} style={{ textShadow: `0 0 10px ${bar.color}` }}>
+                    {(bar as any).label}
+                  </span>
+                )}
+                {/* Bar */}
+                <div
+                  className={`rounded-full shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-[80ms] ease-linear ${vocalize?.id === 'vqc-major-asc' ? 'w-5' : 'w-3'}`}
+                  style={{
+                    backgroundColor: bar.color,
+                    height: `${barHeights[index] * 0.6}px`,
+                    boxShadow: isPlayingState ? `0 0 15px ${bar.color}60` : 'none',
+                    opacity: isPlayingState ? 1 : 0.6
+                  }}
+                ></div>
+              </div>
             ))
           )}
         </div>
