@@ -4521,7 +4521,7 @@ export const MODULES: Module[] = [
         id: 'm_vqc_pro',
         courseId: 'canto',
         number: '11',
-        title: 'Vocalizes VQC Pró',
+        title: 'Vocalizes VQC PRO',
         subtitle: 'Domínio de Escalas',
         description: 'Treinamento vocal avançado com foco em precisão tonal e agilidade.',
         icon: 'dynamic_feed',
