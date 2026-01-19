@@ -311,6 +311,11 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
       if (activeSource !== 'example') pause();
       setIsPlayingState(false);
       setPreparationTime(0);
+
+      // Auto-increment breathing time when finishing an exercise
+      if (vocalize?.isBreathing) {
+        setSelectedBreathingTime(prev => Math.min(prev + 2, 30));
+      }
     } else {
       if (vocalize?.isBreathing) {
         // Stop example if playing
@@ -477,37 +482,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
           </div>
         </div>
 
-        {/* Technical Instructions for Breathing Exercises - Moved above the circle */}
-        {vocalize?.isBreathing && (
-          <div className="w-full max-w-sm mb-6 px-6 py-5 rounded-3xl bg-[#1A202C]/40 border border-white/5 backdrop-blur-md animate-in fade-in slide-in-from-bottom-4 duration-700">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-2 h-2 rounded-full bg-[#6F4CE7] animate-pulse"></span>
-              <p className="text-[11px] uppercase text-[#6F4CE7] font-black tracking-[0.2em] leading-none pt-0.5">Objetivo Técnico</p>
-            </div>
 
-            <p className="text-white/90 text-[15px] leading-relaxed font-medium mb-4">
-              {vocalize.id === 'v-sopro-continuo' && "Desenvolver o apoio e a pressão de ar constante através da técnica do 'S' sustentado."}
-              {vocalize.id === 'v-pulsos-ar' && "Fortalecer o apoio diafragmático ao ativar o abdômen durante a expiração pulsada."}
-              {vocalize.id === 'v-hoo-grave' && "Internalizar a vocalização com a garganta aberta para eliminar o hábito de fechamento ou aperto na garganta."}
-            </p>
-
-            <div className="h-px w-full bg-gradient-to-r from-white/10 via-white/5 to-transparent mb-4"></div>
-
-            <div className="flex gap-3">
-              <div className="w-8 h-8 rounded-full bg-[#6F4CE7]/20 flex items-center justify-center shrink-0">
-                <span className="material-symbols-rounded text-[#6F4CE7] text-lg">lightbulb</span>
-              </div>
-              <div className="flex-1">
-                <p className="text-[10px] uppercase text-gray-500 font-bold tracking-widest mb-1">Como Praticar</p>
-                <p className="text-gray-400 text-[14px] leading-relaxed">
-                  {vocalize.id === 'v-sopro-continuo' && "Inspire pelo nariz enchendo a parte baixa (abdômen) e solte o ar fazendo um som de 'S' (como uma bexiga furada) o mais constante possível."}
-                  {vocalize.id === 'v-pulsos-ar' && "Faça pulsos curtos e firmes com o som de 'S'. Cada pulso deve vir de uma contração rápida do abdômen, sem tensão na garganta."}
-                  {vocalize.id === 'v-hoo-grave' && "Cante a nota mais grave que conseguir de forma confortável, com bastante fluxo de ar. Preste atenção ao movimento da sua barriga."}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
 
         <div className="h-48 flex items-end justify-center gap-2 shrink-0 relative z-10 my-8">
           {vocalize?.isBreathing ? (
