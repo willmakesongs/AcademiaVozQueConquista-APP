@@ -636,10 +636,17 @@ export const LibraryScreen: React.FC<Props> = ({
             Módulos
           </button>
           <button
-            onClick={() => setActiveTab('routine')}
-            className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'routine' ? 'bg-[#1A202C] text-white shadow-sm' : 'text-gray-500'}`}
+            onClick={() => {
+              setActiveTab('modules');
+              onExpandedModuleChange('m_vqc_pro');
+              setTimeout(() => {
+                const el = document.getElementById('module-m_vqc_pro');
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }, 100);
+            }}
+            className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'routine' ? 'bg-[#1A202C] text-white shadow-sm' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}
           >
-            Rotina
+            VQC PRO
           </button>
         </div>
       </header>
@@ -688,6 +695,7 @@ export const LibraryScreen: React.FC<Props> = ({
                 return (
                   <div
                     key={module.id}
+                    id={`module-${module.id}`}
                     className={`rounded-2xl border transition-all duration-300 overflow-hidden ${isActive
                       ? 'bg-[#1A202C] border-[#6F4CE7]/50 shadow-[0_0_30px_rgba(111,76,231,0.1)]'
                       : (isLocked ? 'bg-[#1A202C]/30 border-white/5 opacity-70' : 'bg-[#1A202C]/50 border-white/5')
