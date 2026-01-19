@@ -44,6 +44,13 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
   const animationIntervalRef = useRef<number | null>(null);
   const autoPlayRef = useRef(false);
   const audioCtxRef = useRef<AudioContext | null>(null);
+  const currentTimeRef = useRef(currentTime);
+
+  // Sync refs
+  useEffect(() => {
+    currentTimeRef.current = currentTime;
+  }, [currentTime]);
+
   const lastTickRef = useRef<number>(-1);
   const bellAudioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -306,8 +313,46 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     animationIntervalRef.current = window.setInterval(() => {
       setBarHeights(prev => {
         const config = activeConfigRef.current;
+        const isScaleExercise = vocalize?.id === 'vqc-major-asc';
+
         // Ensure prev has correct length, if not, reset reset to base
         if (prev.length !== config.length) return config.map(c => c.baseHeight);
+
+        // Sequenced Animation for Scale
+        if (isScaleExercise && isPlaying) {
+          const beatDuration = 60 / 100; // 0.6s per beat @ 100 BPM
+          const totalBeats = 8; // 8 notes
+          const sequenceDuration = totalBeats * beatDuration; // 4.8s
+          const cycleDuration = sequenceDuration + (2.4); // 4.8s + 2.4s rest = 7.2s
+
+          // Use refs to get latest values inside interval
+          const time = currentTimeRef.current || 0;
+
+          // Calculate active note index (0-7) based on modulo time
+          // We add a small offset (0.1s) to allow for attack time/latentcy perception
+          const moduloTime = time % (cycleDuration + 2.4); // Adding 2.4s (4 beats) padding/rest for modulation loops
+          // If in padding time, maybe flash all or dim all?
+
+          let activeIndex = -1;
+          if (moduloTime < sequenceDuration) {
+            activeIndex = Math.floor(moduloTime / beatDuration);
+          }
+
+          return prev.map((h, i) => {
+            const base = config[i].baseHeight;
+            // Logic: Active note is MAX. Previous notes are MID. Future notes are MIN.
+            if (i === activeIndex) {
+              // Active: Pulse between 1.0 and 1.2 of max height, bright color handled by rendering
+              return 100 + Math.random() * 20;
+            } else if (i < activeIndex) {
+              // Past: Stay visible but static-ish (Trail)
+              return 60;
+            } else {
+              // Future: Low
+              return 20;
+            }
+          });
+        }
 
         return prev.map((h, i) => {
           const base = config[i].baseHeight;
