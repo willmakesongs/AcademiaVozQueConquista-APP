@@ -5334,9 +5334,8 @@ export const VOCALIZES: Vocalize[] = [
         bpm: 100,
         key: 'A Minor',
         description: 'Familiarização com a sonoridade da escala menor (Natural).',
-        audioUrl: `${VOCALIZES_BASE_URL}vqc_minor_asc_H.mp3`,
-        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_minor_asc_L.mp3`,
-        exampleUrl: `${VOCALIZES_BASE_URL}vqc_minor_asc_example.mp3`
+        audioUrl: 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/VOCALIZES+VQC+PRO/Escala+Menor+Ascendente.mp3',
+        exampleUrl: 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/VOCALIZES+VQC+PRO/Exemplo+Escala+Menor+Ascendente.mp3'
     },
     {
         id: 'vqc-minor-desc',
