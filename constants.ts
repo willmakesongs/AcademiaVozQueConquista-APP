@@ -5389,7 +5389,6 @@ export const VOCALIZES: Vocalize[] = [
         key: 'C Major',
         description: 'Estabilidade nos graus I, III e V.',
         audioUrl: `${VOCALIZES_BASE_URL}vqc_triad_major_H.mp3`,
-        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_triad_major_L.mp3`,
         exampleUrl: `${VOCALIZES_BASE_URL}vqc_triad_major_example.mp3`
     },
     {
@@ -5403,7 +5402,6 @@ export const VOCALIZES: Vocalize[] = [
         key: 'A Minor',
         description: 'Percepção do modo menor em saltos.',
         audioUrl: `${VOCALIZES_BASE_URL}vqc_triad_minor_H.mp3`,
-        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_triad_minor_L.mp3`,
         exampleUrl: `${VOCALIZES_BASE_URL}vqc_triad_minor_example.mp3`
     },
     {
@@ -5417,7 +5415,6 @@ export const VOCALIZES: Vocalize[] = [
         key: 'C Major',
         description: 'Expansão de extensão e registro.',
         audioUrl: `${VOCALIZES_BASE_URL}vqc_octave_jump_H.mp3`,
-        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_octave_jump_L.mp3`,
         exampleUrl: `${VOCALIZES_BASE_URL}vqc_octave_jump_example.mp3`
     },
     {
@@ -5431,7 +5428,6 @@ export const VOCALIZES: Vocalize[] = [
         key: 'C Maj7',
         description: 'Introdução à harmonia de tétrades.',
         audioUrl: `${VOCALIZES_BASE_URL}vqc_arpeggio_maj7_H.mp3`,
-        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_arpeggio_maj7_L.mp3`,
         exampleUrl: `${VOCALIZES_BASE_URL}vqc_arpeggio_maj7_example.mp3`
     },
     {
@@ -5445,7 +5441,6 @@ export const VOCALIZES: Vocalize[] = [
         key: 'C Major',
         description: 'Fluidez e articulação rápida.',
         audioUrl: `${VOCALIZES_BASE_URL}vqc_pentatonic_major_H.mp3`,
-        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_pentatonic_major_L.mp3`,
         exampleUrl: `${VOCALIZES_BASE_URL}vqc_pentatonic_major_example.mp3`
     },
     {
@@ -5459,7 +5454,6 @@ export const VOCALIZES: Vocalize[] = [
         key: 'A Minor',
         description: 'Estilo e controle de intervalos de quarta.',
         audioUrl: `${VOCALIZES_BASE_URL}vqc_pentatonic_minor_H.mp3`,
-        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_pentatonic_minor_L.mp3`,
         exampleUrl: `${VOCALIZES_BASE_URL}vqc_pentatonic_minor_example.mp3`
     },
     {
@@ -5473,7 +5467,6 @@ export const VOCALIZES: Vocalize[] = [
         key: 'Chromatice',
         description: 'Refino da percepção de semitons.',
         audioUrl: `${VOCALIZES_BASE_URL}vqc_chromatism_H.mp3`,
-        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_chromatism_L.mp3`,
         exampleUrl: `${VOCALIZES_BASE_URL}vqc_chromatism_example.mp3`
     },
     {
@@ -5487,7 +5480,6 @@ export const VOCALIZES: Vocalize[] = [
         key: 'C Major',
         description: 'Fortalecimento do apoio diafragmático.',
         audioUrl: `${VOCALIZES_BASE_URL}vqc_jump_5th_4th_H.mp3`,
-        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_jump_5th_4th_L.mp3`,
         exampleUrl: `${VOCALIZES_BASE_URL}vqc_jump_5th_4th_example.mp3`
     },
 

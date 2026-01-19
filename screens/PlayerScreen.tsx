@@ -85,7 +85,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     { color: '#0081FF', baseHeight: 20, label: 'Dó' },
   ];
 
-  const activeConfig = (vocalize?.id === 'vqc-major-asc' || vocalize?.id === 'vqc-minor-asc') ? scaleConfig : (vocalize?.id === 'vqc-major-desc' || vocalize?.id === 'vqc-minor-desc' ? scaleDescConfig : logoConfig);
+  const activeConfig = (['vqc-major-asc', 'vqc-minor-asc', 'vqc-triad-major', 'vqc-triad-minor', 'vqc-octave-jump', 'vqc-arpeggio-maj7', 'vqc-pentatonic-major', 'vqc-pentatonic-minor', 'vqc-chromatism', 'vqc-jump-5th-4th'].includes(vocalize?.id || '')) ? scaleConfig : (['vqc-major-desc', 'vqc-minor-desc'].includes(vocalize?.id || '') ? scaleDescConfig : logoConfig);
   const activeConfigRef = useRef(activeConfig);
 
   // Sync ref with activeConfig
@@ -323,7 +323,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     if (animationIntervalRef.current) clearInterval(animationIntervalRef.current);
 
     const config = activeConfigRef.current;
-    if (vocalize?.id === 'vqc-major-asc' || vocalize?.id === 'vqc-minor-asc' || vocalize?.id === 'vqc-major-desc' || vocalize?.id === 'vqc-minor-desc') {
+    if (['vqc-major-asc', 'vqc-minor-asc', 'vqc-major-desc', 'vqc-minor-desc', 'vqc-triad-major', 'vqc-triad-minor', 'vqc-octave-jump', 'vqc-arpeggio-maj7', 'vqc-pentatonic-major', 'vqc-pentatonic-minor', 'vqc-chromatism', 'vqc-jump-5th-4th'].includes(vocalize?.id || '')) {
       setBarHeights(activeConfigRef.current.map(c => c.baseHeight));
       return;
     }
@@ -578,7 +578,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
 
 
 
-        <div className={`${vocalize?.isBreathing ? 'h-72 items-center' : 'h-52 items-end'} flex justify-center ${['vqc-major-asc', 'vqc-minor-asc', 'vqc-major-desc', 'vqc-minor-desc'].includes(vocalize?.id || '') ? 'gap-3' : 'gap-2'} shrink-0 relative z-10 my-8 transition-all duration-500`}>
+        <div className={`${vocalize?.isBreathing ? 'h-72 items-center' : 'h-52 items-end'} flex justify-center ${['vqc-major-asc', 'vqc-minor-asc', 'vqc-major-desc', 'vqc-minor-desc', 'vqc-triad-major', 'vqc-triad-minor', 'vqc-octave-jump', 'vqc-arpeggio-maj7', 'vqc-pentatonic-major', 'vqc-pentatonic-minor', 'vqc-chromatism', 'vqc-jump-5th-4th'].includes(vocalize?.id || '') ? 'gap-3' : 'gap-2'} shrink-0 relative z-10 my-8 transition-all duration-500`}>
           {vocalize?.isBreathing ? (
             <button
               onClick={togglePlay}
@@ -664,7 +664,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                 )}
                 {/* Bar */}
                 <div
-                  className={`rounded-full shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-[80ms] ease-linear ${['vqc-major-asc', 'vqc-minor-asc', 'vqc-major-desc', 'vqc-minor-desc'].includes(vocalize?.id || '') ? 'w-5' : 'w-3'}`}
+                  className={`rounded-full shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-[80ms] ease-linear ${['vqc-major-asc', 'vqc-minor-asc', 'vqc-major-desc', 'vqc-minor-desc', 'vqc-triad-major', 'vqc-triad-minor', 'vqc-octave-jump', 'vqc-arpeggio-maj7', 'vqc-pentatonic-major', 'vqc-pentatonic-minor', 'vqc-chromatism', 'vqc-jump-5th-4th'].includes(vocalize?.id || '') ? 'w-5' : 'w-3'}`}
                   style={{
                     backgroundColor: bar.color,
                     height: `${barHeights[index] * 0.6}px`,
