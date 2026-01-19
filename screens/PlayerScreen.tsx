@@ -456,12 +456,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
           <span className="material-symbols-rounded">keyboard_arrow_down</span>
         </button>
         <div className="flex flex-col items-center">
-          {!vocalize?.isBreathing && (
-            <>
-              <span className="text-[10px] uppercase tracking-widest text-gray-400">Tocando agora</span>
-              <span className="text-sm font-bold truncate max-w-[200px]">{currentTitle}</span>
-            </>
-          )}
+
         </div>
         <button className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-white/10">
           <span className="material-symbols-rounded">more_horiz</span>
