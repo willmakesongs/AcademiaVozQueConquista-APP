@@ -127,17 +127,19 @@ const AppContent = () => {
 
   const handleNextVocalize = () => {
     if (!currentVocalize) return;
-    const currentIndex = VOCALIZES.findIndex(v => v.id === currentVocalize.id);
-    if (currentIndex < VOCALIZES.length - 1) {
-      setCurrentVocalize(VOCALIZES[currentIndex + 1]);
+    const moduleVocalizes = VOCALIZES.filter(v => v.moduleId === currentVocalize.moduleId);
+    const currentIndex = moduleVocalizes.findIndex(v => v.id === currentVocalize.id);
+    if (currentIndex < moduleVocalizes.length - 1) {
+      setCurrentVocalize(moduleVocalizes[currentIndex + 1]);
     }
   };
 
   const handlePrevVocalize = () => {
     if (!currentVocalize) return;
-    const currentIndex = VOCALIZES.findIndex(v => v.id === currentVocalize.id);
+    const moduleVocalizes = VOCALIZES.filter(v => v.moduleId === currentVocalize.moduleId);
+    const currentIndex = moduleVocalizes.findIndex(v => v.id === currentVocalize.id);
     if (currentIndex > 0) {
-      setCurrentVocalize(VOCALIZES[currentIndex - 1]);
+      setCurrentVocalize(moduleVocalizes[currentIndex - 1]);
     }
   };
 
