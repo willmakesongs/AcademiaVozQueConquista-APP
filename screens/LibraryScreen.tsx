@@ -705,10 +705,14 @@ export const LibraryScreen: React.FC<Props> = ({
                           status === 'completed' ? (
                             <span className="material-symbols-rounded">check</span>
                           ) : (
-                            module.icon ? (
-                              <span className="material-symbols-rounded">{module.icon}</span>
+                            module.icon === 'custom_vqc_logo' ? (
+                              <img src={MINIMALIST_LOGO_URL} className="w-6 h-6 object-contain" alt="VQC" />
                             ) : (
-                              module.number
+                              module.icon ? (
+                                <span className="material-symbols-rounded">{module.icon}</span>
+                              ) : (
+                                module.number
+                              )
                             )
                           )
                         )}

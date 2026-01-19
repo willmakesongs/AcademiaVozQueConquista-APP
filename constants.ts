@@ -4524,7 +4524,7 @@ export const MODULES: Module[] = [
         title: 'Vocalizes VQC PRO',
         subtitle: 'Domínio de Escalas',
         description: 'Treinamento vocal avançado com foco em precisão tonal e agilidade.',
-        icon: 'dynamic_feed',
+        icon: 'custom_vqc_logo',
         topics: [
             {
                 id: 'vqc_pro_1',
