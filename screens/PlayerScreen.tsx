@@ -396,6 +396,12 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
   }, [isPlaying, vocalize?.isBreathing]);
 
   const togglePlay = () => {
+    // Resume AudioContext immediately on user interaction (Fix for iOS/Mobile)
+    if (!audioCtxRef.current) audioCtxRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+    if (audioCtxRef.current.state === 'suspended') {
+      audioCtxRef.current.resume().catch(e => console.error('AudioContext resume failed', e));
+    }
+
     if (isPlayingState) {
       if (activeSource !== 'example') pause();
       setIsPlayingState(false);
