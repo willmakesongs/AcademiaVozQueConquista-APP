@@ -5174,80 +5174,91 @@ export const MODULES: Module[] = [
         icon: 'air',
         topics: [
             {
-                id: 'resp_exercises',
-                title: 'Exercícios de Respiração',
-                description: 'Três exercícios práticos para controle de fôlego.',
+                id: '12.1',
+                title: '1. Sopro Contínuo',
+                description: 'Apoio e pressão de ar constante',
                 content: `
-            <div class="space-y-6">
-                <!-- Sopro Contínuo -->
-                <div class="bg-gradient-to-br from-[#0081FF]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
-                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">1. Sopro Contínuo</h3>
-                    <div class="flex items-center gap-2 mb-6">
-                        <span class="px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
-                        <span class="text-[11px] text-gray-400 font-medium">Apoio e pressão de ar constante</span>
+            <div class="space-y-6 font-sans">
+                <div class="bg-gradient-to-br from-[#101622] to-[#1A202C] p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden shadow-2xl">
+                    <div class="absolute top-0 right-0 w-48 h-48 bg-[#0081FF] blur-[100px] opacity-20"></div>
+                    
+                    <h3 class="text-3xl font-black text-white uppercase tracking-tighter mb-2">1. SOPRO CONTÍNUO</h3>
+                    <div class="px-3 py-1 bg-[#FF00BC]/20 rounded-lg border border-[#FF00BC]/30 inline-block mb-8">
+                        <span class="text-[10px] font-bold text-[#FF00BC] uppercase tracking-widest">OBJETIVO: Apoio e pressão de ar constante</span>
                     </div>
 
-                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
-                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
-                        <p class="text-sm text-gray-300 leading-relaxed">Inspire profundamente e expire de forma estável produzindo um som de "S" contínuo. Observe seu abdômen se expandindo naturalmente na inspiração.</p>
+                    <div class="bg-[#101622] p-6 rounded-2xl border border-white/5 mb-8 relative z-10">
+                        <p class="text-[10px] font-bold text-[#0081FF] uppercase tracking-widest mb-3">INSTRUÇÕES</p>
+                        <p class="text-sm text-gray-300 leading-relaxed font-medium">
+                            Inspire profundamente e expire de forma estável produzindo um som de "S" contínuo. Observe seu abdômen se expandindo naturalmente na inspiração.
+                        </p>
                     </div>
 
-                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="v-sopro-continuo">
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-sm uppercase tracking-widest shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 relative z-10" data-id="v-sopro-continuo">
                         <span class="material-symbols-rounded text-2xl">play_circle</span>
                         INICIAR EXERCÍCIO
                     </button>
                 </div>
             </div>
-
-            <!-- slide -->
-
-            <div class="space-y-6">
-                <!-- Pulsos de Ar -->
-                <div class="bg-gradient-to-br from-[#6F4CE7]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
-                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">2. Pulsos de Ar</h3>
-                    <div class="flex items-center gap-2 mb-6">
-                        <span class="px-2 py-0.5 bg-[#FF00BC]/20 text-[#FF00BC] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
-                        <span class="text-[11px] text-gray-400 font-medium tracking-tight">Ativar abdômen / Fortalecer apoio</span>
+            `
+            },
+            {
+                id: '12.2',
+                title: '2. Pulsos de Ar',
+                description: 'Ativar abdômen / Fortalecer apoio',
+                content: `
+            <div class="space-y-6 font-sans">
+                <div class="bg-gradient-to-br from-[#101622] to-[#1A202C] p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden shadow-2xl">
+                    <div class="absolute top-0 right-0 w-48 h-48 bg-[#6F4CE7] blur-[100px] opacity-20"></div>
+                    
+                    <h3 class="text-3xl font-black text-white uppercase tracking-tighter mb-2">2. PULSOS DE AR</h3>
+                    <div class="px-3 py-1 bg-[#FF00BC]/20 rounded-lg border border-[#FF00BC]/30 inline-block mb-8">
+                        <span class="text-[10px] font-bold text-[#FF00BC] uppercase tracking-widest">OBJETIVO: Ativar abdômen / Fortalecer apoio</span>
                     </div>
 
-                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
-                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
-                        <p class="text-sm text-gray-300 leading-relaxed">Inspire profundamente e expire em rajadas curtas e controladas. Seu trato vocal deve estar aberto e relaxado. Controle os impulsos de ar via abdômen.</p>
+                    <div class="bg-[#101622] p-6 rounded-2xl border border-white/5 mb-8 relative z-10">
+                        <p class="text-[10px] font-bold text-[#6F4CE7] uppercase tracking-widest mb-3">INSTRUÇÕES</p>
+                        <p class="text-sm text-gray-300 leading-relaxed font-medium">
+                            Produza pulsos curtos e rítmicos de "S", focando na contração abdominal rápida a cada pulso. Relaxe entre os pulsos.
+                        </p>
                     </div>
 
-                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="v-pulsos-ar">
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-sm uppercase tracking-widest shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 relative z-10" data-id="v-pulsos-ar">
                         <span class="material-symbols-rounded text-2xl">play_circle</span>
                         INICIAR EXERCÍCIO
                     </button>
                 </div>
             </div>
-
-            <!-- slide -->
-
-            <div class="space-y-6">
-                <!-- Hoo Grave -->
-                <div class="bg-gradient-to-br from-[#FF00BC]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#FF00BC] blur-[80px] opacity-20"></div>
-                    <h3 class="text-2xl font-black text-white mb-2 tracking-tighter uppercase">3. "Hoo" Grave</h3>
-                    <div class="flex items-center gap-2 mb-6">
-                        <span class="px-2 py-0.5 bg-[#0081FF]/20 text-[#0081FF] rounded-full text-[9px] font-bold uppercase">Objetivo</span>
-                        <span class="text-[11px] text-gray-400 font-medium tracking-tight">Garganta aberta / Fluxo de ar</span>
+            `
+            },
+            {
+                id: '12.3',
+                title: '3. "Hoo" Grave',
+                description: 'Garganta aberta / Fluxo de ar',
+                content: `
+            <div class="space-y-6 font-sans">
+                <div class="bg-gradient-to-br from-[#101622] to-[#1A202C] p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden shadow-2xl">
+                    <div class="absolute top-0 right-0 w-48 h-48 bg-[#FF00BC] blur-[100px] opacity-20"></div>
+                    
+                    <h3 class="text-3xl font-black text-white uppercase tracking-tighter mb-2">3. "HOO" GRAVE</h3>
+                    <div class="px-3 py-1 bg-[#FF00BC]/20 rounded-lg border border-[#FF00BC]/30 inline-block mb-8">
+                        <span class="text-[10px] font-bold text-[#FF00BC] uppercase tracking-widest">OBJETIVO: Garganta aberta / Fluxo de ar</span>
                     </div>
 
-                    <div class="bg-black/20 p-5 rounded-2xl border border-white/5 mb-8">
-                        <h4 class="text-[10px] font-bold text-[#0081FF] uppercase mb-2 tracking-widest">Instruções</h4>
-                        <p class="text-sm text-gray-300 leading-relaxed">Cante a nota mais grave que conseguir de forma confortável, com bastante fluxo de ar. Preste atenção ao movimento da sua barriga.</p>
+                    <div class="bg-[#101622] p-6 rounded-2xl border border-white/5 mb-8 relative z-10">
+                        <p class="text-[10px] font-bold text-[#FF00BC] uppercase tracking-widest mb-3">INSTRUÇÕES</p>
+                        <p class="text-sm text-gray-300 leading-relaxed font-medium">
+                            Mantenha a garganta relaxada e emita um som de "Hoo" suave e grave. Sinta a ressonância no peito e evite tensão no pescoço.
+                        </p>
                     </div>
 
-                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-xl active:scale-95 transition-all flex items-center justify-center gap-3" data-id="v-hoo-grave">
+                    <button class="start-vocalize-btn w-full py-5 bg-brand-gradient rounded-2xl text-white font-black text-sm uppercase tracking-widest shadow-xl hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 relative z-10" data-id="v-hoo-grave">
                         <span class="material-symbols-rounded text-2xl">play_circle</span>
                         INICIAR EXERCÍCIO
                     </button>
                 </div>
             </div>
-          `
+            `
             }
         ]
     }
