@@ -692,34 +692,72 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                 </div>
               </div>
 
-              <div className="flex flex-col items-center gap-3">
-                <button
-                  onClick={() => handleTrain('female')}
-                  className={`relative w-24 h-24 rounded-full flex flex-col items-center justify-center transition-all border-4 ${activeSource === 'female' && isPlaying
-                    ? 'bg-[#FF00BC]/20 border-[#FF00BC] shadow-[0_0_20px_rgba(255,0,188,0.3)]'
-                    : 'bg-white/5 border-white/5 grayscale opacity-50 hover:opacity-100'
-                    }`}
-                >
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${activeSource === 'female' && isPlaying ? 'bg-[#FF00BC] text-white' : 'bg-white/10 text-gray-400'}`}>
-                    <span className="material-symbols-rounded text-2xl">woman</span>
+              <div className="flex flex-col items-center gap-3 w-full max-w-[320px]">
+                {/* Single Vocalize Button vs Gendered Buttons */}
+                {!vocalize.audioUrlMale ? (
+                  <div className="flex justify-center flex-1">
+                    <div className="flex flex-col items-center gap-3">
+                      <button
+                        onClick={() => handleTrain('female' as any)} // Reusing 'female' type or add 'single' logic if needed, but 'female' often maps to default audioUrl in legacy logic? No, check handleTrain.
+                        // Actually handleTrain uses 'female' -> audioUrl, 'male' -> audioUrlMale?? No, let's check handleTrain again.
+                        // handleTrain maps: 'male'->audioUrlMale, 'example'->exampleUrl, else->audioUrl.
+                        // So passing 'female' might play audioUrl if audioUrlMale is missing?
+                        // Let's check handleTrain implementation:
+                        // if (type === 'male') targetUrl = vocalize.audioUrlMale;
+                        // else if (type === 'example') targetUrl = vocalize.exampleUrl;
+                        // else targetUrl = vocalize.audioUrl;
+                        // So ANY type other than 'male' or 'example' plays `audioUrl`.
+                        // passing 'single' (or just keeping 'female' effectively plays audioUrl if audioUrlMale is missing?)
+                        // Wait, 'female' is not explicitly 'else'.
+                        // Let's modify handleTrain to be clearer or just pass 'female' which is fine given the 'else' block
+                        // BUT visual feedback depends on activeSource === 'female'.
+                        // Let's use 'single' for clarity if possible, but 'female' works.
+                        // Let's use 'female' but check visual label.
+                        className={`relative w-28 h-28 rounded-full flex flex-col items-center justify-center transition-all border-4 ${activeSource === 'female' && isPlaying
+                          ? 'bg-[#0081FF]/20 border-[#0081FF] shadow-[0_0_20px_rgba(0,129,255,0.3)]'
+                          : 'bg-white/5 border-white/5 opacity-50 hover:opacity-100'
+                          }`}
+                      >
+                        <div className={`w-14 h-14 rounded-full flex items-center justify-center ${activeSource === 'female' && isPlaying ? 'bg-[#0081FF] text-white' : 'bg-white/10 text-gray-400'}`}>
+                          <span className="material-symbols-rounded text-3xl">play_arrow</span>
+                        </div>
+                      </button>
+                      <span className={`text-[12px] uppercase font-black tracking-widest ${activeSource === 'female' && isPlaying ? 'text-white' : 'text-gray-500'}`}>Iniciar Exercício</span>
+                    </div>
                   </div>
-                </button>
-                <span className={`text-[11px] uppercase font-black tracking-widest ${activeSource === 'female' && isPlaying ? 'text-white' : 'text-gray-500'}`}>Vocalize F.</span>
-              </div>
+                ) : (
+                  <div className="flex justify-between w-full">
+                    <div className="flex flex-col items-center gap-3">
+                      <button
+                        onClick={() => handleTrain('female')}
+                        className={`relative w-24 h-24 rounded-full flex flex-col items-center justify-center transition-all border-4 ${activeSource === 'female' && isPlaying
+                          ? 'bg-[#FF00BC]/20 border-[#FF00BC] shadow-[0_0_20px_rgba(255,0,188,0.3)]'
+                          : 'bg-white/5 border-white/5 grayscale opacity-50 hover:opacity-100'
+                          }`}
+                      >
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${activeSource === 'female' && isPlaying ? 'bg-[#FF00BC] text-white' : 'bg-white/10 text-gray-400'}`}>
+                          <span className="material-symbols-rounded text-2xl">woman</span>
+                        </div>
+                      </button>
+                      <span className={`text-[11px] uppercase font-black tracking-widest ${activeSource === 'female' && isPlaying ? 'text-white' : 'text-gray-500'}`}>Vocalize F.</span>
+                    </div>
 
-              <div className="flex flex-col items-center gap-3">
-                <button
-                  onClick={() => handleTrain('male')}
-                  className={`relative w-24 h-24 rounded-full flex flex-col items-center justify-center transition-all border-4 ${activeSource === 'male' && isPlaying
-                    ? 'bg-[#0081FF]/20 border-[#0081FF] shadow-[0_0_20px_rgba(0,129,255,0.3)]'
-                    : 'bg-white/5 border-white/5 grayscale opacity-50 hover:opacity-100'
-                    }`}
-                >
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center ${activeSource === 'male' && isPlaying ? 'bg-[#0081FF] text-white' : 'bg-white/10 text-gray-400'}`}>
-                    <span className="material-symbols-rounded text-2xl">man</span>
+                    <div className="flex flex-col items-center gap-3">
+                      <button
+                        onClick={() => handleTrain('male')}
+                        className={`relative w-24 h-24 rounded-full flex flex-col items-center justify-center transition-all border-4 ${activeSource === 'male' && isPlaying
+                          ? 'bg-[#0081FF]/20 border-[#0081FF] shadow-[0_0_20px_rgba(0,129,255,0.3)]'
+                          : 'bg-white/5 border-white/5 grayscale opacity-50 hover:opacity-100'
+                          }`}
+                      >
+                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${activeSource === 'male' && isPlaying ? 'bg-[#0081FF] text-white' : 'bg-white/10 text-gray-400'}`}>
+                          <span className="material-symbols-rounded text-2xl">man</span>
+                        </div>
+                      </button>
+                      <span className={`text-[11px] uppercase font-black tracking-widest ${activeSource === 'male' && isPlaying ? 'text-white' : 'text-gray-500'}`}>Vocalize M.</span>
+                    </div>
                   </div>
-                </button>
-                <span className={`text-[11px] uppercase font-black tracking-widest ${activeSource === 'male' && isPlaying ? 'text-white' : 'text-gray-500'}`}>Vocalize M.</span>
+                )}
               </div>
             </>
           )}

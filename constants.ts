@@ -5279,8 +5279,7 @@ export const VOCALIZES: Vocalize[] = [
         bpm: 100,
         key: 'C Major',
         description: 'Familiarização com a sonoridade e estrutura da escala maior.',
-        audioUrl: `${VOCALIZES_BASE_URL}vqc_major_asc_H.mp3`,
-        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_major_asc_L.mp3`,
+        audioUrl: 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/VOCALIZES+VQC+PRO/Vocalize+Escala+Maior+Ascendente.mp3',
         exampleUrl: 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/VOCALIZES+VQC+PRO/Exemplo+Escala+Maior+Ascendente.mp3'
     },
     {
