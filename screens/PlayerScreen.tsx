@@ -310,6 +310,11 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
 
   const startVisualizer = () => {
     if (animationIntervalRef.current) clearInterval(animationIntervalRef.current);
+
+    if (vocalize?.id === 'vqc-major-asc') {
+      setBarHeights(activeConfigRef.current.map(c => c.baseHeight));
+      return;
+    }
     animationIntervalRef.current = window.setInterval(() => {
       setBarHeights(prev => {
         const config = activeConfigRef.current;
