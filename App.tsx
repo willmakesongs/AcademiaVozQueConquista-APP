@@ -32,6 +32,7 @@ const AppContent = () => {
   const [dashboardInitialTab, setDashboardInitialTab] = useState<'dashboard' | 'students' | 'reports'>('dashboard');
   const [libraryExpandedModule, setLibraryExpandedModule] = useState<string | null>(null);
   const [libraryScrollY, setLibraryScrollY] = useState(0);
+  const [libraryActiveCourseSlug, setLibraryActiveCourseSlug] = useState<string | null>(null);
 
   // Visitor Warning State
   const [showVisitorWarning, setShowVisitorWarning] = useState(false);
@@ -270,6 +271,8 @@ const AppContent = () => {
             onExpandedModuleChange={setLibraryExpandedModule}
             initialScrollY={libraryScrollY}
             onSaveScrollY={setLibraryScrollY}
+            activeCourseSlug={libraryActiveCourseSlug}
+            onActiveCourseSlugChange={setLibraryActiveCourseSlug}
           />
         );
       case Screen.ROUTINE:

@@ -13,6 +13,8 @@ interface Props {
   onExpandedModuleChange: (id: string | null) => void;
   initialScrollY: number;
   onSaveScrollY: (y: number) => void;
+  activeCourseSlug: string | null;
+  onActiveCourseSlugChange: (slug: string | null) => void;
 }
 
 export const LibraryScreen: React.FC<Props> = ({
@@ -21,7 +23,9 @@ export const LibraryScreen: React.FC<Props> = ({
   expandedModule,
   onExpandedModuleChange,
   initialScrollY,
-  onSaveScrollY
+  onSaveScrollY,
+  activeCourseSlug,
+  onActiveCourseSlugChange: setActiveCourseSlug
 }) => {
   const { user } = useAuth(); // Auth context for guest check
 
@@ -29,7 +33,7 @@ export const LibraryScreen: React.FC<Props> = ({
   const [selectedTopic, setSelectedTopic] = useState<{ id: string; title: string; content?: string } | null>(null);
   const [courses, setCourses] = useState<Course[]>([]);
   const [userCourses, setUserCourses] = useState<StudentCourse[]>([]);
-  const [activeCourseSlug, setActiveCourseSlug] = useState<string | null>(null);
+
   const [activeTab, setActiveTab] = useState<'modules' | 'routine'>('modules');
   const [isSelectorOpen, setIsSelectorOpen] = useState(false);
   const [loading, setLoading] = useState(true);
