@@ -5291,10 +5291,9 @@ export const VOCALIZES: Vocalize[] = [
         duration: '04:00',
         bpm: 100,
         key: 'C Major',
-        description: 'Controle de afinação e suporte na descida da escala maior.',
-        audioUrl: `${VOCALIZES_BASE_URL}vqc_major_desc_H.mp3`,
-        audioUrlMale: `${VOCALIZES_BASE_URL}vqc_major_desc_L.mp3`,
-        exampleUrl: `${VOCALIZES_BASE_URL}vqc_major_desc_example.mp3`
+        description: 'Intervalos da Escala Maior (Descendente): [Meta: Agilidade vocal] - Instrução: Cantar os intervalos descendentes com estabilidade.',
+        audioUrl: 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/VOCALIZES+VQC+PRO/Escala+Maior+Descendente.mp3',
+        exampleUrl: 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/VOCALIZES+VQC+PRO/Exemplo+Escala+Maior+Descendente.mp3'
     },
     {
         id: 'vqc-major-int-asc',
