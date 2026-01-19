@@ -646,7 +646,7 @@ export const LibraryScreen: React.FC<Props> = ({
             }}
             className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'routine' ? 'bg-[#1A202C] text-white shadow-sm' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}
           >
-            VQC PRO
+            VOCALIZES VQC PRO
           </button>
         </div>
       </header>
