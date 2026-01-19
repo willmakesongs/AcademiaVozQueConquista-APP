@@ -206,7 +206,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
       const envelope = ctx.createGain();
       osc.type = 'sine';
       osc.frequency.setValueAtTime(1000, ctx.currentTime);
-      envelope.gain.setValueAtTime(0.05, ctx.currentTime);
+      envelope.gain.setValueAtTime(0.1, ctx.currentTime);
       envelope.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
       osc.connect(envelope);
       envelope.connect(ctx.destination);
