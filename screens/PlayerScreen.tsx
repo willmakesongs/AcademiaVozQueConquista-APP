@@ -359,18 +359,19 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
 
         // Sequenced Animation for Scale
         if (isScaleExercise && isPlaying) {
-          const beatDuration = 60 / 100; // 0.6s per beat @ 100 BPM
-          const totalBeats = config.length; // Use config length (8 for scales, 14 for intervals)
+          const bpm = vocalize?.bpm || 100;
+          const beatDuration = 60 / bpm;
+          const totalBeats = config.length;
           const sequenceDuration = totalBeats * beatDuration;
-          const cycleDuration = sequenceDuration + (2.4);
+          const cycleDuration = sequenceDuration + (beatDuration * 4); // 4 beats rest
 
           // Use refs to get latest values inside interval
           const time = currentTimeRef.current || 0;
 
           // Calculate active note index (0-7) based on modulo time
           // We add a small offset (0.1s) to allow for attack time/latentcy perception
-          const moduloTime = time % (cycleDuration + 2.4); // Adding 2.4s (4 beats) padding/rest for modulation loops
-          // If in padding time, maybe flash all or dim all?
+          // Calculate active note index based on modulo time
+          const moduloTime = time % cycleDuration;
 
           let activeIndex = -1;
           if (moduloTime < sequenceDuration) {
@@ -693,7 +694,10 @@ input[type = 'range']:: -webkit - slider - runnable - track {
           ) : (['vqc-major-int-asc', 'vqc-minor-int-asc'].includes(vocalize?.id || '')) ? (
             <div className="flex gap-1.5 items-end h-64 relative px-4 w-full justify-center pb-12">
               {activeConfig.map((bar, index) => {
-                const activeIndex = isPlaying ? Math.floor((currentTime % (activeConfig.length * 0.6 + 2.4)) / 0.6) : -1;
+                const bpm = vocalize?.bpm || 100;
+                const beatDuration = 60 / bpm;
+                const cycleDuration = (activeConfig.length + 4) * beatDuration;
+                const activeIndex = isPlaying ? Math.floor((currentTime % cycleDuration) / beatDuration) : -1;
                 const isCurrent = index === activeIndex;
                 const isPast = index < activeIndex;
                 const level = (bar as any).level || 0;
