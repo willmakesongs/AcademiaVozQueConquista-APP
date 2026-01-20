@@ -14,6 +14,7 @@ interface Props {
 export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev }) => {
   const { user } = useAuth();
   const isAdmin = user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase());
+  const scaleIds = ['vqc-major-asc', 'vqc-minor-asc', 'vqc-major-desc', 'vqc-minor-desc', 'vqc-triad-major', 'vqc-triad-minor', 'vqc-octave-jump', 'vqc-arpeggio-maj7', 'vqc-pentatonic-major', 'vqc-pentatonic-minor', 'vqc-chromatism', 'vqc-jump-5th-4th', 'vqc-major-int-asc', 'vqc-minor-int-asc'];
 
   const {
     play, stop: stopPlayback, pause, resume: resumePlayback,
@@ -85,7 +86,28 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     { color: '#0081FF', baseHeight: 20, label: 'Dó' },
   ];
 
-  const activeConfig = (['vqc-major-asc', 'vqc-minor-asc', 'vqc-triad-major', 'vqc-triad-minor', 'vqc-octave-jump', 'vqc-arpeggio-maj7', 'vqc-pentatonic-major', 'vqc-pentatonic-minor', 'vqc-chromatism', 'vqc-jump-5th-4th'].includes(vocalize?.id || '')) ? scaleConfig : (['vqc-major-desc', 'vqc-minor-desc'].includes(vocalize?.id || '') ? scaleDescConfig : logoConfig);
+  const intervalsConfig = [
+    { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
+    { color: '#0055D4', baseHeight: 32, label: 'Ré', level: 1 },
+    { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
+    { color: '#002B7F', baseHeight: 44, label: 'Mi', level: 2 },
+    { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
+    { color: '#4B369D', baseHeight: 56, label: 'Fá', level: 3 },
+    { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
+    { color: '#6F4CE7', baseHeight: 68, label: 'Sol', level: 4 },
+    { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
+    { color: '#9333EA', baseHeight: 80, label: 'Lá', level: 5 },
+    { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
+    { color: '#C026D3', baseHeight: 92, label: 'Si', level: 6 },
+    { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
+    { color: '#FF00BC', baseHeight: 110, label: 'Dó', level: 7 },
+  ];
+
+  const activeConfig = (['vqc-major-int-asc', 'vqc-minor-int-asc'].includes(vocalize?.id || ''))
+    ? intervalsConfig
+    : (['vqc-major-asc', 'vqc-minor-asc', 'vqc-triad-major', 'vqc-triad-minor', 'vqc-octave-jump', 'vqc-arpeggio-maj7', 'vqc-pentatonic-major', 'vqc-pentatonic-minor', 'vqc-chromatism', 'vqc-jump-5th-4th'].includes(vocalize?.id || ''))
+      ? scaleConfig
+      : (['vqc-major-desc', 'vqc-minor-desc'].includes(vocalize?.id || '') ? scaleDescConfig : logoConfig);
   const activeConfigRef = useRef(activeConfig);
 
   // Sync ref with activeConfig
@@ -323,14 +345,14 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     if (animationIntervalRef.current) clearInterval(animationIntervalRef.current);
 
     const config = activeConfigRef.current;
-    if (['vqc-major-asc', 'vqc-minor-asc', 'vqc-major-desc', 'vqc-minor-desc', 'vqc-triad-major', 'vqc-triad-minor', 'vqc-octave-jump', 'vqc-arpeggio-maj7', 'vqc-pentatonic-major', 'vqc-pentatonic-minor', 'vqc-chromatism', 'vqc-jump-5th-4th'].includes(vocalize?.id || '')) {
+    if (scaleIds.includes(vocalize?.id || '')) {
       setBarHeights(activeConfigRef.current.map(c => c.baseHeight));
       return;
     }
     animationIntervalRef.current = window.setInterval(() => {
       setBarHeights(prev => {
         const config = activeConfigRef.current;
-        const isScaleExercise = vocalize?.id === 'vqc-major-asc';
+        const isScaleExercise = scaleIds.includes(vocalize?.id || '');
 
         // Ensure prev has correct length, if not, reset reset to base
         if (prev.length !== config.length) return config.map(c => c.baseHeight);
@@ -338,9 +360,9 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
         // Sequenced Animation for Scale
         if (isScaleExercise && isPlaying) {
           const beatDuration = 60 / 100; // 0.6s per beat @ 100 BPM
-          const totalBeats = 8; // 8 notes
-          const sequenceDuration = totalBeats * beatDuration; // 4.8s
-          const cycleDuration = sequenceDuration + (2.4); // 4.8s + 2.4s rest = 7.2s
+          const totalBeats = config.length; // Use config length (8 for scales, 14 for intervals)
+          const sequenceDuration = totalBeats * beatDuration;
+          const cycleDuration = sequenceDuration + (2.4);
 
           // Use refs to get latest values inside interval
           const time = currentTimeRef.current || 0;
@@ -401,6 +423,19 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     if (audioCtxRef.current.state === 'suspended') {
       audioCtxRef.current.resume().catch(e => console.error('AudioContext resume failed', e));
     }
+
+    // iOS Audio Unlock: Play a silent sound immediately to warm up the engine
+    try {
+      const ctx = audioCtxRef.current;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.setValueAtTime(440, ctx.currentTime);
+      gain.gain.setValueAtTime(0.0001, ctx.currentTime); // Inaudible
+      osc.start();
+      osc.stop(ctx.currentTime + 0.1);
+    } catch (e) { console.error('Audio Warmup failed', e) }
 
     if (isPlayingState) {
       if (activeSource !== 'example') pause();
@@ -578,7 +613,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
 
 
 
-        <div className={`${vocalize?.isBreathing ? 'h-72 items-center' : 'h-52 items-end'} flex justify-center ${['vqc-major-asc', 'vqc-minor-asc', 'vqc-major-desc', 'vqc-minor-desc', 'vqc-triad-major', 'vqc-triad-minor', 'vqc-octave-jump', 'vqc-arpeggio-maj7', 'vqc-pentatonic-major', 'vqc-pentatonic-minor', 'vqc-chromatism', 'vqc-jump-5th-4th'].includes(vocalize?.id || '') ? 'gap-3' : 'gap-2'} shrink-0 relative z-10 my-8 transition-all duration-500`}>
+        <div className={`${vocalize?.isBreathing ? 'h-72 items-center' : 'h-52 items-end'} flex justify-center ${scaleIds.includes(vocalize?.id || '') ? 'gap-3' : 'gap-2'} shrink-0 relative z-10 my-8 transition-all duration-500`}>
           {vocalize?.isBreathing ? (
             <button
               onClick={togglePlay}
@@ -608,29 +643,31 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                 }}
               >
                 {!isPlayingState && !isPlaybackLoading && (
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-full backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span className="material-symbols-rounded text-white text-5xl">play_arrow</span>
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-full backdrop-blur-[2px]">
+                    <span className="material-symbols-rounded text-white text-5xl drop-shadow-lg">play_arrow</span>
                   </div>
                 )}
 
-                {preparationTime > 0 ? (
-                  <>
-                    <span className="text-white/60 font-black text-[10px] uppercase tracking-widest mb-1">
-                      Prepáre-se
-                    </span>
-                    <span className="text-white font-mono text-5xl font-black">
-                      {Math.ceil(preparationTime)}
-                    </span>
-                  </>
-                ) : (
-                  <>
-                    <span className="text-white font-black text-base uppercase tracking-tighter mt-4">
-                      {localBreathingTime < 5 ? 'Inspire' : 'Expire'}
-                    </span>
-                    <span className="text-white/80 font-mono text-3xl mt-2 font-black">
-                      {Math.ceil(localBreathingTime < 5 ? 5 - localBreathingTime : selectedBreathingTime - (localBreathingTime - 5))}s
-                    </span>
-                  </>
+                {isPlayingState && (
+                  preparationTime > 0 ? (
+                    <>
+                      <span className="text-white/60 font-black text-[10px] uppercase tracking-widest mb-1">
+                        Prepáre-se
+                      </span>
+                      <span className="text-white font-mono text-5xl font-black">
+                        {Math.ceil(preparationTime)}
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-white font-black text-base uppercase tracking-tighter mt-4">
+                        {localBreathingTime < 5 ? 'Inspire' : 'Expire'}
+                      </span>
+                      <span className="text-white/80 font-mono text-3xl mt-2 font-black">
+                        {Math.ceil(localBreathingTime < 5 ? 5 - localBreathingTime : selectedBreathingTime - (localBreathingTime - 5))}s
+                      </span>
+                    </>
+                  )
                 )}
               </div>
 
@@ -653,6 +690,30 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                 />
               </svg>
             </button>
+          ) : (['vqc-major-int-asc', 'vqc-minor-int-asc'].includes(vocalize?.id || '')) ? (
+            <div className="flex gap-2 items-end h-64 relative overflow-hidden px-8 max-w-full overflow-x-auto hide-scrollbar pb-12">
+              {activeConfig.map((bar, index) => {
+                const activeIndex = isPlaying ? Math.floor((currentTime % (activeConfig.length * 0.6 + 2.4)) / 0.6) : -1;
+                const isCurrent = index === activeIndex;
+                const isPast = index < activeIndex;
+
+                return (
+                  <div key={index} className="flex flex-col items-center gap-2 group shrink-0">
+                    <span className={`text-[9px] font-black uppercase tracking-tight transition-all duration-300 ${isCurrent ? 'text-white opacity-100 -translate-y-1' : 'text-transparent opacity-0 translate-y-2'}`} style={{ textShadow: `0 0 10px ${bar.color}` }}>
+                      {(bar as any).label}
+                    </span>
+                    <div
+                      className={`w-10 h-3.5 rounded-full transition-all duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.3)] ${isCurrent ? 'scale-110 brightness-125' : isPast ? 'opacity-40 grayscale-[0.5]' : 'opacity-20'}`}
+                      style={{
+                        backgroundColor: bar.color,
+                        transform: `translateY(-${(bar as any).level * 16}px)`,
+                        boxShadow: isCurrent ? `0 0 15px ${bar.color}80` : 'none',
+                      }}
+                    ></div>
+                  </div>
+                );
+              })}
+            </div>
           ) : (
             activeConfig.map((bar, index) => (
               <div key={index} className="flex flex-col items-center gap-2">
@@ -664,7 +725,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                 )}
                 {/* Bar */}
                 <div
-                  className={`rounded-full shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-[80ms] ease-linear ${['vqc-major-asc', 'vqc-minor-asc', 'vqc-major-desc', 'vqc-minor-desc', 'vqc-triad-major', 'vqc-triad-minor', 'vqc-octave-jump', 'vqc-arpeggio-maj7', 'vqc-pentatonic-major', 'vqc-pentatonic-minor', 'vqc-chromatism', 'vqc-jump-5th-4th'].includes(vocalize?.id || '') ? 'w-5' : 'w-3'}`}
+                  className={`rounded-full shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-[80ms] ease-linear ${scaleIds.includes(vocalize?.id || '') ? 'w-5' : 'w-3'}`}
                   style={{
                     backgroundColor: bar.color,
                     height: `${barHeights[index] * 0.6}px`,
