@@ -691,23 +691,25 @@ input[type = 'range']:: -webkit - slider - runnable - track {
               </svg>
             </button>
           ) : (['vqc-major-int-asc', 'vqc-minor-int-asc'].includes(vocalize?.id || '')) ? (
-            <div className="flex gap-2 items-end h-64 relative overflow-hidden px-8 max-w-full overflow-x-auto hide-scrollbar pb-12">
+            <div className="flex gap-1.5 items-end h-64 relative px-4 w-full justify-center pb-12">
               {activeConfig.map((bar, index) => {
                 const activeIndex = isPlaying ? Math.floor((currentTime % (activeConfig.length * 0.6 + 2.4)) / 0.6) : -1;
                 const isCurrent = index === activeIndex;
                 const isPast = index < activeIndex;
+                const level = (bar as any).level || 0;
 
                 return (
-                  <div key={index} className="flex flex-col items-center gap-2 group shrink-0">
-                    <span className={`text-[9px] font-black uppercase tracking-tight transition-all duration-300 ${isCurrent ? 'text-white opacity-100 -translate-y-1' : 'text-transparent opacity-0 translate-y-2'}`} style={{ textShadow: `0 0 10px ${bar.color}` }}>
-                      {(bar as any).label}
-                    </span>
+                  <div key={index} className="flex flex-col items-center gap-1 shrink-0" style={{ transform: `translateY(-${level * 14}px)` }}>
+                    <div className="h-6 flex items-center justify-center">
+                      <span className={`text-[8px] font-black uppercase transition-all duration-300 ${isCurrent ? 'text-white opacity-100 scale-110' : 'text-transparent opacity-0 scale-75'}`} style={{ textShadow: `0 0 10px ${bar.color}` }}>
+                        {(bar as any).label}
+                      </span>
+                    </div>
                     <div
-                      className={`w-10 h-3.5 rounded-full transition-all duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.3)] ${isCurrent ? 'scale-110 brightness-125' : isPast ? 'opacity-40 grayscale-[0.5]' : 'opacity-20'}`}
+                      className={`w-5 h-3.5 rounded-full transition-all duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.3)] ${isCurrent ? 'scale-110 brightness-150' : isPast ? 'opacity-40 grayscale-[0.2]' : 'opacity-20'}`}
                       style={{
                         backgroundColor: bar.color,
-                        transform: `translateY(-${(bar as any).level * 16}px)`,
-                        boxShadow: isCurrent ? `0 0 15px ${bar.color}80` : 'none',
+                        boxShadow: isCurrent ? `0 0 20px ${bar.color}CC` : 'none',
                       }}
                     ></div>
                   </div>
