@@ -19,6 +19,26 @@ const SCALE_INTERVALS: Record<string, number[]> = {
 
 const GUITAR_STRINGS: NoteName[] = ['E', 'B', 'G', 'D', 'A', 'E']; // High to Low
 
+// Scale patterns (position 1 - open position)
+const SCALE_PATTERNS: Record<string, number[][]> = {
+    'Major Pentatonic': [
+        [0, 3], // E string
+        [0, 2], // B string  
+        [0, 2], // G string
+        [0, 2], // D string
+        [0, 3], // A string
+        [0, 3]  // E string
+    ],
+    'Minor Pentatonic': [
+        [0, 3], // E string
+        [0, 3], // B string
+        [0, 2], // G string
+        [0, 2], // D string
+        [0, 3], // A string
+        [0, 3]  // E string
+    ]
+};
+
 export const Scales: React.FC = () => {
     const [activeTab, setActiveTab] = useState<ScaleTab>('Básico');
     const [selectedRoot, setSelectedRoot] = useState<NoteName>('C');
@@ -35,26 +55,32 @@ export const Scales: React.FC = () => {
         return intervals.map(interval => NOTES[(rootIndex + interval) % 12]);
     }, [selectedRoot, selectedType]);
 
-    // Generate fretboard positions (limit to first 12 frets, one note per string)
+    // Generate scale pattern positions
     const positions = useMemo(() => {
-        const pos: Array<{ string: number; fret: number; note: NoteName; isRoot: boolean }> = [];
+        const pattern = SCALE_PATTERNS[selectedType] || SCALE_PATTERNS['Major Pentatonic'];
+        const rootIndex = NOTES.indexOf(selectedRoot);
+        const pos: Array<{ string: number; fret: number; note: NoteName; isRoot: boolean; finger: number }> = [];
 
         GUITAR_STRINGS.forEach((openString, stringIndex) => {
             const stringRootIndex = NOTES.indexOf(openString);
+            const frets = pattern[stringIndex] || [0, 2];
 
-            // Find the first occurrence of each scale note on this string
-            for (let fret = 0; fret <= 12; fret++) {
+            frets.forEach((fret, idx) => {
                 const noteAtFret = NOTES[(stringRootIndex + fret) % 12];
                 if (scaleNotes.includes(noteAtFret)) {
                     const isRoot = noteAtFret === selectedRoot;
-                    pos.push({ string: stringIndex, fret, note: noteAtFret, isRoot });
-                    break; // Only first occurrence per string
+                    // Finger numbering: 0=open, 1=index, 2=middle, 3=ring, 4=pinky
+                    let finger = 0;
+                    if (fret > 0) {
+                        finger = idx === 0 ? (fret === 2 ? 2 : 1) : 3;
+                    }
+                    pos.push({ string: stringIndex, fret, note: noteAtFret, isRoot, finger });
                 }
-            }
+            });
         });
 
         return pos;
-    }, [scaleNotes, selectedRoot]);
+    }, [scaleNotes, selectedRoot, selectedType]);
 
     return (
         <div className="flex flex-col items-center p-6">
@@ -79,11 +105,11 @@ export const Scales: React.FC = () => {
             </button>
 
             {/* Scale Notes Display */}
-            <div className="flex gap-2 mb-8">
+            <div className="flex gap-2 mb-8 flex-wrap justify-center">
                 {scaleNotes.map((note, idx) => (
                     <div
                         key={idx}
-                        className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${note === selectedRoot ? 'bg-orange-500 text-white' : 'bg-[#0081FF] text-white'}`}
+                        className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${note === selectedRoot ? 'bg-black text-white' : 'bg-[#0081FF] text-white'}`}
                     >
                         {note}
                     </div>
@@ -91,50 +117,62 @@ export const Scales: React.FC = () => {
             </div>
 
             {/* Fretboard Diagram */}
-            <div className="relative pt-10 pb-20 w-full max-w-[280px]">
+            <div className="relative pt-10 pb-20 w-full max-w-[320px]">
+                {/* String Labels (Top) - Open indicators */}
+                <div className="flex justify-between mb-4 px-2">
+                    {GUITAR_STRINGS.map((_, stringIndex) => {
+                        const openNote = positions.find(p => p.string === stringIndex && p.fret === 0);
+                        return (
+                            <div key={stringIndex} className="w-10 text-center">
+                                {openNote && (
+                                    <div className="w-8 h-8 mx-auto rounded-full bg-[#0081FF] border-2 border-white flex items-center justify-center text-xs font-bold text-white">
+                                        0
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
+                </div>
+
                 {/* Fret Number Labels */}
-                <div className="absolute left-[-30px] top-10 flex flex-col gap-[39.5px] text-[10px] text-gray-600 font-mono">
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(f => <span key={f}>{f}</span>)}
+                <div className="absolute left-[-30px] top-10 flex flex-col gap-[46px] text-[10px] text-gray-600 font-mono">
+                    {[1, 2, 3, 4, 5, 6, 7].map(f => <span key={f}>{f}</span>)}
                 </div>
 
                 {/* Fretboard Grid */}
-                <div className="flex justify-between border-t-4 border-gray-400">
+                <div className="flex justify-between border-t-4 border-gray-400 relative">
                     {Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} className="w-px h-[500px] bg-gray-600 relative">
+                        <div key={i} className="w-px h-[350px] bg-gray-600 relative">
                             {/* Horizontal Frets */}
-                            {Array.from({ length: 13 }).map((_, f) => (
-                                <div key={f} className="absolute left-[-40px] right-[-40px] h-px bg-white/10" style={{ top: `${f * 40}px` }} />
+                            {Array.from({ length: 8 }).map((_, f) => (
+                                <div key={f} className="absolute left-[-40px] right-[-40px] h-px bg-white/10" style={{ top: `${f * 50}px` }} />
                             ))}
                         </div>
                     ))}
+
+                    {/* Scale Notes on Fretboard */}
+                    {positions.filter(p => p.fret > 0 && p.fret <= 7).map((pos, idx) => (
+                        <div
+                            key={idx}
+                            className={`absolute w-9 h-9 rounded-full border-2 flex items-center justify-center text-xs font-black z-10 transition-all ${pos.isRoot
+                                    ? 'bg-black border-white text-white'
+                                    : 'bg-[#0081FF] border-white text-white'
+                                }`}
+                            style={{
+                                left: `${(pos.string) * 20}%`,
+                                top: `${(pos.fret * 50) - 25}px`,
+                                marginLeft: pos.string === 0 ? '0' : pos.string === 5 ? '-36px' : '-18px'
+                            }}
+                        >
+                            {pos.finger}
+                        </div>
+                    ))}
+
+                    {/* Fret Markers (3rd, 5th, 7th) */}
+                    <div className="absolute left-1/2 -translate-x-1/2 top-[125px] w-3 h-3 rounded-full bg-white/10" />
+                    <div className="absolute left-1/2 -translate-x-1/2 top-[225px] w-3 h-3 rounded-full bg-white/10" />
+                    <div className="absolute left-1/2 -translate-x-1/2 top-[325px] w-3 h-3 rounded-full bg-white/10" />
                 </div>
-
-                {/* Scale Notes on Fretboard */}
-                {positions.map((pos, idx) => (
-                    <div
-                        key={idx}
-                        className={`absolute w-8 h-8 rounded-full border-2 flex items-center justify-center text-[10px] font-black z-10 transition-all ${pos.fret === 0
-                                ? 'top-[-40px] bg-[#0081FF] border-[#101622] text-white'
-                                : pos.isRoot
-                                    ? 'bg-orange-500 border-[#101622] text-white'
-                                    : 'bg-white border-[#101622] text-[#101622]'
-                            }`}
-                        style={{
-                            left: `${(pos.string) * 20}%`,
-                            top: pos.fret === 0 ? '-40px' : `${(pos.fret * 40) - 20}px`,
-                            marginLeft: pos.string === 0 ? '0' : pos.string === 5 ? '-32px' : '-16px'
-                        }}
-                    >
-                        {pos.isRoot ? 'R' : pos.note}
-                    </div>
-                ))}
-
-                {/* Fret Markers (3rd, 5th, 7th, 9th, 12th) */}
-                <div className="absolute left-1/2 -translate-x-1/2 top-[100px] w-3 h-3 rounded-full bg-white/10" />
-                <div className="absolute left-1/2 -translate-x-1/2 top-[180px] w-3 h-3 rounded-full bg-white/10" />
-                <div className="absolute left-1/2 -translate-x-1/2 top-[260px] w-3 h-3 rounded-full bg-white/10" />
-                <div className="absolute left-1/2 -translate-x-1/2 top-[340px] w-3 h-3 rounded-full bg-white/10" />
-                <div className="absolute left-1/2 -translate-x-1/2 top-[460px] w-3 h-3 rounded-full bg-white/10" />
             </div>
 
             {/* Rolling Picker Panel */}
