@@ -127,24 +127,6 @@ export const Scales: React.FC = () => {
                 </button>
             </div>
 
-            {/* Fret Position Selector - Show current range */}
-            <div className="flex w-full mb-2 px-8 gap-1 overflow-x-auto">
-                {Array.from({ length: 25 }, (_, i) => i).filter(pos =>
-                    pos === 0 || (pos >= selectedPosition - 2 && pos <= selectedPosition + 5)
-                ).map(pos => (
-                    <button
-                        key={pos}
-                        onClick={() => setSelectedPosition(pos)}
-                        className={`flex-shrink-0 px-3 text-center text-sm font-bold py-1 rounded transition-all ${selectedPosition === pos
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-gray-700 text-gray-400'
-                            }`}
-                    >
-                        {pos}
-                    </button>
-                ))}
-            </div>
-
             {/* Fretboard Container */}
             <div className="w-full flex items-center gap-2 mb-4">
                 {/* Open Strings (Fret 0) - Outside the fretboard */}
@@ -190,11 +172,17 @@ export const Scales: React.FC = () => {
                                             {/* Fret Line */}
                                             <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gray-700" />
 
-                                            {/* Fret Number Label (centered in fret space) */}
+                                            {/* Fret Number Button (centered in fret space) */}
                                             {stringIndex === 0 && (
-                                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-sm text-gray-300 font-bold">
+                                                <button
+                                                    onClick={() => setSelectedPosition(fret)}
+                                                    className={`absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1 rounded text-sm font-bold transition-all ${selectedPosition === fret
+                                                            ? 'bg-blue-600 text-white'
+                                                            : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                                        }`}
+                                                >
                                                     {fret}
-                                                </div>
+                                                </button>
                                             )}
 
                                             {/* Note Dot */}
