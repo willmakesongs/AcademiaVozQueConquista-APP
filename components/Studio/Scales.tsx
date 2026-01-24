@@ -3,176 +3,210 @@ import React, { useState, useMemo } from 'react';
 import { WheelPicker } from './WheelPicker';
 import { NoteName, NOTES } from '../../types';
 
-type ScaleTab = 'Básico' | 'Modos' | 'Avançado' | 'Arpejo';
+type ViewMode = 'Full' | 'Vertical' | 'Diagonal';
+type ScaleCategory = 'Common' | 'Rare' | 'Exotic';
 
 const SCALE_INTERVALS: Record<string, number[]> = {
-    'Major Pentatonic': [0, 2, 4, 7, 9],
-    'Minor Pentatonic': [0, 3, 5, 7, 10],
-    'Blues': [0, 3, 5, 6, 7, 10],
+    // Common
     'Major': [0, 2, 4, 5, 7, 9, 11],
-    'Minor Natural': [0, 2, 3, 5, 7, 8, 10],
+    'Harmonic Minor': [0, 2, 3, 5, 7, 8, 11],
+    'Melodic Minor': [0, 2, 3, 5, 7, 9, 11],
+    'Natural Minor': [0, 2, 3, 5, 7, 8, 10],
+    'Pentatonic Major': [0, 2, 4, 7, 9],
+    'Pentatonic Minor': [0, 3, 5, 7, 10],
+    'Pentatonic Blues': [0, 3, 5, 6, 7, 10],
+    'Pentatonic Neutral': [0, 2, 5, 7, 10],
+    // Modes
+    'Ionian': [0, 2, 4, 5, 7, 9, 11],
     'Dorian': [0, 2, 3, 5, 7, 9, 10],
     'Phrygian': [0, 1, 3, 5, 7, 8, 10],
     'Lydian': [0, 2, 4, 6, 7, 9, 11],
-    'Mixolydian': [0, 2, 4, 5, 7, 9, 10]
+    'Mixolydian': [0, 2, 4, 5, 7, 9, 10],
+    'Aeolian': [0, 2, 3, 5, 7, 8, 10],
+    'Locrian': [0, 1, 3, 5, 6, 8, 10],
+    // Rare
+    'Diatonic': [0, 2, 4, 5, 7, 9, 11],
+    'Diminished': [0, 2, 3, 5, 6, 8, 9, 11],
+    'Diminished Half': [0, 1, 3, 4, 6, 7, 9, 10],
+    'Diminished Whole': [0, 2, 3, 5, 6, 8, 9, 11],
+    'Diminished Whole Tone': [0, 2, 4, 6, 8, 10],
+    'Dominant 7th': [0, 2, 4, 5, 7, 9, 10],
+    'Lydian Augmented': [0, 2, 4, 6, 8, 9, 11],
+    'Lydian Minor': [0, 2, 4, 6, 7, 8, 10],
+    'Lydian Diminished': [0, 2, 3, 6, 7, 9, 11]
 };
 
 const GUITAR_STRINGS: NoteName[] = ['E', 'B', 'G', 'D', 'A', 'E']; // High to Low
 
-// Scale patterns (position 1 - open position)
-const SCALE_PATTERNS: Record<string, number[][]> = {
-    'Major Pentatonic': [
-        [0, 3], // E string
-        [0, 2], // B string  
-        [0, 2], // G string
-        [0, 2], // D string
-        [0, 3], // A string
-        [0, 3]  // E string
-    ],
-    'Minor Pentatonic': [
-        [0, 3], // E string
-        [0, 3], // B string
-        [0, 2], // G string
-        [0, 2], // D string
-        [0, 3], // A string
-        [0, 3]  // E string
-    ]
-};
-
 export const Scales: React.FC = () => {
-    const [activeTab, setActiveTab] = useState<ScaleTab>('Básico');
     const [selectedRoot, setSelectedRoot] = useState<NoteName>('C');
-    const [selectedType, setSelectedType] = useState('Major Pentatonic');
+    const [selectedType, setSelectedType] = useState('Major');
+    const [viewMode, setViewMode] = useState<ViewMode>('Full');
+    const [category, setCategory] = useState<ScaleCategory>('Common');
     const [isPickerOpen, setIsPickerOpen] = useState(false);
 
     const roots: NoteName[] = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-    const types = ["Major Pentatonic", "Minor Pentatonic", "Blues", "Major", "Minor Natural", "Dorian", "Phrygian", "Lydian", "Mixolydian"];
 
-    // Generate scale notes
-    const scaleNotes = useMemo(() => {
-        const intervals = SCALE_INTERVALS[selectedType] || SCALE_INTERVALS['Major Pentatonic'];
+    const scalesByCategory: Record<ScaleCategory, string[]> = {
+        'Common': ['Major', 'Harmonic Minor', 'Melodic Minor', 'Natural Minor', 'Pentatonic Major', 'Pentatonic Minor', 'Pentatonic Blues', 'Pentatonic Neutral'],
+        'Rare': ['Ionian', 'Dorian', 'Phrygian', 'Lydian', 'Mixolydian', 'Aeolian', 'Locrian', 'Diatonic', 'Diminished', 'Diminished Half', 'Diminished Whole', 'Diminished Whole Tone', 'Dominant 7th'],
+        'Exotic': ['Lydian Augmented', 'Lydian Minor', 'Lydian Diminished']
+    };
+
+    // Generate scale notes with intervals
+    const scaleNotesWithIntervals = useMemo(() => {
+        const intervals = SCALE_INTERVALS[selectedType] || SCALE_INTERVALS['Major'];
         const rootIndex = NOTES.indexOf(selectedRoot);
-        return intervals.map(interval => NOTES[(rootIndex + interval) % 12]);
+        return intervals.map(interval => ({
+            note: NOTES[(rootIndex + interval) % 12],
+            interval: interval,
+            degree: intervals.indexOf(interval) + 1
+        }));
     }, [selectedRoot, selectedType]);
 
-    // Generate scale pattern positions
-    const positions = useMemo(() => {
-        const pattern = SCALE_PATTERNS[selectedType] || SCALE_PATTERNS['Major Pentatonic'];
-        const rootIndex = NOTES.indexOf(selectedRoot);
-        const pos: Array<{ string: number; fret: number; note: NoteName; isRoot: boolean; finger: number }> = [];
+    // Generate all fretboard positions
+    const allPositions = useMemo(() => {
+        const pos: Array<{ string: number; fret: number; note: NoteName; degree: number; isRoot: boolean }> = [];
 
         GUITAR_STRINGS.forEach((openString, stringIndex) => {
             const stringRootIndex = NOTES.indexOf(openString);
-            const frets = pattern[stringIndex] || [0, 2];
 
-            frets.forEach((fret, idx) => {
+            for (let fret = 0; fret <= 21; fret++) {
                 const noteAtFret = NOTES[(stringRootIndex + fret) % 12];
-                if (scaleNotes.includes(noteAtFret)) {
-                    const isRoot = noteAtFret === selectedRoot;
-                    // Finger numbering: 0=open, 1=index, 2=middle, 3=ring, 4=pinky
-                    let finger = 0;
-                    if (fret > 0) {
-                        finger = idx === 0 ? (fret === 2 ? 2 : 1) : 3;
-                    }
-                    pos.push({ string: stringIndex, fret, note: noteAtFret, isRoot, finger });
+                const scaleNote = scaleNotesWithIntervals.find(sn => sn.note === noteAtFret);
+
+                if (scaleNote) {
+                    pos.push({
+                        string: stringIndex,
+                        fret,
+                        note: noteAtFret,
+                        degree: scaleNote.degree,
+                        isRoot: noteAtFret === selectedRoot
+                    });
                 }
-            });
+            }
         });
 
         return pos;
-    }, [scaleNotes, selectedRoot, selectedType]);
+    }, [scaleNotesWithIntervals, selectedRoot]);
 
     return (
-        <div className="flex flex-col items-center p-6">
-            {/* Top Tabs */}
-            <div className="flex w-full bg-white/5 rounded-xl p-1 mb-8">
-                {(['Básico', 'Modos', 'Avançado', 'Arpejo'] as ScaleTab[]).map(tab => (
+        <div className="flex flex-col items-center p-6 pb-32">
+            {/* Header */}
+            <div className="flex items-center justify-between w-full mb-4">
+                <button className="text-gray-500 text-sm">⚙️ Settings</button>
+                <div className="flex flex-col items-center">
                     <button
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        className={`flex-1 py-2 text-[10px] font-bold uppercase tracking-widest rounded-lg transition-all ${activeTab === tab ? 'bg-white text-black shadow-lg' : 'text-gray-500'}`}
+                        onClick={() => setIsPickerOpen(true)}
+                        className="text-2xl font-bold text-white flex items-center gap-2"
                     >
-                        {tab}
+                        {selectedRoot} {selectedType} 🔊
+                    </button>
+                    <span className="text-xs text-gray-400">
+                        {scaleNotesWithIntervals.map(sn => sn.degree).join(', ')}
+                    </span>
+                </div>
+                <button className="text-gray-500 text-sm">🎵 Tunings</button>
+            </div>
+
+            {/* Fretboard */}
+            <div className="w-full overflow-x-auto mb-6">
+                <div className="min-w-[900px] relative">
+                    {/* Fret Numbers */}
+                    <div className="flex mb-2">
+                        {Array.from({ length: 22 }, (_, i) => (
+                            <div key={i} className="flex-1 text-center text-[10px] text-gray-500 font-mono min-w-[40px]">
+                                {i === 0 ? 'O' : i}
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Strings */}
+                    <div className="relative bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-4">
+                        {GUITAR_STRINGS.map((stringName, stringIndex) => (
+                            <div key={stringIndex} className="relative h-12 flex items-center mb-1">
+                                {/* String Label */}
+                                <div className="absolute -left-8 text-xs text-gray-400 font-bold">{stringName}</div>
+
+                                {/* String Line */}
+                                <div className="absolute inset-x-0 h-px bg-gray-600" />
+
+                                {/* Frets */}
+                                {Array.from({ length: 22 }, (_, fret) => (
+                                    <div key={fret} className="flex-1 min-w-[40px] relative">
+                                        {/* Fret Line */}
+                                        {fret > 0 && (
+                                            <div className="absolute left-0 top-0 bottom-0 w-px bg-gray-700" />
+                                        )}
+
+                                        {/* Note Dot */}
+                                        {allPositions
+                                            .filter(p => p.string === stringIndex && p.fret === fret)
+                                            .map((pos, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black z-10 ${pos.isRoot
+                                                            ? 'bg-orange-500 text-white'
+                                                            : 'bg-yellow-400 text-black'
+                                                        }`}
+                                                >
+                                                    {pos.degree}
+                                                </div>
+                                            ))}
+                                    </div>
+                                ))}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+
+            {/* View Mode Buttons */}
+            <div className="flex gap-2 mb-6">
+                {(['Full', 'Vertical', 'Diagonal'] as ViewMode[]).map(mode => (
+                    <button
+                        key={mode}
+                        onClick={() => setViewMode(mode)}
+                        className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === mode
+                                ? 'bg-gray-700 text-white'
+                                : 'bg-gray-800 text-gray-400'
+                            }`}
+                    >
+                        {mode}
                     </button>
                 ))}
             </div>
 
-            <button
-                onClick={() => setIsPickerOpen(true)}
-                className="text-[#0081FF] text-4xl font-light mb-8 font-sans active:scale-95 transition-all text-center"
-            >
-                {selectedRoot} {selectedType}
-            </button>
-
-            {/* Scale Notes Display */}
-            <div className="flex gap-2 mb-8 flex-wrap justify-center">
-                {scaleNotes.map((note, idx) => (
-                    <div
-                        key={idx}
-                        className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold ${note === selectedRoot ? 'bg-black text-white' : 'bg-[#0081FF] text-white'}`}
+            {/* Scale Categories */}
+            <div className="flex gap-2 mb-4 w-full">
+                {(['Common', 'Rare', 'Exotic'] as ScaleCategory[]).map(cat => (
+                    <button
+                        key={cat}
+                        onClick={() => setCategory(cat)}
+                        className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${category === cat
+                                ? 'bg-gray-700 text-white'
+                                : 'bg-gray-800 text-gray-400'
+                            }`}
                     >
-                        {note}
-                    </div>
+                        {cat}
+                    </button>
                 ))}
             </div>
 
-            {/* Fretboard Diagram */}
-            <div className="relative pt-10 pb-20 w-full max-w-[320px]">
-                {/* String Labels (Top) - Open indicators */}
-                <div className="flex justify-between mb-4 px-2">
-                    {GUITAR_STRINGS.map((_, stringIndex) => {
-                        const openNote = positions.find(p => p.string === stringIndex && p.fret === 0);
-                        return (
-                            <div key={stringIndex} className="w-10 text-center">
-                                {openNote && (
-                                    <div className="w-8 h-8 mx-auto rounded-full bg-[#0081FF] border-2 border-white flex items-center justify-center text-xs font-bold text-white">
-                                        0
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })}
-                </div>
-
-                {/* Fret Number Labels */}
-                <div className="absolute left-[-30px] top-10 flex flex-col gap-[46px] text-[10px] text-gray-600 font-mono">
-                    {[1, 2, 3, 4, 5, 6, 7].map(f => <span key={f}>{f}</span>)}
-                </div>
-
-                {/* Fretboard Grid */}
-                <div className="flex justify-between border-t-4 border-gray-400 relative">
-                    {Array.from({ length: 6 }).map((_, i) => (
-                        <div key={i} className="w-px h-[350px] bg-gray-600 relative">
-                            {/* Horizontal Frets */}
-                            {Array.from({ length: 8 }).map((_, f) => (
-                                <div key={f} className="absolute left-[-40px] right-[-40px] h-px bg-white/10" style={{ top: `${f * 50}px` }} />
-                            ))}
-                        </div>
-                    ))}
-
-                    {/* Scale Notes on Fretboard */}
-                    {positions.filter(p => p.fret > 0 && p.fret <= 7).map((pos, idx) => (
-                        <div
-                            key={idx}
-                            className={`absolute w-9 h-9 rounded-full border-2 flex items-center justify-center text-xs font-black z-10 transition-all ${pos.isRoot
-                                    ? 'bg-black border-white text-white'
-                                    : 'bg-[#0081FF] border-white text-white'
-                                }`}
-                            style={{
-                                left: `${(pos.string) * 20}%`,
-                                top: `${(pos.fret * 50) - 25}px`,
-                                marginLeft: pos.string === 0 ? '0' : pos.string === 5 ? '-36px' : '-18px'
-                            }}
-                        >
-                            {pos.finger}
-                        </div>
-                    ))}
-
-                    {/* Fret Markers (3rd, 5th, 7th) */}
-                    <div className="absolute left-1/2 -translate-x-1/2 top-[125px] w-3 h-3 rounded-full bg-white/10" />
-                    <div className="absolute left-1/2 -translate-x-1/2 top-[225px] w-3 h-3 rounded-full bg-white/10" />
-                    <div className="absolute left-1/2 -translate-x-1/2 top-[325px] w-3 h-3 rounded-full bg-white/10" />
-                </div>
+            {/* Scale Grid */}
+            <div className="grid grid-cols-3 gap-2 w-full">
+                {scalesByCategory[category].map(scale => (
+                    <button
+                        key={scale}
+                        onClick={() => setSelectedType(scale)}
+                        className={`p-3 rounded-lg text-xs font-bold transition-all ${selectedType === scale
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-800 text-gray-400'
+                            }`}
+                    >
+                        {scale}
+                    </button>
+                ))}
             </div>
 
             {/* Rolling Picker Panel */}
@@ -195,13 +229,13 @@ export const Scales: React.FC = () => {
                                 items={roots}
                                 value={selectedRoot}
                                 onChange={setSelectedRoot}
-                                width="w-1/2"
+                                width="w-1/3"
                             />
                             <WheelPicker
-                                items={types}
+                                items={scalesByCategory[category]}
                                 value={selectedType}
                                 onChange={setSelectedType}
-                                width="w-1/2"
+                                width="w-2/3"
                             />
                         </div>
                     </div>
