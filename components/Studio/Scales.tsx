@@ -171,10 +171,9 @@ export const Scales: React.FC = () => {
             </div>
 
             {/* Fretboard Container */}
-            <div className={`w-full flex items-center gap-2 mb-4 mt-8 transition-all duration-300 ${fretboardOrientation === 'Vertical' ? 'flex-col' : ''
-                }`}>
+            <div className="w-full flex items-center gap-2 mb-4 mt-8 transition-all duration-300">
                 {/* Open Strings (Fret 0) - Outside the fretboard */}
-                {selectedPosition === 0 && fretboardOrientation === 'Horizontal' && (
+                {selectedPosition === 0 && (
                     <div className={`flex flex-col gap-0 ${handedness === 'Left' ? 'order-2' : ''}`}>
                         {GUITAR_STRINGS.map((stringName, stringIndex) => {
                             const openNote = displayPositions.find(p => p.string === stringIndex && p.fret === 0);
@@ -193,7 +192,7 @@ export const Scales: React.FC = () => {
                 )}
 
                 {/* Nut (Thick line separator) */}
-                {selectedPosition === 0 && fretboardOrientation === 'Horizontal' && (
+                {selectedPosition === 0 && (
                     <div className={`w-1 h-[288px] bg-gray-300 rounded ${handedness === 'Left' ? 'order-1' : ''}`} />
                 )}
 
