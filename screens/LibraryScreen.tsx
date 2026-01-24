@@ -324,8 +324,9 @@ export const LibraryScreen: React.FC<Props> = ({
         setChecklistState(newState);
         localStorage.setItem('checklist_progress', JSON.stringify(newState));
 
+
         // Gamification: Ganho de XP ao concluir tópico
-        if (isNowCompleted && user && user.id !== 'guest') {
+        if (isNowCompleted && user) {
           updateGamification?.(150); // 150 XP por tópico teórico concluído
         }
       }

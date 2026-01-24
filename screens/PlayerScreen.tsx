@@ -558,6 +558,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     setPitch(newPitch);
   };
 
+
   const handleTrain = async (type: 'female' | 'male' | 'example') => {
     if (!vocalize) return;
 
@@ -585,10 +586,18 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     } else {
       setActiveAudioUrl(targetUrl);
       setActiveSource(type);
-      play(targetUrl, { pitch });
+
+      // Recompensa XP ao concluir o vocalize
+      const onEnded = () => {
+        // Removemos a trava de guest temporariamente para o usuário ver o progresso
+        updateGamification?.(300);
+      };
+
+      play(targetUrl, { pitch, onEnded });
       startVisualizer(); // Start visualizer when new audio plays
     }
   };
+
 
   const formatTime = (time: number) => {
     if (isNaN(time) || !isFinite(time)) return "0:00";
