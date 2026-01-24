@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Tuner } from '../components/Studio/Tuner';
 import { Metronome } from '../components/Studio/Metronome';
-import { ChordLibraryJTab } from '../components/Studio/ChordLibraryJTab';
+import { ChordLibrary } from '../components/Studio/ChordLibrary';
 import { Scales } from '../components/Studio/Scales';
 
 interface Props {
@@ -21,7 +21,7 @@ export const StudioScreen: React.FC<Props> = ({ onBack }) => {
             case 'metronome':
                 return <Metronome />;
             case 'chords':
-                return <ChordLibraryJTab />;
+                return <ChordLibrary />;
             case 'scales':
                 return <Scales />;
             default:

@@ -1,5 +1,6 @@
 
 import { NoteName, NOTES, SelectedNote } from '../../types';
+import { calculateFinger } from './chordLogic';
 
 /**
  * DICIONÁRIO ALMIR CHEDIAK - PADRÃO CAGED (ABSOLUTO)
@@ -146,7 +147,7 @@ const CHORD_DEFINITIONS: Record<string, Record<string, number[]>> = {
 };
 
 // Mapeamento da Nota da Tônica ORIGINAL de cada Shape (Casa 0)
-const SHAPE_ORIGIN_ROOT: Record<string, NoteName> = { 
+const SHAPE_ORIGIN_ROOT: Record<string, NoteName> = {
   'C': 'C',
   'A': 'A',
   'G': 'G',
@@ -155,7 +156,7 @@ const SHAPE_ORIGIN_ROOT: Record<string, NoteName> = {
 };
 
 // Corda onde se encontra a tônica principal de cada shape
-const SHAPE_ROOT_STRING: Record<string, number> = { 
+const SHAPE_ROOT_STRING: Record<string, number> = {
   'C': 4, // A string
   'A': 4, // A string
   'G': 5, // E string
@@ -199,13 +200,13 @@ export const resetChordOverride = (type: string, shape: string) => {
  * MOTOR DE CÁLCULO DE POSIÇÃO (CAGED SYSTEM - ABSOLUTE)
  */
 export const getCagedPosition = (
-  root: NoteName, 
-  type: string, 
+  root: NoteName,
+  type: string,
   shape: string
 ): SelectedNote[] => {
   // Normalização do tipo para bater com as chaves do dicionário
   let normalizedType = type;
-  
+
   if (type === 'minor' || type === 'm') normalizedType = 'minor';
   else if (type === 'major' || type === '') normalizedType = 'major';
   // Sétimas e Tríades Especiais
@@ -231,13 +232,13 @@ export const getCagedPosition = (
 
   // 1. Tenta pegar do banco de dados do usuário (Correção manual)
   const learnedPattern = getChordTemplate(normalizedType, shape);
-  
+
   // Cálculo da distância de transposição
   const stringBaseNotes: NoteName[] = ['E', 'B', 'G', 'D', 'A', 'E']; // Cordas soltas
   const targetRootIdx = NOTES.indexOf(root);
-  
+
   // Tônica original do shape (Ex: Se shape 'E', tônica original é E)
-  const originRootNote = SHAPE_ORIGIN_ROOT[shape]; 
+  const originRootNote = SHAPE_ORIGIN_ROOT[shape];
   const originRootIdx = NOTES.indexOf(originRootNote);
 
   // Quantas casas precisamos subir para transformar a Tônica Original na Tônica Alvo?
@@ -248,9 +249,9 @@ export const getCagedPosition = (
   if (learnedPattern) {
     const positions: SelectedNote[] = [];
     const rootStr = SHAPE_ROOT_STRING[shape];
-    const openStringNote = stringBaseNotes[rootStr]; 
+    const openStringNote = stringBaseNotes[rootStr];
     const openStringIdx = NOTES.indexOf(openStringNote);
-    
+
     let absoluteRootFret = targetRootIdx - openStringIdx;
     if (absoluteRootFret < 0) absoluteRootFret += 12;
 
@@ -258,35 +259,42 @@ export const getCagedPosition = (
       if (offset !== null && offset !== undefined) {
         let finalFret = absoluteRootFret + offset;
         while (finalFret < 0) finalFret += 12;
-        if (finalFret > 15) finalFret -= 12; 
+        if (finalFret > 15) finalFret -= 12;
         positions.push({ stringIndex: sIdx, fret: finalFret });
       }
     });
-    return positions;
+
+    // Calculate fingers for all positions
+    const positionsWithFingers = positions.map(pos => ({
+      ...pos,
+      finger: calculateFinger(pos.stringIndex, pos.fret, positions)
+    }));
+
+    return positionsWithFingers;
   }
 
   // 2. Fallback: Dicionário Almir Chediak (Absoluto)
   const shapeDefinitions = CHORD_DEFINITIONS[normalizedType];
 
   if (!shapeDefinitions) {
-      // Se não houver definição para este tipo, retorna vazio (evita erro)
-      return [];
+    // Se não houver definição para este tipo, retorna vazio (evita erro)
+    return [];
   }
 
   const baseShape = shapeDefinitions[shape];
 
   // Se o shape não existir para este tipo específico (ex: não existe C shape para alguns acordes raros)
   if (!baseShape) {
-      return [];
+    return [];
   }
 
   const positions: SelectedNote[] = [];
-  
+
   baseShape.forEach((baseFret, sIdx) => {
     if (baseFret !== -1) {
       // A matemática aqui é: CasaOriginal + Deslocamento
       let finalFret = baseFret + fretShift;
-      
+
       // Ajuste para não sair do braço (Opcional, mas Caged funciona bem na oitava inicial)
       if (finalFret > 15 && fretShift > 0) {
         // Nada a fazer, é agudo mesmo
@@ -295,6 +303,12 @@ export const getCagedPosition = (
       positions.push({ stringIndex: sIdx, fret: finalFret });
     }
   });
-  
-  return positions;
+
+  // Calculate fingers for all positions
+  const positionsWithFingers = positions.map(pos => ({
+    ...pos,
+    finger: calculateFinger(pos.stringIndex, pos.fret, positions)
+  }));
+
+  return positionsWithFingers;
 };
