@@ -790,61 +790,66 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                 />
               </svg>
             </button>
-          ) : (scaleIds.includes(vocalize?.id || '')) ? (
-            <div className={`flex gap-1.5 items-end h-64 relative px-4 w-full justify-center pb-12 ${activeConfig.length > 10 ? 'scale-90 origin-bottom' : ''}`}>
-              {activeConfig.map((bar, index) => {
-                const bpm = vocalize?.bpm || 100;
-                const beatDuration = 60 / bpm;
-                const cycleDuration = (activeConfig.length + 4) * beatDuration;
 
-                // Apply offset to match audio transients (skipping the first preparation chord - 2 beats) + 2ms fine-tuning
-                const startOffset = (beatDuration * 2) + 0.002;
-                const adjustedTime = Math.max(0, currentTime - startOffset);
-                const activeIndex = isPlaying ? Math.floor((adjustedTime % cycleDuration) / beatDuration) : -1;
-                const isCurrent = index === activeIndex;
-                const isPast = index < activeIndex;
-                const level = (bar as any).level || 0;
-
-                return (
-                  <div key={index} className="flex flex-col items-center gap-1 shrink-0" style={{ transform: `translateY(-${level * 14}px)` }}>
-                    <div className="h-6 flex items-center justify-center">
-                      <span className={`text-[8px] font-black uppercase transition-all duration-300 ${isCurrent ? 'text-white opacity-100 scale-110' : 'text-transparent opacity-0 scale-75'}`} style={{ textShadow: `0 0 10px ${bar.color}` }}>
-                        {(bar as any).label}
-                      </span>
-                    </div>
-                    <div
-                      className={`w-5 h-3.5 rounded-full transition-all duration-300 shadow-[0_4px_12px_rgba(0,0,0,0.3)] ${isCurrent ? 'scale-110 brightness-150' : isPast ? 'opacity-40 grayscale-[0.2]' : 'opacity-20'}`}
-                      style={{
-                        backgroundColor: bar.color,
-                        boxShadow: isCurrent ? `0 0 20px ${bar.color}CC` : 'none',
-                      }}
-                    ></div>
-                  </div>
-                );
-              })}
-            </div>
           ) : (
-            activeConfig.map((bar, index) => (
-              <div key={index} className="flex flex-col items-center gap-2">
-                {/* Note Label */}
-                {(bar as any).label && (
-                  <span className={`text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${isPlayingState ? 'text-white translate-y-0 opacity-100' : 'text-transparent translate-y-4 opacity-0'}`} style={{ textShadow: `0 0 10px ${bar.color}` }}>
-                    {(bar as any).label}
-                  </span>
-                )}
-                {/* Bar */}
-                <div
-                  className={`rounded-full shadow-[0_0_15px_rgba(255,255,255,0.1)] transition-all duration-[80ms] ease-linear ${scaleIds.includes(vocalize?.id || '') ? 'w-5' : 'w-3'}`}
-                  style={{
-                    backgroundColor: bar.color,
-                    height: `${barHeights[index] * 0.6}px`,
-                    boxShadow: isPlayingState ? `0 0 15px ${bar.color}60` : 'none',
-                    opacity: isPlayingState ? 1 : 0.6
-                  }}
-                ></div>
-              </div>
-            ))
+            <div className={`flex flex-1 w-full items-center justify-center p-6 relative overflow-hidden h-64`}>
+              {scaleIds.includes(vocalize?.id || '') ? (
+                <div className={`flex gap-1.5 items-end relative px-4 w-full justify-center pb-8 ${activeConfig.length > 10 ? 'scale-[0.85] origin-bottom' : ''}`}>
+                  {activeConfig.map((bar, index) => {
+                    const bpm = vocalize?.bpm || 100;
+                    const beatDuration = 60 / bpm;
+                    const cycleDuration = (activeConfig.length + 4) * beatDuration;
+                    const startOffset = (beatDuration * 2) + 0.002;
+                    const adjustedTime = Math.max(0, currentTime - startOffset);
+                    const activeIndex = isPlaying ? Math.floor((adjustedTime % cycleDuration) / beatDuration) : -1;
+                    const isCurrent = index === activeIndex;
+                    const isPast = index < activeIndex;
+                    const level = (bar as any).level || 0;
+
+                    return (
+                      <div key={index} className="flex flex-col items-center shrink-0" style={{ transform: `translateY(-${level * 14}px)` }}>
+                        {/* Note Label */}
+                        <div className="h-6 flex items-center justify-center mb-1">
+                          <span className={`text-[8px] font-black uppercase transition-all duration-300 ${isCurrent ? 'text-white opacity-100' : 'text-transparent opacity-0'}`}>
+                            {(bar as any).label}
+                          </span>
+                        </div>
+                        {/* Dot */}
+                        <div
+                          className={`w-4 h-4 rounded-full transition-all duration-300 ${isCurrent ? 'scale-110 brightness-150' : isPast ? 'opacity-40' : 'opacity-10'}`}
+                          style={{
+                            backgroundColor: bar.color,
+                            boxShadow: isCurrent ? `0 0 15px ${bar.color}` : 'none',
+                          }}
+                        ></div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="flex items-end justify-center gap-2 h-32 w-full">
+                  {activeConfig.map((bar, index) => (
+                    <div key={index} className="flex flex-col items-center gap-2">
+                      {(bar as any).label && (
+                        <span className={`text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${isPlayingState ? 'text-white opacity-100' : 'text-transparent opacity-0'}`}>
+                          {(bar as any).label}
+                        </span>
+                      )}
+                      <div
+                        className="w-3 rounded-full transition-all duration-[80ms] ease-linear"
+                        style={{
+                          backgroundColor: bar.color,
+                          height: `${(barHeights[index] || 20) * 0.6}px`,
+                          opacity: isPlayingState ? 1 : 0.6
+                        }}
+                      ></div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
+
         </div>
 
 
