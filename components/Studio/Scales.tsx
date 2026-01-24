@@ -52,6 +52,7 @@ export const Scales: React.FC = () => {
     const [selectedRoot, setSelectedRoot] = useState<NoteName>('C');
     const [selectedType, setSelectedType] = useState('Major');
     const [viewMode, setViewMode] = useState<ViewMode>('Full');
+    const [selectedPosition, setSelectedPosition] = useState(3); // Starting position (fret)
 
     const roots: NoteName[] = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
@@ -66,19 +67,22 @@ export const Scales: React.FC = () => {
         }));
     }, [selectedRoot, selectedType]);
 
-    // Generate fretboard positions (0-7 frets visible)
-    const allPositions = useMemo(() => {
+    // Generate box pattern positions (2-3 notes per string within 4-5 fret span)
+    const boxPositions = useMemo(() => {
         const pos: Array<{ string: number; fret: number; note: NoteName; degree: number; isRoot: boolean }> = [];
+        const fretRange = 5; // Show 5 frets starting from selected position
 
         GUITAR_STRINGS.forEach((openString, stringIndex) => {
             const stringRootIndex = NOTES.indexOf(openString);
+            const notesOnString: typeof pos = [];
 
-            for (let fret = 0; fret <= 7; fret++) {
+            // Find all scale notes on this string within the range
+            for (let fret = selectedPosition; fret < selectedPosition + fretRange; fret++) {
                 const noteAtFret = NOTES[(stringRootIndex + fret) % 12];
                 const scaleNote = scaleNotesWithIntervals.find(sn => sn.note === noteAtFret);
 
                 if (scaleNote) {
-                    pos.push({
+                    notesOnString.push({
                         string: stringIndex,
                         fret,
                         note: noteAtFret,
@@ -87,10 +91,13 @@ export const Scales: React.FC = () => {
                     });
                 }
             }
+
+            // Take first 2-3 notes per string
+            pos.push(...notesOnString.slice(0, 3));
         });
 
         return pos;
-    }, [scaleNotesWithIntervals, selectedRoot]);
+    }, [scaleNotesWithIntervals, selectedRoot, selectedPosition]);
 
     return (
         <div className="flex flex-col items-center p-4 pb-32 bg-[#101622]">
@@ -105,12 +112,19 @@ export const Scales: React.FC = () => {
                 <button className="text-gray-500 text-sm px-3 py-1 bg-gray-800 rounded">{'>>'}</button>
             </div>
 
-            {/* Fret Numbers */}
-            <div className="flex w-full mb-2 px-8">
-                {Array.from({ length: 8 }, (_, i) => (
-                    <div key={i} className="flex-1 text-center text-xs text-gray-400 font-mono">
-                        {i}
-                    </div>
+            {/* Fret Position Selector */}
+            <div className="flex w-full mb-2 px-8 gap-1">
+                {[0, 2, 3, 4, 5, 6, 7, 8].map(pos => (
+                    <button
+                        key={pos}
+                        onClick={() => setSelectedPosition(pos)}
+                        className={`flex-1 text-center text-sm font-bold py-1 rounded transition-all ${selectedPosition === pos
+                                ? 'bg-blue-600 text-white'
+                                : 'bg-gray-700 text-gray-400'
+                            }`}
+                    >
+                        {pos}
+                    </button>
                 ))}
             </div>
 
@@ -126,29 +140,37 @@ export const Scales: React.FC = () => {
 
                         {/* Frets */}
                         <div className="flex w-full">
-                            {Array.from({ length: 8 }, (_, fret) => (
-                                <div key={fret} className="flex-1 relative h-12">
-                                    {/* Fret Line */}
-                                    {fret > 0 && (
+                            {Array.from({ length: 5 }, (_, idx) => {
+                                const fret = selectedPosition + idx;
+                                return (
+                                    <div key={idx} className="flex-1 relative h-12">
+                                        {/* Fret Line */}
                                         <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gray-700" />
-                                    )}
 
-                                    {/* Note Dot */}
-                                    {allPositions
-                                        .filter(p => p.string === stringIndex && p.fret === fret)
-                                        .map((pos, idx) => (
-                                            <div
-                                                key={idx}
-                                                className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-black z-10 ${pos.isRoot
-                                                    ? 'bg-orange-500 text-white'
-                                                    : 'bg-yellow-400 text-black'
-                                                    }`}
-                                            >
-                                                {pos.degree}
+                                        {/* Fret Number Label (top of first string) */}
+                                        {stringIndex === 0 && (
+                                            <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] text-gray-400 font-mono">
+                                                {fret}
                                             </div>
-                                        ))}
-                                </div>
-                            ))}
+                                        )}
+
+                                        {/* Note Dot */}
+                                        {boxPositions
+                                            .filter(p => p.string === stringIndex && p.fret === fret)
+                                            .map((pos, dotIdx) => (
+                                                <div
+                                                    key={dotIdx}
+                                                    className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-black z-10 ${pos.isRoot
+                                                            ? 'bg-orange-500 text-white'
+                                                            : 'bg-yellow-400 text-black'
+                                                        }`}
+                                                >
+                                                    {pos.degree}
+                                                </div>
+                                            ))}
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
                 ))}
@@ -161,8 +183,8 @@ export const Scales: React.FC = () => {
                         key={mode}
                         onClick={() => setViewMode(mode)}
                         className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === mode
-                            ? 'bg-gray-600 text-white'
-                            : 'bg-gray-700 text-gray-400'
+                                ? 'bg-gray-600 text-white'
+                                : 'bg-gray-700 text-gray-400'
                             }`}
                     >
                         {mode}
@@ -177,8 +199,8 @@ export const Scales: React.FC = () => {
                         key={root}
                         onClick={() => setSelectedRoot(root)}
                         className={`py-3 rounded text-sm font-bold transition-all ${selectedRoot === root
-                            ? 'bg-orange-500 text-white'
-                            : 'bg-gray-700 text-gray-300'
+                                ? 'bg-orange-500 text-white'
+                                : 'bg-gray-700 text-gray-300'
                             }`}
                     >
                         {root}
@@ -191,8 +213,8 @@ export const Scales: React.FC = () => {
                         key={root}
                         onClick={() => setSelectedRoot(root)}
                         className={`py-3 rounded text-sm font-bold transition-all ${selectedRoot === root
-                            ? 'bg-orange-500 text-white'
-                            : 'bg-gray-700 text-gray-300'
+                                ? 'bg-orange-500 text-white'
+                                : 'bg-gray-700 text-gray-300'
                             }`}
                     >
                         {root}
@@ -208,8 +230,8 @@ export const Scales: React.FC = () => {
                             key={scale}
                             onClick={() => setSelectedType(scale)}
                             className={`py-3 rounded text-[10px] font-bold transition-all ${selectedType === scale
-                                ? rowIdx === 0 ? 'bg-blue-600 text-white' : 'bg-gray-600 text-white'
-                                : 'bg-gray-700 text-gray-400'
+                                    ? rowIdx === 0 ? 'bg-blue-600 text-white' : 'bg-gray-600 text-white'
+                                    : 'bg-gray-700 text-gray-400'
                                 }`}
                         >
                             {scale}
