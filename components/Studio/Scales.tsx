@@ -143,7 +143,7 @@ export const Scales: React.FC = () => {
                                     {openNote && (
                                         <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${openNote.isRoot ? 'bg-[#0081FF] text-white' : 'bg-[#FF00BC] text-white'
                                             }`}>
-                                            {openNote.degree}
+                                            {openNote.note}
                                         </div>
                                     )}
                                 </div>
@@ -190,11 +190,11 @@ export const Scales: React.FC = () => {
                                                     <div
                                                         key={dotIdx}
                                                         className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-black z-10 ${pos.isRoot
-                                                                ? 'bg-[#0081FF] text-white'
-                                                                : 'bg-[#FF00BC] text-white'
+                                                            ? 'bg-[#0081FF] text-white'
+                                                            : 'bg-[#FF00BC] text-white'
                                                             }`}
                                                     >
-                                                        {pos.degree}
+                                                        {pos.note}
                                                     </div>
                                                 ))}
                                         </div>
