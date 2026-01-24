@@ -50,7 +50,7 @@ const SCALE_ROWS = [
 export const Scales: React.FC = () => {
     const [selectedRoot, setSelectedRoot] = useState<NoteName>('C');
     const [selectedType, setSelectedType] = useState('Major');
-    const [viewMode, setViewMode] = useState<ViewMode>('Full');
+    const [viewMode, setViewMode] = useState<ViewMode>('Vertical');
     const [selectedPosition, setSelectedPosition] = useState(0); // Starting position (fret)
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
