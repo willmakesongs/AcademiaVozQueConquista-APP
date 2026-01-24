@@ -244,7 +244,7 @@ export const Scales: React.FC = () => {
                                                         className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-black z-10 ${pos.isRoot
                                                             ? 'bg-[#0081FF] text-white'
                                                             : 'bg-[#FF00BC] text-white'
-                                                            }`}
+                                                            } ${handedness === 'Left' && fretboardOrientation === 'Horizontal' ? 'scale-x-[-1]' : ''}`}
                                                     >
                                                         {pos.note}
                                                     </div>
@@ -346,8 +346,8 @@ export const Scales: React.FC = () => {
                                 <button
                                     onClick={() => setHandedness('Right')}
                                     className={`flex-1 py-3 rounded-lg font-bold transition-all ${handedness === 'Right'
-                                        ? 'bg-gray-800 text-white'
-                                        : 'bg-gray-500 text-gray-300'
+                                        ? 'bg-[#0081FF] text-white'
+                                        : 'bg-gray-700 text-gray-400 opacity-50'
                                         }`}
                                 >
                                     Destro
@@ -355,8 +355,8 @@ export const Scales: React.FC = () => {
                                 <button
                                     onClick={() => setHandedness('Left')}
                                     className={`flex-1 py-3 rounded-lg font-bold transition-all ${handedness === 'Left'
-                                        ? 'bg-gray-800 text-white'
-                                        : 'bg-gray-500 text-gray-300'
+                                        ? 'bg-[#0081FF] text-white'
+                                        : 'bg-gray-700 text-gray-400 opacity-50'
                                         }`}
                                 >
                                     Canhoto
@@ -371,8 +371,8 @@ export const Scales: React.FC = () => {
                                 <button
                                     onClick={() => setFretboardOrientation('Horizontal')}
                                     className={`flex-1 py-3 rounded-lg font-bold transition-all ${fretboardOrientation === 'Horizontal'
-                                        ? 'bg-gray-800 text-white'
-                                        : 'bg-gray-500 text-gray-300'
+                                        ? 'bg-[#0081FF] text-white'
+                                        : 'bg-gray-700 text-gray-400 opacity-50'
                                         }`}
                                 >
                                     Horizontal
@@ -380,8 +380,8 @@ export const Scales: React.FC = () => {
                                 <button
                                     onClick={() => setFretboardOrientation('Vertical')}
                                     className={`flex-1 py-3 rounded-lg font-bold transition-all ${fretboardOrientation === 'Vertical'
-                                        ? 'bg-gray-800 text-white'
-                                        : 'bg-gray-500 text-gray-300'
+                                        ? 'bg-[#0081FF] text-white'
+                                        : 'bg-gray-700 text-gray-400 opacity-50'
                                         }`}
                                 >
                                     Vertical
@@ -396,8 +396,8 @@ export const Scales: React.FC = () => {
                                 <button
                                     onClick={() => setAccidentals('Sharp')}
                                     className={`flex-1 py-3 rounded-lg font-bold transition-all ${accidentals === 'Sharp'
-                                        ? 'bg-gray-800 text-white'
-                                        : 'bg-gray-500 text-gray-300'
+                                        ? 'bg-[#0081FF] text-white'
+                                        : 'bg-gray-700 text-gray-400 opacity-50'
                                         }`}
                                 >
                                     Sustenido (#)
@@ -405,8 +405,8 @@ export const Scales: React.FC = () => {
                                 <button
                                     onClick={() => setAccidentals('Flat')}
                                     className={`flex-1 py-3 rounded-lg font-bold transition-all ${accidentals === 'Flat'
-                                        ? 'bg-gray-800 text-white'
-                                        : 'bg-gray-500 text-gray-300'
+                                        ? 'bg-[#0081FF] text-white'
+                                        : 'bg-gray-700 text-gray-400 opacity-50'
                                         }`}
                                 >
                                     Bemol (b)
@@ -421,8 +421,8 @@ export const Scales: React.FC = () => {
                                 <button
                                     onClick={() => setAutoSound('Off')}
                                     className={`flex-1 py-3 rounded-lg font-bold transition-all ${autoSound === 'Off'
-                                        ? 'bg-gray-800 text-white'
-                                        : 'bg-gray-500 text-gray-300'
+                                        ? 'bg-[#0081FF] text-white'
+                                        : 'bg-gray-700 text-gray-400 opacity-50'
                                         }`}
                                 >
                                     Desligado
@@ -430,8 +430,8 @@ export const Scales: React.FC = () => {
                                 <button
                                     onClick={() => setAutoSound('On')}
                                     className={`flex-1 py-3 rounded-lg font-bold transition-all ${autoSound === 'On'
-                                        ? 'bg-gray-800 text-white'
-                                        : 'bg-gray-500 text-gray-300'
+                                        ? 'bg-[#0081FF] text-white'
+                                        : 'bg-gray-700 text-gray-400 opacity-50'
                                         }`}
                                 >
                                     Ligado
