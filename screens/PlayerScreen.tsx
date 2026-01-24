@@ -34,12 +34,16 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
   const [activeSource, setActiveSource] = useState<'female' | 'male' | 'example'>('female');
   const { pitch: globalPitch } = usePlayback();
   const [pitch, setPitch] = useState(globalPitch);
+  // Cálculo da taxa de reprodução baseada nos semitons
+  const playbackRate = Math.pow(2, pitch / 12);
 
   const [barHeights, setBarHeights] = useState<number[]>([70, 35, 25, 85, 45, 25]); // Will be synced by effect
   const [isPlayingState, setIsPlayingState] = useState(false);
   const [touchStart, setTouchStart] = useState<{ x: number, y: number } | null>(null);
   const [touchEnd, setTouchEnd] = useState<{ x: number, y: number } | null>(null);
   const minSwipeDistance = 50;
+  const [smoothTime, setSmoothTime] = useState(currentTime);
+  const lastSyncRef = useRef({ audioTime: currentTime, perfTime: performance.now() });
 
   // Breathing Exercise State
   const [selectedBreathingTime, setSelectedBreathingTime] = useState(10);
@@ -55,10 +59,28 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
   const audioCtxRef = useRef<AudioContext | null>(null);
   const currentTimeRef = useRef(currentTime);
 
-  // Sync refs
+  // Sync refs and smooth time starting point
   useEffect(() => {
     currentTimeRef.current = currentTime;
+    lastSyncRef.current = { audioTime: currentTime, perfTime: performance.now() };
+    setSmoothTime(currentTime);
   }, [currentTime]);
+
+  // High-precision animation loop for smooth time interpolation
+  useEffect(() => {
+    if (!isPlaying) return;
+
+    let rafId: number;
+    const animate = () => {
+      const delta = (performance.now() - lastSyncRef.current.perfTime) / 1000;
+      const interpolated = lastSyncRef.current.audioTime + (delta * playbackRate);
+      setSmoothTime(interpolated);
+      rafId = requestAnimationFrame(animate);
+    };
+
+    rafId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafId);
+  }, [isPlaying, playbackRate]);
 
   const lastTickRef = useRef<number>(-1);
   const bellAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -188,8 +210,6 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
   }, [activeConfig]);
 
 
-  // Cálculo da taxa de reprodução baseada nos semitons
-  const playbackRate = Math.pow(2, pitch / 12);
 
   // Limpeza ao desmontar - REMOVIDO para permitir background playback
   useEffect(() => {
@@ -796,11 +816,11 @@ input[type = 'range']:: -webkit - slider - runnable - track {
               {scaleIds.includes(vocalize?.id || '') ? (
                 <div className={`flex gap-1.5 items-end relative px-4 w-full justify-center pb-8 ${activeConfig.length > 10 ? 'scale-[0.85] origin-bottom' : ''}`}>
                   {activeConfig.map((bar, index) => {
-                    const bpm = vocalize?.bpm || 100;
+                    const bpm = vocalize?.bpm || 110; // Default to 110 if missing
                     const beatDuration = 60 / bpm;
                     const cycleDuration = (activeConfig.length + 4) * beatDuration;
                     const startOffset = (beatDuration * 2) + 0.002;
-                    const adjustedTime = Math.max(0, currentTime - startOffset);
+                    const adjustedTime = Math.max(0, smoothTime - startOffset);
                     const activeIndex = isPlaying ? Math.floor((adjustedTime % cycleDuration) / beatDuration) : -1;
                     const isCurrent = index === activeIndex;
                     const isPast = index < activeIndex;
