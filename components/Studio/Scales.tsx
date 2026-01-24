@@ -128,7 +128,7 @@ export const Scales: React.FC = () => {
             </div>
 
             {/* Fretboard Container */}
-            <div className="w-full flex items-center gap-2 mb-4">
+            <div className="w-full flex items-center gap-2 mb-4 mt-8">
                 {/* Open Strings (Fret 0) - Outside the fretboard */}
                 {selectedPosition === 0 && (
                     <div className="flex flex-col gap-0">
@@ -177,8 +177,8 @@ export const Scales: React.FC = () => {
                                                 <button
                                                     onClick={() => setSelectedPosition(fret)}
                                                     className={`absolute -top-10 left-1/2 -translate-x-1/2 px-3 py-1 rounded text-sm font-bold transition-all ${selectedPosition === fret
-                                                            ? 'bg-blue-600 text-white'
-                                                            : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                                        ? 'bg-blue-600 text-white'
+                                                        : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                                                         }`}
                                                 >
                                                     {fret}
