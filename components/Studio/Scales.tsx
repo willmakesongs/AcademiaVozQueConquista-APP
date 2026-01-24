@@ -172,10 +172,11 @@ export const Scales: React.FC = () => {
             </div>
 
             {/* Fretboard Container */}
-            <div className="w-full flex items-center gap-2 mb-4 mt-8">
+            <div className={`w-full flex items-center gap-2 mb-4 mt-8 transition-all duration-300 ${fretboardOrientation === 'Vertical' ? 'flex-col' : ''
+                }`}>
                 {/* Open Strings (Fret 0) - Outside the fretboard */}
-                {selectedPosition === 0 && (
-                    <div className="flex flex-col gap-0">
+                {selectedPosition === 0 && fretboardOrientation === 'Horizontal' && (
+                    <div className={`flex flex-col gap-0 ${handedness === 'Left' ? 'order-2' : ''}`}>
                         {GUITAR_STRINGS.map((stringName, stringIndex) => {
                             const openNote = displayPositions.find(p => p.string === stringIndex && p.fret === 0);
                             return (
@@ -193,12 +194,13 @@ export const Scales: React.FC = () => {
                 )}
 
                 {/* Nut (Thick line separator) */}
-                {selectedPosition === 0 && (
-                    <div className="w-1 h-[288px] bg-gray-300 rounded" />
+                {selectedPosition === 0 && fretboardOrientation === 'Horizontal' && (
+                    <div className={`w-1 h-[288px] bg-gray-300 rounded ${handedness === 'Left' ? 'order-1' : ''}`} />
                 )}
 
                 {/* Fretboard */}
-                <div className="flex-1 bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-2">
+                <div className={`flex-1 bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-2 ${fretboardOrientation === 'Vertical' ? 'rotate-90 origin-center my-32' : ''
+                    } ${handedness === 'Left' && fretboardOrientation === 'Horizontal' ? 'scale-x-[-1]' : ''}`}>
                     {GUITAR_STRINGS.map((stringName, stringIndex) => (
                         <div key={stringIndex} className="relative h-12 flex items-center">
                             {/* String Label */}
@@ -346,8 +348,8 @@ export const Scales: React.FC = () => {
                                 <button
                                     onClick={() => setHandedness('Right')}
                                     className={`flex-1 py-3 rounded-lg font-bold transition-all ${handedness === 'Right'
-                                            ? 'bg-gray-800 text-white'
-                                            : 'bg-gray-500 text-gray-300'
+                                        ? 'bg-gray-800 text-white'
+                                        : 'bg-gray-500 text-gray-300'
                                         }`}
                                 >
                                     Right Handed
@@ -355,8 +357,8 @@ export const Scales: React.FC = () => {
                                 <button
                                     onClick={() => setHandedness('Left')}
                                     className={`flex-1 py-3 rounded-lg font-bold transition-all ${handedness === 'Left'
-                                            ? 'bg-gray-800 text-white'
-                                            : 'bg-gray-500 text-gray-300'
+                                        ? 'bg-gray-800 text-white'
+                                        : 'bg-gray-500 text-gray-300'
                                         }`}
                                 >
                                     Left Handed
@@ -371,8 +373,8 @@ export const Scales: React.FC = () => {
                                 <button
                                     onClick={() => setFretboardOrientation('Horizontal')}
                                     className={`flex-1 py-3 rounded-lg font-bold transition-all ${fretboardOrientation === 'Horizontal'
-                                            ? 'bg-gray-800 text-white'
-                                            : 'bg-gray-500 text-gray-300'
+                                        ? 'bg-gray-800 text-white'
+                                        : 'bg-gray-500 text-gray-300'
                                         }`}
                                 >
                                     Horizontal
@@ -380,8 +382,8 @@ export const Scales: React.FC = () => {
                                 <button
                                     onClick={() => setFretboardOrientation('Vertical')}
                                     className={`flex-1 py-3 rounded-lg font-bold transition-all ${fretboardOrientation === 'Vertical'
-                                            ? 'bg-gray-800 text-white'
-                                            : 'bg-gray-500 text-gray-300'
+                                        ? 'bg-gray-800 text-white'
+                                        : 'bg-gray-500 text-gray-300'
                                         }`}
                                 >
                                     Vertical
@@ -396,8 +398,8 @@ export const Scales: React.FC = () => {
                                 <button
                                     onClick={() => setAccidentals('Sharp')}
                                     className={`flex-1 py-3 rounded-lg font-bold transition-all ${accidentals === 'Sharp'
-                                            ? 'bg-gray-800 text-white'
-                                            : 'bg-gray-500 text-gray-300'
+                                        ? 'bg-gray-800 text-white'
+                                        : 'bg-gray-500 text-gray-300'
                                         }`}
                                 >
                                     Sharp (#)
@@ -405,8 +407,8 @@ export const Scales: React.FC = () => {
                                 <button
                                     onClick={() => setAccidentals('Flat')}
                                     className={`flex-1 py-3 rounded-lg font-bold transition-all ${accidentals === 'Flat'
-                                            ? 'bg-gray-800 text-white'
-                                            : 'bg-gray-500 text-gray-300'
+                                        ? 'bg-gray-800 text-white'
+                                        : 'bg-gray-500 text-gray-300'
                                         }`}
                                 >
                                     Flat (b)
@@ -421,8 +423,8 @@ export const Scales: React.FC = () => {
                                 <button
                                     onClick={() => setAutoSound('Off')}
                                     className={`flex-1 py-3 rounded-lg font-bold transition-all ${autoSound === 'Off'
-                                            ? 'bg-gray-800 text-white'
-                                            : 'bg-gray-500 text-gray-300'
+                                        ? 'bg-gray-800 text-white'
+                                        : 'bg-gray-500 text-gray-300'
                                         }`}
                                 >
                                     Off
@@ -430,8 +432,8 @@ export const Scales: React.FC = () => {
                                 <button
                                     onClick={() => setAutoSound('On')}
                                     className={`flex-1 py-3 rounded-lg font-bold transition-all ${autoSound === 'On'
-                                            ? 'bg-gray-800 text-white'
-                                            : 'bg-gray-500 text-gray-300'
+                                        ? 'bg-gray-800 text-white'
+                                        : 'bg-gray-500 text-gray-300'
                                         }`}
                                 >
                                     On
