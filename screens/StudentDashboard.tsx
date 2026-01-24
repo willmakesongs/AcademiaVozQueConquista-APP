@@ -138,7 +138,7 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
                 {/* Section: LORENA IA (Destaque Principal) */}
                 <div
                     onClick={() => onNavigate(Screen.CHAT)}
-                    className="relative overflow-hidden bg-gradient-to-br from-[#1A202C] to-[#25213b] p-5 rounded-2xl border border-[#6F4CE7]/30 active:scale-[0.98] cursor-pointer shadow-lg shadow-purple-900/10"
+                    className="relative overflow-hidden bg-gradient-to-br from-[#1A202C] to-[#25213b] p-5 rounded-2xl border border-[#6F4CE7]/30 active:scale-[0.98] active:bg-[#6F4CE7]/5 cursor-pointer shadow-lg shadow-purple-900/10 touch-manipulation"
                 >
                     <div className="absolute top-0 right-0 w-40 h-40 bg-[#6F4CE7] blur-[80px] opacity-10 group-hover:opacity-25 transition-opacity"></div>
 
@@ -189,7 +189,7 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
                 {/* Section: FERRAMENTAS DE ESTÚDIO (PERFIL) */}
                 <div
                     onClick={() => onNavigate(Screen.PROFILE)}
-                    className="bg-[#1A202C] p-5 rounded-2xl border border-[#0081FF]/20 cursor-pointer active:bg-[#1A202C]/80 transition-colors relative overflow-hidden"
+                    className="bg-[#1A202C] p-5 rounded-2xl border border-[#0081FF]/20 cursor-pointer active:bg-[#0081FF]/5 active:scale-[0.98] transition-all relative overflow-hidden touch-manipulation"
                 >
                     <div className="absolute -left-10 top-1/2 -translate-y-1/2 w-20 h-full bg-[#0081FF]/5 skew-x-12"></div>
 

@@ -164,13 +164,13 @@ export const LoginScreen: React.FC = () => {
           ></div>
           <button
             onClick={() => setRole('student')}
-            className={`flex-1 py-2.5 text-sm font-semibold rounded-xl z-10 transition-colors ${role === 'student' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`flex-1 py-2.5 text-sm font-semibold rounded-xl z-10 transition-colors active:scale-95 touch-manipulation ${role === 'student' ? 'text-white' : 'text-gray-500'}`}
           >
             Aluno
           </button>
           <button
             onClick={() => setRole('teacher')}
-            className={`flex-1 py-2.5 text-sm font-semibold rounded-xl z-10 transition-colors ${role === 'teacher' ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+            className={`flex-1 py-2.5 text-sm font-semibold rounded-xl z-10 transition-colors active:scale-95 touch-manipulation ${role === 'teacher' ? 'text-white' : 'text-gray-500'}`}
           >
             Professor
           </button>
