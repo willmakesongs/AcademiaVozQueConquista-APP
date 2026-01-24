@@ -344,7 +344,7 @@ export const PianoScreen: React.FC<Props> = ({ onBack, embedded, onPlayNote, onS
                             }
                             onBack();
                         }}
-                        className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-white/10 transition-colors backdrop-blur-sm border border-white/5"
+                        className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white active:bg-white/10 transition-colors backdrop-blur-sm border border-white/5"
                     >
                         <span className="material-symbols-rounded">arrow_back</span>
                     </button>

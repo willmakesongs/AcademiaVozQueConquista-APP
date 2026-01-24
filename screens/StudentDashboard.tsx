@@ -1,31 +1,80 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Vocalize, Screen } from '../types';
 import { useAuth } from '../contexts/AuthContext';
-import { LORENA_AVATAR_URL } from '../constants';
+import { LORENA_AVATAR_URL, MODULES, VOCALIZES } from '../constants';
 
 interface Props {
     onNavigate: (screen: Screen) => void;
     onPlayVocalize: (vocalize: Vocalize) => void;
 }
 
-export const StudentDashboard: React.FC<Props> = ({ onNavigate }) => {
+export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }) => {
     const { user } = useAuth();
     const firstName = user?.name?.split(' ')[0] || 'Voz';
+
+    const [progress, setProgress] = useState(0);
+    const [nextLesson, setNextLesson] = useState<{ id: string, title: string, type: 'topic' | 'vocalize' } | null>(null);
+
+    useEffect(() => {
+        const saved = localStorage.getItem('checklist_progress');
+        if (saved) {
+            try {
+                const checklist = JSON.parse(saved);
+
+                // 1. Calcular Progresso Total
+                // Vamos contar todos os tópicos de todos os módulos
+                const allTopics = MODULES.flatMap(m => m.topics);
+                const totalTopics = allTopics.length;
+                const completedTopics = allTopics.filter(t => checklist[t.id]).length;
+
+                const percentage = totalTopics > 0 ? (completedTopics / totalTopics) * 100 : 0;
+                setProgress(Math.round(percentage));
+
+                // 2. Tentar encontrar a próxima aula
+                const firstPending = allTopics.find(t => !checklist[t.id]);
+                if (firstPending) {
+                    setNextLesson({ id: firstPending.id, title: firstPending.title, type: 'topic' });
+                }
+            } catch (e) {
+                console.error("Erro ao calcular progresso:", e);
+            }
+        }
+    }, []);
 
     return (
         <div className="min-h-screen bg-[#101622] pb-40">
             {/* Header */}
             <header className="pt-8 pb-4 px-6 flex justify-between items-center bg-[#101622]/95 backdrop-blur-sm sticky top-0 z-20 border-b border-white/5">
                 <div className="flex items-center gap-3">
-                    <img
-                        src={user?.avatarUrl || 'https://picsum.photos/200'}
-                        alt="Profile"
-                        className="w-10 h-10 rounded-full border-2 border-[#6F4CE7]"
-                    />
+                    <div className="relative">
+                        <img
+                            src={user?.avatarUrl || 'https://picsum.photos/200'}
+                            alt="Profile"
+                            className="w-10 h-10 rounded-full border-2 border-[#6F4CE7]"
+                        />
+                        {user?.level && (
+                            <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-[#6F4CE7] rounded-full flex items-center justify-center border-2 border-[#101622]">
+                                <span className="text-[10px] font-black text-white">{user.level}</span>
+                            </div>
+                        )}
+                    </div>
                     <div>
-                        <p className="text-xs text-gray-400 font-medium">Bem-vindo(a),</p>
-                        <h2 className="text-lg font-bold text-white">{user?.name || 'Voz'}</h2>
+                        <div className="flex items-center gap-2">
+                            <p className="text-xs text-gray-400 font-medium">Bem-vindo(a), {firstName}</p>
+                            {user?.streak && user.streak > 0 && (
+                                <div className="flex items-center gap-0.5 bg-orange-500/20 px-1.5 py-0.5 rounded-full border border-orange-500/30">
+                                    <span className="material-symbols-rounded text-orange-500 text-xs">local_fire_department</span>
+                                    <span className="text-[10px] font-black text-orange-500">{user.streak}</span>
+                                </div>
+                            )}
+                        </div>
+                        <div className="w-32 h-1.5 bg-white/5 rounded-full mt-1 overflow-hidden relative">
+                            <div
+                                className="h-full bg-gradient-to-r from-[#0081FF] to-[#6F4CE7] transition-all duration-1000"
+                                style={{ width: `${((user?.xp || 0) % 1000) / 10}%` }}
+                            ></div>
+                        </div>
                     </div>
                 </div>
                 <button className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white relative hover:bg-white/10 transition-colors">
@@ -36,49 +85,60 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate }) => {
 
             <div className="px-6 py-6 space-y-8">
 
-                {/* Introduction Text */}
-                <div className="space-y-4 text-center pt-2">
-                    <p className="text-gray-300 text-sm leading-relaxed">
-                        <strong className="text-white">Olá, {firstName}!</strong> É um prazer ter você conosco nesta jornada de autodescoberta e domínio vocal.
-                    </p>
-                    <p className="text-gray-300 text-sm leading-relaxed">
-                        Na nossa Academia, unimos a sensibilidade das aulas presenciais com a tecnologia deste app para acelerar sua evolução.
-                    </p>
-                </div>
+                {/* Section: Sua Evolução (DYNAMIC CARD) */}
+                <div className="bg-gradient-to-br from-[#1A202C] to-[#111827] p-6 rounded-3xl border border-white/5 relative overflow-hidden shadow-2xl">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[60px] opacity-10"></div>
 
-                {/* Section: Como usar o App */}
-                <div className="bg-[#1A202C] p-5 rounded-2xl border border-white/5">
-                    <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                        <span className="material-symbols-rounded text-[#0081FF]">school</span>
-                        Seu Guia de Bolso
-                    </h3>
+                    <div className="relative z-10">
+                        <div className="flex justify-between items-center mb-6">
+                            <div className="flex items-center gap-2">
+                                <span className="material-symbols-rounded text-[#0081FF]">signal_cellular_alt</span>
+                                <h3 className="text-sm font-black text-white uppercase tracking-widest">Sua Evolução</h3>
+                            </div>
+                            <span className="text-2xl font-black text-white">{progress}%</span>
+                        </div>
 
-                    <ul className="space-y-4">
-                        <li className="flex gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] shrink-0 mt-1">
-                                <span className="material-symbols-rounded text-lg">map</span>
+                        {/* Progress Bar Large */}
+                        <div className="w-full h-3 bg-white/5 rounded-full mb-8 overflow-hidden">
+                            <div
+                                className="h-full bg-gradient-to-r from-[#0081FF] to-[#6F4CE7] rounded-full transition-all duration-1000"
+                                style={{ width: `${progress}%` }}
+                            ></div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
+                                <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Status do Curso</p>
+                                <p className="text-white font-bold">{progress > 90 ? 'Quase mestre!' : (progress > 50 ? 'Em ascensão' : 'Iniciante focado')}</p>
                             </div>
-                            <div>
-                                <strong className="text-white text-sm block">Sua Trilha Personalizada</strong>
-                                <p className="text-xs text-gray-400">Módulos de estudo liberados conforme sua evolução na Academia.</p>
+                            <div className="bg-white/5 p-4 rounded-2xl border border-white/5">
+                                <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Nível VQC</p>
+                                <p className="text-white font-bold">Lvl {user?.level || 1}</p>
                             </div>
-                        </li>
-                        <li className="flex gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] shrink-0 mt-1">
-                                <span className="material-symbols-rounded text-lg">library_music</span>
-                            </div>
-                            <div>
-                                <strong className="text-white text-sm block">Guia de Prática Diária</strong>
-                                <p className="text-xs text-gray-400">Áudios de vocalizes e exercícios de respiração com qualidade de estúdio.</p>
-                            </div>
-                        </li>
-                    </ul>
+                        </div>
+
+                        {/* Next Action CTA */}
+                        {nextLesson && (
+                            <button
+                                onClick={() => onNavigate(Screen.LIBRARY)}
+                                className="w-full mt-6 py-4 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/10 flex items-center justify-between px-5 transition-all group"
+                            >
+                                <div className="text-left">
+                                    <p className="text-[10px] text-[#0081FF] font-black uppercase mb-0.5">Sugestão da Lorena:</p>
+                                    <p className="text-sm font-bold text-white truncate max-w-[180px]">{nextLesson.title}</p>
+                                </div>
+                                <div className="w-10 h-10 rounded-full bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] group-hover:bg-[#0081FF] group-hover:text-white transition-all">
+                                    <span className="material-symbols-rounded">play_arrow</span>
+                                </div>
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {/* Section: LORENA IA (Destaque Principal) */}
                 <div
                     onClick={() => onNavigate(Screen.CHAT)}
-                    className="relative overflow-hidden bg-gradient-to-br from-[#1A202C] to-[#25213b] p-5 rounded-2xl border border-[#6F4CE7]/30 group cursor-pointer shadow-lg shadow-purple-900/10"
+                    className="relative overflow-hidden bg-gradient-to-br from-[#1A202C] to-[#25213b] p-5 rounded-2xl border border-[#6F4CE7]/30 active:scale-[0.98] cursor-pointer shadow-lg shadow-purple-900/10"
                 >
                     <div className="absolute top-0 right-0 w-40 h-40 bg-[#6F4CE7] blur-[80px] opacity-10 group-hover:opacity-25 transition-opacity"></div>
 
@@ -129,7 +189,7 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate }) => {
                 {/* Section: FERRAMENTAS DE ESTÚDIO (PERFIL) */}
                 <div
                     onClick={() => onNavigate(Screen.PROFILE)}
-                    className="bg-[#1A202C] p-5 rounded-2xl border border-[#0081FF]/20 cursor-pointer hover:bg-[#1A202C]/80 transition-colors relative overflow-hidden"
+                    className="bg-[#1A202C] p-5 rounded-2xl border border-[#0081FF]/20 cursor-pointer active:bg-[#1A202C]/80 transition-colors relative overflow-hidden"
                 >
                     <div className="absolute -left-10 top-1/2 -translate-y-1/2 w-20 h-full bg-[#0081FF]/5 skew-x-12"></div>
 
@@ -153,9 +213,6 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate }) => {
                             <p className="text-[10px] text-gray-400">Piano completo para pegar referências auditivas onde estiver.</p>
                         </div>
                     </div>
-                    <p className="text-[10px] text-gray-500 mt-3 italic text-center relative z-10">
-                        *Confira também os detalhes do seu plano e assinatura.
-                    </p>
                 </div>
 
                 {/* Quote & CTA */}

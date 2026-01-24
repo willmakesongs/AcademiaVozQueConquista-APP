@@ -81,13 +81,19 @@ export interface User {
   age?: string;
   instagram?: string;
   modality?: 'Online' | 'Presencial';
-  level?: string;
+  level_name?: string; // Original, renamed to avoid conflict
   scheduleDay?: string;
   scheduleTime?: string;
   contractAgreed?: boolean;
   contractAgreedAt?: string;
   signatureUrl?: string;
   lastPaymentDate?: string;
+  // Gamification
+  xp?: number;
+  level?: number;
+  streak?: number;
+  lastPracticeDate?: string;
+  badges?: string[];
 }
 
 export interface PaymentReceipt {
@@ -121,6 +127,9 @@ export interface StudentSummary {
   address?: string;
   instagram?: string;
   courses?: StudentCourse[];
+  // Gamification
+  xp?: number;
+  streak?: number;
 }
 
 export interface Appointment {

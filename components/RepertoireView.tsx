@@ -109,7 +109,7 @@ export const RepertoireView: React.FC<Props> = ({ onBack }) => {
                     <h2 className="text-2xl font-bold text-white">Buscar Karaokê</h2>
                     <button
                         onClick={onBack}
-                        className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-white/10 transition-colors"
+                        className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white active:bg-white/10 transition-colors"
                     >
                         <span className="material-symbols-rounded">close</span>
                     </button>
@@ -130,7 +130,7 @@ export const RepertoireView: React.FC<Props> = ({ onBack }) => {
                     {searchTerm && (
                         <button
                             onClick={() => setSearchTerm('')}
-                            className="absolute inset-y-0 right-4 flex items-center text-gray-500 hover:text-white"
+                            className="absolute inset-y-0 right-4 flex items-center text-gray-500 active:text-white"
                         >
                             <span className="material-symbols-rounded text-sm">close</span>
                         </button>
@@ -147,7 +147,7 @@ export const RepertoireView: React.FC<Props> = ({ onBack }) => {
                         px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all
                         ${selectedCategory === cat
                                     ? 'bg-[#8B5CF6] text-white shadow-[0_0_15px_rgba(139,92,246,0.4)]'
-                                    : 'bg-[#1E1E2E] text-gray-400 border border-white/5 hover:bg-white/5'}
+                                    : 'bg-[#1E1E2E] text-gray-400 border border-white/5 active:bg-white/5'}
                     `}
                         >
                             {cat}
@@ -167,15 +167,15 @@ export const RepertoireView: React.FC<Props> = ({ onBack }) => {
                         <button
                             key={music.id}
                             onClick={() => handleMusicSelect(music)}
-                            className="group bg-[#1E1E2E] p-4 rounded-3xl border border-white/5 flex items-center justify-between hover:bg-[#27273A] transition-all relative overflow-hidden"
+                            className="bg-[#1E1E2E] p-4 rounded-3xl border border-white/5 flex items-center justify-between active:bg-[#27273A] transition-all relative overflow-hidden"
                         >
                             {/* Background Glow Effect */}
-                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/0 to-white/0 group-hover:via-white/5 transition-all duration-500"></div>
+                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/0 to-white/0 transition-all duration-500"></div>
 
                             <div className="flex items-center gap-4 relative z-10 w-full">
                                 {/* Thumbnail */}
                                 <div className="relative w-24 aspect-video rounded-xl overflow-hidden shadow-lg bg-black">
-                                    <img src={music.thumbnailUrl} alt={music.title} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                                    <img src={music.thumbnailUrl} alt={music.title} className="w-full h-full object-cover" />
                                     <div className="absolute bottom-1 right-1 bg-black/80 px-1.5 py-0.5 rounded text-[10px] font-bold text-white">
                                         {music.duration}
                                     </div>
@@ -191,7 +191,7 @@ export const RepertoireView: React.FC<Props> = ({ onBack }) => {
                                 </div>
 
                                 {/* Action Button */}
-                                <div className="w-10 h-10 rounded-full bg-[#8B5CF6] flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform flex-shrink-0">
+                                <div className="w-10 h-10 rounded-full bg-[#8B5CF6] flex items-center justify-center text-white shadow-lg active:scale-110 transition-transform flex-shrink-0">
                                     <span className="material-symbols-rounded">play_arrow</span>
                                 </div>
                             </div>
@@ -216,7 +216,7 @@ export const RepertoireView: React.FC<Props> = ({ onBack }) => {
             <div className="flex items-center gap-4 mb-6">
                 <button
                     onClick={() => setSelected(null)}
-                    className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-white/10 transition-colors flex-shrink-0"
+                    className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white active:bg-white/10 transition-colors flex-shrink-0"
                 >
                     <span className="material-symbols-rounded">keyboard_arrow_down</span>
                 </button>
@@ -249,7 +249,7 @@ export const RepertoireView: React.FC<Props> = ({ onBack }) => {
                                 <p className="text-gray-400 text-sm mb-6">Esta versão específica ainda não está no nosso acervo.</p>
                                 <button
                                     onClick={() => setCurrentKey('0')}
-                                    className="px-6 py-2 bg-[#8B5CF6] text-white rounded-full text-sm font-bold hover:bg-[#7C3AED] transition-colors shadow-lg"
+                                    className="px-6 py-2 bg-[#8B5CF6] text-white rounded-full text-sm font-bold active:bg-[#7C3AED] transition-colors shadow-lg"
                                 >
                                     Voltar para Original
                                 </button>
@@ -264,7 +264,7 @@ export const RepertoireView: React.FC<Props> = ({ onBack }) => {
                         <h2 className="text-2xl font-bold text-white mb-1">{selected.title}</h2>
                         <p className="text-gray-400 text-lg">{selected.artist}</p>
                     </div>
-                    <button className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-[#8B5CF6] hover:bg-white/10 transition-colors">
+                    <button className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-[#8B5CF6] active:bg-white/10 transition-colors">
                         <span className="material-symbols-rounded text-2xl">favorite</span>
                     </button>
                 </div>
@@ -282,7 +282,7 @@ export const RepertoireView: React.FC<Props> = ({ onBack }) => {
                             </div>
                             <button
                                 onClick={() => setCurrentKey('0')}
-                                className="text-[10px] font-bold text-[#8B5CF6] border border-[#8B5CF6]/30 px-2 py-1 rounded-lg hover:bg-[#8B5CF6]/10 transition-colors uppercase"
+                                className="text-[10px] font-bold text-[#8B5CF6] border border-[#8B5CF6]/30 px-2 py-1 rounded-lg active:bg-[#8B5CF6]/10 transition-colors uppercase"
                             >
                                 Resetar
                             </button>
@@ -307,7 +307,7 @@ export const RepertoireView: React.FC<Props> = ({ onBack }) => {
                                     if (currentIndex > 0) setCurrentKey(keys[currentIndex - 1]);
                                 }}
                                 disabled={currentKey === '-2'}
-                                className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-white hover:bg-white/10 disabled:opacity-30 transition-colors"
+                                className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-white active:bg-white/10 disabled:opacity-30 transition-colors"
                             >
                                 <span className="material-symbols-rounded">remove</span>
                             </button>
@@ -329,7 +329,7 @@ export const RepertoireView: React.FC<Props> = ({ onBack }) => {
                                     if (currentIndex < 4) setCurrentKey(keys[currentIndex + 1]);
                                 }}
                                 disabled={currentKey === '+2'}
-                                className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-white hover:bg-white/10 disabled:opacity-30 transition-colors"
+                                className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-white active:bg-white/10 disabled:opacity-30 transition-colors"
                             >
                                 <span className="material-symbols-rounded">add</span>
                             </button>
@@ -339,13 +339,13 @@ export const RepertoireView: React.FC<Props> = ({ onBack }) => {
 
                 {/* Secondary Actions */}
                 <div className="grid grid-cols-2 gap-4">
-                    <button className="bg-[#1E1E2E] p-4 rounded-2xl border border-white/5 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors group">
-                        <span className="material-symbols-rounded text-gray-400 group-hover:text-white transition-colors">playlist_add</span>
-                        <span className="text-sm font-bold text-gray-300 group-hover:text-white">Salvar</span>
+                    <button className="bg-[#1E1E2E] p-4 rounded-2xl border border-white/5 flex items-center justify-center gap-2 active:bg-white/5 transition-colors">
+                        <span className="material-symbols-rounded text-gray-400 transition-colors">playlist_add</span>
+                        <span className="text-sm font-bold text-gray-300">Salvar</span>
                     </button>
-                    <button className="bg-[#1E1E2E] p-4 rounded-2xl border border-white/5 flex items-center justify-center gap-2 hover:bg-white/5 transition-colors group">
-                        <span className="material-symbols-rounded text-gray-400 group-hover:text-white transition-colors">share</span>
-                        <span className="text-sm font-bold text-gray-300 group-hover:text-white">Compartilhar</span>
+                    <button className="bg-[#1E1E2E] p-4 rounded-2xl border border-white/5 flex items-center justify-center gap-2 active:bg-white/5 transition-colors">
+                        <span className="material-symbols-rounded text-gray-400 transition-colors">share</span>
+                        <span className="text-sm font-bold text-gray-300">Compartilhar</span>
                     </button>
                 </div>
 
@@ -355,9 +355,9 @@ export const RepertoireView: React.FC<Props> = ({ onBack }) => {
                     <div className="flex justify-center gap-6">
                         {!feedbackSent ? (
                             <>
-                                <button onClick={() => handleFeedback('low')} className="text-2xl hover:scale-125 transition-transform" title="Muito Baixo">⬇️</button>
-                                <button onClick={() => handleFeedback('ok')} className="text-2xl hover:scale-125 transition-transform" title="Confortável">✅</button>
-                                <button onClick={() => handleFeedback('high')} className="text-2xl hover:scale-125 transition-transform" title="Muito Alto">⬆️</button>
+                                <button onClick={() => handleFeedback('low')} className="text-2xl active:scale-125 transition-transform" title="Muito Baixo">⬇️</button>
+                                <button onClick={() => handleFeedback('ok')} className="text-2xl active:scale-125 transition-transform" title="Confortável">✅</button>
+                                <button onClick={() => handleFeedback('high')} className="text-2xl active:scale-125 transition-transform" title="Muito Alto">⬆️</button>
                             </>
                         ) : (
                             <span className="text-xs text-green-400 font-bold bg-green-400/10 px-3 py-1 rounded-full">Feedback Enviado!</span>

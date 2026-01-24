@@ -16,6 +16,7 @@ interface AuthContextType {
   updateProfileAvatar: (url: string) => Promise<void>;
   visitorTimeRemaining: number | null;
   refreshUser: () => Promise<void>;
+  updateGamification: (xpToAdd: number) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -217,13 +218,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           age: data.age?.toString(),
           instagram: data.instagram,
           modality: data.modality,
-          level: data.level,
+          level_name: data.level,
           scheduleDay: data.schedule_day,
           scheduleTime: data.schedule_time,
           contractAgreed: data.contract_agreed,
           contractAgreedAt: data.contract_agreed_at,
           signatureUrl: data.signature_url,
-          lastPaymentDate: data.last_payment_date
+          lastPaymentDate: data.last_payment_date,
+          // Gamification
+          xp: data.xp || 0,
+          level: data.level || 1,
+          streak: data.streak || 0,
+          lastPracticeDate: data.last_practice_date,
+          badges: data.badges || []
         };
 
         const updatedUser = await enforceSubscriptionStatus(userData);
@@ -405,6 +412,57 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const updateGamification = async (xpToAdd: number) => {
+    if (!user || user.id === 'guest') return;
+
+    const today = new Date().toISOString().split('T')[0];
+    const lastDate = user.lastPracticeDate;
+    let newStreak = user.streak || 0;
+
+    if (lastDate !== today) {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+      if (lastDate === yesterdayStr) {
+        newStreak += 1;
+      } else if (!lastDate || lastDate < yesterdayStr) {
+        newStreak = 1;
+      }
+    }
+
+    const newXp = (user.xp || 0) + xpToAdd;
+    const newLevel = Math.floor(newXp / 1000) + 1; // Basic level logic: 1000xp per level
+
+    const updates = {
+      xp: newXp,
+      level: newLevel,
+      streak: newStreak,
+      last_practice_date: today
+    };
+
+    // Update locally for instant feedback
+    setUser(prev => prev ? {
+      ...prev,
+      xp: newXp,
+      level: newLevel,
+      streak: newStreak,
+      lastPracticeDate: today
+    } : null);
+
+    if (isSupabaseConfigured) {
+      try {
+        const { error } = await supabase
+          .from('profiles')
+          .update(updates)
+          .eq('id', user.id);
+        if (error) throw error;
+      } catch (err) {
+        console.error('Erro ao atualizar gamificação:', err);
+      }
+    }
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -419,6 +477,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       updateProfileAvatar,
       visitorTimeRemaining,
       refreshUser,
+      updateGamification,
       setUser
     }}>
       {children}

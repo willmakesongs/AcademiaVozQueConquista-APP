@@ -217,7 +217,7 @@ export const RoutineView: React.FC<Props> = ({ onNavigate }) => {
 
             <button
                 onClick={() => setIsAddModalOpen(true)}
-                className="w-full py-4 rounded-2xl bg-white/5 border border-dashed border-white/10 text-gray-400 text-sm font-bold flex items-center justify-center gap-2 hover:bg-white/10"
+                className="w-full py-4 rounded-2xl bg-white/5 border border-dashed border-white/10 text-gray-400 text-sm font-bold flex items-center justify-center gap-2 active:bg-white/10"
             >
                 <span className="material-symbols-rounded">add</span>
                 Adicionar Tarefa

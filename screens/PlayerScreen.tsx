@@ -3,6 +3,7 @@ import { Screen, Vocalize } from '../types';
 import { VOCALIZES, DISABLE_ALL_PLAYERS, MINIMALIST_LOGO_URL } from '../constants';
 import { usePlayback } from '../contexts/PlaybackContext';
 import { useAuth } from '../contexts/AuthContext';
+import { PitchVisualizer } from '../components/PitchVisualizer';
 
 interface Props {
   vocalize: Vocalize | null;
@@ -12,9 +13,15 @@ interface Props {
 }
 
 export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev }) => {
-  const { user } = useAuth();
+  const { user, updateGamification } = useAuth();
   const isAdmin = user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase());
-  const scaleIds = ['vqc-major-asc', 'vqc-minor-asc', 'vqc-major-desc', 'vqc-minor-desc', 'vqc-triad-major', 'vqc-triad-minor', 'vqc-octave-jump', 'vqc-arpeggio-maj7', 'vqc-pentatonic-major', 'vqc-pentatonic-minor', 'vqc-chromatism', 'vqc-jump-5th-4th', 'vqc-major-int-asc', 'vqc-minor-int-asc'];
+  const scaleIds = [
+    'vqc-major-asc', 'vqc-minor-asc', 'vqc-major-desc', 'vqc-minor-desc',
+    'vqc-triad-major', 'vqc-triad-minor', 'vqc-octave-jump', 'vqc-arpeggio-maj7',
+    'vqc-pentatonic-major', 'vqc-pentatonic-minor', 'vqc-chromatism', 'vqc-jump-5th-4th',
+    'vqc-major-int-asc', 'vqc-minor-int-asc', 'vqc-major-int-desc', 'vqc-minor-int-desc',
+    'v-arp3x-m3', 'v-arp3x-m8', 'v-rep-oit-m4', 'v-rep-oit-m7', 'v-rev5-m5', 'v-rev-rep-m8', 'v-esc-long-m8', 'v-desaq-m8'
+  ];
 
   const {
     play, stop: stopPlayback, pause, resume: resumePlayback,
@@ -40,6 +47,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
   const LOG_TAG = 'PlayerScreen:';
   const [preparationTime, setPreparationTime] = useState(0);
   const [localBreathingTime, setLocalBreathingTime] = useState(0);
+  const [showPitch, setShowPitch] = useState(false);
 
   // Refs
   const animationIntervalRef = useRef<number | null>(null);
@@ -65,25 +73,70 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
   ];
 
   const scaleConfig = [
-    { color: '#0081FF', baseHeight: 20, label: 'Dó' },
-    { color: '#0055D4', baseHeight: 30, label: 'Re' },
-    { color: '#002B7F', baseHeight: 40, label: 'Mi' },
-    { color: '#4B369D', baseHeight: 50, label: 'Fa' },
-    { color: '#6F4CE7', baseHeight: 60, label: 'Sol' },
-    { color: '#9333EA', baseHeight: 70, label: 'La' },
-    { color: '#C026D3', baseHeight: 85, label: 'Si' },
-    { color: '#FF00BC', baseHeight: 100, label: 'Dó' },
+    { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
+    { color: '#0055D4', baseHeight: 32, label: 'Ré', level: 1 },
+    { color: '#002B7F', baseHeight: 44, label: 'Mi', level: 2 },
+    { color: '#4B369D', baseHeight: 56, label: 'Fá', level: 3 },
+    { color: '#6F4CE7', baseHeight: 68, label: 'Sol', level: 4 },
+    { color: '#9333EA', baseHeight: 80, label: 'Lá', level: 5 },
+    { color: '#C026D3', baseHeight: 92, label: 'Si', level: 6 },
+    { color: '#FF00BC', baseHeight: 110, label: 'Dó', level: 7 },
   ];
 
   const scaleDescConfig = [
-    { color: '#FF00BC', baseHeight: 100, label: 'Dó' },
-    { color: '#C026D3', baseHeight: 85, label: 'Si' },
-    { color: '#9333EA', baseHeight: 70, label: 'La' },
-    { color: '#6F4CE7', baseHeight: 60, label: 'Sol' },
-    { color: '#4B369D', baseHeight: 50, label: 'Fa' },
-    { color: '#002B7F', baseHeight: 40, label: 'Mi' },
-    { color: '#0055D4', baseHeight: 30, label: 'Re' },
-    { color: '#0081FF', baseHeight: 20, label: 'Dó' },
+    { color: '#FF00BC', baseHeight: 110, label: 'Dó', level: 7 },
+    { color: '#C026D3', baseHeight: 92, label: 'Si', level: 6 },
+    { color: '#9333EA', baseHeight: 80, label: 'Lá', level: 5 },
+    { color: '#6F4CE7', baseHeight: 68, label: 'Sol', level: 4 },
+    { color: '#4B369D', baseHeight: 56, label: 'Fá', level: 3 },
+    { color: '#002B7F', baseHeight: 44, label: 'Mi', level: 2 },
+    { color: '#0055D4', baseHeight: 32, label: 'Ré', level: 1 },
+    { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
+  ];
+
+  const triadConfig = [
+    { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
+    { color: '#002B7F', baseHeight: 44, label: 'Mi', level: 2 },
+    { color: '#6F4CE7', baseHeight: 68, label: 'Sol', level: 4 },
+    { color: '#FF00BC', baseHeight: 110, label: 'Dó', level: 7 },
+  ];
+
+  const arpeggioConfig = [
+    { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
+    { color: '#002B7F', baseHeight: 44, label: 'Mi', level: 2 },
+    { color: '#6F4CE7', baseHeight: 68, label: 'Sol', level: 4 },
+    { color: '#C026D3', baseHeight: 92, label: 'Si', level: 6 },
+    { color: '#FF00BC', baseHeight: 110, label: 'Dó', level: 7 },
+  ];
+
+  const pentatonicConfig = [
+    { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
+    { color: '#0055D4', baseHeight: 32, label: 'Ré', level: 1 },
+    { color: '#002B7F', baseHeight: 44, label: 'Mi', level: 2 },
+    { color: '#6F4CE7', baseHeight: 68, label: 'Sol', level: 4 },
+    { color: '#9333EA', baseHeight: 80, label: 'Lá', level: 5 },
+    { color: '#FF00BC', baseHeight: 110, label: 'Dó', level: 7 },
+  ];
+
+  const jumpConfig = [
+    { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
+    { color: '#FF00BC', baseHeight: 110, label: 'Dó', level: 7 },
+  ];
+
+  const chromaticConfig = [
+    { color: '#0081FF', baseHeight: 20, label: 'C', level: 0 },
+    { color: '#0070ED', baseHeight: 25, label: 'C#', level: 0.5 },
+    { color: '#0055D4', baseHeight: 32, label: 'D', level: 1 },
+    { color: '#0040A9', baseHeight: 38, label: 'D#', level: 1.5 },
+    { color: '#002B7F', baseHeight: 44, label: 'E', level: 2 },
+    { color: '#25308E', baseHeight: 50, label: 'F', level: 3 },
+    { color: '#4B369D', baseHeight: 56, label: 'F#', level: 3.5 },
+    { color: '#5D41C2', baseHeight: 62, label: 'G', level: 4 },
+    { color: '#6F4CE7', baseHeight: 68, label: 'G#', level: 4.5 },
+    { color: '#8141EA', baseHeight: 74, label: 'A', level: 5 },
+    { color: '#9333EA', baseHeight: 80, label: 'A#', level: 5.5 },
+    { color: '#AA2DBF', baseHeight: 86, label: 'B', level: 6 },
+    { color: '#C026D3', baseHeight: 92, label: 'C', level: 7 },
   ];
 
   const intervalsConfig = [
@@ -105,9 +158,27 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
 
   const activeConfig = (['vqc-major-int-asc', 'vqc-minor-int-asc'].includes(vocalize?.id || ''))
     ? intervalsConfig
-    : (['vqc-major-asc', 'vqc-minor-asc', 'vqc-triad-major', 'vqc-triad-minor', 'vqc-octave-jump', 'vqc-arpeggio-maj7', 'vqc-pentatonic-major', 'vqc-pentatonic-minor', 'vqc-chromatism', 'vqc-jump-5th-4th'].includes(vocalize?.id || ''))
-      ? scaleConfig
-      : (['vqc-major-desc', 'vqc-minor-desc'].includes(vocalize?.id || '') ? scaleDescConfig : logoConfig);
+    : (['vqc-major-int-desc', 'vqc-minor-int-desc'].includes(vocalize?.id || ''))
+      ? scaleDescConfig
+      : (['vqc-major-asc', 'vqc-minor-asc'].includes(vocalize?.id || ''))
+        ? scaleConfig
+        : (['vqc-major-desc', 'vqc-minor-desc'].includes(vocalize?.id || ''))
+          ? scaleDescConfig
+          : (['vqc-triad-major', 'vqc-triad-minor', 'v-arp3x-m3', 'v-arp3x-m8'].includes(vocalize?.id || ''))
+            ? triadConfig
+            : (['vqc-arpeggio-maj7'].includes(vocalize?.id || ''))
+              ? arpeggioConfig
+              : (['vqc-pentatonic-major', 'vqc-pentatonic-minor'].includes(vocalize?.id || ''))
+                ? pentatonicConfig
+                : (['vqc-octave-jump', 'vqc-jump-5th-4th', 'v-rep-oit-m4', 'v-rep-oit-m7'].includes(vocalize?.id || ''))
+                  ? jumpConfig
+                  : (['vqc-chromatism'].includes(vocalize?.id || ''))
+                    ? chromaticConfig
+                    : (['v-rev5-m5', 'v-rev-rep-m8', 'v-desaq-m8'].includes(vocalize?.id || ''))
+                      ? scaleDescConfig
+                      : (['v-esc-long-m8'].includes(vocalize?.id || ''))
+                        ? scaleConfig
+                        : logoConfig;
   const activeConfigRef = useRef(activeConfig);
 
   // Sync ref with activeConfig
@@ -368,10 +439,12 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
           // Use refs to get latest values inside interval
           const time = currentTimeRef.current || 0;
 
-          // Calculate active note index (0-7) based on modulo time
-          // We add a small offset (0.1s) to allow for attack time/latentcy perception
+          // Apply 2-beats + 2ms offset for all scale exercises (VQC-PRO standard chord intro)
+          const startOffset = scaleIds.includes(vocalize?.id || '') ? (beatDuration * 2) + 0.002 : 0;
+          const adjustedTime = Math.max(0, time - startOffset);
+
           // Calculate active note index based on modulo time
-          const moduloTime = time % cycleDuration;
+          const moduloTime = adjustedTime % cycleDuration;
 
           let activeIndex = -1;
           if (moduloTime < sequenceDuration) {
@@ -400,15 +473,26 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
           return Math.max(15, Math.min(140, base * randomScale));
         });
       });
-    }, 80);
+    }, 16); // Increased frequency to 60fps for better sync precision
   };
 
   const startPlayback = () => {
-    if (activeAudioUrl) {
-      play(activeAudioUrl, { pitch });
-    }
     setIsPlayingState(true);
     startVisualizer();
+
+    // Reward XP when playback ends (attached via PlaybackContext options)
+    if (activeAudioUrl) {
+      play(activeAudioUrl, {
+        pitch,
+        onEnded: () => {
+          setIsPlayingState(false);
+          // Gamification: XP por concluir exercício
+          if (user && user.id !== 'guest') {
+            updateGamification?.(100);
+          }
+        }
+      });
+    }
   };
 
   // Sync with context if not breathing
@@ -583,14 +667,17 @@ input[type = 'range']:: -webkit - slider - runnable - track {
 
       {/* Header */}
       <div className="flex items-center justify-between p-6 z-10">
-        <button onClick={onBack} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-white/10">
+        <button onClick={onBack} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white active:bg-white/10">
           <span className="material-symbols-rounded">keyboard_arrow_down</span>
         </button>
         <div className="flex flex-col items-center">
 
         </div>
-        <button className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-white/10">
-          <span className="material-symbols-rounded">more_horiz</span>
+        <button
+          onClick={() => setShowPitch(!showPitch)}
+          className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${showPitch ? 'bg-[#0081FF] text-white' : 'bg-white/5 text-gray-400 active:bg-white/10'}`}
+        >
+          <span className="material-symbols-rounded">mic</span>
         </button>
       </div>
 
@@ -612,6 +699,9 @@ input[type = 'range']:: -webkit - slider - runnable - track {
           </div>
         </div>
 
+        {/* Pitch Detection View */}
+        <PitchVisualizer isActive={showPitch} />
+
 
 
         <div className={`${vocalize?.isBreathing ? 'h-72 items-center' : 'h-52 items-end'} flex justify-center ${scaleIds.includes(vocalize?.id || '') ? 'gap-3' : 'gap-2'} shrink-0 relative z-10 my-8 transition-all duration-500`}>
@@ -619,7 +709,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
             <button
               onClick={togglePlay}
               disabled={isPlaybackLoading || (DISABLE_ALL_PLAYERS && !isAdmin)}
-              className="relative flex items-center justify-center w-60 h-60 mb-8 hover:scale-[1.02] active:scale-95 transition-transform group"
+              className="relative flex items-center justify-center w-60 h-60 mb-8 active:scale-95 transition-transform group"
             >
               {/* Outer Glow */}
               <div
@@ -691,13 +781,17 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                 />
               </svg>
             </button>
-          ) : (['vqc-major-int-asc', 'vqc-minor-int-asc'].includes(vocalize?.id || '')) ? (
-            <div className="flex gap-1.5 items-end h-64 relative px-4 w-full justify-center pb-12">
+          ) : (scaleIds.includes(vocalize?.id || '')) ? (
+            <div className={`flex gap-1.5 items-end h-64 relative px-4 w-full justify-center pb-12 ${activeConfig.length > 10 ? 'scale-90 origin-bottom' : ''}`}>
               {activeConfig.map((bar, index) => {
                 const bpm = vocalize?.bpm || 100;
                 const beatDuration = 60 / bpm;
                 const cycleDuration = (activeConfig.length + 4) * beatDuration;
-                const activeIndex = isPlaying ? Math.floor((currentTime % cycleDuration) / beatDuration) : -1;
+
+                // Apply offset to match audio transients (skipping the first preparation chord - 2 beats) + 2ms fine-tuning
+                const startOffset = (beatDuration * 2) + 0.002;
+                const adjustedTime = Math.max(0, currentTime - startOffset);
+                const activeIndex = isPlaying ? Math.floor((adjustedTime % cycleDuration) / beatDuration) : -1;
                 const isCurrent = index === activeIndex;
                 const isPast = index < activeIndex;
                 const level = (bar as any).level || 0;

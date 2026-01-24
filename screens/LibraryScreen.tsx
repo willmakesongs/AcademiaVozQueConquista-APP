@@ -27,7 +27,7 @@ export const LibraryScreen: React.FC<Props> = ({
   activeCourseSlug,
   onActiveCourseSlugChange: setActiveCourseSlug
 }) => {
-  const { user } = useAuth(); // Auth context for guest check
+  const { user, updateGamification } = useAuth(); // Auth context for guest check
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTopic, setSelectedTopic] = useState<{ id: string; title: string; content?: string } | null>(null);
@@ -319,9 +319,15 @@ export const LibraryScreen: React.FC<Props> = ({
     if (checklistItem) {
       const id = checklistItem.getAttribute('data-id');
       if (id) {
-        const newState = { ...checklistState, [id]: !checklistState[id] };
+        const isNowCompleted = !checklistState[id];
+        const newState = { ...checklistState, [id]: isNowCompleted };
         setChecklistState(newState);
         localStorage.setItem('checklist_progress', JSON.stringify(newState));
+
+        // Gamification: Ganho de XP ao concluir tópico
+        if (isNowCompleted && user && user.id !== 'guest') {
+          updateGamification?.(150); // 150 XP por tópico teórico concluído
+        }
       }
       return;
     }
@@ -644,7 +650,7 @@ export const LibraryScreen: React.FC<Props> = ({
                 if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }, 100);
             }}
-            className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'routine' ? 'bg-[#1A202C] text-white shadow-sm' : 'text-gray-500 hover:text-white hover:bg-white/5'}`}
+            className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'routine' ? 'bg-[#1A202C] text-white shadow-sm' : 'text-gray-500'}`}
           >
             VOCALIZES VQC PRO
           </button>
@@ -665,7 +671,7 @@ export const LibraryScreen: React.FC<Props> = ({
                   const top = mod?.topics.find(t => t.id === lastLesson.topicId);
                   if (top) handleLessonOpen(top, lastLesson.moduleId);
                 }}
-                className="bg-brand-gradient p-5 rounded-2xl shadow-[0_10px_30px_rgba(111,76,231,0.2)] mb-4 cursor-pointer group hover:scale-[1.02] transition-all"
+                className="bg-brand-gradient p-5 rounded-2xl shadow-[0_10px_30px_rgba(111,76,231,0.2)] mb-4 cursor-pointer active:scale-[0.98] transition-all"
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">AULA EM ANDAMENTO</span>
@@ -750,7 +756,7 @@ export const LibraryScreen: React.FC<Props> = ({
                           {module.topics.map(topic => (
                             <div
                               key={topic.id}
-                              className={`relative p-2 rounded-lg transition-colors flex items-center justify-between ${topic.content || topic.id.startsWith('10.1') ? 'hover:bg-white/5 cursor-pointer group' : ''}`}
+                              className={`relative p-2 rounded-lg transition-colors flex items-center justify-between ${topic.content || topic.id.startsWith('10.1') ? 'active:bg-white/5 cursor-pointer' : ''}`}
                               onClick={() => {
                                 if (topic.content || topic.id.startsWith('10.1')) {
                                   handleLessonOpen(topic, module.id);
@@ -758,7 +764,7 @@ export const LibraryScreen: React.FC<Props> = ({
                               }}
                             >
                               <div className="flex-1">
-                                <p className={`text-sm font-semibold ${checklistState[topic.id] ? 'text-gray-500 line-through' : (topic.content || topic.id.startsWith('10.1') ? 'text-[#0081FF] group-hover:text-white' : 'text-white')}`}>
+                                <p className={`text-sm font-semibold ${checklistState[topic.id] ? 'text-gray-500 line-through' : (topic.content || topic.id.startsWith('10.1') ? 'text-[#0081FF]' : 'text-white')}`}>
                                   {topic.title}
                                 </p>
                                 <p className="text-[10px] text-gray-600">{topic.description}</p>
@@ -766,7 +772,7 @@ export const LibraryScreen: React.FC<Props> = ({
                               <div className="flex items-center gap-2">
                                 {checklistState[topic.id] && <span className="material-symbols-rounded text-[#0081FF] text-sm">check_circle</span>}
                                 {(topic.content || topic.id.startsWith('10.1')) && (
-                                  <span className="material-symbols-rounded text-gray-600 text-sm group-hover:text-white">
+                                  <span className="material-symbols-rounded text-gray-600 text-sm">
                                     {topic.id.startsWith('10.1') ? 'play_circle' : 'article'}
                                   </span>
                                 )}

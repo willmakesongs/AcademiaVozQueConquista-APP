@@ -64,14 +64,14 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentScreen, onNavigate,
         >
           {/* CAMADA 1: Botão Flutuante (Fundo) */}
           <div className="absolute -top-14 w-20 h-20 z-0">
-            <div className={`absolute inset-0 bg-brand-gradient rounded-full blur-md opacity-50 group-hover:opacity-80 transition-opacity animate-pulse duration-2000 ${isBlocked || isOverdue ? 'hidden' : ''}`}></div>
+            <div className={`absolute inset-0 bg-brand-gradient rounded-full blur-md opacity-50 animate-pulse duration-2000 ${isBlocked || isOverdue ? 'hidden' : ''}`}></div>
             <button
-              className="relative flex items-center justify-center w-full h-full rounded-full bg-[#1A202C] shadow-[0_8px_24px_rgba(238,19,202,0.5)] hover:scale-105 transition-transform border-4 border-[#101622] overflow-hidden group-hover:border-[#FF00BC]/50"
+              className="relative flex items-center justify-center w-full h-full rounded-full bg-[#1A202C] shadow-[0_8px_24px_rgba(238,19,202,0.5)] active:scale-95 transition-transform border-4 border-[#101622] overflow-hidden"
             >
               <img
                 src={LORENA_AVATAR_URL}
                 alt="Lorena IA"
-                className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
+                className="w-full h-full object-cover opacity-90"
               />
               {/* Overlay de brilho */}
               <div className="absolute inset-0 bg-gradient-to-tr from-[#0081FF]/20 to-[#FF00BC]/20 mix-blend-overlay"></div>
