@@ -1,15 +1,17 @@
 
 import React, { useState } from 'react';
 import { WheelPicker } from './WheelPicker';
+import { PianoKeyboard } from './PianoKeyboard';
 import { getCagedPosition } from '../../services/CAGED/cagedLogic';
 import { NoteName } from '../../types';
 
-type Instrument = 'guitar' | 'bass' | 'ukulele';
+type Instrument = 'guitar' | 'bass' | 'ukulele' | 'piano';
 
 const INSTRUMENT_CONFIG = {
     guitar: { strings: 6, spacing: 32, labels: ['E', 'A', 'D', 'G', 'B', 'E'] },
     bass: { strings: 4, spacing: 44, labels: ['E', 'A', 'D', 'G'] },
-    ukulele: { strings: 4, spacing: 44, labels: ['G', 'C', 'E', 'A'] }
+    ukulele: { strings: 4, spacing: 44, labels: ['G', 'C', 'E', 'A'] },
+    piano: { strings: 0, spacing: 0, labels: [] } // Piano uses keyboard instead
 };
 
 const CAGED_SHAPES = ['C', 'A', 'G', 'E', 'D'];
@@ -43,13 +45,13 @@ export const ChordLibrary: React.FC = () => {
         <div className="p-6 flex flex-col items-center">
             {/* Instrument Selector */}
             <div className="flex gap-2 p-1 bg-black/20 rounded-xl mb-8 w-full">
-                {(['guitar', 'bass', 'ukulele'] as Instrument[]).map(inst => (
+                {(['guitar', 'bass', 'ukulele', 'piano'] as Instrument[]).map(inst => (
                     <button
                         key={inst}
                         onClick={() => setInstrument(inst)}
                         className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${instrument === inst ? 'bg-white/10 text-white' : 'text-gray-500'}`}
                     >
-                        {inst === 'guitar' ? 'Violão' : inst === 'bass' ? 'Baixo' : 'Ukulele'}
+                        {inst === 'guitar' ? 'Violão' : inst === 'bass' ? 'Baixo' : 'Ukulele' : 'Piano'}
                     </button>
                 ))}
             </div>
@@ -126,6 +128,11 @@ export const ChordLibrary: React.FC = () => {
                                 value={selectedExtension}
                                 onChange={setSelectedExtension}
                                 width="w-1/3"
+            {/* Instrument Display */}
+            {instrument === 'piano' ? (
+                <PianoKeyboard root={selectedRoot} chordType={chordType} />
+            ) : (
+                <>
                             />
                         </div>
                     </div>
@@ -211,6 +218,8 @@ const ChordDiagram: React.FC<{ instrument: Instrument; positions: any[] }> = ({ 
             {/* String Names (Bottom) */}
             <div className="flex gap-6 mt-8 px-2">
                 {config.labels.map((label, i) => (
+                </>
+            )}
                     <div key={i} className="w-4 text-center text-[10px] font-black text-gray-600">
                         {label}
                     </div>
