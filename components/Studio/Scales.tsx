@@ -53,6 +53,13 @@ export const Scales: React.FC = () => {
     const [selectedType, setSelectedType] = useState('Major');
     const [viewMode, setViewMode] = useState<ViewMode>('Full');
     const [selectedPosition, setSelectedPosition] = useState(0); // Starting position (fret)
+    const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+    // Settings
+    const [handedness, setHandedness] = useState<'Right' | 'Left'>('Right');
+    const [fretboardOrientation, setFretboardOrientation] = useState<'Horizontal' | 'Vertical'>('Horizontal');
+    const [accidentals, setAccidentals] = useState<'Sharp' | 'Flat'>('Sharp');
+    const [autoSound, setAutoSound] = useState<'Off' | 'On'>('Off');
 
     const roots: NoteName[] = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
@@ -146,7 +153,13 @@ export const Scales: React.FC = () => {
                 </button>
                 <div className="flex flex-col items-center">
                     <div className="text-xl font-bold text-white flex items-center gap-2">
-                        {selectedRoot} {selectedType} 🔊
+                        {selectedRoot} {selectedType}
+                        <button
+                            onClick={() => setIsSettingsOpen(true)}
+                            className="text-gray-400 hover:text-white transition-colors"
+                        >
+                            ⚙️
+                        </button>
                     </div>
                 </div>
                 <button
@@ -308,6 +321,126 @@ export const Scales: React.FC = () => {
                     ))}
                 </div>
             ))}
+
+            {/* Settings Modal */}
+            {isSettingsOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center pointer-events-none">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto" onClick={() => setIsSettingsOpen(false)} />
+
+                    <div className="relative w-full max-w-md bg-gray-700 rounded-2xl p-6 pointer-events-auto animate-in fade-in duration-300">
+                        {/* Header */}
+                        <div className="flex items-center justify-between mb-6 bg-gray-600 -mx-6 -mt-6 px-6 py-4 rounded-t-2xl">
+                            <h2 className="text-2xl font-bold text-white">Settings</h2>
+                            <button
+                                onClick={() => setIsSettingsOpen(false)}
+                                className="text-white text-2xl hover:text-gray-300"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        {/* Handedness */}
+                        <div className="mb-6">
+                            <h3 className="text-lg font-bold text-white mb-3 text-center">Handedness</h3>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setHandedness('Right')}
+                                    className={`flex-1 py-3 rounded-lg font-bold transition-all ${handedness === 'Right'
+                                            ? 'bg-gray-800 text-white'
+                                            : 'bg-gray-500 text-gray-300'
+                                        }`}
+                                >
+                                    Right Handed
+                                </button>
+                                <button
+                                    onClick={() => setHandedness('Left')}
+                                    className={`flex-1 py-3 rounded-lg font-bold transition-all ${handedness === 'Left'
+                                            ? 'bg-gray-800 text-white'
+                                            : 'bg-gray-500 text-gray-300'
+                                        }`}
+                                >
+                                    Left Handed
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Fretboard Orientation */}
+                        <div className="mb-6">
+                            <h3 className="text-lg font-bold text-white mb-3 text-center">Fretboard</h3>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setFretboardOrientation('Horizontal')}
+                                    className={`flex-1 py-3 rounded-lg font-bold transition-all ${fretboardOrientation === 'Horizontal'
+                                            ? 'bg-gray-800 text-white'
+                                            : 'bg-gray-500 text-gray-300'
+                                        }`}
+                                >
+                                    Horizontal
+                                </button>
+                                <button
+                                    onClick={() => setFretboardOrientation('Vertical')}
+                                    className={`flex-1 py-3 rounded-lg font-bold transition-all ${fretboardOrientation === 'Vertical'
+                                            ? 'bg-gray-800 text-white'
+                                            : 'bg-gray-500 text-gray-300'
+                                        }`}
+                                >
+                                    Vertical
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Accidentals */}
+                        <div className="mb-6">
+                            <h3 className="text-lg font-bold text-white mb-3 text-center">Accidentals</h3>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setAccidentals('Sharp')}
+                                    className={`flex-1 py-3 rounded-lg font-bold transition-all ${accidentals === 'Sharp'
+                                            ? 'bg-gray-800 text-white'
+                                            : 'bg-gray-500 text-gray-300'
+                                        }`}
+                                >
+                                    Sharp (#)
+                                </button>
+                                <button
+                                    onClick={() => setAccidentals('Flat')}
+                                    className={`flex-1 py-3 rounded-lg font-bold transition-all ${accidentals === 'Flat'
+                                            ? 'bg-gray-800 text-white'
+                                            : 'bg-gray-500 text-gray-300'
+                                        }`}
+                                >
+                                    Flat (b)
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Chord Auto Sound */}
+                        <div className="mb-4">
+                            <h3 className="text-lg font-bold text-white mb-3 text-center">Chord Auto Sound</h3>
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => setAutoSound('Off')}
+                                    className={`flex-1 py-3 rounded-lg font-bold transition-all ${autoSound === 'Off'
+                                            ? 'bg-gray-800 text-white'
+                                            : 'bg-gray-500 text-gray-300'
+                                        }`}
+                                >
+                                    Off
+                                </button>
+                                <button
+                                    onClick={() => setAutoSound('On')}
+                                    className={`flex-1 py-3 rounded-lg font-bold transition-all ${autoSound === 'On'
+                                            ? 'bg-gray-800 text-white'
+                                            : 'bg-gray-500 text-gray-300'
+                                        }`}
+                                >
+                                    On
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
