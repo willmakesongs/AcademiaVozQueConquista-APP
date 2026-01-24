@@ -128,14 +128,16 @@ export const ChordLibrary: React.FC = () => {
                                 value={selectedExtension}
                                 onChange={setSelectedExtension}
                                 width="w-1/3"
-            {instrument === 'piano' ? (
-                <PianoKeyboard root={selectedRoot} chordType={chordType} />
-            ) : (
-                <>
                             />
                         </div>
                     </div>
                 </div>
+            )}
+
+            {instrument === 'piano' ? (
+                <PianoKeyboard root={selectedRoot} chordType={chordType} />
+            ) : (
+                <ChordDiagram instrument={instrument} positions={chordPositions} />
             )}
         </div>
     );
@@ -219,11 +221,11 @@ const ChordDiagram: React.FC<{ instrument: Instrument; positions: any[] }> = ({ 
                 {config.labels.map((label, i) => (
                 </>
             )}
-                    <div key={i} className="w-4 text-center text-[10px] font-black text-gray-600">
-                        {label}
-                    </div>
-                ))}
+            <div key={i} className="w-4 text-center text-[10px] font-black text-gray-600">
+                {label}
             </div>
+                ))}
         </div>
+        </div >
     );
 };
