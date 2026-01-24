@@ -140,11 +140,11 @@ export const Scales: React.FC = () => {
                                             <div
                                                 key={idx}
                                                 className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-black z-10 ${pos.isRoot
-                                                        ? 'bg-orange-500 text-white'
-                                                        : 'bg-yellow-400 text-black'
+                                                    ? 'bg-orange-500 text-white'
+                                                    : 'bg-yellow-400 text-black'
                                                     }`}
                                             >
-                                                {pos.note}
+                                                {pos.degree}
                                             </div>
                                         ))}
                                 </div>
@@ -161,8 +161,8 @@ export const Scales: React.FC = () => {
                         key={mode}
                         onClick={() => setViewMode(mode)}
                         className={`flex-1 py-2 rounded-lg text-sm font-bold transition-all ${viewMode === mode
-                                ? 'bg-gray-600 text-white'
-                                : 'bg-gray-700 text-gray-400'
+                            ? 'bg-gray-600 text-white'
+                            : 'bg-gray-700 text-gray-400'
                             }`}
                     >
                         {mode}
@@ -177,8 +177,8 @@ export const Scales: React.FC = () => {
                         key={root}
                         onClick={() => setSelectedRoot(root)}
                         className={`py-3 rounded text-sm font-bold transition-all ${selectedRoot === root
-                                ? 'bg-orange-500 text-white'
-                                : 'bg-gray-700 text-gray-300'
+                            ? 'bg-orange-500 text-white'
+                            : 'bg-gray-700 text-gray-300'
                             }`}
                     >
                         {root}
@@ -191,8 +191,8 @@ export const Scales: React.FC = () => {
                         key={root}
                         onClick={() => setSelectedRoot(root)}
                         className={`py-3 rounded text-sm font-bold transition-all ${selectedRoot === root
-                                ? 'bg-orange-500 text-white'
-                                : 'bg-gray-700 text-gray-300'
+                            ? 'bg-orange-500 text-white'
+                            : 'bg-gray-700 text-gray-300'
                             }`}
                     >
                         {root}
@@ -208,8 +208,8 @@ export const Scales: React.FC = () => {
                             key={scale}
                             onClick={() => setSelectedType(scale)}
                             className={`py-3 rounded text-[10px] font-bold transition-all ${selectedType === scale
-                                    ? rowIdx === 0 ? 'bg-blue-600 text-white' : 'bg-gray-600 text-white'
-                                    : 'bg-gray-700 text-gray-400'
+                                ? rowIdx === 0 ? 'bg-blue-600 text-white' : 'bg-gray-600 text-white'
+                                : 'bg-gray-700 text-gray-400'
                                 }`}
                         >
                             {scale}
