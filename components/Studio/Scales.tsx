@@ -67,7 +67,36 @@ export const Scales: React.FC = () => {
         }));
     }, [selectedRoot, selectedType]);
 
-    // Generate box pattern positions (2-3 notes per string within 4-5 fret span)
+    // Generate FULL fretboard positions (all scale notes across entire visible range)
+    const fullPositions = useMemo(() => {
+        const pos: Array<{ string: number; fret: number; note: NoteName; degree: number; isRoot: boolean }> = [];
+        const startFret = selectedPosition;
+        const fretRange = 12; // Show 12 frets in Full mode
+
+        GUITAR_STRINGS.forEach((openString, stringIndex) => {
+            const stringRootIndex = NOTES.indexOf(openString);
+
+            // Find ALL scale notes on this string within the range
+            for (let fret = startFret; fret < startFret + fretRange; fret++) {
+                const noteAtFret = NOTES[(stringRootIndex + fret) % 12];
+                const scaleNote = scaleNotesWithIntervals.find(sn => sn.note === noteAtFret);
+
+                if (scaleNote) {
+                    pos.push({
+                        string: stringIndex,
+                        fret,
+                        note: noteAtFret,
+                        degree: scaleNote.degree,
+                        isRoot: noteAtFret === selectedRoot
+                    });
+                }
+            }
+        });
+
+        return pos;
+    }, [scaleNotesWithIntervals, selectedRoot, selectedPosition]);
+
+    // Generate box pattern positions (2-3 notes per string within 4-5 fret span) for Vertical mode
     const boxPositions = useMemo(() => {
         const pos: Array<{ string: number; fret: number; note: NoteName; degree: number; isRoot: boolean }> = [];
         const startFret = selectedPosition;
@@ -100,7 +129,9 @@ export const Scales: React.FC = () => {
         return pos;
     }, [scaleNotesWithIntervals, selectedRoot, selectedPosition]);
 
-    const displayFrets = selectedPosition === 0 ? 4 : 5;
+    // Choose which positions to display based on view mode
+    const displayPositions = viewMode === 'Full' ? fullPositions : boxPositions;
+    const displayFrets = viewMode === 'Full' ? 12 : (selectedPosition === 0 ? 4 : 5);
 
     return (
         <div className="flex flex-col items-center p-4 pb-32 bg-[#101622]">
@@ -133,7 +164,7 @@ export const Scales: React.FC = () => {
                 {selectedPosition === 0 && (
                     <div className="flex flex-col gap-0">
                         {GUITAR_STRINGS.map((stringName, stringIndex) => {
-                            const openNote = boxPositions.find(p => p.string === stringIndex && p.fret === 0);
+                            const openNote = displayPositions.find(p => p.string === stringIndex && p.fret === 0);
                             return (
                                 <div key={stringIndex} className="h-12 flex items-center justify-center w-10">
                                     {openNote && (
@@ -162,11 +193,11 @@ export const Scales: React.FC = () => {
 
                             {/* String Line - Variable thickness */}
                             <div className={`absolute inset-x-0 bg-gray-600 ${stringIndex === 0 ? 'h-[1px]' :   // E (high)
-                                    stringIndex === 1 ? 'h-[1.5px]' : // B
-                                        stringIndex === 2 ? 'h-[2px]' :   // G
-                                            stringIndex === 3 ? 'h-[2.5px]' : // D
-                                                stringIndex === 4 ? 'h-[3px]' :   // A
-                                                    'h-[3.5px]'                       // E (low)
+                                stringIndex === 1 ? 'h-[1.5px]' : // B
+                                    stringIndex === 2 ? 'h-[2px]' :   // G
+                                        stringIndex === 3 ? 'h-[2.5px]' : // D
+                                            stringIndex === 4 ? 'h-[3px]' :   // A
+                                                'h-[3.5px]'                       // E (low)
                                 }`} />
 
                             {/* Frets */}
@@ -192,7 +223,7 @@ export const Scales: React.FC = () => {
                                             )}
 
                                             {/* Note Dot */}
-                                            {boxPositions
+                                            {displayPositions
                                                 .filter(p => p.string === stringIndex && p.fret === fret)
                                                 .map((pos, dotIdx) => (
                                                     <div
