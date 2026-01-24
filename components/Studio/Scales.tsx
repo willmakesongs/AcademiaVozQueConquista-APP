@@ -106,22 +106,36 @@ export const Scales: React.FC = () => {
         <div className="flex flex-col items-center p-4 pb-32 bg-[#101622]">
             {/* Header */}
             <div className="flex items-center justify-between w-full mb-4">
-                <button className="text-gray-500 text-sm px-3 py-1 bg-gray-800 rounded">{'<<'}</button>
+                <button
+                    onClick={() => setSelectedPosition(Math.max(0, selectedPosition - 1))}
+                    disabled={selectedPosition === 0}
+                    className="text-white text-sm px-3 py-1 bg-gray-800 rounded disabled:opacity-30"
+                >
+                    {'<<'}
+                </button>
                 <div className="flex flex-col items-center">
                     <div className="text-xl font-bold text-white flex items-center gap-2">
                         {selectedRoot} {selectedType} 🔊
                     </div>
                 </div>
-                <button className="text-gray-500 text-sm px-3 py-1 bg-gray-800 rounded">{'>>'}</button>
+                <button
+                    onClick={() => setSelectedPosition(Math.min(20, selectedPosition + 1))}
+                    disabled={selectedPosition >= 20}
+                    className="text-white text-sm px-3 py-1 bg-gray-800 rounded disabled:opacity-30"
+                >
+                    {'>>'}
+                </button>
             </div>
 
-            {/* Fret Position Selector */}
-            <div className="flex w-full mb-2 px-8 gap-1">
-                {[0, 2, 3, 4, 5, 6, 7, 8].map(pos => (
+            {/* Fret Position Selector - Show current range */}
+            <div className="flex w-full mb-2 px-8 gap-1 overflow-x-auto">
+                {Array.from({ length: 25 }, (_, i) => i).filter(pos =>
+                    pos === 0 || (pos >= selectedPosition - 2 && pos <= selectedPosition + 5)
+                ).map(pos => (
                     <button
                         key={pos}
                         onClick={() => setSelectedPosition(pos)}
-                        className={`flex-1 text-center text-sm font-bold py-1 rounded transition-all ${selectedPosition === pos
+                        className={`flex-shrink-0 px-3 text-center text-sm font-bold py-1 rounded transition-all ${selectedPosition === pos
                             ? 'bg-blue-600 text-white'
                             : 'bg-gray-700 text-gray-400'
                             }`}
@@ -176,9 +190,9 @@ export const Scales: React.FC = () => {
                                             {/* Fret Line */}
                                             <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gray-700" />
 
-                                            {/* Fret Number Label (top of first string) */}
+                                            {/* Fret Number Label (centered in fret space) */}
                                             {stringIndex === 0 && (
-                                                <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] text-gray-400 font-mono">
+                                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 text-sm text-gray-300 font-bold">
                                                     {fret}
                                                 </div>
                                             )}
