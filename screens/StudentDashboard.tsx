@@ -188,24 +188,24 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
 
                 {/* Section: FERRAMENTAS DE ESTÚDIO (PERFIL) */}
                 <div
-                    onClick={() => onNavigate(Screen.PROFILE)}
+                    onClick={() => onNavigate(Screen.STUDIO)}
                     className="bg-[#1A202C] p-5 rounded-2xl border border-[#0081FF]/20 cursor-pointer active:bg-[#0081FF]/5 active:scale-[0.98] transition-all relative overflow-hidden touch-manipulation"
                 >
                     <div className="absolute -left-10 top-1/2 -translate-y-1/2 w-20 h-full bg-[#0081FF]/5 skew-x-12"></div>
 
                     <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2 relative z-10">
                         <span className="material-symbols-rounded text-[#0081FF]">construction</span>
-                        Ferramentas de Estúdio (Perfil)
+                        VQC Studio
                     </h3>
                     <p className="text-sm text-gray-300 mb-4 relative z-10">
-                        O botão <strong>PERFIL</strong> guarda segredos! Lá você encontra ferramentas tecnológicas essenciais para o seu treino diário:
+                        O estúdio guarda segredos! Lá você encontra ferramentas tecnológicas essenciais para o seu treino diário:
                     </p>
 
                     <div className="grid grid-cols-2 gap-3 relative z-10">
                         <div className="bg-[#151A23] p-3 rounded-xl border border-white/5 hover:border-[#0081FF]/30 transition-colors">
                             <span className="material-symbols-rounded text-[#0081FF] mb-2 block text-xl">graphic_eq</span>
-                            <strong className="text-white text-xs block mb-1">Analisador de Afinação</strong>
-                            <p className="text-[10px] text-gray-400">Feedback visual em tempo real para saber se você está na nota certa.</p>
+                            <strong className="text-white text-xs block mb-1">Afinador, Metrônomo e Acordes</strong>
+                            <p className="text-[10px] text-gray-400">As ferramentas essenciais para o seu treino diário, agora em um só lugar.</p>
                         </div>
                         <div className="bg-[#151A23] p-3 rounded-xl border border-white/5 hover:border-[#FF00BC]/30 transition-colors">
                             <span className="material-symbols-rounded text-[#FF00BC] mb-2 block text-xl">piano</span>

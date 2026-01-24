@@ -25,7 +25,12 @@ serve(async (req) => {
         let userRole = 'student';
         let userName = 'Voz';
 
-        if (user_id) {
+        const isValidUuid = (uuid: string) => {
+            const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+            return uuidRegex.test(uuid);
+        };
+
+        if (user_id && user_id !== 'guest' && isValidUuid(user_id)) {
             const { data: profile, error: profileError } = await supabase
                 .from('profiles')
                 .select('role, name')
@@ -148,12 +153,18 @@ Termine sempre com um reforço de autoridade ou uma ação prática (Ex: "Vá pa
         // Formatação do Histórico para o Gemini API
         let chatHistory = [];
         if (history && Array.isArray(history)) {
-            chatHistory = history
+            const formattedHistory = history
                 .filter((m: any) => m.text && !m.isError)
                 .map((m: any) => ({
                     role: m.role === 'user' ? 'user' : 'model',
                     parts: [{ text: m.text }]
                 }));
+
+            // O Gemini exige que o histórico comece com uma mensagem do usuário
+            const firstUserIndex = formattedHistory.findIndex(m => m.role === 'user');
+            if (firstUserIndex !== -1) {
+                chatHistory = formattedHistory.slice(firstUserIndex);
+            }
         }
 
         const chat = model.startChat({

@@ -1,0 +1,77 @@
+Note: Unnecessary use of -X or --request, POST is already inferred.
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0* Host sedjnyryixudxmmkeoam.supabase.co:443 was resolved.
+* IPv6: (none)
+* IPv4: 104.18.38.10, 172.64.149.246
+*   Trying 104.18.38.10:443...
+* Connected to sedjnyryixudxmmkeoam.supabase.co (104.18.38.10) port 443
+* ALPN: curl offers h2,http/1.1
+* (304) (OUT), TLS handshake, Client hello (1):
+} [337 bytes data]
+*  CAfile: /etc/ssl/cert.pem
+*  CApath: none
+* (304) (IN), TLS handshake, Server hello (2):
+{ [122 bytes data]
+* (304) (IN), TLS handshake, Unknown (8):
+{ [19 bytes data]
+* (304) (IN), TLS handshake, Certificate (11):
+{ [2528 bytes data]
+* (304) (IN), TLS handshake, CERT verify (15):
+{ [79 bytes data]
+* (304) (IN), TLS handshake, Finished (20):
+{ [36 bytes data]
+* (304) (OUT), TLS handshake, Finished (20):
+} [36 bytes data]
+* SSL connection using TLSv1.3 / AEAD-CHACHA20-POLY1305-SHA256 / [blank] / UNDEF
+* ALPN: server accepted h2
+* Server certificate:
+*  subject: CN=supabase.co
+*  start date: Jan  2 06:20:04 2026 GMT
+*  expire date: Apr  2 07:19:59 2026 GMT
+*  subjectAltName: host "sedjnyryixudxmmkeoam.supabase.co" matched cert's "*.supabase.co"
+*  issuer: C=US; O=Google Trust Services; CN=WE1
+*  SSL certificate verify ok.
+* using HTTP/2
+* [HTTP/2] [1] OPENED stream for https://sedjnyryixudxmmkeoam.supabase.co/functions/v1/lorena-ai-brain
+* [HTTP/2] [1] [:method: POST]
+* [HTTP/2] [1] [:scheme: https]
+* [HTTP/2] [1] [:authority: sedjnyryixudxmmkeoam.supabase.co]
+* [HTTP/2] [1] [:path: /functions/v1/lorena-ai-brain]
+* [HTTP/2] [1] [user-agent: curl/8.7.1]
+* [HTTP/2] [1] [accept: */*]
+* [HTTP/2] [1] [authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlZGpueXJ5aXh1ZHhtbWtlb2FtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyODE0NDIsImV4cCI6MjA4Mjg1NzQ0Mn0.5NozVbt66LPMGYLBd2be_IOX3PttYBZETcowwNOkTRA]
+* [HTTP/2] [1] [content-type: application/json]
+* [HTTP/2] [1] [content-length: 15]
+> POST /functions/v1/lorena-ai-brain HTTP/2
+> Host: sedjnyryixudxmmkeoam.supabase.co
+> User-Agent: curl/8.7.1
+> Accept: */*
+> Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlZGpueXJ5aXh1ZHhtbWtlb2FtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyODE0NDIsImV4cCI6MjA4Mjg1NzQ0Mn0.5NozVbt66LPMGYLBd2be_IOX3PttYBZETcowwNOkTRA
+> Content-Type: application/json
+> Content-Length: 15
+> 
+} [15 bytes data]
+* upload completely sent off: 15 bytes
+100    15    0     0  100    15      0     13  0:00:01  0:00:01 --:--:--    13< HTTP/2 500 
+< date: Sat, 24 Jan 2026 18:11:23 GMT
+< content-type: application/json
+< server: cloudflare
+< cf-ray: 9c317e336a73f1da-GRU
+< cf-cache-status: DYNAMIC
+< access-control-allow-origin: *
+< strict-transport-security: max-age=31536000; includeSubDomains; preload
+< vary: Accept-Encoding
+< access-control-allow-headers: authorization, x-client-info, apikey, content-type
+< sb-project-ref: sedjnyryixudxmmkeoam
+< sb-request-id: 019bf134-1c31-7854-9bce-31438b3a6450
+< x-deno-execution-id: 2c54473f-f4ef-45a7-b819-5c92fa463c37
+< x-sb-edge-region: sa-east-1
+< x-served-by: supabase-edge-runtime
+< set-cookie: __cf_bm=LLet7fHtpagYBjal4HGlN5KrITAToZW5pL2eXdtBlPw-1769278283-1.0.1.1-Bc41Wgl2wiPAwvyFezLgp5XeFtvo9.FF6qnC_Of3iBHd3sgQfeYl_Dny6SycmMTk859wyvrvwEkamHnNfB3QxYpSsKYyqI5uVCuhIXkM2sE; path=/; expires=Sat, 24-Jan-26 18:41:23 GMT; domain=.supabase.co; HttpOnly; Secure; SameSite=None
+< alt-svc: h3=":443"; ma=86400
+< 
+{ [1360 bytes data]
+100  3942    0  3927  100    15   3037     11  0:00:01  0:00:01 --:--:--  3051
+* Connection #0 to host sedjnyryixudxmmkeoam.supabase.co left intact
+{"error":"[GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent: [400 Bad Request] Invalid value at 'system_instruction' (type.googleapis.com/google.ai.generativelanguage.v1beta.Content), \"\nVocê é a **Lorena Pimentel IA**, a mentora virtual máxima da academia \"Voz Que Conquista\".\nSeu interlocutor chama-se **Voz**. Trate-o sempre pelo nome.\n\n**SUA PERSONALIDADE:**\n- **Tom:** Profissional, Parceira Intelectual e Especialista em Alta Performance Vocal. \n- Fuja do genérico. Seja direta, técnica e encorajadora sem ser \"fofinha\".\n- Use emojis de música (✨, 🎤, 🎶) com elegância.\n\n**CONHECIMENTO TÉCNICO ATUALIZADO (AGENTES DE MÚSICA):**\nVocê tem conhecimento total sobre os novos módulos do APP:\n1. **Escalas e Vocalizes:** Nossos exercícios de agilidade e intervalos rodam em **110 BPM** para garantir precisão rítmica.\n2. **Visualizador de Pitch:** O app agora mostra o caminho da voz através de **bolinhas (notas)** e **barras de áudio** que reagem em tempo real.\n3. **Treinamento de Respiração:** Temos um sistema de ciclos de 5s (Inspire) e intervalos selecionáveis (5s, 10s, 15s... para Expire) para controle de suporte.\n4. **Resostrategies:** Você domina os conceitos de Fonação (Adução/Abdução), Ressonância (Balanço) e Teoria (Fase 1: Alicerce).\n\n**ESTRUTURA DE FEEDBACK (CRITIQUE STYLE):**\nSe o aluno falar sobre prática ou dúvida técnica:\n1. **Clareza Articulatória:** Se as consoantes não explodirem, a palavra morre.\n2. **Tensão Muscular:** Cuidado com o queixo e ombros. O esforço é no apoio (abdominal), não na garganta.\n3. **Autoridade Vocal:** Cante com domínio. Sem pedir desculpas pela sua voz.\n\n**REGRA DE OURO:**\nTermine sempre com um reforço de autoridade ou uma ação prática (Ex: \"Vá para o Player agora e pratique o Intervalo 3 em 110 BPM\").\n\" [{\"@type\":\"type.googleapis.com/google.rpc.BadRequest\",\"fieldViolations\":[{\"field\":\"system_instruction\",\"description\":\"Invalid value at 'system_instruction' (type.googleapis.com/google.ai.generativelanguage.v1beta.Content), \\\"\\nVocê é a **Lorena Pimentel IA**, a mentora virtual máxima da academia \\\"Voz Que Conquista\\\".\\nSeu interlocutor chama-se **Voz**. Trate-o sempre pelo nome.\\n\\n**SUA PERSONALIDADE:**\\n- **Tom:** Profissional, Parceira Intelectual e Especialista em Alta Performance Vocal. \\n- Fuja do genérico. Seja direta, técnica e encorajadora sem ser \\\"fofinha\\\".\\n- Use emojis de música (✨, 🎤, 🎶) com elegância.\\n\\n**CONHECIMENTO TÉCNICO ATUALIZADO (AGENTES DE MÚSICA):**\\nVocê tem conhecimento total sobre os novos módulos do APP:\\n1. **Escalas e Vocalizes:** Nossos exercícios de agilidade e intervalos rodam em **110 BPM** para garantir precisão rítmica.\\n2. **Visualizador de Pitch:** O app agora mostra o caminho da voz através de **bolinhas (notas)** e **barras de áudio** que reagem em tempo real.\\n3. **Treinamento de Respiração:** Temos um sistema de ciclos de 5s (Inspire) e intervalos selecionáveis (5s, 10s, 15s... para Expire) para controle de suporte.\\n4. **Resostrategies:** Você domina os conceitos de Fonação (Adução/Abdução), Ressonância (Balanço) e Teoria (Fase 1: Alicerce).\\n\\n**ESTRUTURA DE FEEDBACK (CRITIQUE STYLE):**\\nSe o aluno falar sobre prática ou dúvida técnica:\\n1. **Clareza Articulatória:** Se as consoantes não explodirem, a palavra morre.\\n2. **Tensão Muscular:** Cuidado com o queixo e ombros. O esforço é no apoio (abdominal), não na garganta.\\n3. **Autoridade Vocal:** Cante com domínio. Sem pedir desculpas pela sua voz.\\n\\n**REGRA DE OURO:**\\nTermine sempre com um reforço de autoridade ou uma ação prática (Ex: \\\"Vá para o Player agora e pratique o Intervalo 3 em 110 BPM\\\").\\n\\\"\"}]}]","details":"Erro interno no processamento da IA."}

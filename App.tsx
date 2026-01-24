@@ -14,7 +14,8 @@ import { ProfileScreen } from './screens/ProfileScreen';
 import { CalendarScreen } from './screens/CalendarScreen';
 import { TwisterScreen } from './screens/TwisterScreen';
 import { BreathingScreen } from './screens/BreathingScreen';
-import { ChatScreen } from './screens/ChatScreen'; // Importação nova
+import { ChatScreen } from './screens/ChatScreen';
+import { StudioScreen } from './screens/StudioScreen';
 import { BlockedScreen } from './screens/BlockedScreen';
 import { VisitorConversionScreen } from './screens/VisitorConversionScreen';
 import { BottomNav } from './components/BottomNav';
@@ -96,7 +97,7 @@ const AppContent = () => {
 
   const navigateToPlayer = (vocalize: Vocalize) => {
     // Só atualiza a tela anterior se NÃO estiver vindo do próprio player (ex: próxima música)
-    if (screen !== Screen.PLAYER && screen !== Screen.TWISTERS && screen !== Screen.BREATHING && screen !== Screen.CHAT) {
+    if (screen !== Screen.PLAYER && screen !== Screen.TWISTERS && screen !== Screen.BREATHING && screen !== Screen.CHAT && screen !== Screen.STUDIO) {
       setPreviousScreen(screen);
     }
 
@@ -111,8 +112,8 @@ const AppContent = () => {
   // Wrapper para navegação padrão para lidar com o histórico
   const handleNavigate = (targetScreen: Screen) => {
     // Se for navegar para telas secundárias manualmente, salva o histórico
-    if (targetScreen === Screen.PLAYER || targetScreen === Screen.TWISTERS || targetScreen === Screen.BREATHING || targetScreen === Screen.CHAT) {
-      if (screen !== Screen.PLAYER && screen !== Screen.TWISTERS && screen !== Screen.BREATHING && screen !== Screen.CHAT) {
+    if (targetScreen === Screen.PLAYER || targetScreen === Screen.TWISTERS || targetScreen === Screen.BREATHING || targetScreen === Screen.CHAT || targetScreen === Screen.STUDIO) {
+      if (screen !== Screen.PLAYER && screen !== Screen.TWISTERS && screen !== Screen.BREATHING && screen !== Screen.CHAT && screen !== Screen.STUDIO) {
         setPreviousScreen(screen);
       }
     }
@@ -259,6 +260,12 @@ const AppContent = () => {
             onBack={() => setScreen(previousScreen)}
           />
         );
+      case Screen.STUDIO:
+        return (
+          <StudioScreen
+            onBack={() => setScreen(previousScreen)}
+          />
+        );
       case Screen.ONBOARDING:
         return <OnboardingScreen onComplete={() => setScreen(Screen.STUDENT_DASHBOARD)} />;
       case Screen.LIBRARY:
@@ -318,7 +325,7 @@ const AppContent = () => {
       {renderScreen()}
 
       {/* Menu rodapé presente em quase todas as telas para navegação rápida */}
-      {user && screen !== Screen.LOGIN && screen !== Screen.CALENDAR && user.status !== 'blocked' && !(user.id === 'guest' && visitorTimeRemaining === 0) && (
+      {user && screen !== Screen.LOGIN && screen !== Screen.CALENDAR && screen !== Screen.STUDIO && user.status !== 'blocked' && !(user.id === 'guest' && visitorTimeRemaining === 0) && (
         <BottomNav
           currentScreen={screen}
           onNavigate={handleBottomNav}
