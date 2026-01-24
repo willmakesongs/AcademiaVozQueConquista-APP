@@ -52,7 +52,7 @@ export const Scales: React.FC = () => {
     const [selectedRoot, setSelectedRoot] = useState<NoteName>('C');
     const [selectedType, setSelectedType] = useState('Major');
     const [viewMode, setViewMode] = useState<ViewMode>('Full');
-    const [selectedPosition, setSelectedPosition] = useState(3); // Starting position (fret)
+    const [selectedPosition, setSelectedPosition] = useState(0); // Starting position (fret)
 
     const roots: NoteName[] = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 
@@ -70,14 +70,15 @@ export const Scales: React.FC = () => {
     // Generate box pattern positions (2-3 notes per string within 4-5 fret span)
     const boxPositions = useMemo(() => {
         const pos: Array<{ string: number; fret: number; note: NoteName; degree: number; isRoot: boolean }> = [];
-        const fretRange = 5; // Show 5 frets starting from selected position
+        const startFret = selectedPosition;
+        const fretRange = selectedPosition === 0 ? 4 : 5; // Smaller range for open position
 
         GUITAR_STRINGS.forEach((openString, stringIndex) => {
             const stringRootIndex = NOTES.indexOf(openString);
             const notesOnString: typeof pos = [];
 
             // Find all scale notes on this string within the range
-            for (let fret = selectedPosition; fret < selectedPosition + fretRange; fret++) {
+            for (let fret = startFret; fret < startFret + fretRange; fret++) {
                 const noteAtFret = NOTES[(stringRootIndex + fret) % 12];
                 const scaleNote = scaleNotesWithIntervals.find(sn => sn.note === noteAtFret);
 
@@ -98,6 +99,8 @@ export const Scales: React.FC = () => {
 
         return pos;
     }, [scaleNotesWithIntervals, selectedRoot, selectedPosition]);
+
+    const displayFrets = selectedPosition === 0 ? 4 : 5;
 
     return (
         <div className="flex flex-col items-center p-4 pb-32 bg-[#101622]">
@@ -128,52 +131,79 @@ export const Scales: React.FC = () => {
                 ))}
             </div>
 
-            {/* Fretboard */}
-            <div className="w-full bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-2 mb-4">
-                {GUITAR_STRINGS.map((stringName, stringIndex) => (
-                    <div key={stringIndex} className="relative h-12 flex items-center">
-                        {/* String Label */}
-                        <div className="absolute -left-6 text-xs text-gray-300 font-bold w-4">{stringName}</div>
-
-                        {/* String Line */}
-                        <div className="absolute inset-x-0 h-0.5 bg-gray-600" />
-
-                        {/* Frets */}
-                        <div className="flex w-full">
-                            {Array.from({ length: 5 }, (_, idx) => {
-                                const fret = selectedPosition + idx;
-                                return (
-                                    <div key={idx} className="flex-1 relative h-12">
-                                        {/* Fret Line */}
-                                        <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gray-700" />
-
-                                        {/* Fret Number Label (top of first string) */}
-                                        {stringIndex === 0 && (
-                                            <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] text-gray-400 font-mono">
-                                                {fret}
-                                            </div>
-                                        )}
-
-                                        {/* Note Dot */}
-                                        {boxPositions
-                                            .filter(p => p.string === stringIndex && p.fret === fret)
-                                            .map((pos, dotIdx) => (
-                                                <div
-                                                    key={dotIdx}
-                                                    className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-black z-10 ${pos.isRoot
-                                                            ? 'bg-orange-500 text-white'
-                                                            : 'bg-yellow-400 text-black'
-                                                        }`}
-                                                >
-                                                    {pos.degree}
-                                                </div>
-                                            ))}
-                                    </div>
-                                );
-                            })}
-                        </div>
+            {/* Fretboard Container */}
+            <div className="w-full flex items-center gap-2 mb-4">
+                {/* Open Strings (Fret 0) - Outside the fretboard */}
+                {selectedPosition === 0 && (
+                    <div className="flex flex-col gap-0">
+                        {GUITAR_STRINGS.map((stringName, stringIndex) => {
+                            const openNote = boxPositions.find(p => p.string === stringIndex && p.fret === 0);
+                            return (
+                                <div key={stringIndex} className="h-12 flex items-center justify-center w-10">
+                                    {openNote && (
+                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-black ${openNote.isRoot ? 'bg-orange-500 text-white' : 'bg-yellow-400 text-black'
+                                            }`}>
+                                            {openNote.degree}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })}
                     </div>
-                ))}
+                )}
+
+                {/* Nut (Thick line separator) */}
+                {selectedPosition === 0 && (
+                    <div className="w-1 h-[288px] bg-gray-300 rounded" />
+                )}
+
+                {/* Fretboard */}
+                <div className="flex-1 bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-2">
+                    {GUITAR_STRINGS.map((stringName, stringIndex) => (
+                        <div key={stringIndex} className="relative h-12 flex items-center">
+                            {/* String Label */}
+                            <div className="absolute -left-6 text-xs text-gray-300 font-bold w-4">{stringName}</div>
+
+                            {/* String Line */}
+                            <div className="absolute inset-x-0 h-0.5 bg-gray-600" />
+
+                            {/* Frets */}
+                            <div className="flex w-full">
+                                {Array.from({ length: displayFrets }, (_, idx) => {
+                                    const fret = selectedPosition === 0 ? idx + 1 : selectedPosition + idx;
+                                    return (
+                                        <div key={idx} className="flex-1 relative h-12">
+                                            {/* Fret Line */}
+                                            <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-gray-700" />
+
+                                            {/* Fret Number Label (top of first string) */}
+                                            {stringIndex === 0 && (
+                                                <div className="absolute -top-6 left-1/2 -translate-x-1/2 text-[10px] text-gray-400 font-mono">
+                                                    {fret}
+                                                </div>
+                                            )}
+
+                                            {/* Note Dot */}
+                                            {boxPositions
+                                                .filter(p => p.string === stringIndex && p.fret === fret)
+                                                .map((pos, dotIdx) => (
+                                                    <div
+                                                        key={dotIdx}
+                                                        className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-black z-10 ${pos.isRoot
+                                                                ? 'bg-orange-500 text-white'
+                                                                : 'bg-yellow-400 text-black'
+                                                            }`}
+                                                    >
+                                                        {pos.degree}
+                                                    </div>
+                                                ))}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </div>
 
             {/* View Mode Buttons */}
