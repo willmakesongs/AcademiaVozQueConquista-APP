@@ -51,7 +51,7 @@ export const ChordLibrary: React.FC = () => {
                         onClick={() => setInstrument(inst)}
                         className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${instrument === inst ? 'bg-white/10 text-white' : 'text-gray-500'}`}
                     >
-                        {inst === 'guitar' ? 'Violão' : inst === 'bass' ? 'Baixo' : 'Ukulele' : inst === 'piano' ? 'Piano' : ''}
+                        {inst === 'guitar' ? 'Violão' : inst === 'bass' ? 'Baixo' : inst === 'ukulele' ? 'Ukulele' : 'Piano'}
                     </button>
                 ))}
             </div>
