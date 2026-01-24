@@ -695,12 +695,12 @@ input[type = 'range']:: -webkit - slider - runnable - track {
 `}</style>
 
       {/* Header */}
-      <div className="flex items-center justify-between p-6 z-10">
+      <div className="flex items-center justify-between px-6 pt-4 pb-2 z-10">
         <button onClick={onBack} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white active:bg-white/10">
           <span className="material-symbols-rounded">keyboard_arrow_down</span>
         </button>
         <div className="flex flex-col items-center">
-
+          {/* Title could go here if needed, but we have it below */}
         </div>
         <button
           onClick={() => setShowPitch(!showPitch)}
@@ -710,17 +710,17 @@ input[type = 'range']:: -webkit - slider - runnable - track {
         </button>
       </div>
 
-      {/* Visualizer Area */}
-      <div className="flex-1 flex flex-col items-center justify-center px-8 z-10 overflow-y-auto hide-scrollbar">
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col items-center justify-between px-6 z-10 overflow-hidden">
 
-        {/* INFO ABOVE CIRCLE FOR BREATHING */}
-        <div className={`w-full text-center mb-6 ${vocalize?.isBreathing ? 'mt-8' : ''}`}>
-          <h2 className="text-2xl font-black text-white mb-2 leading-tight tracking-tighter">
+        {/* Info Area (Title & Category) */}
+        <div className={`w-full text-center mt-2 ${vocalize?.isBreathing ? 'mb-4' : 'mb-2'}`}>
+          <h2 className="text-xl font-black text-white leading-tight tracking-tighter">
             {vocalize?.title}
           </h2>
-          <div className="flex items-center justify-center gap-2 text-gray-400 text-sm font-medium">
+          <div className="flex items-center justify-center gap-2 text-gray-400 text-[10px] font-medium uppercase tracking-widest mt-1">
             <span className="flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#0081FF]"></span>
+              <span className="w-1 h-1 rounded-full bg-[#0081FF]"></span>
               {vocalize?.category}
             </span>
             <span>•</span>
@@ -728,17 +728,16 @@ input[type = 'range']:: -webkit - slider - runnable - track {
           </div>
         </div>
 
-        {/* Pitch Detection View */}
+        {/* Pitch Detection View (Conditional) */}
         <PitchVisualizer isActive={showPitch} />
 
-
-
-        <div className={`${vocalize?.isBreathing ? 'h-80 items-center' : 'h-[320px] items-end'} flex justify-center ${scaleIds.includes(vocalize?.id || '') ? 'gap-0' : 'gap-2'} shrink-0 relative z-10 mt-12 mb-6 transition-all duration-500`}>
+        {/* Visualizer Container - Optimized Height & Spacing */}
+        <div className={`${vocalize?.isBreathing ? 'h-72' : 'h-64'} w-full flex items-center justify-center shrink-0 relative z-10 my-0 transition-all duration-500 overflow-visible`}>
           {vocalize?.isBreathing ? (
             <button
               onClick={togglePlay}
               disabled={isPlaybackLoading || (DISABLE_ALL_PLAYERS && !isAdmin)}
-              className="relative flex items-center justify-center w-64 h-64 active:scale-95 transition-transform group"
+              className="relative flex items-center justify-center w-60 h-60 active:scale-95 transition-transform group"
             >
               {/* Outer Glow */}
               <div
@@ -751,7 +750,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
 
               {/* Main Circle */}
               <div
-                className="relative z-10 w-44 h-44 rounded-full flex flex-col items-center justify-center transition-all duration-[100ms] border-4 border-white/10"
+                className="relative z-10 w-40 h-40 rounded-full flex flex-col items-center justify-center transition-all duration-[100ms] border-4 border-white/10"
                 style={{
                   background: preparationTime > 0
                     ? 'radial-gradient(circle, #1A202C 0%, #2D3748 100%)'
@@ -792,19 +791,19 @@ input[type = 'range']:: -webkit - slider - runnable - track {
               </div>
 
               {/* Progress Ring */}
-              <svg className="absolute inset-0 w-64 h-64 -rotate-90">
+              <svg className="absolute inset-0 w-60 h-60 -rotate-90">
                 <circle
-                  cx="128"
-                  cy="128"
-                  r="120"
+                  cx="120"
+                  cy="120"
+                  r="110"
                   fill="none"
                   stroke="white"
                   strokeWidth="3.5"
-                  strokeDasharray="754"
+                  strokeDasharray="691"
                   strokeDashoffset={
                     preparationTime > 0
-                      ? 754 - (754 * (preparationTime / 2))
-                      : 754 - (754 * (localBreathingTime / (5 + selectedBreathingTime)))
+                      ? 691 - (691 * (preparationTime / 2))
+                      : 691 - (691 * (localBreathingTime / (5 + selectedBreathingTime)))
                   }
                   className="opacity-15 transition-all duration-300"
                 />
@@ -812,14 +811,13 @@ input[type = 'range']:: -webkit - slider - runnable - track {
             </button>
 
           ) : (
-            <div className={`flex flex-1 w-full items-center justify-center p-2 relative overflow-visible h-80`}>
+            <div className={`flex flex-1 w-full items-end justify-center p-0 relative overflow-visible h-full`}>
               {scaleIds.includes(vocalize?.id || '') ? (
                 <div
-                  className="flex items-end relative w-full justify-center pb-12 transition-transform duration-500"
+                  className="flex items-end relative w-full justify-center pb-8 transition-transform duration-500"
                   style={{
-                    // Dynamic scaling: ensure up to 16-20 notes fit safely on a 320-375px screen
-                    transform: `scale(${activeConfig.length > 10 ? Math.max(0.5, 1 - (activeConfig.length - 10) * 0.05) : 1})`,
-                    gap: activeConfig.length > 10 ? '2px' : '12px',
+                    transform: `scale(${activeConfig.length > 10 ? Math.max(0.45, 1 - (activeConfig.length - 10) * 0.06) : 0.9})`,
+                    gap: activeConfig.length > 10 ? '2px' : '10px',
                     willChange: 'transform'
                   }}
                 >
@@ -837,12 +835,12 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                     return (
                       <div key={index} className="flex flex-col items-center shrink-0 transition-transform duration-300" style={{ transform: `translateY(-${level * 22}px) translateZ(0)` }}>
                         {/* Note Label */}
-                        <div className="h-8 flex items-center justify-center mb-2">
+                        <div className="h-8 flex items-center justify-center mb-1">
                           <span className={`text-[10px] font-black uppercase transition-all duration-300 ${isCurrent ? 'text-white opacity-100 scale-125' : 'text-transparent opacity-0'}`} style={{ transform: 'translateZ(0)' }}>
                             {(bar as any).label}
                           </span>
                         </div>
-                        {/* Dot - Using translateZ(0) to force GPU and avoid square artifacts */}
+                        {/* Dot */}
                         <div
                           className={`w-6 h-6 rounded-full transition-all duration-300 ${isCurrent ? 'scale-125 brightness-150' : isPast ? 'opacity-50' : 'opacity-10'}`}
                           style={{
@@ -856,19 +854,19 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                   })}
                 </div>
               ) : (
-                <div className="flex items-end justify-center gap-2.5 h-64 w-full">
+                <div className="flex items-end justify-center gap-2 h-48 w-full pb-4">
                   {activeConfig.map((bar, index) => (
-                    <div key={index} className="flex flex-col items-center gap-3">
+                    <div key={index} className="flex flex-col items-center gap-2">
                       {(bar as any).label && (
-                        <span className={`text-[12px] font-black uppercase tracking-wider transition-all duration-300 ${isPlayingState ? 'text-white opacity-100' : 'text-transparent opacity-0'}`}>
+                        <span className={`text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${isPlayingState ? 'text-white opacity-100' : 'text-transparent opacity-0'}`}>
                           {(bar as any).label}
                         </span>
                       )}
                       <div
-                        className="w-4 rounded-full transition-all duration-[100ms] ease-linear"
+                        className="w-3 rounded-full transition-all duration-[100ms] ease-linear"
                         style={{
                           backgroundColor: bar.color,
-                          height: `${(barHeights[index] || 20) * 1.1}px`,
+                          height: `${(barHeights[index] || 20) * 0.9}px`,
                           opacity: isPlayingState ? 1 : 0.6,
                           transform: 'translateZ(0)',
                           filter: isPlayingState ? `drop-shadow(0 0 8px ${bar.color}40)` : 'none'
@@ -880,98 +878,55 @@ input[type = 'range']:: -webkit - slider - runnable - track {
               )}
             </div>
           )}
-
         </div>
 
+        {/* Action Area (Controls & Buttons) - Tightened */}
+        <div className="w-full flex flex-col items-center gap-4 mb-4">
 
-
-
-        {/* TIMER CONTROL FOR BREATHING */}
-        {vocalize?.isBreathing && (
-          <div className="w-full max-w-xs mb-8 p-3 rounded-2xl bg-[#1A202C]/80 border border-white/5 shrink-0">
-            <p className="text-[10px] uppercase text-gray-500 font-bold tracking-widest mb-3 text-center">Tempo de Expiração (Segundos)</p>
-            <div className="flex flex-wrap justify-center gap-2">
-              {breathingIntervals.map(time => (
-                <button
-                  key={time}
-                  onClick={() => setSelectedBreathingTime(time)}
-                  className={`w-10 h-10 rounded-xl text-xs font-bold transition-all active:scale-90 ${selectedBreathingTime === time
-                    ? 'bg-brand-gradient text-white shadow-lg'
-                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
-                    }`}
-                >
-                  {time}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        <div className="w-full text-center mb-6">
-          {DISABLE_ALL_PLAYERS && !isAdmin && (
-            <div className="bg-[#FF00BC]/10 border border-[#FF00BC]/30 text-[#FF00BC] text-sm font-bold py-3 px-6 rounded-2xl mb-6 inline-flex items-center gap-2 animate-pulse">
-              <span className="material-symbols-rounded text-lg">info</span>
-              Ativo para assinantes
-            </div>
-          )}
-
-          {/* Debug - Remover após confirmar fix */}
-          <div className="hidden" id="active-source-debug">{activeSource}</div>
-
-          {errorMsg && (
-            <div className="bg-[#FF00BC]/10 border border-[#FF00BC]/20 text-red-200 text-xs p-3 rounded-lg mb-4 inline-block">
-              <span className="material-symbols-rounded text-sm align-bottom mr-1">warning</span>
-              {errorMsg}
-            </div>
-          )}
-        </div>
-
-        {/* AUDIO SOURCE BUTTONS */}
-        <div className="flex justify-center gap-4 mb-8 shrink-0">
-          {vocalize?.isBreathing ? (
-            <div className="flex flex-col items-center gap-3">
-              <button
-                onClick={() => handleTrain('example')}
-                className={`relative w-28 h-28 rounded-full flex flex-col items-center justify-center transition-all duration-700 border-[3px] overflow-hidden shadow-2xl ${activeSource === 'example' && isPlaying
-                  ? 'bg-[#1A202C] border-[#6F4CE7] shadow-[#6F4CE7]/40 scale-105'
-                  : 'bg-white/5 border-white/10 opacity-70 hover:opacity-100 hover:border-white/20'
-                  }`}
-              >
-                {/* Internal Logo / Visualizer */}
-                <div className="flex items-end justify-center gap-[4.5px] h-10 relative z-10 translate-y-0.5">
-                  {activeConfig.map((bar, index) => (
-                    <div
-                      key={index}
-                      className="w-1.5 rounded-full transition-all duration-300"
-                      style={{
-                        height: activeSource === 'example' && isPlaying
-                          ? `${(barHeights[index] / 140) * 50}px`
-                          : `${(bar.baseHeight / 100) * 35}px`,
-                        backgroundColor: bar.color, // Full brand colors even when static
-                        boxShadow: activeSource === 'example' && isPlaying ? `0 0 12px ${bar.color}60` : `0 0 8px ${bar.color}30`,
-                        opacity: 1 // Full opacity for "lit" look
-                      }}
-                    />
-                  ))}
-                </div>
-
-                {/* Subtle Inner Glow when playing */}
-                {activeSource === 'example' && isPlaying && (
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#6F4CE7]/10 to-transparent animate-pulse" />
-                )}
-              </button>
-
-              <div className="flex flex-col items-center">
-                <span className={`text-[12px] uppercase font-black tracking-[0.25em] transition-colors duration-300 ${activeSource === 'example' && isPlaying ? 'text-white' : 'text-gray-500'}`}>Exemplo</span>
-                <span className="text-[8px] text-gray-600 font-bold uppercase tracking-[0.1em] mt-1">Guia Técnico</span>
+          {/* TIMER CONTROL FOR BREATHING */}
+          {vocalize?.isBreathing && (
+            <div className="w-full max-w-xs p-3 rounded-2xl bg-[#1A202C]/80 border border-white/5 shrink-0">
+              <p className="text-[9px] uppercase text-gray-500 font-bold tracking-widest mb-2 text-center">Tempo de Expiração (Segundos)</p>
+              <div className="flex flex-wrap justify-center gap-2">
+                {breathingIntervals.map(time => (
+                  <button
+                    key={time}
+                    onClick={() => setSelectedBreathingTime(time)}
+                    className={`w-9 h-9 rounded-xl text-[10px] font-bold transition-all active:scale-90 ${selectedBreathingTime === time
+                      ? 'bg-brand-gradient text-white shadow-lg'
+                      : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                      }`}
+                  >
+                    {time}
+                  </button>
+                ))}
               </div>
             </div>
-          ) : (
-            <>
-              <div className="flex flex-col items-center gap-3">
+          )}
+
+          {/* Messages / Warnings */}
+          <div className="w-full text-center">
+            {DISABLE_ALL_PLAYERS && !isAdmin && (
+              <div className="bg-[#FF00BC]/10 border border-[#FF00BC]/30 text-[#FF00BC] text-[10px] font-bold py-1.5 px-4 rounded-xl mb-2 inline-flex items-center gap-2 animate-pulse">
+                <span className="material-symbols-rounded text-base">info</span>
+                Ativo para assinantes
+              </div>
+            )}
+            {errorMsg && (
+              <div className="bg-[#FF00BC]/10 border border-[#FF00BC]/20 text-red-200 text-[10px] p-2 rounded-lg mb-2 inline-block">
+                <span className="material-symbols-rounded text-sm align-bottom mr-1">warning</span>
+                {errorMsg}
+              </div>
+            )}
+          </div>
+
+          {/* MAIN TRAIN BUTTONS */}
+          <div className="flex justify-center gap-4 shrink-0 transition-transform duration-300">
+            {vocalize?.isBreathing ? (
+              <div className="flex flex-col items-center gap-2">
                 <button
                   onClick={() => handleTrain('example')}
-                  className={`relative w-24 h-24 rounded-full flex flex-col items-center justify-center transition-all duration-700 border-[3px] overflow-hidden shadow-xl ${activeSource === 'example' && isPlaying
+                  className={`relative w-24 h-24 rounded-full flex flex-col items-center justify-center transition-all duration-700 border-[3px] overflow-hidden shadow-2xl ${activeSource === 'example' && isPlaying
                     ? 'bg-[#1A202C] border-[#6F4CE7] shadow-[#6F4CE7]/40 scale-105'
                     : 'bg-white/5 border-white/10 opacity-70 hover:opacity-100 hover:border-white/20'
                     }`}
@@ -980,13 +935,13 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                     {activeConfig.map((bar, index) => (
                       <div
                         key={index}
-                        className="w-1.5 rounded-full transition-all duration-300"
+                        className="w-1 rounded-full transition-all duration-300"
                         style={{
                           height: activeSource === 'example' && isPlaying
                             ? `${(barHeights[index] / 140) * 40}px`
                             : `${(bar.baseHeight / 100) * 28}px`,
                           backgroundColor: bar.color,
-                          boxShadow: activeSource === 'example' && isPlaying ? `0 0 10px ${bar.color}50` : `0 0 6px ${bar.color}20`,
+                          boxShadow: activeSource === 'example' && isPlaying ? `0 0 10px ${bar.color}60` : `0 0 6px ${bar.color}30`,
                           opacity: 1
                         }}
                       />
@@ -994,18 +949,45 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                   </div>
                 </button>
                 <div className="flex flex-col items-center">
-                  <span className={`text-[11px] uppercase font-black tracking-[0.2em] ${activeSource === 'example' && isPlaying ? 'text-white' : 'text-gray-500'}`}>Exemplo</span>
+                  <span className={`text-[10px] uppercase font-black tracking-widest ${activeSource === 'example' && isPlaying ? 'text-white' : 'text-gray-500'}`}>Exemplo</span>
                 </div>
               </div>
+            ) : (
+              <>
+                <div className="flex flex-col items-center gap-2">
+                  <button
+                    onClick={() => handleTrain('example')}
+                    className={`relative w-20 h-20 rounded-full flex flex-col items-center justify-center transition-all duration-700 border-[3px] overflow-hidden shadow-xl ${activeSource === 'example' && isPlaying
+                      ? 'bg-[#1A202C] border-[#6F4CE7] shadow-[#6F4CE7]/40 scale-105'
+                      : 'bg-white/5 border-white/10 opacity-70 hover:opacity-100 hover:border-white/20'
+                      }`}
+                  >
+                    <div className="flex items-end justify-center gap-[3px] h-6 relative z-10 translate-y-0.5">
+                      {activeConfig.map((bar, index) => (
+                        <div
+                          key={index}
+                          className="w-1 rounded-full transition-all duration-300"
+                          style={{
+                            height: activeSource === 'example' && isPlaying
+                              ? `${(barHeights[index] / 140) * 35}px`
+                              : `${(bar.baseHeight / 100) * 24}px`,
+                            backgroundColor: bar.color,
+                            boxShadow: activeSource === 'example' && isPlaying ? `0 0 8px ${bar.color}50` : `0 0 4px ${bar.color}20`,
+                            opacity: 1
+                          }}
+                        />
+                      ))}
+                    </div>
+                  </button>
+                  <span className={`text-[10px] uppercase font-black tracking-wider ${activeSource === 'example' && isPlaying ? 'text-white' : 'text-gray-500'}`}>Exemplo</span>
+                </div>
 
-              <div className="flex flex-col items-center gap-3 w-full max-w-[320px]">
-                {/* Single Vocalize Button vs Gendered Buttons */}
-                {!vocalize.audioUrlMale ? (
-                  <div className="flex justify-center flex-1">
-                    <div className="flex flex-col items-center gap-3">
+                <div className="flex flex-col items-center gap-2">
+                  {!vocalize.audioUrlMale ? (
+                    <div className="flex flex-col items-center gap-2">
                       <button
                         onClick={() => handleTrain('female')}
-                        className={`relative w-24 h-24 rounded-full flex flex-col items-center justify-center transition-all duration-700 border-[3px] overflow-hidden shadow-xl ${activeSource === 'female' && isPlaying
+                        className={`relative w-20 h-20 rounded-full flex flex-col items-center justify-center transition-all duration-700 border-[3px] overflow-hidden shadow-xl ${activeSource === 'female' && isPlaying
                           ? 'bg-[#1A202C] border-[#0081FF] shadow-[#0081FF]/40 scale-105'
                           : 'bg-white/5 border-white/10 opacity-70 hover:opacity-100 hover:border-white/20'
                           }`}
@@ -1013,143 +995,94 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                         <img
                           src={MINIMALIST_LOGO_URL}
                           alt="VQC Logo"
-                          className={`w-12 h-12 object-contain transition-all duration-500 ${activeSource === 'female' && isPlaying ? 'brightness-125 drop-shadow-[0_0_8px_rgba(0,129,255,0.6)]' : 'opacity-80 grayscale'}`}
+                          className={`w-10 h-10 object-contain transition-all duration-500 ${activeSource === 'female' && isPlaying ? 'brightness-125 drop-shadow-[0_0_8px_rgba(0,129,255,0.6)]' : 'opacity-80 grayscale'}`}
                         />
                       </button>
-                      <span className={`text-[11px] uppercase font-black tracking-[0.2em] ${activeSource === 'female' && isPlaying ? 'text-white' : 'text-gray-500'}`}>Iniciar Exercício</span>
+                      <span className={`text-[10px] uppercase font-black tracking-wider ${activeSource === 'female' && isPlaying ? 'text-white' : 'text-gray-500'}`}>Iniciar Exercício</span>
                     </div>
-                  </div>
-                ) : (
-                  <div className="flex justify-between w-full">
-                    <div className="flex flex-col items-center gap-3">
-                      <button
-                        onClick={() => handleTrain('female')}
-                        className={`relative w-24 h-24 rounded-full flex flex-col items-center justify-center transition-all border-4 ${activeSource === 'female' && isPlaying
-                          ? 'bg-[#FF00BC]/20 border-[#FF00BC] shadow-[0_0_20px_rgba(255,0,188,0.3)]'
-                          : 'bg-white/5 border-white/5 grayscale opacity-50 hover:opacity-100'
-                          }`}
-                      >
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${activeSource === 'female' && isPlaying ? 'bg-[#FF00BC] text-white' : 'bg-white/10 text-gray-400'}`}>
-                          <span className="material-symbols-rounded text-2xl">woman</span>
-                        </div>
-                      </button>
-                      <span className={`text-[11px] uppercase font-black tracking-widest ${activeSource === 'female' && isPlaying ? 'text-white' : 'text-gray-500'}`}>Vocalize F.</span>
+                  ) : (
+                    <div className="flex gap-4">
+                      <div className="flex flex-col items-center gap-2">
+                        <button
+                          onClick={() => handleTrain('female')}
+                          className={`relative w-20 h-20 rounded-full flex flex-col items-center justify-center transition-all border-[3px] ${activeSource === 'female' && isPlaying
+                            ? 'bg-[#FF00BC]/20 border-[#FF00BC] shadow-[0_0_20px_rgba(255,0,188,0.3)]'
+                            : 'bg-white/5 border-white/5 grayscale opacity-50'
+                            }`}
+                        >
+                          <span className="material-symbols-rounded text-xl">woman</span>
+                        </button>
+                        <span className={`text-[10px] uppercase font-black tracking-wider ${activeSource === 'female' && isPlaying ? 'text-white' : 'text-gray-500'}`}>Vocalize F.</span>
+                      </div>
+                      <div className="flex flex-col items-center gap-2">
+                        <button
+                          onClick={() => handleTrain('male')}
+                          className={`relative w-20 h-20 rounded-full flex flex-col items-center justify-center transition-all border-[3px] ${activeSource === 'male' && isPlaying
+                            ? 'bg-[#0081FF]/20 border-[#0081FF] shadow-[0_0_20px_rgba(0,129,255,0.3)]'
+                            : 'bg-white/5 border-white/5 grayscale opacity-50'
+                            }`}
+                        >
+                          <span className="material-symbols-rounded text-xl">man</span>
+                        </button>
+                        <span className={`text-[10px] uppercase font-black tracking-wider ${activeSource === 'male' && isPlaying ? 'text-white' : 'text-gray-500'}`}>Vocalize M.</span>
+                      </div>
                     </div>
-
-                    <div className="flex flex-col items-center gap-3">
-                      <button
-                        onClick={() => handleTrain('male')}
-                        className={`relative w-24 h-24 rounded-full flex flex-col items-center justify-center transition-all border-4 ${activeSource === 'male' && isPlaying
-                          ? 'bg-[#0081FF]/20 border-[#0081FF] shadow-[0_0_20px_rgba(0,129,255,0.3)]'
-                          : 'bg-white/5 border-white/5 grayscale opacity-50 hover:opacity-100'
-                          }`}
-                      >
-                        <div className={`w-12 h-12 rounded-full flex items-center justify-center ${activeSource === 'male' && isPlaying ? 'bg-[#0081FF] text-white' : 'bg-white/10 text-gray-400'}`}>
-                          <span className="material-symbols-rounded text-2xl">man</span>
-                        </div>
-                      </button>
-                      <span className={`text-[11px] uppercase font-black tracking-widest ${activeSource === 'male' && isPlaying ? 'text-white' : 'text-gray-500'}`}>Vocalize M.</span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* PITCH CONTROL */}
-        {!vocalize?.isBreathing && (
-          <div className="w-full max-w-xs mb-8 p-3 rounded-2xl bg-[#1A202C]/80 border border-white/5 flex items-center justify-between shrink-0">
-            <button
-              onClick={() => changePitch(-1)}
-              className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-300 hover:text-white transition-colors active:scale-95"
-            >
-              <span className="material-symbols-rounded">remove</span>
-            </button>
-
-            <div className="text-center">
-              <p className="text-[10px] uppercase text-gray-500 font-bold tracking-widest mb-0.5">
-                Tom {pitch !== 0 && '(HQ Resampling)'}
-              </p>
-              <p className={`text-lg font-bold font-mono transition-colors ${pitch !== 0 ? 'text-[#FF00BC]' : 'text-white'}`}>
-                {pitch > 0 ? `+${pitch}` : pitch} st
-              </p>
-            </div>
-
-            <button
-              onClick={() => changePitch(1)}
-              className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-300 hover:text-white transition-colors active:scale-95"
-            >
-              <span className="material-symbols-rounded">add</span>
-            </button>
+                  )}
+                </div>
+              </>
+            )}
           </div>
-        )}
 
-        {/* Progress Bar */}
-        <div className="w-full mb-8 shrink-0 relative">
-          <input
-            type="range"
-            min="0"
-            max={duration || 100}
-            value={currentTime}
-            onChange={(e) => seek(parseFloat(e.target.value))}
-            className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#FF00BC]"
-          />
-          <div className="flex justify-between mt-2 px-1">
-            <span className="text-[10px] text-gray-500 font-mono">{formatTime(currentTime)}</span>
-            <span className="text-[10px] text-gray-500 font-mono">{formatTime(duration)}</span>
-          </div>
-        </div>
-
-        {/* Controls */}
-        <div className="flex items-center justify-center gap-6 w-full max-w-sm mb-10 shrink-0">
-          <button
-            onClick={onPrev}
-            className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/5 rounded-full transition-colors"
-          >
-            <span className="material-symbols-rounded text-3xl">skip_previous</span>
-          </button>
-
+          {/* PITCH CONTROL */}
           {!vocalize?.isBreathing && (
-            <>
-              <button
-                onClick={() => { seek(Math.max(0, currentTime - 5)); }}
-                disabled={isPlaybackLoading}
-                className="text-gray-400 hover:text-white transition-colors disabled:opacity-30"
-              >
-                <span className="material-symbols-rounded text-3xl">replay_5</span>
+            <div className="w-full max-w-[280px] p-2 rounded-xl bg-[#1A202C]/60 border border-white/5 flex items-center justify-between shrink-0">
+              <button onClick={() => changePitch(-1)} className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-300 active:scale-95">
+                <span className="material-symbols-rounded text-sm">remove</span>
               </button>
-
-              <button
-                onClick={togglePlay}
-                disabled={isPlaybackLoading || (DISABLE_ALL_PLAYERS && !isAdmin)}
-                className={`w-20 h-20 rounded-full bg-brand-gradient flex items-center justify-center shadow-[0_10px_30px_rgba(238,19,202,0.4)] hover:scale-105 transition-transform active:scale-95 ${isPlaybackLoading || (DISABLE_ALL_PLAYERS && !isAdmin) ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
-              >
-                {isPlaybackLoading ? (
-                  <span className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                ) : (
-                  <span className="material-symbols-rounded text-4xl text-white fill-current">
-                    {isPlayingState ? 'pause' : 'play_arrow'}
-                  </span>
-                )}
+              <div className="text-center">
+                <p className="text-[8px] uppercase text-gray-500 font-bold tracking-widest leading-none mb-1">Ajuste de Tom</p>
+                <p className={`text-sm font-bold font-mono ${pitch !== 0 ? 'text-[#FF00BC]' : 'text-white'}`}>{pitch > 0 ? `+${pitch}` : pitch} st</p>
+              </div>
+              <button onClick={() => changePitch(1)} className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-gray-300 active:scale-95">
+                <span className="material-symbols-rounded text-sm">add</span>
               </button>
-
-              <button
-                onClick={() => { seek(Math.min(duration, currentTime + 5)); }}
-                disabled={isPlaybackLoading}
-                className="text-gray-400 hover:text-white transition-colors disabled:opacity-30"
-              >
-                <span className="material-symbols-rounded text-3xl">forward_5</span>
-              </button>
-            </>
+            </div>
           )}
 
-          <button
-            onClick={onNext}
-            className="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/5 rounded-full transition-colors"
-          >
-            <span className="material-symbols-rounded text-3xl">skip_next</span>
-          </button>
+          {/* Progress Bar & Seek */}
+          <div className="w-full max-w-sm px-2">
+            <input
+              type="range"
+              min="0"
+              max={duration || 100}
+              value={currentTime}
+              onChange={(e) => seek(parseFloat(e.target.value))}
+              className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#FF00BC]"
+            />
+            <div className="flex justify-between mt-1 px-1">
+              <span className="text-[9px] text-gray-600 font-mono">{formatTime(currentTime)}</span>
+              <span className="text-[9px] text-gray-600 font-mono">{formatTime(duration)}</span>
+            </div>
+          </div>
+
+          {/* Playback Controls */}
+          <div className="flex items-center justify-center gap-6 w-full">
+            <button onClick={onPrev} className="text-gray-500 hover:text-white transition-colors">
+              <span className="material-symbols-rounded text-2xl">skip_previous</span>
+            </button>
+            <button
+              onClick={togglePlay}
+              disabled={isPlaybackLoading}
+              className={`w-14 h-14 rounded-full bg-brand-gradient flex items-center justify-center shadow-lg active:scale-95 transition-transform ${isPlaybackLoading ? 'opacity-50' : ''}`}
+            >
+              <span className="material-symbols-rounded text-3xl text-white">
+                {isPlayingState ? 'pause' : 'play_arrow'}
+              </span>
+            </button>
+            <button onClick={onNext} className="text-gray-500 hover:text-white transition-colors">
+              <span className="material-symbols-rounded text-2xl">skip_next</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
