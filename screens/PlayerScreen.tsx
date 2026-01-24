@@ -733,12 +733,12 @@ input[type = 'range']:: -webkit - slider - runnable - track {
 
 
 
-        <div className={`${vocalize?.isBreathing ? 'h-80 items-center' : 'h-64 items-end'} flex justify-center ${scaleIds.includes(vocalize?.id || '') ? 'gap-3' : 'gap-2'} shrink-0 relative z-10 mt-14 mb-10 transition-all duration-500`}>
+        <div className={`${vocalize?.isBreathing ? 'h-80 items-center' : 'h-[320px] items-end'} flex justify-center ${scaleIds.includes(vocalize?.id || '') ? 'gap-0' : 'gap-2'} shrink-0 relative z-10 mt-12 mb-6 transition-all duration-500`}>
           {vocalize?.isBreathing ? (
             <button
               onClick={togglePlay}
               disabled={isPlaybackLoading || (DISABLE_ALL_PLAYERS && !isAdmin)}
-              className="relative flex items-center justify-center w-64 h-64 mb-8 active:scale-95 transition-transform group"
+              className="relative flex items-center justify-center w-64 h-64 active:scale-95 transition-transform group"
             >
               {/* Outer Glow */}
               <div
@@ -812,9 +812,17 @@ input[type = 'range']:: -webkit - slider - runnable - track {
             </button>
 
           ) : (
-            <div className={`flex flex-1 w-full items-center justify-center p-6 relative overflow-hidden h-72`}>
+            <div className={`flex flex-1 w-full items-center justify-center p-2 relative overflow-visible h-80`}>
               {scaleIds.includes(vocalize?.id || '') ? (
-                <div className={`flex gap-2 items-end relative px-4 w-full justify-center pb-12 ${activeConfig.length > 10 ? 'scale-[0.8] origin-bottom' : ''}`}>
+                <div
+                  className="flex items-end relative w-full justify-center pb-12 transition-transform duration-500"
+                  style={{
+                    // Dynamic scaling: ensure up to 16-20 notes fit safely on a 320-375px screen
+                    transform: `scale(${activeConfig.length > 10 ? Math.max(0.5, 1 - (activeConfig.length - 10) * 0.05) : 1})`,
+                    gap: activeConfig.length > 10 ? '2px' : '12px',
+                    willChange: 'transform'
+                  }}
+                >
                   {activeConfig.map((bar, index) => {
                     const bpm = vocalize?.bpm || 110;
                     const beatDuration = 60 / bpm;
@@ -827,19 +835,20 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                     const level = (bar as any).level || 0;
 
                     return (
-                      <div key={index} className="flex flex-col items-center shrink-0" style={{ transform: `translateY(-${level * 22}px)` }}>
+                      <div key={index} className="flex flex-col items-center shrink-0 transition-transform duration-300" style={{ transform: `translateY(-${level * 22}px) translateZ(0)` }}>
                         {/* Note Label */}
                         <div className="h-8 flex items-center justify-center mb-2">
-                          <span className={`text-[10px] font-black uppercase transition-all duration-300 ${isCurrent ? 'text-white opacity-100 scale-125' : 'text-transparent opacity-0'}`}>
+                          <span className={`text-[10px] font-black uppercase transition-all duration-300 ${isCurrent ? 'text-white opacity-100 scale-125' : 'text-transparent opacity-0'}`} style={{ transform: 'translateZ(0)' }}>
                             {(bar as any).label}
                           </span>
                         </div>
-                        {/* Dot */}
+                        {/* Dot - Using translateZ(0) to force GPU and avoid square artifacts */}
                         <div
-                          className={`w-6 h-6 rounded-full transition-all duration-300 ${isCurrent ? 'scale-125 brightness-150' : isPast ? 'opacity-40' : 'opacity-10'}`}
+                          className={`w-6 h-6 rounded-full transition-all duration-300 ${isCurrent ? 'scale-125 brightness-150' : isPast ? 'opacity-50' : 'opacity-10'}`}
                           style={{
                             backgroundColor: bar.color,
-                            boxShadow: isCurrent ? `0 0 25px ${bar.color}` : 'none',
+                            transform: 'translateZ(0)',
+                            filter: isCurrent ? `drop-shadow(0 0 12px ${bar.color})` : 'none'
                           }}
                         ></div>
                       </div>
@@ -847,7 +856,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                   })}
                 </div>
               ) : (
-                <div className="flex items-end justify-center gap-2.5 h-48 w-full">
+                <div className="flex items-end justify-center gap-2.5 h-64 w-full">
                   {activeConfig.map((bar, index) => (
                     <div key={index} className="flex flex-col items-center gap-3">
                       {(bar as any).label && (
@@ -859,9 +868,10 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                         className="w-4 rounded-full transition-all duration-[100ms] ease-linear"
                         style={{
                           backgroundColor: bar.color,
-                          height: `${(barHeights[index] || 20) * 0.9}px`,
+                          height: `${(barHeights[index] || 20) * 1.1}px`,
                           opacity: isPlayingState ? 1 : 0.6,
-                          boxShadow: isPlayingState ? `0 0 20px ${bar.color}40` : 'none'
+                          transform: 'translateZ(0)',
+                          filter: isPlayingState ? `drop-shadow(0 0 8px ${bar.color}40)` : 'none'
                         }}
                       ></div>
                     </div>
@@ -872,6 +882,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
           )}
 
         </div>
+
 
 
 
