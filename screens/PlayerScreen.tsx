@@ -733,12 +733,12 @@ input[type = 'range']:: -webkit - slider - runnable - track {
 
 
 
-        <div className={`${vocalize?.isBreathing ? 'h-72 items-center' : 'h-52 items-end'} flex justify-center ${scaleIds.includes(vocalize?.id || '') ? 'gap-3' : 'gap-2'} shrink-0 relative z-10 my-8 transition-all duration-500`}>
+        <div className={`${vocalize?.isBreathing ? 'h-80 items-center' : 'h-64 items-end'} flex justify-center ${scaleIds.includes(vocalize?.id || '') ? 'gap-3' : 'gap-2'} shrink-0 relative z-10 mt-14 mb-10 transition-all duration-500`}>
           {vocalize?.isBreathing ? (
             <button
               onClick={togglePlay}
               disabled={isPlaybackLoading || (DISABLE_ALL_PLAYERS && !isAdmin)}
-              className="relative flex items-center justify-center w-60 h-60 mb-8 active:scale-95 transition-transform group"
+              className="relative flex items-center justify-center w-64 h-64 mb-8 active:scale-95 transition-transform group"
             >
               {/* Outer Glow */}
               <div
@@ -751,7 +751,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
 
               {/* Main Circle */}
               <div
-                className="relative z-10 w-40 h-40 rounded-full flex flex-col items-center justify-center transition-all duration-[100ms] border-4 border-white/10"
+                className="relative z-10 w-44 h-44 rounded-full flex flex-col items-center justify-center transition-all duration-[100ms] border-4 border-white/10"
                 style={{
                   background: preparationTime > 0
                     ? 'radial-gradient(circle, #1A202C 0%, #2D3748 100%)'
@@ -764,26 +764,26 @@ input[type = 'range']:: -webkit - slider - runnable - track {
               >
                 {!isPlayingState && !isPlaybackLoading && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-full backdrop-blur-[2px]">
-                    <span className="material-symbols-rounded text-white text-5xl drop-shadow-lg">play_arrow</span>
+                    <span className="material-symbols-rounded text-white text-6xl drop-shadow-lg">play_arrow</span>
                   </div>
                 )}
 
                 {isPlayingState && (
                   preparationTime > 0 ? (
                     <>
-                      <span className="text-white/60 font-black text-[10px] uppercase tracking-widest mb-1">
+                      <span className="text-white/60 font-black text-[12px] uppercase tracking-widest mb-1">
                         Prepáre-se
                       </span>
-                      <span className="text-white font-mono text-5xl font-black">
+                      <span className="text-white font-mono text-6xl font-black text-shadow-glow">
                         {Math.ceil(preparationTime)}
                       </span>
                     </>
                   ) : (
                     <>
-                      <span className="text-white font-black text-base uppercase tracking-tighter mt-4">
+                      <span className="text-white font-black text-xl uppercase tracking-tighter mt-4">
                         {localBreathingTime < 5 ? 'Inspire' : 'Expire'}
                       </span>
-                      <span className="text-white/80 font-mono text-3xl mt-2 font-black">
+                      <span className="text-white/80 font-mono text-4xl mt-2 font-black">
                         {Math.ceil(localBreathingTime < 5 ? 5 - localBreathingTime : selectedBreathingTime - (localBreathingTime - 5))}s
                       </span>
                     </>
@@ -792,31 +792,31 @@ input[type = 'range']:: -webkit - slider - runnable - track {
               </div>
 
               {/* Progress Ring */}
-              <svg className="absolute inset-0 w-60 h-60 -rotate-90">
+              <svg className="absolute inset-0 w-64 h-64 -rotate-90">
                 <circle
-                  cx="120"
-                  cy="120"
-                  r="110"
+                  cx="128"
+                  cy="128"
+                  r="120"
                   fill="none"
                   stroke="white"
-                  strokeWidth="2.5"
-                  strokeDasharray="691"
+                  strokeWidth="3.5"
+                  strokeDasharray="754"
                   strokeDashoffset={
                     preparationTime > 0
-                      ? 691 - (691 * (preparationTime / 2))
-                      : 691 - (691 * (localBreathingTime / (5 + selectedBreathingTime)))
+                      ? 754 - (754 * (preparationTime / 2))
+                      : 754 - (754 * (localBreathingTime / (5 + selectedBreathingTime)))
                   }
-                  className="opacity-10"
+                  className="opacity-15 transition-all duration-300"
                 />
               </svg>
             </button>
 
           ) : (
-            <div className={`flex flex-1 w-full items-center justify-center p-6 relative overflow-hidden h-64`}>
+            <div className={`flex flex-1 w-full items-center justify-center p-6 relative overflow-hidden h-72`}>
               {scaleIds.includes(vocalize?.id || '') ? (
-                <div className={`flex gap-1.5 items-end relative px-4 w-full justify-center pb-8 ${activeConfig.length > 10 ? 'scale-[0.85] origin-bottom' : ''}`}>
+                <div className={`flex gap-2 items-end relative px-4 w-full justify-center pb-12 ${activeConfig.length > 10 ? 'scale-[0.8] origin-bottom' : ''}`}>
                   {activeConfig.map((bar, index) => {
-                    const bpm = vocalize?.bpm || 110; // Default to 110 if missing
+                    const bpm = vocalize?.bpm || 110;
                     const beatDuration = 60 / bpm;
                     const cycleDuration = (activeConfig.length + 4) * beatDuration;
                     const startOffset = (beatDuration * 2) + 0.002;
@@ -827,19 +827,19 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                     const level = (bar as any).level || 0;
 
                     return (
-                      <div key={index} className="flex flex-col items-center shrink-0" style={{ transform: `translateY(-${level * 14}px)` }}>
+                      <div key={index} className="flex flex-col items-center shrink-0" style={{ transform: `translateY(-${level * 22}px)` }}>
                         {/* Note Label */}
-                        <div className="h-6 flex items-center justify-center mb-1">
-                          <span className={`text-[8px] font-black uppercase transition-all duration-300 ${isCurrent ? 'text-white opacity-100' : 'text-transparent opacity-0'}`}>
+                        <div className="h-8 flex items-center justify-center mb-2">
+                          <span className={`text-[10px] font-black uppercase transition-all duration-300 ${isCurrent ? 'text-white opacity-100 scale-125' : 'text-transparent opacity-0'}`}>
                             {(bar as any).label}
                           </span>
                         </div>
                         {/* Dot */}
                         <div
-                          className={`w-4 h-4 rounded-full transition-all duration-300 ${isCurrent ? 'scale-110 brightness-150' : isPast ? 'opacity-40' : 'opacity-10'}`}
+                          className={`w-6 h-6 rounded-full transition-all duration-300 ${isCurrent ? 'scale-125 brightness-150' : isPast ? 'opacity-40' : 'opacity-10'}`}
                           style={{
                             backgroundColor: bar.color,
-                            boxShadow: isCurrent ? `0 0 15px ${bar.color}` : 'none',
+                            boxShadow: isCurrent ? `0 0 25px ${bar.color}` : 'none',
                           }}
                         ></div>
                       </div>
@@ -847,20 +847,21 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                   })}
                 </div>
               ) : (
-                <div className="flex items-end justify-center gap-2 h-32 w-full">
+                <div className="flex items-end justify-center gap-2.5 h-48 w-full">
                   {activeConfig.map((bar, index) => (
-                    <div key={index} className="flex flex-col items-center gap-2">
+                    <div key={index} className="flex flex-col items-center gap-3">
                       {(bar as any).label && (
-                        <span className={`text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${isPlayingState ? 'text-white opacity-100' : 'text-transparent opacity-0'}`}>
+                        <span className={`text-[12px] font-black uppercase tracking-wider transition-all duration-300 ${isPlayingState ? 'text-white opacity-100' : 'text-transparent opacity-0'}`}>
                           {(bar as any).label}
                         </span>
                       )}
                       <div
-                        className="w-3 rounded-full transition-all duration-[80ms] ease-linear"
+                        className="w-4 rounded-full transition-all duration-[100ms] ease-linear"
                         style={{
                           backgroundColor: bar.color,
-                          height: `${(barHeights[index] || 20) * 0.6}px`,
-                          opacity: isPlayingState ? 1 : 0.6
+                          height: `${(barHeights[index] || 20) * 0.9}px`,
+                          opacity: isPlayingState ? 1 : 0.6,
+                          boxShadow: isPlayingState ? `0 0 20px ${bar.color}40` : 'none'
                         }}
                       ></div>
                     </div>
@@ -871,6 +872,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
           )}
 
         </div>
+
 
 
         {/* TIMER CONTROL FOR BREATHING */}
