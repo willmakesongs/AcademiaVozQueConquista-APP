@@ -140,14 +140,16 @@ Termine sempre com um reforço de autoridade ou uma ação prática (Ex: "Vá pa
         if (!apiKey) throw new Error("GEMINI_API_KEY não configurada no servidor.")
 
         const genAI = new GoogleGenerativeAI(apiKey)
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+        const model = genAI.getGenerativeModel({
+            model: "gemini-3-flash-preview",
+            systemInstruction: { parts: [{ text: systemPrompt }] }
+        })
 
         // Formatação do Histórico para o Gemini API
-        // O formato esperado é { role: "user" | "model", parts: [{ text: "..." }] }
         let chatHistory = [];
         if (history && Array.isArray(history)) {
             chatHistory = history
-                .filter((m: any) => m.text && !m.isError) // Remove mensagens de erro ou vazias
+                .filter((m: any) => m.text && !m.isError)
                 .map((m: any) => ({
                     role: m.role === 'user' ? 'user' : 'model',
                     parts: [{ text: m.text }]
@@ -156,7 +158,6 @@ Termine sempre com um reforço de autoridade ou uma ação prática (Ex: "Vá pa
 
         const chat = model.startChat({
             history: chatHistory,
-            systemInstruction: systemPrompt
         });
 
         const result = await chat.sendMessage(query);
