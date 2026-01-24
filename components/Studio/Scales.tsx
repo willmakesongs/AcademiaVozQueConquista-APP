@@ -160,8 +160,14 @@ export const Scales: React.FC = () => {
                             {/* String Label */}
                             <div className="absolute -left-6 text-xs text-gray-300 font-bold w-4">{stringName}</div>
 
-                            {/* String Line */}
-                            <div className="absolute inset-x-0 h-0.5 bg-gray-600" />
+                            {/* String Line - Variable thickness */}
+                            <div className={`absolute inset-x-0 bg-gray-600 ${stringIndex === 0 ? 'h-[1px]' :   // E (high)
+                                    stringIndex === 1 ? 'h-[1.5px]' : // B
+                                        stringIndex === 2 ? 'h-[2px]' :   // G
+                                            stringIndex === 3 ? 'h-[2.5px]' : // D
+                                                stringIndex === 4 ? 'h-[3px]' :   // A
+                                                    'h-[3.5px]'                       // E (low)
+                                }`} />
 
                             {/* Frets */}
                             <div className="flex w-full">
