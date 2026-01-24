@@ -128,7 +128,6 @@ export const ChordLibrary: React.FC = () => {
                                 value={selectedExtension}
                                 onChange={setSelectedExtension}
                                 width="w-1/3"
-            {/* Instrument Display */}
             {instrument === 'piano' ? (
                 <PianoKeyboard root={selectedRoot} chordType={chordType} />
             ) : (
