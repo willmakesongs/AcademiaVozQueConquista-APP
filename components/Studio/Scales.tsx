@@ -330,7 +330,7 @@ export const Scales: React.FC = () => {
                     <div className="relative w-full max-w-md bg-gray-700 rounded-2xl p-6 pointer-events-auto animate-in fade-in duration-300">
                         {/* Header */}
                         <div className="flex items-center justify-between mb-6 bg-gray-600 -mx-6 -mt-6 px-6 py-4 rounded-t-2xl">
-                            <h2 className="text-2xl font-bold text-white">Settings</h2>
+                            <h2 className="text-2xl font-bold text-white">Configurações</h2>
                             <button
                                 onClick={() => setIsSettingsOpen(false)}
                                 className="text-white text-2xl hover:text-gray-300"
@@ -341,7 +341,7 @@ export const Scales: React.FC = () => {
 
                         {/* Handedness */}
                         <div className="mb-6">
-                            <h3 className="text-lg font-bold text-white mb-3 text-center">Handedness</h3>
+                            <h3 className="text-lg font-bold text-white mb-3 text-center">Mão Dominante</h3>
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => setHandedness('Right')}
@@ -350,7 +350,7 @@ export const Scales: React.FC = () => {
                                         : 'bg-gray-500 text-gray-300'
                                         }`}
                                 >
-                                    Right Handed
+                                    Destro
                                 </button>
                                 <button
                                     onClick={() => setHandedness('Left')}
@@ -359,14 +359,14 @@ export const Scales: React.FC = () => {
                                         : 'bg-gray-500 text-gray-300'
                                         }`}
                                 >
-                                    Left Handed
+                                    Canhoto
                                 </button>
                             </div>
                         </div>
 
                         {/* Fretboard Orientation */}
                         <div className="mb-6">
-                            <h3 className="text-lg font-bold text-white mb-3 text-center">Fretboard</h3>
+                            <h3 className="text-lg font-bold text-white mb-3 text-center">Braço</h3>
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => setFretboardOrientation('Horizontal')}
@@ -391,7 +391,7 @@ export const Scales: React.FC = () => {
 
                         {/* Accidentals */}
                         <div className="mb-6">
-                            <h3 className="text-lg font-bold text-white mb-3 text-center">Accidentals</h3>
+                            <h3 className="text-lg font-bold text-white mb-3 text-center">Acidentes</h3>
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => setAccidentals('Sharp')}
@@ -400,7 +400,7 @@ export const Scales: React.FC = () => {
                                         : 'bg-gray-500 text-gray-300'
                                         }`}
                                 >
-                                    Sharp (#)
+                                    Sustenido (#)
                                 </button>
                                 <button
                                     onClick={() => setAccidentals('Flat')}
@@ -409,14 +409,14 @@ export const Scales: React.FC = () => {
                                         : 'bg-gray-500 text-gray-300'
                                         }`}
                                 >
-                                    Flat (b)
+                                    Bemol (b)
                                 </button>
                             </div>
                         </div>
 
                         {/* Chord Auto Sound */}
                         <div className="mb-4">
-                            <h3 className="text-lg font-bold text-white mb-3 text-center">Chord Auto Sound</h3>
+                            <h3 className="text-lg font-bold text-white mb-3 text-center">Som Automático</h3>
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => setAutoSound('Off')}
@@ -425,7 +425,7 @@ export const Scales: React.FC = () => {
                                         : 'bg-gray-500 text-gray-300'
                                         }`}
                                 >
-                                    Off
+                                    Desligado
                                 </button>
                                 <button
                                     onClick={() => setAutoSound('On')}
@@ -434,7 +434,7 @@ export const Scales: React.FC = () => {
                                         : 'bg-gray-500 text-gray-300'
                                         }`}
                                 >
-                                    On
+                                    Ligado
                                 </button>
                             </div>
                         </div>
