@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { GoogleGenAI, Chat } from "@google/genai";
 import { useAuth } from '../contexts/AuthContext';
-import { MODULES, LORENA_AVATAR_URL, INITIAL_TASKS } from '../constants';
-import { Task } from '../types';
+import { supabase } from '../lib/supabaseClient';
+import { MODULES, LORENA_AVATAR_URL } from '../constants';
 
 interface Props {
     onBack: () => void;
@@ -23,12 +22,6 @@ let cachedUserId: string | null = null;
 export const ChatScreen: React.FC<Props> = ({ onBack }) => {
     const { user } = useAuth();
 
-    // Estado da API Key
-    const [apiKeyReady, setApiKeyReady] = useState(false);
-    const [checkingKey, setCheckingKey] = useState(true);
-    const [envApiKey, setEnvApiKey] = useState<string | null>(null);
-
-    // Inicializa mensagens
     const [messages, setMessages] = useState<Message[]>(() => {
         if (cachedMessages && cachedUserId === user?.id) {
             return cachedMessages;
@@ -41,43 +34,16 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
     });
 
     const [inputText, setInputText] = useState('');
-    const [isTyping, setIsTyping] = useState(false);
+    const [isThinking, setIsThinking] = useState(false);
     const scrollRef = useRef<HTMLDivElement>(null);
 
-    const chatSessionRef = useRef<Chat | null>(null);
-
-    // 1. VERIFICAÇÃO DE API KEY ROBUSTA
-    useEffect(() => {
-        const checkKey = async () => {
-            setCheckingKey(true);
-            try {
-                // Tenta obter via process.env (configurado no vite.config.ts)
-                const key = process.env.API_KEY || process.env.GEMINI_API_KEY;
-
-                if (key && key.length > 10 && !key.includes("PLACEHOLDER")) {
-                    setEnvApiKey(key);
-                    setApiKeyReady(true);
-                    setTimeout(() => initChat(key), 100);
-                } else {
-                    setApiKeyReady(false);
-                }
-            } catch (error) {
-                console.error("Erro na verificação da chave:", error);
-                setApiKeyReady(false);
-            } finally {
-                setCheckingKey(false);
-            }
-        };
-        checkKey();
-    }, []);
-
-    // Sincroniza cache
+    // Persistência em cache local já está configurada
     useEffect(() => {
         cachedMessages = messages;
         cachedUserId = user?.id || null;
     }, [messages, user]);
 
-    // Auto-scroll
+    // Auto-scroll fluído
     useEffect(() => {
         if (scrollRef.current) {
             scrollRef.current.scrollTo({
@@ -85,81 +51,10 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                 behavior: 'smooth'
             });
         }
-    }, [messages, isTyping]);
-
-    const initChat = async (key?: string) => {
-        try {
-            const apiKey = key || envApiKey || process.env.API_KEY || process.env.GEMINI_API_KEY;
-            if (!apiKey) return;
-
-            const ai = new GoogleGenAI({ apiKey: apiKey });
-
-            // BUSCA CONTEXTO DA ROTINA DINAMICAMENTE
-            let currentTasks = INITIAL_TASKS;
-            try {
-                const saved = localStorage.getItem('vocalizes_routine_tasks');
-                if (saved) {
-                    currentTasks = JSON.parse(saved);
-                }
-            } catch (e) {
-                console.warn("Falha ao ler rotina para o prompt:", e);
-            }
-
-            const systemPrompt = `
-        Você é a **Lorena Pimentel IA**, a mentora virtual da academia "Voz Que Conquista".
-        
-        **Sua Personalidade:**
-        - Vibrante, solar, encorajadora e apaixonada por voz.
-        - Use emojis de música (✨, 🎤, 🎶), mas sem exagerar.
-        - Linguagem natural (pt-BR), como uma professora no WhatsApp.
-
-        **Regras de Resposta:**
-        - Se o aluno pedir **Letra de Música**, formate com espaçamento claro entre estrofes.
-        - Seja concisa e prática.
-        - SEMPRE use o contexto da rotina do aluno para dar feedbacks personalizados.
-        
-        **Contexto do Aluno:**
-        Nome: ${user?.name || 'Aluno'}.
-        Módulos Disponíveis: ${MODULES.map(m => m.title).join(', ')}.
-        Tarefas da Rotina Atual: ${JSON.stringify(currentTasks)}.
-        `;
-
-            const history = messages
-                .filter(m => m.id !== 'welcome' && !m.isLoading && m.text && m.text.trim() !== "" && !m.text.includes("Minha conexão falhou"))
-                .map(m => ({
-                    role: m.role,
-                    parts: [{ text: m.text }]
-                }));
-
-            // MODELO ATUALIZADO: gemini-3-flash-preview
-            chatSessionRef.current = ai.chats.create({
-                model: 'gemini-3-flash-preview',
-                config: {
-                    systemInstruction: systemPrompt,
-                },
-                history: history
-            });
-
-        } catch (e) {
-            console.error("Falha ao inicializar sessão de chat:", e);
-        }
-    };
+    }, [messages, isThinking]);
 
     const handleSendMessage = async () => {
-        if (!inputText.trim()) return;
-
-        if (!chatSessionRef.current) {
-            await initChat(envApiKey || undefined);
-        }
-
-        if (!chatSessionRef.current) {
-            setMessages(prev => [...prev, {
-                id: Date.now().toString(),
-                role: 'model',
-                text: "⚠️ Não consegui conectar com a Lorena IA. Verifique sua conexão ou a chave API."
-            }]);
-            return;
-        }
+        if (!inputText.trim() || isThinking) return;
 
         const userText = inputText;
         const userMsg: Message = {
@@ -170,7 +65,7 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
 
         setMessages(prev => [...prev, userMsg]);
         setInputText('');
-        setIsTyping(true);
+        setIsThinking(true);
 
         const botMsgId = (Date.now() + 1).toString();
         const botPlaceholder: Message = {
@@ -182,38 +77,44 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
         setMessages(prev => [...prev, botPlaceholder]);
 
         try {
-            const resultStream = await chatSessionRef.current.sendMessageStream({ message: userText });
+            // Chamada para a Edge Function Lorena Brain
+            const { data, error } = await supabase.functions.invoke('lorena-ai-brain', {
+                body: {
+                    query: userText,
+                    user_id: user?.id,
+                    history: messages.slice(-10) // Envia as últimas 10 mensagens para contexto
+                }
+            });
 
-            let accumulatedText = '';
-            for await (const chunk of resultStream) {
-                const chunkText = chunk.text || '';
-                accumulatedText += chunkText;
-
-                setMessages(prev => {
-                    const newMsgs = [...prev];
-                    const targetIndex = newMsgs.findIndex(m => m.id === botMsgId);
-                    if (targetIndex !== -1) {
-                        newMsgs[targetIndex] = {
-                            ...newMsgs[targetIndex],
-                            text: accumulatedText,
-                            isLoading: false
-                        };
-                    }
-                    return newMsgs;
-                });
+            if (error || !data) {
+                throw new Error(error?.message || "Falha na resposta da Lorena");
             }
+
+            setMessages(prev => {
+                const newMsgs = [...prev];
+                const targetIndex = newMsgs.findIndex(m => m.id === botMsgId);
+                if (targetIndex !== -1) {
+                    newMsgs[targetIndex] = {
+                        ...newMsgs[targetIndex],
+                        text: data.answer,
+                        isLoading: false
+                    };
+                }
+                return newMsgs;
+            });
+
         } catch (error: any) {
-            console.error("Erro no envio:", error);
+            console.error("Erro na Lorena IA:", error);
 
             let errorMsg = "Ops! Tive um problema de conexão. Poderia repetir? 🔄";
-            const errStr = error.toString();
+            const errStr = error.toString().toLowerCase();
 
-            if (errStr.includes("404") || errStr.includes("not found")) {
-                errorMsg = "⚠️ Modelo em manutenção. Tente novamente em breve.";
-            } else if (errStr.includes("API key") || errStr.includes("403")) {
-                errorMsg = "⚠️ Erro de Autenticação: Chave API inválida.";
-            } else if (errStr.includes("429") || errStr.includes("quota")) {
-                errorMsg = "⏳ A Lorena está muito ocupada! Aguarde 10 segundos e tente novamente.";
+            if (errStr.includes("404")) {
+                errorMsg = "⚠️ Serviço da Lorena em manutenção. Tente novamente em breve.";
+            } else if (errStr.includes("api key") || errStr.includes("403")) {
+                errorMsg = "⚠️ Erro de Configuração: Chave API não encontrada no servidor.";
+            } else if (errStr.includes("quota") || errStr.includes("429")) {
+                errorMsg = "⏳ A Lorena está processando muitas dúvidas! Aguarde 10 segundos.";
             }
 
             setMessages(prev => {
@@ -224,29 +125,10 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                     text: errorMsg
                 }];
             });
-
-            chatSessionRef.current = null;
         } finally {
-            setIsTyping(false);
+            setIsThinking(false);
         }
     };
-
-    if (!checkingKey && !apiKeyReady) {
-        return (
-            <div className="min-h-screen bg-[#101622] flex flex-col relative overflow-hidden text-center p-8">
-                <div className="w-24 h-24 bg-[#FF00BC]/10 rounded-full flex items-center justify-center mb-6 mx-auto border border-[#FF00BC]/20">
-                    <span className="material-symbols-rounded text-5xl text-[#FF00BC]">vpn_key_off</span>
-                </div>
-                <h2 className="text-2xl font-bold text-white mb-3">Chave API Necessária</h2>
-                <p className="text-sm text-gray-400 mb-8 max-w-xs mx-auto">
-                    Certifique-se de que a variável de ambiente <code>API_KEY</code> está configurada corretamente no seu projeto.
-                </p>
-                <button onClick={onBack} className="w-full py-4 rounded-xl bg-white/5 text-white font-bold border border-white/10">
-                    Voltar
-                </button>
-            </div>
-        );
-    }
 
     return (
         <div className="min-h-screen bg-[#101622] flex flex-col relative overflow-hidden">
@@ -293,7 +175,7 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                         className="flex-1 bg-transparent text-white text-sm p-3 max-h-32 min-h-[44px] focus:outline-none resize-none"
                         rows={1}
                     />
-                    <button onClick={handleSendMessage} disabled={!inputText.trim() || isTyping} className={`w-10 h-10 rounded-xl flex items-center justify-center ${inputText.trim() ? 'bg-[#0081FF] text-white shadow-lg' : 'bg-white/5 text-gray-600'}`}>
+                    <button onClick={handleSendMessage} disabled={!inputText.trim() || isThinking} className={`w-10 h-10 rounded-xl flex items-center justify-center ${inputText.trim() ? 'bg-[#0081FF] text-white shadow-lg' : 'bg-white/5 text-gray-600'}`}>
                         <span className="material-symbols-rounded">send</span>
                     </button>
                 </div>
