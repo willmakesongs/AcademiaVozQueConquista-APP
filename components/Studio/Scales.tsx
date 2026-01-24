@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { NoteName, NOTES } from '../../types';
 
@@ -199,8 +198,8 @@ export const Scales: React.FC = () => {
                 )}
 
                 {/* Fretboard */}
-                <div className={`flex-1 bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-2 ${fretboardOrientation === 'Vertical' ? 'rotate-90 origin-center my-32' : ''
-                    } ${handedness === 'Left' && fretboardOrientation === 'Horizontal' ? 'scale-x-[-1]' : ''}`}>
+                <div className={`flex-1 bg-gradient-to-b from-gray-800 to-gray-900 rounded-lg p-2 ${handedness === 'Left' && fretboardOrientation === 'Horizontal' ? 'scale-x-[-1]' : ''
+                    }`}>
                     {GUITAR_STRINGS.map((stringName, stringIndex) => (
                         <div key={stringIndex} className="relative h-12 flex items-center">
                             {/* String Label */}
