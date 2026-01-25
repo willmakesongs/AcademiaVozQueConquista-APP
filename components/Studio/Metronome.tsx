@@ -64,6 +64,20 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
         localStorage.setItem('vqc_metronome_bpm', bpm.toString());
     }, [bpm]);
 
+    // --- USER PROGRESS (SIMPLE FIELD) ---
+    const [myBpm, setMyBpm] = useState('');
+
+    // Load Progress
+    useEffect(() => {
+        const saved = localStorage.getItem('vqc_my_bpm_progress');
+        if (saved) setMyBpm(saved);
+    }, []);
+
+    // Save Progress (Auto-save on change)
+    useEffect(() => {
+        localStorage.setItem('vqc_my_bpm_progress', myBpm);
+    }, [myBpm]);
+
     // Removed handleSaveProgress
 
 
@@ -476,10 +490,10 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                         </button>
                         <button
                             onClick={handleToggle}
-                            className={`col - span - 2 rounded - xl font - bold tracking - widest uppercase text - sm flex items - center justify - center gap - 2 transition - all active: scale - 95 shadow - lg ${isPlaying
+                            className={`col-span-2 rounded-full font-bold tracking-widest uppercase text-sm flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg ${isPlaying
                                 ? 'bg-[#E11D48] text-white shadow-[#E11D48]/30 border border-[#E11D48]'
-                                : 'bg-[#6F4CE7] text-white hover:bg-[#5B3DC9] shadow-[#6F4CE7]/30 border border-[#6F4CE7]'
-                                } `}
+                                : 'bg-gradient-to-r from-[#6F4CE7] to-[#8B5CF6] text-white hover:opacity-90 shadow-[#6F4CE7]/30 border border-[#6F4CE7]/20'
+                                }`}
                         >
                             {isPlaying ? (
                                 <><span className="material-symbols-rounded">stop</span> Stop</>
@@ -537,7 +551,29 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
 
 
 
-                    {/* Removed UI Block */}
+                    {/* --- MY PROGRESS FIELD --- */}
+                    <div className="w-full bg-[#1A1F2E] rounded-3xl p-5 border border-white/5 mt-2 flex items-center justify-between gap-4">
+                        <div className="flex flex-col">
+                            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
+                                Meu Recorde
+                            </span>
+                            <span className="text-[10px] text-gray-600 font-medium">
+                                BPM Conquistado
+                            </span>
+                        </div>
+                        <div className="relative w-32">
+                            <input
+                                type="number"
+                                value={myBpm}
+                                onChange={(e) => setMyBpm(e.target.value)}
+                                placeholder="000"
+                                className="w-full bg-black/20 border border-white/10 rounded-2xl py-3 px-4 text-center font-mono text-xl font-bold text-white placeholder-white/10 focus:outline-none focus:border-[#6F4CE7]/50 focus:bg-[#6F4CE7]/5 transition-all"
+                            />
+                            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-500 font-bold pointer-events-none">
+                                BPM
+                            </span>
+                        </div>
+                    </div>
 
                     <button
                         onClick={() => setShowInstructions(true)}

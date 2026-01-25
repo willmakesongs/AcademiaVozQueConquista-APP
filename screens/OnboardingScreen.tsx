@@ -72,35 +72,25 @@ export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
 
         setLoading(true);
         try {
-            // 1. Atualização Garantida (Campos que já existem)
-            const { error: coreError } = await supabase
+            // 1. Atualizar Perfil Completo
+            const { error: profileError } = await supabase
                 .from('profiles')
                 .update({
                     name: nameValue,
                     phone: phoneRef.current?.value || '',
-                    onboarding_completed: true
+                    age: parseInt(ageRef.current?.value || '0') || null,
+                    address: addressRef.current?.value || '',
+                    instagram: instagramRef.current?.value || '',
+                    modality: modality,
+                    level: level,
+                    schedule_day: scheduleDay,
+                    schedule_time: scheduleTimeRef.current?.value || '09:00',
+                    onboarding_completed: true,
+                    // ai_pedagogical_notes: Inicializado automaticamente pelo banco
                 })
                 .eq('id', user.id);
 
-            if (coreError) throw coreError;
-
-            // 2. Atualização "Best Effort"
-            try {
-                await supabase
-                    .from('profiles')
-                    .update({
-                        age: parseInt(ageRef.current?.value || '0') || null,
-                        address: addressRef.current?.value || '',
-                        instagram: instagramRef.current?.value || '',
-                        modality: modality,
-                        level: level,
-                        schedule_day: scheduleDay,
-                        schedule_time: scheduleTimeRef.current?.value || '09:00',
-                    })
-                    .eq('id', user.id);
-            } catch (extendedError) {
-                console.warn('Campos estendidos falharam:', extendedError);
-            }
+            if (profileError) throw profileError;
 
             // 3. Vincular Curso Selecionado
             if (selectedCourseId) {

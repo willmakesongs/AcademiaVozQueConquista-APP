@@ -1566,12 +1566,13 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             {/* Modals */}
             {selectedStudent && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
-                    <div className="w-full max-w-sm bg-[#1A202C] rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col">
-                        <div className="px-6 py-4 border-b border-white/5 flex justify-between items-center bg-[#151A23]">
+                    <div className="w-full max-w-sm bg-[#1A202C] rounded-[32px] border border-white/10 shadow-2xl overflow-hidden flex flex-col h-full max-h-[90vh]">
+                        <div className="px-6 py-4 border-b border-white/5 flex justify-between items-center bg-[#151A23] shrink-0">
                             <h3 className="font-bold text-white">Detalhes do Aluno</h3>
                             <button onClick={() => setSelectedStudent(null)} className="text-gray-400 hover:text-white"><span className="material-symbols-rounded">close</span></button>
                         </div>
-                        <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto hide-scrollbar">
+
+                        <div className="flex-1 overflow-y-auto hide-scrollbar p-6 space-y-4">
                             <div className="flex gap-4 items-center">
                                 <div className="relative">
                                     <div className="w-16 h-16 rounded-full border-2 border-[#0081FF] overflow-hidden">
@@ -1591,25 +1592,39 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     </button>
                                 </div>
                                 <div className="flex-1">
-                                    <h4 className="text-lg font-bold text-white">{selectedStudent.name}</h4>
-                                    <p className="text-xs text-gray-500 uppercase font-black">{selectedStudent.modality} • {selectedStudent.level}</p>
-                                    <div className={`mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded-md border ${selectedStudent.status === 'blocked'
-                                        ? 'bg-[#FF00BC]/20 border-[#FF00BC]/30 text-red-400'
-                                        : selectedStudent.status === 'inactive'
-                                            ? 'bg-gray-500/20 border-gray-500/30 text-gray-400'
-                                            : 'bg-[#0081FF]/20 border-[#0081FF]/30 text-green-400'
-                                        }`}>
-                                        <span className="material-symbols-rounded text-[14px]">
-                                            {selectedStudent.status === 'blocked' ? 'lock' : selectedStudent.status === 'inactive' ? 'pause_circle' : 'check_circle'}
-                                        </span>
-                                        <span className="text-[10px] font-bold uppercase">
-                                            {selectedStudent.status === 'blocked' ? 'Bloqueado' : selectedStudent.status === 'inactive' ? 'Inativo' : 'Ativo'}
-                                        </span>
+                                    <div className="flex items-center gap-2 mb-1">
+                                        <h4 className="text-lg font-bold text-white leading-none">{selectedStudent.name}</h4>
+                                        <div className="flex items-center gap-1 bg-white/5 px-2 py-0.5 rounded-full border border-white/5">
+                                            <input
+                                                type="number"
+                                                value={editAge}
+                                                onChange={(e) => setEditAge(e.target.value)}
+                                                className="bg-transparent border-none text-white text-xs font-bold focus:outline-none w-8 text-center p-0"
+                                                placeholder="--"
+                                            />
+                                            <span className="text-[10px] text-gray-500 font-bold uppercase">anos</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <p className="text-xs text-gray-500 uppercase font-black">{selectedStudent.modality} • {selectedStudent.level}</p>
+                                        <div className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md border text-[9px] font-bold ${selectedStudent.status === 'blocked'
+                                            ? 'bg-[#FF00BC]/20 border-[#FF00BC]/30 text-red-400'
+                                            : selectedStudent.status === 'inactive'
+                                                ? 'bg-gray-500/20 border-gray-500/30 text-gray-400'
+                                                : 'bg-[#0081FF]/20 border-[#0081FF]/30 text-green-400'
+                                            }`}>
+                                            <span className="material-symbols-rounded text-[14px]">
+                                                {selectedStudent.status === 'blocked' ? 'lock' : selectedStudent.status === 'inactive' ? 'pause_circle' : 'check_circle'}
+                                            </span>
+                                            <span className="text-[10px] font-bold uppercase">
+                                                {selectedStudent.status === 'blocked' ? 'Bloqueado' : selectedStudent.status === 'inactive' ? 'Inativo' : 'Ativo'}
+                                            </span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {/* Status Control Toggle - Refined Layout */}
+                            {/* Status Control Toggle */}
                             <div className="p-5 bg-[#101622] rounded-2xl border border-white/5 space-y-4">
                                 <div className="text-center">
                                     <p className="text-[10px] font-black text-[#0081FF] uppercase tracking-[0.15em] mb-1">Controle de Acesso</p>
@@ -1625,125 +1640,27 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                             }`}
                                     />
 
-                                    <button
-                                        onClick={() => setEditStatus('active')}
-                                        className={`flex-1 flex flex-col items-center justify-center gap-0.5 relative z-10 transition-colors duration-300 ${editStatus === 'active' || editStatus === 'overdue' ? 'text-white' : 'text-gray-500 hover:text-gray-400'}`}
-                                    >
+                                    <button onClick={() => setEditStatus('active')} className={`flex-1 flex flex-col items-center justify-center gap-0.5 relative z-10 transition-colors duration-300 ${editStatus === 'active' || editStatus === 'overdue' ? 'text-white' : 'text-gray-500 hover:text-gray-400'}`}>
                                         <span className="material-symbols-rounded text-[18px]">check_circle</span>
                                         <span className="text-[8px] font-black uppercase tracking-tighter">Ativo</span>
                                     </button>
-
-                                    <button
-                                        onClick={() => setEditStatus('blocked')}
-                                        className={`flex-1 flex flex-col items-center justify-center gap-0.5 relative z-10 transition-colors duration-300 ${editStatus === 'blocked' ? 'text-white' : 'text-gray-500 hover:text-gray-400'}`}
-                                    >
+                                    <button onClick={() => setEditStatus('blocked')} className={`flex-1 flex flex-col items-center justify-center gap-0.5 relative z-10 transition-colors duration-300 ${editStatus === 'blocked' ? 'text-white' : 'text-gray-500 hover:text-gray-400'}`}>
                                         <span className="material-symbols-rounded text-[18px]">block</span>
                                         <span className="text-[8px] font-black uppercase tracking-tighter">Bloqueado</span>
                                     </button>
-
-                                    <button
-                                        onClick={() => setEditStatus('trial')}
-                                        className={`flex-1 flex flex-col items-center justify-center gap-0.5 relative z-10 transition-colors duration-300 ${editStatus === 'trial' ? 'text-white' : 'text-gray-500 hover:text-gray-400'}`}
-                                    >
+                                    <button onClick={() => setEditStatus('trial')} className={`flex-1 flex flex-col items-center justify-center gap-0.5 relative z-10 transition-colors duration-300 ${editStatus === 'trial' ? 'text-white' : 'text-gray-500 hover:text-gray-400'}`}>
                                         <span className="material-symbols-rounded text-[18px]">bolt</span>
                                         <span className="text-[8px] font-black uppercase tracking-tighter">Teste</span>
                                     </button>
-
-                                    <button
-                                        onClick={() => setEditStatus('inactive')}
-                                        className={`flex-1 flex flex-col items-center justify-center gap-0.5 relative z-10 transition-colors duration-300 ${editStatus === 'inactive' ? 'text-white' : 'text-gray-500 hover:text-gray-400'}`}
-                                    >
+                                    <button onClick={() => setEditStatus('inactive')} className={`flex-1 flex flex-col items-center justify-center gap-0.5 relative z-10 transition-colors duration-300 ${editStatus === 'inactive' ? 'text-white' : 'text-gray-500 hover:text-gray-400'}`}>
                                         <span className="material-symbols-rounded text-[18px]">pause_circle</span>
                                         <span className="text-[8px] font-black uppercase tracking-tighter">Inativo</span>
                                     </button>
                                 </div>
                             </div>
 
-                            {/* ... Rest of Edit Form ... */}
-                            {/* NOTE: Preserving the existing form logic, just ensuring scroll container is good */}
-
-                            <div className="grid grid-cols-2 gap-3">
-                                {/* 1. Mensalidade */}
-                                <div className="p-4 rounded-xl bg-gradient-to-br from-[#1A202C] to-[#161b22] border border-white/5 relative overflow-hidden flex flex-col justify-center">
-                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1">Mensalidade</p>
-                                    <div className="flex items-baseline gap-0.5">
-                                        <span className="text-sm font-medium text-gray-500">R$</span>
-                                        <input
-                                            type="number"
-                                            value={editAmount}
-                                            onChange={(e) => setEditAmount(parseInt(e.target.value) || 0)}
-                                            className="bg-transparent border-none text-white text-2xl font-black focus:outline-none w-24"
-                                        />
-                                    </div>
-                                    <div className="absolute top-2 right-2 opacity-10">
-                                        <span className="material-symbols-rounded text-4xl text-white">savings</span>
-                                    </div>
-                                </div>
-
-                                {/* 2. Vencimento */}
-                                <div className="p-4 rounded-xl bg-[#1A202C] border border-white/5 flex flex-col justify-center relative overflow-hidden">
-                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1">Vence dia</p>
-                                    <div className="flex items-center gap-1">
-                                        <span className="text-2xl font-black text-white">{editPaymentDay}</span>
-                                        <select
-                                            value={editPaymentDay}
-                                            onChange={(e) => setEditPaymentDay(e.target.value)}
-                                            className="absolute inset-0 opacity-0 cursor-pointer"
-                                        >
-                                            {['01', '05', '10', '15', '20', '25'].map(d => (
-                                                <option key={d} value={d}>Dia {d}</option>
-                                            ))}
-                                        </select>
-                                        <span className="material-symbols-rounded text-gray-600 text-sm">edit</span>
-                                    </div>
-                                    <div className="absolute top-2 right-2 opacity-5">
-                                        <span className="material-symbols-rounded text-4xl text-white">calendar_month</span>
-                                    </div>
-                                </div>
-
-                                {/* 3. Idade */}
-                                <div className="p-4 rounded-xl bg-[#1A202C] border border-white/5 flex flex-col justify-center">
-                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1">Idade do Aluno</p>
-                                    <div className="flex items-baseline gap-1">
-                                        <input
-                                            type="number"
-                                            value={editAge}
-                                            onChange={(e) => setEditAge(e.target.value)}
-                                            className="bg-transparent border-none text-white text-xl font-black focus:outline-none w-12"
-                                            placeholder="--"
-                                        />
-                                        <span className="text-xs text-gray-500 font-bold uppercase">anos</span>
-                                    </div>
-                                </div>
-
-                                {/* 4. Agenda */}
-                                <div className="p-4 rounded-xl bg-[#1A202C] border border-white/5 flex flex-col justify-center relative">
-                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1">Agenda Semanal</p>
-                                    <div className="flex items-center gap-2">
-                                        <select
-                                            value={editScheduleDay}
-                                            onChange={(e) => setEditScheduleDay(e.target.value)}
-                                            className="bg-transparent text-lg font-black text-white border-none focus:outline-none cursor-pointer appearance-none p-0"
-                                        >
-                                            {['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'].map(d => (
-                                                <option key={d} value={d} className="bg-[#1A202C]">{d}</option>
-                                            ))}
-                                        </select>
-                                        <span className="text-gray-600 text-xs">•</span>
-                                        <input
-                                            type="time"
-                                            value={editScheduleTime}
-                                            onChange={(e) => setEditScheduleTime(e.target.value)}
-                                            className="bg-transparent border-none text-white text-sm font-bold focus:outline-none w-14"
-                                        />
-                                    </div>
-                                    <div className="absolute top-2 right-2 opacity-5">
-                                        <span className="material-symbols-rounded text-4xl text-white">schedule</span>
-                                    </div>
-                                </div>
-                            </div>
                             {/* Payment Action Bar */}
-                            <div className="mt-3 flex items-center gap-2">
+                            <div className="mb-3 flex items-center gap-2">
                                 <button
                                     onClick={handleConfirmPayment}
                                     className="flex-1 bg-[#0081FF] text-white h-12 rounded-xl flex items-center justify-center gap-3 text-xs font-bold shadow-lg shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all"
@@ -1762,6 +1679,86 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                         <span className="material-symbols-rounded text-xl">receipt</span>
                                     </a>
                                 )}
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3 mb-3">
+                                {/* 1. Mensalidade */}
+                                <div className="p-4 rounded-xl bg-gradient-to-br from-[#1A202C] to-[#161b22] border border-white/5 relative overflow-hidden flex flex-col justify-center">
+                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1 shadow-black drop-shadow-md">Mensalidade</p>
+                                    <div className="flex items-baseline gap-0.5 relative z-10">
+                                        <span className="text-sm font-medium text-gray-500">R$</span>
+                                        <input
+                                            type="number"
+                                            value={editAmount}
+                                            onChange={(e) => setEditAmount(parseInt(e.target.value) || 0)}
+                                            className="bg-transparent border-none text-white text-2xl font-black focus:outline-none w-24"
+                                        />
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-10 pointer-events-none">
+                                        <span className="material-symbols-rounded text-4xl text-white">savings</span>
+                                    </div>
+                                </div>
+
+                                {/* 2. Vencimento */}
+                                <div className="p-4 rounded-xl bg-[#1A202C] border border-white/5 flex flex-col justify-center relative overflow-hidden group">
+                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1">Vence dia</p>
+                                    <div className="flex items-center gap-1 relative z-10">
+                                        <span className="text-2xl font-black text-white">{editPaymentDay}</span>
+                                        <select
+                                            value={editPaymentDay}
+                                            onChange={(e) => setEditPaymentDay(e.target.value)}
+                                            className="absolute inset-0 opacity-0 cursor-pointer"
+                                        >
+                                            {['01', '05', '10', '15', '20', '25'].map(d => (
+                                                <option key={d} value={d}>Dia {d}</option>
+                                            ))}
+                                        </select>
+                                        <span className="material-symbols-rounded text-gray-600 text-sm group-hover:text-[#0081FF] transition-colors">edit</span>
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-5 pointer-events-none">
+                                        <span className="material-symbols-rounded text-4xl text-white">calendar_month</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* 3. Agenda Full Width */}
+                            <div className="p-4 rounded-xl bg-[#1A202C] border border-white/5 relative mb-3">
+                                <div className="flex justify-between items-center mb-3">
+                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Agenda Semanal</p>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <div className="flex items-center gap-3 bg-black/20 p-2 rounded-lg border border-white/5">
+                                        <div className="flex-1">
+                                            <p className="text-[8px] text-gray-500 font-bold uppercase mb-0.5">Dia da Semana</p>
+                                            <select
+                                                value={editScheduleDay}
+                                                onChange={(e) => setEditScheduleDay(e.target.value)}
+                                                className="w-full bg-transparent text-sm font-bold text-white border-none focus:outline-none cursor-pointer appearance-none"
+                                            >
+                                                {['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom', 'Seg / Qua', 'Ter / Qui'].map(d => (
+                                                    <option key={d} value={d} className="bg-[#1A202C]">{d}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                        <div className="w-[1px] h-8 bg-white/10"></div>
+                                        <div className="flex-1">
+                                            <p className="text-[8px] text-gray-500 font-bold uppercase mb-0.5">Horário</p>
+                                            <input
+                                                type="text"
+                                                value={editScheduleTime}
+                                                onChange={(e) => setEditScheduleTime(e.target.value)}
+                                                className="w-full bg-transparent border-none text-white text-sm font-bold focus:outline-none"
+                                                placeholder="00:00"
+                                            />
+                                        </div>
+                                    </div>
+                                    <p className="text-[9px] text-gray-600 text-center mt-1">
+                                        Para múltiplos horários, selecione a combinação ou edite o texto.
+                                    </p>
+                                </div>
+                                <div className="absolute top-2 right-2 opacity-5 pointer-events-none">
+                                    <span className="material-symbols-rounded text-4xl text-white">schedule</span>
+                                </div>
                             </div>
 
                             <div className="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
@@ -2018,6 +2015,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     )}
                 </div>
             )}
+
 
             {isAddModalOpen && (
                 <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-300 p-4">

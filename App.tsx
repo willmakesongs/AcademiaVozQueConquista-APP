@@ -325,7 +325,7 @@ const AppContent = () => {
       {renderScreen()}
 
       {/* Menu rodapé presente em quase todas as telas para navegação rápida */}
-      {user && screen !== Screen.LOGIN && screen !== Screen.CALENDAR && screen !== Screen.STUDIO && user.status !== 'blocked' && !(user.id === 'guest' && visitorTimeRemaining === 0) && (
+      {user && screen !== Screen.LOGIN && screen !== Screen.CALENDAR && user.status !== 'blocked' && !(user.id === 'guest' && visitorTimeRemaining === 0) && (
         <BottomNav
           currentScreen={screen}
           onNavigate={handleBottomNav}
