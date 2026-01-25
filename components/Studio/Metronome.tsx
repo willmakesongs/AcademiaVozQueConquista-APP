@@ -429,9 +429,9 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                         <div className="flex items-center justify-between w-full px-4">
                             <button
                                 onClick={() => adjustBpm(-1)}
-                                className="w-14 h-14 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:border-[#6F4CE7]/50 hover:bg-[#6F4CE7]/10 transition-all active:scale-95 text-2xl"
+                                className="w-12 h-12 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:border-[#6F4CE7]/50 hover:bg-[#6F4CE7]/10 transition-all active:scale-90 shadow-lg shadow-black/20"
                             >
-                                <span className="material-symbols-rounded">-</span>
+                                <span className="material-symbols-rounded text-2xl">remove</span>
                             </button>
 
                             <div className="flex flex-col items-center">
@@ -445,9 +445,9 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
 
                             <button
                                 onClick={() => adjustBpm(1)}
-                                className="w-14 h-14 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:border-[#6F4CE7]/50 hover:bg-[#6F4CE7]/10 transition-all active:scale-95 text-2xl"
+                                className="w-12 h-12 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:border-[#6F4CE7]/50 hover:bg-[#6F4CE7]/10 transition-all active:scale-90 shadow-lg shadow-black/20"
                             >
-                                <span className="material-symbols-rounded">+</span>
+                                <span className="material-symbols-rounded text-2xl">add</span>
                             </button>
                         </div>
 
