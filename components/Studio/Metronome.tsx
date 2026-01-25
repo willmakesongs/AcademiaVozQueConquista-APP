@@ -352,7 +352,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
     }, [currentMarking]);
 
     return (
-        <div className="w-full h-full bg-[#101622] flex flex-col font-sans relative overflow-y-auto">
+        <div className="w-full min-h-full bg-[#101622] flex flex-col font-sans relative">
             <style>{`
                 input[type=range].vertical-slider {
                     writing-mode: bt-lr; /* IE/Edge */
