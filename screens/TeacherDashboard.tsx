@@ -59,6 +59,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
     // States Detalhes
     const [selectedStudent, setSelectedStudent] = useState<StudentSummary | null>(null);
+    const [vocalAssessment, setVocalAssessment] = useState<any | null>(null);
     const [notesInput, setNotesInput] = useState('');
     const [isEditing, setIsEditing] = useState(false);
     const [editPhone, setEditPhone] = useState('');
@@ -444,18 +445,45 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
     const openStudentDetails = (student: StudentSummary) => {
         setSelectedStudent(student);
-        setNotesInput(student.notes || '');
-        setEditPhone(student.phone || '');
-        setEditScheduleDay(student.scheduleDay || 'Seg');
-        setEditScheduleTime(student.scheduleTime || '14:00');
-        setEditAge(student.age || '');
-        setEditAddress(student.address || '');
-        setEditInstagram(student.instagram || '');
-        setEditAmount((student.amount !== null && student.amount !== undefined) ? student.amount : 97);
-        setEditPaymentDay(student.paymentDay || '05');
-        setEditStatus(student.status as any || 'active');
         setIsEditing(false);
     };
+
+    // Load Notes and Assessment when student selected
+    useEffect(() => {
+        if (selectedStudent) {
+            setNotesInput(selectedStudent.notes || '');
+            setEditPhone(selectedStudent.phone || '');
+            setEditScheduleDay(selectedStudent.scheduleDay || 'Seg');
+            setEditScheduleTime(selectedStudent.scheduleTime || '14:00');
+            setEditAge(selectedStudent.age || '');
+            setEditAddress(selectedStudent.address || '');
+            setEditInstagram(selectedStudent.instagram || '');
+            setEditAmount((selectedStudent.amount !== null && selectedStudent.amount !== undefined) ? selectedStudent.amount : 97);
+            setEditPaymentDay(selectedStudent.paymentDay || '05');
+            setEditStatus(selectedStudent.status as any || 'active');
+
+            // Fetch Assessment
+            const fetchAssessment = async () => {
+                const { data } = await supabase
+                    .from('vocal_assessments')
+                    .select('*')
+                    .eq('user_id', selectedStudent.id)
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .single();
+
+                if (data) {
+                    setVocalAssessment(data);
+                } else {
+                    setVocalAssessment(null);
+                }
+            };
+            fetchAssessment();
+        } else {
+            // Clear assessment when no student is selected
+            setVocalAssessment(null);
+        }
+    }, [selectedStudent]);
 
     const toggleStudentCourse = async (courseId: string, currentStatus: boolean) => {
         if (!selectedStudent) return;
@@ -951,7 +979,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                             <button
                                 key={tab.id}
                                 onClick={() => setFinanceTab(tab.id)}
-                                className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 px-4 ${financeTab === tab.id ? 'bg-[#1A202C] text-white shadow-lg' : 'text-gray-500'}`}
+                                className={`flex-1 flex flex-col items-center justify-center gap-0.5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shrink-0 px-4 ${financeTab === tab.id ? 'bg-[#1A202C] text-white shadow-lg' : 'text-gray-500'}`}
                             >
                                 <span className="material-symbols-rounded text-sm">{tab.icon}</span>
                                 {tab.label}
@@ -1422,8 +1450,8 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                             </p>
                         </div>
                     )}
-                </div>
-            </div>
+                </div >
+            </div >
         );
     };
 
@@ -1781,6 +1809,48 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     })}
                                 </div>
                             </div>
+
+                            {/* Assessment Section */}
+                            {vocalAssessment && (
+                                <div className="bg-[#1A202C] p-4 rounded-xl border border-white/5 space-y-3 mb-4">
+                                    <h5 className="text-white font-bold text-sm flex items-center gap-2">
+                                        <span className="material-symbols-rounded text-[#0081FF]">psychology</span>
+                                        Análise Vocal
+                                    </h5>
+                                    <div className="space-y-2">
+                                        {vocalAssessment.color && (
+                                            <div className="flex justify-between text-xs">
+                                                <span className="text-gray-400">Cor Vocal:</span>
+                                                <span className="text-white font-medium capitalize">{vocalAssessment.color}</span>
+                                            </div>
+                                        )}
+                                        {vocalAssessment.texture && (
+                                            <div className="flex justify-between text-xs">
+                                                <span className="text-gray-400">Textura:</span>
+                                                <span className="text-white font-medium capitalize">{vocalAssessment.texture}</span>
+                                            </div>
+                                        )}
+                                        {vocalAssessment.register && (
+                                            <div className="flex justify-between text-xs">
+                                                <span className="text-gray-400">Preferência:</span>
+                                                <span className="text-white font-medium capitalize">{vocalAssessment.register === 'todos' ? 'Todos os Registros' : `Voz de ${vocalAssessment.register}`}</span>
+                                            </div>
+                                        )}
+                                        {vocalAssessment.artists && (
+                                            <div className="flex flex-col gap-1 text-xs">
+                                                <span className="text-gray-400">Artistas Similares:</span>
+                                                <span className="text-white font-medium italic">"{vocalAssessment.artists}"</span>
+                                            </div>
+                                        )}
+                                        {(vocalAssessment.range_goal_low || vocalAssessment.range_goal_high) && (
+                                            <div className="flex justify-between text-xs border-t border-white/5 pt-2 mt-1">
+                                                <span className="text-gray-400">Extensão Atual:</span>
+                                                <span className="text-[#0081FF] font-black">{vocalAssessment.range_goal_low || '?'} - {vocalAssessment.range_goal_high || '?'}</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
                                 <p className="text-[10px] text-gray-500 font-bold uppercase">Status do Contrato</p>

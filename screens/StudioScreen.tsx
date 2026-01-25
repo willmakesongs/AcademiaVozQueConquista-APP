@@ -1,34 +1,12 @@
 
-import React, { useState } from 'react';
-import { Tuner } from '../components/Studio/Tuner';
-import { Metronome } from '../components/Studio/Metronome';
-import { ChordLibrary } from '../components/Studio/ChordLibrary';
-import { Scales } from '../components/Studio/Scales';
+
+import React from 'react';
 
 interface Props {
     onBack: () => void;
 }
 
-type Module = 'tuner' | 'metronome' | 'chords' | 'scales';
-
 export const StudioScreen: React.FC<Props> = ({ onBack }) => {
-    const [activeModule, setActiveModule] = useState<Module>('tuner');
-
-    const renderModule = () => {
-        switch (activeModule) {
-            case 'tuner':
-                return <Tuner />;
-            case 'metronome':
-                return <Metronome />;
-            case 'chords':
-                return <ChordLibrary />;
-            case 'scales':
-                return <Scales />;
-            default:
-                return <Tuner />;
-        }
-    };
-
     return (
         <div className="min-h-screen bg-[#101622] flex flex-col text-white">
             {/* Header */}
@@ -44,45 +22,19 @@ export const StudioScreen: React.FC<Props> = ({ onBack }) => {
                 </div>
             </header>
 
-            {/* Main Content */}
-            <main className="flex-1 overflow-y-auto hide-scrollbar pb-32">
-                {renderModule()}
+            {/* Main Content Space */}
+            <main className="flex-1 flex flex-col items-center justify-center p-12 text-center">
+                <div className="w-20 h-20 rounded-3xl bg-[#0081FF]/10 flex items-center justify-center mb-6 animate-pulse">
+                    <span className="material-symbols-rounded text-4xl text-[#0081FF]">construction</span>
+                </div>
+                <h2 className="text-2xl font-bold mb-3 bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
+                    Novo VQC Studio em breve
+                </h2>
+                <p className="text-gray-400 max-w-xs leading-relaxed">
+                    Estamos preparando uma experiência musical totalmente reformulada para você.
+                </p>
             </main>
-
-            {/* Bottom Navigation Tabs */}
-            <nav className="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#1A202C] border-t border-white/5 px-6 py-4 flex justify-around items-center z-50">
-                <button
-                    onClick={() => setActiveModule('tuner')}
-                    className={`flex flex-col items-center gap-1 transition-colors ${activeModule === 'tuner' ? 'text-[#0081FF]' : 'text-gray-500'}`}
-                >
-                    <span className="material-symbols-rounded text-2xl">graphic_eq</span>
-                    <span className="text-[10px] font-bold uppercase tracking-widest">Afinador</span>
-                </button>
-
-                <button
-                    onClick={() => setActiveModule('metronome')}
-                    className={`flex flex-col items-center gap-1 transition-colors ${activeModule === 'metronome' ? 'text-[#6F4CE7]' : 'text-gray-500'}`}
-                >
-                    <span className="material-symbols-rounded text-2xl">timer</span>
-                    <span className="text-[10px] font-bold uppercase tracking-widest">Metrônomo</span>
-                </button>
-
-                <button
-                    onClick={() => setActiveModule('scales')}
-                    className={`flex flex-col items-center gap-1 transition-colors ${activeModule === 'scales' ? 'text-[#0081FF]' : 'text-gray-500'}`}
-                >
-                    <span className="material-symbols-rounded text-2xl">straighten</span>
-                    <span className="text-[10px] font-bold uppercase tracking-widest">Escalas</span>
-                </button>
-
-                <button
-                    onClick={() => setActiveModule('chords')}
-                    className={`flex flex-col items-center gap-1 transition-colors ${activeModule === 'chords' ? 'text-[#FF00BC]' : 'text-gray-500'}`}
-                >
-                    <span className="material-symbols-rounded text-2xl">library_music</span>
-                    <span className="text-[10px] font-bold uppercase tracking-widest">Acordes</span>
-                </button>
-            </nav>
         </div>
     );
 };
+

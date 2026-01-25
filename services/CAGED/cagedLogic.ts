@@ -1,6 +1,5 @@
 
 import { NoteName, NOTES, SelectedNote } from '../../types';
-import { calculateFinger } from './chordLogic';
 
 /**
  * DICIONÁRIO ALMIR CHEDIAK - PADRÃO CAGED (ABSOLUTO)
@@ -263,14 +262,7 @@ export const getCagedPosition = (
         positions.push({ stringIndex: sIdx, fret: finalFret });
       }
     });
-
-    // Calculate fingers for all positions
-    const positionsWithFingers = positions.map(pos => ({
-      ...pos,
-      finger: calculateFinger(pos.stringIndex, pos.fret, positions)
-    }));
-
-    return positionsWithFingers;
+    return positions;
   }
 
   // 2. Fallback: Dicionário Almir Chediak (Absoluto)
@@ -304,11 +296,5 @@ export const getCagedPosition = (
     }
   });
 
-  // Calculate fingers for all positions
-  const positionsWithFingers = positions.map(pos => ({
-    ...pos,
-    finger: calculateFinger(pos.stringIndex, pos.fret, positions)
-  }));
-
-  return positionsWithFingers;
+  return positions;
 };

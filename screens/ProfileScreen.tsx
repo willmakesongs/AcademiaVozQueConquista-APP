@@ -9,12 +9,16 @@ import { PianoScreen } from './PianoScreen';
 import { STORAGE_BASE_URL } from '../constants';
 import * as Tone from 'tone';
 
-// CAGED Imports
+// Lucide Icons
+import { Sparkles, BookOpen, Clock, Music } from 'lucide-react';
+
+// CAGED Components
 import ChordLibrary from '../components/CAGED/ChordLibrary';
 import Metronome from '../components/CAGED/Metronome';
 import Navigation from '../components/CAGED/Navigation';
+
+// CAGED Services
 import { preloadGuitarSamples, initAudio, setMetronomeVolume, playMetronomeSound, preloadDrumSamples } from '../services/CAGED/audio';
-import { Sparkles, BookOpen, Clock } from 'lucide-react';
 
 interface Props {
     onNavigate: (screen: Screen) => void;
@@ -133,14 +137,19 @@ function formatDayOfMonth(dateString?: string) {
 export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinancialClick }) => {
     const { user, updateProfileAvatar, refreshUser } = useAuth();
     const { isOfflineMode, setOfflineMode, downloadProgress, downloadAll } = usePlayback();
+
+
     const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const receiptFileInputRef = useRef<HTMLInputElement>(null);
 
+
     // Navigation State
     const [activeView, setActiveView] = useState<'menu' | 'personal_data' | 'subscription' | 'contract' | 'vocal_test' | 'piano' | 'tuner' | 'chord_dictionary'>('menu');
 
-    // --- ESTADO DE EDIÇÃO DE VENCIMENTO ---
+    const [isEditingDueDate, setIsEditingDueDate] = useState(false);
+    const [editDueDateDay, setEditDueDateDay] = useState('02');
+
     // --- CAGED / CHORD DICTIONARY STATE ---
     const [cagedView, setCagedView] = useState<'library' | 'metronome'>('library');
     const [cagedMode, setCagedMode] = useState<FretboardMode>(() => {
@@ -148,19 +157,16 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
         return (saved as FretboardMode) || 'notes';
     });
 
-    // METRONOME STATE
+    // --- METRONOME STATE (LIFTED) ---
     const [bpm, setBpm] = useState(120);
     const [isMetronomePlaying, setIsMetronomePlaying] = useState(false);
-    const [tick, setTick] = useState(0);
+    const [tick, setTick] = useState(0); // 0 a 7
     const [soundType, setSoundType] = useState('loop');
     const [volume, setVolume] = useState(80);
     const [isMuted, setIsMuted] = useState(false);
 
     const timerRef = useRef<number | null>(null);
     const measureRef = useRef(0);
-
-    const [isEditingDueDate, setIsEditingDueDate] = useState(false);
-    const [editDueDateDay, setEditDueDateDay] = useState('02');
 
     // --- ESTADOS DO TESTE VOCAL & AFINADOR ---
     // --- ESTADOS DO TESTE VOCAL & AFINADOR ---
@@ -219,8 +225,11 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
     // --- ESTADO DO BOTÃO PIX ---
     const [pixCopyStatus, setPixCopyStatus] = useState('Copiar Chave');
 
+
     // Limpeza de áudio ao sair
     useEffect(() => {
+        preloadGuitarSamples();
+        preloadDrumSamples();
         return () => {
             stopMic();
             if (synthRef.current) synthRef.current.dispose();
@@ -228,35 +237,27 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
         };
     }, []);
 
-    // --- CAGED EFFECTS ---
-    useEffect(() => {
-        if (activeView === 'chord_dictionary') {
-            preloadGuitarSamples();
-            preloadDrumSamples();
-        } else {
-            setIsMetronomePlaying(false);
-            if (timerRef.current) clearInterval(timerRef.current);
-        }
-    }, [activeView]);
-
     useEffect(() => {
         localStorage.setItem('fretboard_mode', cagedMode);
     }, [cagedMode]);
 
+    // --- METRONOME ENGINE ---
     useEffect(() => {
         const volValue = isMuted ? 0 : volume / 100;
         setMetronomeVolume(volValue);
     }, [volume, isMuted]);
 
     useEffect(() => {
-        if (isMetronomePlaying && activeView === 'chord_dictionary') {
+        if (isMetronomePlaying) {
             const interval = (30 / bpm) * 1000;
             if (timerRef.current) clearInterval(timerRef.current);
 
             timerRef.current = window.setInterval(() => {
                 setTick(prev => {
                     const nextTick = (prev + 1) % 8;
-                    if (nextTick === 0) measureRef.current = (measureRef.current + 1) % 4;
+                    if (nextTick === 0) {
+                        measureRef.current = (measureRef.current + 1) % 4;
+                    }
 
                     const isDownBeat = nextTick % 2 === 0;
                     const isAccent = nextTick === 0;
@@ -265,6 +266,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                     if (soundType === 'loop' || isDownBeat) {
                         playMetronomeSound(soundType, isAccent, nextTick, isFillBar);
                     }
+
                     return nextTick;
                 });
             }, interval);
@@ -272,7 +274,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
             if (timerRef.current) clearInterval(timerRef.current);
         }
         return () => { if (timerRef.current) clearInterval(timerRef.current); };
-    }, [isMetronomePlaying, bpm, soundType, activeView]);
+    }, [isMetronomePlaying, bpm, soundType]);
 
     const toggleMetronome = async () => {
         await initAudio();
@@ -283,6 +285,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
         }
         setIsMetronomePlaying(!isMetronomePlaying);
     };
+
 
     // --- LÓGICA DE ÁUDIO ---
     const startMic = async () => {
@@ -794,6 +797,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                 <div>
                     <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 px-1">Meu Estúdio</h3>
                     <div className="grid grid-cols-2 gap-3">
+
                         <button
                             onClick={() => setActiveView('vocal_test')}
                             className="bg-[#1A202C] p-4 rounded-2xl border border-white/5 hover:border-[#6F4CE7]/50 transition-all group text-left relative overflow-hidden hover:shadow-lg hover:shadow-purple-900/20"
@@ -804,6 +808,30 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                             </div>
                             <h4 className="font-bold text-white text-sm">Extensão Vocal</h4>
                             <p className="text-[10px] text-gray-500 mt-1">Descubra sua classificação.</p>
+                        </button>
+
+                        <button
+                            onClick={() => setActiveView('chord_dictionary')}
+                            className="bg-[#1A202C] p-4 rounded-2xl border border-white/5 hover:border-[#0081FF]/50 transition-all group text-left relative overflow-hidden hover:shadow-lg hover:shadow-blue-900/20"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-br from-[#0081FF]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div className="w-10 h-10 rounded-xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] mb-3 group-hover:scale-110 transition-transform">
+                                <span className="material-symbols-rounded">menu_book</span>
+                            </div>
+                            <h4 className="font-bold text-white text-sm">Dicionário de Acordes</h4>
+                            <p className="text-[10px] text-gray-500 mt-1">Biblioteca CAGED Chediak.</p>
+                        </button>
+
+                        <button
+                            onClick={() => setActiveView('tuner')}
+                            className="bg-[#1A202C] p-4 rounded-2xl border border-white/5 hover:border-[#0081FF]/50 transition-all group text-left relative overflow-hidden hover:shadow-lg hover:shadow-blue-900/20"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-br from-[#0081FF]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div className="w-10 h-10 rounded-xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] mb-3 group-hover:scale-110 transition-transform">
+                                <span className="material-symbols-rounded">tune</span>
+                            </div>
+                            <h4 className="font-bold text-white text-sm">Afinador</h4>
+                            <p className="text-[10px] text-gray-500 mt-1">Ajuste seu instrumento.</p>
                         </button>
 
                         <button
@@ -818,33 +846,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                             <p className="text-[10px] text-gray-500 mt-1">Teclado para treino.</p>
                         </button>
 
-                        <button
-                            onClick={() => setActiveView('tuner')}
-                            className="col-span-2 bg-[#1A202C] p-4 rounded-2xl border border-white/5 hover:border-[#0081FF]/50 transition-all group flex items-center gap-4 relative overflow-hidden hover:shadow-lg hover:shadow-blue-900/20"
-                        >
-                            <div className="absolute inset-0 bg-gradient-to-r from-[#0081FF]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            <div className="w-10 h-10 rounded-xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] group-hover:scale-110 transition-transform shrink-0">
-                                <span className="material-symbols-rounded">tune</span>
-                            </div>
-                            <div>
-                                <h4 className="font-bold text-white text-sm">Afinador Cromático</h4>
-                                <p className="text-[10px] text-gray-500 mt-0.5">Verifique sua afinação em tempo real.</p>
-                            </div>
-                        </button>
 
-                        <button
-                            onClick={() => setActiveView('chord_dictionary')}
-                            className="col-span-2 bg-[#1A202C] p-4 rounded-2xl border border-white/5 hover:border-[#0081FF]/50 transition-all group flex items-center gap-4 relative overflow-hidden hover:shadow-lg hover:shadow-green-900/20"
-                        >
-                            <div className="absolute inset-0 bg-gradient-to-r from-[#0081FF]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            <div className="w-10 h-10 rounded-xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] group-hover:scale-110 transition-transform shrink-0">
-                                <span className="material-symbols-rounded">library_music</span>
-                            </div>
-                            <div>
-                                <h4 className="font-bold text-white text-sm">Dicionário de Acordes</h4>
-                                <p className="text-[10px] text-gray-500 mt-0.5">Visualize acordes por notas ou intervalos.</p>
-                            </div>
-                        </button>
                     </div>
                 </div>
 
@@ -1473,121 +1475,6 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
         </div>
     );
 
-    const renderTuner = () => {
-        const isPianoActive = !!pianoNote;
-        // Parse piano note (e.g., "C#4" -> Note: "C#", Octave: "4")
-        const displayNote = isPianoActive ? pianoNote?.replace(/[0-9]/g, '') : pitchNote;
-        const displayOctave = isPianoActive ? pianoNote?.slice(-1) : pitchOctave;
-        const displayHz = isPianoActive ? pianoFreq : null;
-
-        const isTuned = !isPianoActive && Math.abs(pitchCents) < 10 && pitchNote !== '-';
-
-        const circleBorderColor = isPianoActive
-            ? 'border-[#0081FF]'
-            : (isTuned ? 'border-[#0081FF]' : 'border-[#1A202C]');
-
-        const circleBgColor = isPianoActive
-            ? 'bg-[#0081FF]/10'
-            : (isTuned ? 'bg-[#0081FF]/5' : 'bg-[#1A202C]');
-
-        return (
-            <div className="flex-1 flex flex-col animate-in slide-in-from-right relative">
-                {renderHeader('Afinador', () => { stopMic(); setActiveView('menu'); })}
-
-                <div className="flex-1 flex flex-col items-center pt-4 relative z-10 min-h-[400px]">
-
-                    {/* TUNER CIRCLE */}
-                    <div className={`relative w-56 h-56 top-4 sm:w-64 sm:h-64 mx-auto rounded-full border-8 flex items-center justify-center transition-all duration-300 ${circleBorderColor} ${circleBgColor}`}>
-                        <div className="text-center">
-                            <div className={`text-7xl sm:text-8xl font-bold font-mono tracking-tighter ${isPianoActive ? 'text-[#0081FF]' : 'text-white'}`}>
-                                {displayNote}
-                            </div>
-                            {displayOctave !== null && (
-                                <div className={`text-2xl font-medium ${isPianoActive ? 'text-[#0081FF]/70' : 'text-gray-500'}`}>
-                                    {displayOctave}
-                                </div>
-                            )}
-                            {isPianoActive && displayHz && (
-                                <div className="text-sm font-mono text-[#0081FF]/50 mt-1">
-                                    {displayHz} Hz
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Needle (Voice Only) */}
-                        {!isPianoActive && pitchNote !== '-' && (
-                            <div
-                                className="absolute top-0 bottom-0 w-1 bg-[#FF00BC] origin-center transition-transform duration-100 ease-linear rounded-full opacity-70"
-                                style={{ transform: `rotate(${pitchCents}deg)` }}
-                            ></div>
-                        )}
-
-                        {/* Status Label (Piano or Tuned) */}
-                        {isPianoActive ? (
-                            <div className="absolute -bottom-4 bg-[#0081FF] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-[#0081FF]/20">
-                                Piano
-                            </div>
-                        ) : (Math.abs(pitchCents) < 10 && pitchNote !== '-') ? (
-                            <div className="absolute -bottom-4 bg-[#0081FF] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-[#0081FF]/20">
-                                Afinado
-                            </div>
-                        ) : null}
-                    </div>
-
-                    {/* Tuning Indicators (Voice Only) */}
-                    {!isPianoActive && isMicOn && pitchNote !== '-' && (
-                        <div className="flex justify-center items-center gap-2 mt-8 mb-4">
-                            <div className={`w-3 h-3 rounded-full ${pitchCents < -10 ? 'bg-[#FF00BC]' : 'bg-gray-700'}`}></div>
-                            <span className="text-xs font-bold text-gray-500 uppercase tracking-widest px-2">
-                                {Math.abs(pitchCents) < 10 ? 'AFINADO' : (pitchCents < 0 ? 'BAIXO' : 'ALTO')}
-                            </span>
-                            <div className={`w-3 h-3 rounded-full ${pitchCents > 10 ? 'bg-[#FF00BC]' : 'bg-gray-700'}`}></div>
-                        </div>
-                    )}
-
-                    {/* Mic Controls */}
-                    <div className="mt-8 mb-4">
-                        {!isMicOn ? (
-                            <button
-                                onClick={startMic}
-                                className="px-8 py-3 rounded-xl bg-white/5 text-white font-bold hover:bg-white/10 transition-colors border border-white/10 flex items-center gap-2"
-                            >
-                                <span className="material-symbols-rounded">mic</span>
-                                Ligar Microfone
-                            </button>
-                        ) : (
-                            !isPianoActive && (
-                                <button
-                                    onClick={stopMic}
-                                    className="px-6 py-2 rounded-lg text-gray-500 text-xs hover:text-white transition-colors flex items-center gap-2"
-                                >
-                                    <span className="material-symbols-rounded text-sm">mic_off</span>
-                                    Parar
-                                </button>
-                            )
-                        )}
-                    </div>
-
-                </div>
-
-                {/* PIANO - Centered/Bottom */}
-                <div className="w-full relative z-20 border-t border-white/5">
-                    <PianoScreen
-                        onBack={() => { }}
-                        embedded={true}
-                        onPlayNote={(note, freq) => {
-                            setPianoNote(note);
-                            setPianoFreq(freq);
-                        }}
-                        onStopNote={() => {
-                            setPianoNote(null);
-                            setPianoFreq(null);
-                        }}
-                    />
-                </div>
-            </div>
-        );
-    };
 
     const renderVocalTest = () => (
         <div className="flex-1 flex flex-col relative animate-in zoom-in-95 duration-300">
@@ -1851,6 +1738,103 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
         </div>
     );
 
+
+
+    const renderTuner = () => {
+        const isPianoActive = !!pianoNote;
+        const displayNote = isPianoActive ? pianoNote?.replace(/[0-9]/g, '') : pitchNote;
+        const displayOctave = isPianoActive ? pianoNote?.slice(-1) : pitchOctave;
+        const displayHz = isPianoActive ? pianoFreq : null;
+
+        const isTuned = !isPianoActive && Math.abs(pitchCents) < 10 && pitchNote !== '-';
+
+        const circleBorderColor = isPianoActive
+            ? 'border-[#0081FF]'
+            : (isTuned ? 'border-[#0081FF]' : 'border-[#1A202C]');
+
+        const circleBgColor = isPianoActive
+            ? 'bg-[#0081FF]/10'
+            : (isTuned ? 'bg-[#0081FF]/5' : 'bg-[#1A202C]');
+
+        return (
+            <div className="flex-1 flex flex-col animate-in slide-in-from-right relative">
+                {renderHeader('Afinador', () => { stopMic(); setActiveView('menu'); })}
+
+                <div className="flex-1 flex flex-col items-center pt-4 relative z-10 min-h-[400px]">
+
+                    {/* TUNER CIRCLE */}
+                    <div className={`relative w-56 h-56 top-4 sm:w-64 sm:h-64 mx-auto rounded-full border-8 flex items-center justify-center transition-all duration-300 ${circleBorderColor} ${circleBgColor}`}>
+                        <div className="text-center">
+                            <div className={`text-7xl sm:text-8xl font-bold font-mono tracking-tighter ${isPianoActive ? 'text-[#0081FF]' : 'text-white'}`}>
+                                {displayNote}
+                            </div>
+                            {displayOctave !== null && (
+                                <div className={`text-2xl font-medium ${isPianoActive ? 'text-[#0081FF]/70' : 'text-gray-500'}`}>
+                                    {displayOctave}
+                                </div>
+                            )}
+                            {isPianoActive && displayHz && (
+                                <div className="text-sm font-mono text-[#0081FF]/50 mt-1">
+                                    {displayHz} Hz
+                                </div>
+                            )}
+                        </div>
+
+                        {!isPianoActive && pitchNote !== '-' && (
+                            <div
+                                className="absolute top-0 bottom-0 w-1 bg-[#FF00BC] origin-center transition-transform duration-100 ease-linear rounded-full opacity-70"
+                                style={{ transform: `rotate(${pitchCents}deg)` }}
+                            ></div>
+                        )}
+
+                        {isPianoActive ? (
+                            <div className="absolute -bottom-4 bg-[#0081FF] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-[#0081FF]/20">
+                                Piano
+                            </div>
+                        ) : (Math.abs(pitchCents) < 10 && pitchNote !== '-') ? (
+                            <div className="absolute -bottom-4 bg-[#0081FF] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-[#0081FF]/20">
+                                Afinado
+                            </div>
+                        ) : null}
+                    </div>
+
+                    {!isPianoActive && isMicOn && pitchNote !== '-' && (
+                        <div className="flex justify-center items-center gap-2 mt-8 mb-4">
+                            <div className={`w-3 h-3 rounded-full ${pitchCents < -10 ? 'bg-[#FF00BC]' : 'bg-gray-700'}`}></div>
+                            <span className="text-xs font-bold text-gray-500 uppercase tracking-widest px-2">
+                                {Math.abs(pitchCents) < 10 ? 'AFINADO' : (pitchCents < 0 ? 'BAIXO' : 'ALTO')}
+                            </span>
+                            <div className={`w-3 h-3 rounded-full ${pitchCents > 10 ? 'bg-[#FF00BC]' : 'bg-gray-700'}`}></div>
+                        </div>
+                    )}
+
+                    <div className="mt-8 mb-4">
+                        {!isMicOn ? (
+                            <button
+                                onClick={startMic}
+                                className="px-8 py-3 rounded-xl bg-white/5 text-white font-bold hover:bg-white/10 transition-colors border border-white/10 flex items-center gap-2"
+                            >
+                                <span className="material-symbols-rounded">mic</span>
+                                Ligar Microfone
+                            </button>
+                        ) : (
+                            !isPianoActive && (
+                                <button
+                                    onClick={stopMic}
+                                    className="px-6 py-2 rounded-lg text-gray-500 text-xs hover:text-white transition-colors flex items-center gap-2"
+                                >
+                                    <span className="material-symbols-rounded text-sm">mic_off</span>
+                                    Parar
+                                </button>
+                            )
+                        )}
+                    </div>
+
+                </div>
+            </div>
+        );
+    };
+
     const renderCAGEDHeader = () => {
         let title = "";
         let highlight = "";
@@ -1947,9 +1931,11 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
             {activeView === 'subscription' && renderSubscription()}
             {activeView === 'contract' && renderContract()}
             {activeView === 'vocal_test' && renderVocalTest()}
-            {activeView === 'piano' && <PianoScreen onBack={() => setActiveView('menu')} />}
             {activeView === 'tuner' && renderTuner()}
             {activeView === 'chord_dictionary' && renderChordDictionary()}
+
+
+            {activeView === 'piano' && <PianoScreen onBack={() => setActiveView('menu')} />}
 
             {/* Hidden Input for camera or gallery - Global Access */}
             <input

@@ -171,6 +171,306 @@ const SINGEO_BASE_URL = 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/
 // MODULES DATA
 // -----------------------------------------------------------
 export const MODULES: Module[] = [
+    // --- INTRODUÇÃO E FERRAMENTAS ---
+    {
+        id: 'm_classification',
+        number: '00',
+        title: 'CLASSIFICAÇÃO VOCAL',
+        subtitle: 'Conheça sua Voz',
+        description: 'Descubra sua extensão vocal e aprenda a teoria por trás das classificações.',
+        icon: 'psychology',
+        topics: [
+            {
+                id: '0.1_t',
+                title: 'Teoria da Classificação',
+                description: 'Entenda os tipos de vozes.',
+                content: `
+          <div class="space-y-6">
+            <div class="bg-gradient-to-br from-[#0081FF]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
+              <div class="w-16 h-16 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] mb-8">
+                <span class="material-symbols-rounded text-4xl">theater_comedy</span>
+              </div>
+              <h3 class="text-3xl font-black text-white mb-6 tracking-tighter">O que é Classificação?</h3>
+              <p class="text-gray-300 leading-relaxed text-lg">
+                Classificação vocal é a categorização das vozes humanas com base em suas características naturais, como <strong>extensão, timbre e tessitura</strong>.
+              </p>
+            </div>
+            <div class="p-6 bg-white/5 rounded-3xl border border-white/5">
+                <p class="text-gray-400 italic text-center">
+                    "Saber sua classificação ajuda a escolher o repertório certo para sua voz brilhar sem esforço."
+                </p>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                    <span class="material-symbols-rounded">straighten</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Extensão vs Tessitura</h3>
+            </div>
+            
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                <div class="p-4 bg-black/40 rounded-2xl border-l-4 border-[#0081FF]">
+                    <h4 class="text-white font-bold text-sm mb-1">Extensão Vocal</h4>
+                    <p class="text-xs text-gray-400">É o conjunto de todas as notas que você consegue emitir, da mais grave à mais aguda, mesmo que sem qualidade musical.</p>
+                </div>
+                
+                <div class="p-4 bg-black/40 rounded-2xl border-l-4 border-[#FF00BC]">
+                    <h4 class="text-white font-bold text-sm mb-1">Tessitura</h4>
+                    <p class="text-xs text-gray-400">É a faixa de notas onde sua voz soa com melhor qualidade, volume e conforto. É nela que você realmente <strong>canta</strong>.</p>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
+                    <span class="material-symbols-rounded">piano</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Vozes Masculinas</h3>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5">
+                <p class="text-gray-300 text-sm mb-6 leading-relaxed">
+                    As vozes masculinas variam do <strong>Baixo</strong> (mais grave) ao <strong>Tenor</strong> (mais agudo).
+                </p>
+
+                <!-- Piano Visualizer for Ranges -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                        <span>Extensões Comuns</span>
+                        <span>MIDI C2 - C4</span>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[9px] text-[#0081FF] font-bold">
+                                <span>BAIXO</span>
+                                <span>E2 - E4</span>
+                            </div>
+                            <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                                <div class="h-full bg-[#0081FF] rounded-full" style="width: 40%; margin-left: 10%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[9px] text-[#6F4CE7] font-bold">
+                                <span>BARÍTONO</span>
+                                <span>A2 - A4</span>
+                            </div>
+                            <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                                <div class="h-full bg-[#6F4CE7] rounded-full" style="width: 40%; margin-left: 25%"></div>
+                            </div>
+                        </div>
+                        <div class="space-y-1">
+                            <div class="flex justify-between text-[9px] text-[#FF00BC] font-bold">
+                                <span>TENOR</span>
+                                <span>C3 - C5</span>
+                            </div>
+                            <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                                <div class="h-full bg-[#FF00BC] rounded-full" style="width: 40%; margin-left: 45%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC]">
+                    <span class="material-symbols-rounded">piano</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">Vozes Femininas</h3>
+            </div>
+
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5">
+                <p class="text-gray-300 text-sm mb-6 leading-relaxed">
+                    Vão do <strong>Contralto</strong> (mais grave) ao <strong>Soprano</strong> (mais agudo).
+                </p>
+
+                <div class="space-y-3">
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-[9px] text-[#FF00BC] font-bold">
+                            <span>CONTRALTO</span>
+                            <span>F3 - F5</span>
+                        </div>
+                        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-[#FF00BC] rounded-full" style="width: 40%; margin-left: 20%"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-[9px] text-[#6F4CE7] font-bold">
+                            <span>MEZZO-SOPRANO</span>
+                            <span>A3 - A5</span>
+                        </div>
+                        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-[#6F4CE7] rounded-full" style="width: 40%; margin-left: 40%"></div>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="flex justify-between text-[9px] text-[#0081FF] font-bold">
+                            <span>SOPRANO</span>
+                            <span>C4 - C6</span>
+                        </div>
+                        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-[#0081FF] rounded-full" style="width: 40%; margin-left: 55%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+
+
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="bg-gradient-to-br from-[#1A202C] to-[#101622] p-8 rounded-[2.5rem] border border-white/5 border-l-4 border-l-[#FF00BC] relative overflow-hidden">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 rounded-2xl bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC]">
+                        <span class="material-symbols-rounded">quiz</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-white tracking-tighter">Questionário: Que Tipo de Voz eu Tenho?</h3>
+                </div>
+                
+                <p class="text-gray-400 mb-8 leading-relaxed">
+                    Analise seu instrumento e responda. Suas respostas serão salvas para o professor.
+                </p>
+
+                <div class="space-y-6">
+                    <div class="space-y-3">
+                        <label class="text-sm font-bold text-white uppercase tracking-wider block">Artistas com voz parecida (até 5):</label>
+                        <input 
+                            id="artists_input"
+                            type="text" 
+                            oninput="window.updateVocalAnswer('artists', this.value)"
+                            placeholder="Ex: Ed Sheeran, Adele, Bruno Mars..." 
+                            class="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-[#0081FF]"
+                        />
+                    </div>
+
+                    <div class="h-px bg-white/5"></div>
+
+                    <div class="space-y-4">
+                        <label class="text-sm font-bold text-white uppercase tracking-wider block">Se eu pudesse dar uma cor para minha voz, ela seria:</label>
+                        <div id="options_color" class="grid grid-cols-1 gap-3">
+                             <div onclick="window.selectVocalOption('color', 'lilas', this)" class="cursor-pointer p-4 bg-black/40 rounded-xl border border-white/5 flex items-center gap-3 hover:bg-white/5 transition-all">
+                                <div class="w-6 h-6 rounded-full bg-[#3D00B8]"></div>
+                                <span class="text-xs text-gray-300"><strong>Lilás escuro:</strong> (Baixos e Contraltos)</span>
+                             </div>
+                             <div onclick="window.selectVocalOption('color', 'vermelho', this)" class="cursor-pointer p-4 bg-black/40 rounded-xl border border-white/5 flex items-center gap-3 hover:bg-white/5 transition-all">
+                                <div class="w-6 h-6 rounded-full bg-[#CC0000]"></div>
+                                <span class="text-xs text-gray-300"><strong>Vermelho intenso:</strong> (Mezzo-sopranos e Barítonos)</span>
+                             </div>
+                             <div onclick="window.selectVocalOption('color', 'laranja', this)" class="cursor-pointer p-4 bg-black/40 rounded-xl border border-white/5 flex items-center gap-3 hover:bg-white/5 transition-all">
+                                <div class="w-6 h-6 rounded-full bg-[#FF8C00]"></div>
+                                <span class="text-xs text-gray-300"><strong>Laranja:</strong> (Mezzos, Sopranos, Barítonos e Tenores)</span>
+                             </div>
+                             <div onclick="window.selectVocalOption('color', 'amarelo', this)" class="cursor-pointer p-4 bg-black/40 rounded-xl border border-white/5 flex items-center gap-3 hover:bg-white/5 transition-all">
+                                <div class="w-6 h-6 rounded-full bg-[#FFEA00]"></div>
+                                <span class="text-xs text-gray-300"><strong>Amarelo vivo:</strong> (Sopranos e Tenores)</span>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="space-y-6">
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5">
+                    <label class="text-sm font-bold text-white uppercase tracking-wider block mb-4">Minha voz tem características de textura como:</label>
+                    <div id="options_texture" class="space-y-2">
+                        <div onclick="window.selectVocalOption('texture', 'chocolate', this)" class="cursor-pointer flex items-center gap-3 p-3 bg-black/20 rounded-xl border border-transparent hover:border-white/10 transition-all">
+                            <span class="material-symbols-rounded text-[#8B4513]">cookie</span>
+                            <span class="text-sm text-gray-300"><strong>Chocolate</strong> (Baixos/Barítonos)</span>
+                        </div>
+                        <div onclick="window.selectVocalOption('texture', 'veludo', this)" class="cursor-pointer flex items-center gap-3 p-3 bg-black/20 rounded-xl border border-transparent hover:border-white/10 transition-all">
+                            <span class="material-symbols-rounded text-[#C71585]">texture</span>
+                            <span class="text-sm text-gray-300"><strong>Veludo</strong> (Mezzos)</span>
+                        </div>
+                        <div onclick="window.selectVocalOption('texture', 'creme', this)" class="cursor-pointer flex items-center gap-3 p-3 bg-black/20 rounded-xl border border-transparent hover:border-white/10 transition-all">
+                            <span class="material-symbols-rounded text-[#F0E68C]">water_drop</span>
+                            <span class="text-sm text-gray-300"><strong>Creme denso</strong> (Tenores/Sopranos)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5">
+                    <label class="text-sm font-bold text-white uppercase tracking-wider block mb-4">Eu gosto de cantar mais com:</label>
+                    <div id="options_register" class="space-y-2">
+                         <div onclick="window.selectVocalOption('register', 'peito', this)" class="cursor-pointer p-3 bg-black/20 rounded-xl text-sm text-gray-300 border border-transparent hover:border-white/10 transition-all">
+                            <strong>Voz de peito</strong> (Baixo/Contralto)
+                         </div>
+                         <div onclick="window.selectVocalOption('register', 'mista', this)" class="cursor-pointer p-3 bg-black/20 rounded-xl text-sm text-gray-300 border border-transparent hover:border-white/10 transition-all">
+                            <strong>Voz mista e cabeça</strong> (Soprano/Tenor)
+                         </div>
+                         <div onclick="window.selectVocalOption('register', 'todos', this)" class="cursor-pointer p-3 bg-black/20 rounded-xl text-sm text-gray-300 border border-transparent hover:border-white/10 transition-all">
+                            <strong>Todos os registros</strong> (Mezzos/Barítonos)
+                         </div>
+                    </div>
+                </div>
+
+                 <div class="bg-gradient-to-r from-[#0081FF]/20 to-[#6F4CE7]/20 p-6 rounded-3xl border border-white/5 text-center">
+                    <h4 class="text-white font-bold mb-2">Tarefa Prática 📝</h4>
+                    <p class="text-xs text-gray-300 leading-relaxed mb-4">
+                        Escreva agora qual a sua nota mais grave e qual a sua nota mais aguda.
+                    </p>
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <input id="note_low_input" type="text" oninput="window.updateVocalAnswer('range_goal_low', this.value)" placeholder="Grave (Ex: E2)" class="bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-white text-xs text-center" />
+                        <input id="note_high_input" type="text" oninput="window.updateVocalAnswer('range_goal_high', this.value)" placeholder="Aguda (Ex: C5)" class="bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-white text-xs text-center" />
+                    </div>
+                    <button onclick="window.saveQuestionnaire()" class="w-full py-3 bg-[#0081FF] text-white font-bold rounded-xl shadow-lg shadow-blue-500/20 active:scale-95 transition-all">
+                        Salvar Respostas
+                    </button>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="bg-brand-gradient p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden text-center">
+                <div class="relative z-10">
+                    <div class="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-white mx-auto mb-6">
+                        <span class="material-symbols-rounded text-4xl">mic_external_on</span>
+                    </div>
+                    <h3 class="text-3xl font-black text-white mb-4 tracking-tighter">Pronto para o Teste?</h3>
+                    <p class="text-white/80 leading-relaxed mb-6">
+                        Agora que você entende as diferenças, vamos descobrir em qual dessas categorias sua voz se encaixa melhor hoje.
+                    </p>
+                    <div class="bg-black/20 p-4 rounded-2xl backdrop-blur-sm border border-white/10">
+                        <p class="text-xs text-white font-bold uppercase tracking-widest">
+                            No próximo tópico, use o microfone para cantar suas notas.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="w-full py-5 bg-[#1A202C] text-white font-black rounded-3xl border border-white/10 hover:bg-white/5 transition-all text-sm tracking-widest uppercase flex items-center justify-center gap-3" onclick="window.handleNavigateToTopic('tool_vocal_extension')">
+                <span class="material-symbols-rounded">mic_double</span>
+                Ir para o Teste
+            </button>
+          </div>
+        `
+            },
+            {
+                id: 'tool_vocal_extension',
+                title: 'Teste de Extensão Vocal',
+                description: 'Cante e descubra seu tipo de voz.',
+            }
+        ]
+    },
     // --- FASE 1: O INSTRUMENTO E A FONTE (O ALICERCE) ---
     {
         id: 'm_theory',

@@ -16,8 +16,8 @@ export const formatMusicText = (text: string): string => {
     .replace(/♭/g, 'b')
     .replace(/♯/g, '#')
     .replace(/Maj/g, 'maj')
-    .replace(/ma/g, 'maj') 
-    .replace(/M(?![a-z])/g, 'maj') 
+    .replace(/ma/g, 'maj')
+    .replace(/M(?![a-z])/g, 'maj')
     .replace(/min/g, 'm');
 };
 
@@ -42,17 +42,17 @@ export const getScientificPitch = (stringIndex: number, fret: number): { note: s
   // Index 3 (D)      = D3
   // Index 4 (A)      = A2
   // Index 5 (Low E)  = E2
-  const openOctaves = [4, 3, 3, 3, 2, 2]; 
-  
+  const openOctaves = [4, 3, 3, 3, 2, 2];
+
   const startNote = GUITAR_STRINGS[stringIndex];
   const startOctave = openOctaves[stringIndex];
   const startIndex = NOTES.indexOf(startNote);
-  
+
   const totalSemitones = startIndex + fret;
   const octaveShift = Math.floor(totalSemitones / 12);
-  
+
   const noteName = NOTES[totalSemitones % 12];
-  
+
   return {
     note: formatMusicText(noteName),
     octave: startOctave + octaveShift
@@ -66,7 +66,7 @@ export const getScientificPitch = (stringIndex: number, fret: number): { note: s
 export const getIntervalAt = (note: string, root: string): string => {
   try {
     if (!window.Tonal) return '?';
-    
+
     // Obter semitons de distância (0-11)
     const semitones = (window.Tonal.Note.chroma(note) - window.Tonal.Note.chroma(root) + 12) % 12;
 
@@ -78,7 +78,7 @@ export const getIntervalAt = (note: string, root: string): string => {
       3: 'm',
       4: '3',
       5: '4',
-      6: 'b5', 
+      6: 'b5',
       7: '5',
       8: 'b6',
       9: '6',
@@ -109,10 +109,10 @@ export const calculateFinger = (sIdx: number, fret: number, allNotes: SelectedNo
 
   const minFret = pressed[0].fret;
   const maxFret = pressed[pressed.length - 1].fret;
-  
+
   // Identifica se há uma pestana (2 ou mais notas na mesma casa inicial)
   const isBarreAtStart = pressed.filter(n => n.fret === minFret).length >= 2;
-  
+
   const fingerMap: Record<string, number> = {};
   let availableFingers = [1, 2, 3, 4];
 
@@ -162,18 +162,18 @@ export const identifyChord = (selected: SelectedNote[]): ChordResult[] => {
   const uniqueNotes = Array.from(new Set(allNotes));
 
   const detected: string[] = window.Tonal.Chord.detect(uniqueNotes);
-  
+
   if (detected.length === 0) return [];
 
   const processedResults = detected.map(chordName => {
     const chord = window.Tonal.Chord.get(chordName);
     const root = formatMusicText(chord.tonic || chordName.charAt(0));
-    
+
     let suffix = chord.aliases[0] || '';
     if (suffix === 'M') suffix = '';
     if (suffix === 'ma7') suffix = 'maj7';
-    
-    let score = 50; 
+
+    let score = 50;
     const isDirect = root === bassNote;
     if (isDirect) score += 40;
 
@@ -186,10 +186,10 @@ export const identifyChord = (selected: SelectedNote[]): ChordResult[] => {
 
     let sanitizedBaseName = `${root}${suffix}`;
     sanitizedBaseName = formatMusicText(sanitizedBaseName);
-    
+
     let displayName = sanitizedBaseName;
     if (!isDirect && bassNote) {
-        displayName = `${sanitizedBaseName}/${bassNote}`;
+      displayName = `${sanitizedBaseName}/${bassNote}`;
     }
 
     return {
@@ -206,7 +206,7 @@ export const identifyChord = (selected: SelectedNote[]): ChordResult[] => {
     .sort((a, b) => b.score - a.score)
     .forEach(item => {
       if (item.fullName.match(/[A-G][b#]?\d$/) && !item.fullName.includes('7') && !item.fullName.includes('9')) {
-        return; 
+        return;
       }
       if (!uniqueDisplayNames.has(item.fullName)) {
         uniqueDisplayNames.set(item.fullName, item);

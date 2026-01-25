@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabaseClient';
 import { usePlayback } from '../contexts/PlaybackContext';
 import { RepertoireView } from '../components/RepertoireView';
 import { RoutineView } from '../components/RoutineView';
+import { VocalAnalyzer } from '../components/VocalAnalyzer';
 
 interface Props {
   onNavigate: (screen: Screen) => void;
@@ -66,6 +67,160 @@ export const LibraryScreen: React.FC<Props> = ({
       }, 100);
     }
   }, [initialScrollY]);
+
+  // Global handler for HTML interactions (e.g., from Theory content)
+  useEffect(() => {
+    // Helper to persist data
+    const persistData = (key: string, value: any) => {
+      const currentCheck = JSON.parse(localStorage.getItem('vocal_questionnaire_temp') || '{}');
+      currentCheck[key] = value;
+      localStorage.setItem('vocal_questionnaire_temp', JSON.stringify(currentCheck));
+    };
+
+    // Navigation Handler
+    (window as any).handleNavigateToTopic = (topicId: string) => {
+      for (const m of MODULES) {
+        const t = m.topics.find(top => top.id === topicId);
+        if (t) {
+          handleLessonOpen(t, m.id);
+          break;
+        }
+      }
+    };
+
+    // New Incremental Input Handler
+    (window as any).updateVocalAnswer = (key: string, value: string) => {
+      persistData(key, value);
+    };
+
+    // Restore State on Slide Change
+    useEffect(() => {
+      if (!selectedTopic) return;
+
+      const restore = () => {
+        const savedData = JSON.parse(localStorage.getItem('vocal_questionnaire_temp') || '{}');
+
+        const setVal = (id: string, val: string) => {
+          const el = document.getElementById(id) as HTMLInputElement;
+          if (el && val) el.value = val;
+        };
+
+        setVal('artists_input', savedData.artists);
+        setVal('note_low_input', savedData.range_goal_low);
+        setVal('note_high_input', savedData.range_goal_high);
+
+        // Restore Options Visuals (Best Effort)
+        const restoreOption = (cat: string, val: string) => {
+          const container = document.getElementById(`options_${cat}`);
+          if (container && val) {
+            // Try to find the element that would set this value
+            // Since we don't have data-value attributes on them initially, we check the onclick string or just iterate
+            // Simple hack: We set the data-value on click, but initially it's not there.
+            // We can match by partial onclick string content which is unique enough here: selectVocalOption('color', 'lilas'...)
+            const optionEl = container.querySelector(`div[onclick*="'${val}'"]`) as HTMLElement;
+            if (optionEl) {
+              optionEl.style.borderColor = '#0081FF';
+              optionEl.style.backgroundColor = 'rgba(0, 129, 255, 0.2)';
+              optionEl.setAttribute('data-selected', 'true');
+              optionEl.setAttribute('data-value', val);
+            }
+          }
+        };
+
+        restoreOption('color', savedData.color);
+        restoreOption('texture', savedData.texture);
+        restoreOption('register', savedData.register);
+      };
+
+      // Small delay to ensure DOM update
+      const t = setTimeout(restore, 50);
+      return () => clearTimeout(t);
+    }, [currentPage, selectedTopic]);
+
+    // Questionnaire Selection Handler
+    (window as any).selectVocalOption = (category: string, value: string, element: HTMLElement) => {
+      // 1. Visual Feedback
+      // Remove 'active' class from siblings
+      const parent = element.parentElement;
+      if (parent) {
+        Array.from(parent.children).forEach((child: any) => {
+          child.style.borderColor = 'rgba(255,255,255,0.05)';
+          child.style.backgroundColor = 'rgba(0,0,0,0.4)';
+          child.setAttribute('data-selected', 'false');
+        });
+      }
+
+      // Add 'active' style to clicked
+      element.style.borderColor = '#0081FF';
+      element.style.backgroundColor = 'rgba(0, 129, 255, 0.2)';
+      element.setAttribute('data-selected', 'true');
+      element.setAttribute('data-value', value);
+
+      // 2. Persist Selection
+      persistData(category, value);
+    };
+
+    // Questionnaire Save Handler
+    (window as any).saveQuestionnaire = async () => {
+      // Load persist data
+      const savedData = JSON.parse(localStorage.getItem('vocal_questionnaire_temp') || '{}');
+
+      // Check local inputs as fallback (if they are on the current screen)
+      const noteLowInput = document.getElementById('note_low_input') as HTMLInputElement;
+      const noteHighInput = document.getElementById('note_high_input') as HTMLInputElement;
+
+      // If elements exist on current slide, prioritize their values and update storage
+      if (noteLowInput) savedData['range_goal_low'] = noteLowInput.value;
+      if (noteHighInput) savedData['range_goal_high'] = noteHighInput.value;
+
+      const data = {
+        artists: savedData.artists,
+        color: savedData.color,
+        texture: savedData.texture,
+        register: savedData.register,
+        range_goal_low: savedData.range_goal_low,
+        range_goal_high: savedData.range_goal_high
+      };
+
+      if (!data.artists && !data.color && !data.texture) {
+        alert('Por favor, preencha pelo menos algumas informações antes de salvar.');
+        return;
+      }
+
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+
+        if (!user) {
+          alert('Você precisa estar logado para salvar suas respostas.');
+          return;
+        }
+
+        const { error } = await supabase
+          .from('vocal_assessments')
+          .insert([{
+            user_id: user.id,
+            ...data
+          }]);
+
+        if (error) throw error;
+
+        // Clear temp storage after success
+        localStorage.removeItem('vocal_questionnaire_temp');
+
+        alert('Respostas salvas com sucesso! 🎉 \nO professor terá acesso a esses dados.');
+      } catch (e) {
+        console.error('Error saving:', e);
+        alert('Erro ao salvar respostas. Tente novamente.');
+      }
+    };
+
+    return () => {
+      delete (window as any).handleNavigateToTopic;
+      delete (window as any).updateVocalAnswer;
+      delete (window as any).selectVocalOption;
+      delete (window as any).saveQuestionnaire;
+    };
+  }, []);
 
   // Save scroll position on unmount
   useEffect(() => {
@@ -517,7 +672,11 @@ export const LibraryScreen: React.FC<Props> = ({
       {/* Topic Content Modal */}
       {selectedTopic && (
         <div className="fixed inset-0 z-[60] bg-[#101622] flex flex-col animate-in slide-in-from-bottom duration-300 max-w-md mx-auto left-0 right-0 shadow-2xl">
-          {selectedTopic.id.startsWith('10.1') ? (
+          {selectedTopic.id === 'tool_vocal_extension' ? (
+            <div className="flex-1 bg-[#101622] flex flex-col">
+              <VocalAnalyzer onBack={() => setSelectedTopic(null)} />
+            </div>
+          ) : selectedTopic.id.startsWith('10.1') ? (
             <div className="flex-1 bg-[#101622] p-4">
               <RepertoireView onBack={() => setSelectedTopic(null)} />
             </div>
@@ -757,24 +916,24 @@ export const LibraryScreen: React.FC<Props> = ({
                           {module.topics.map(topic => (
                             <div
                               key={topic.id}
-                              className={`relative p-2 rounded-lg transition-colors flex items-center justify-between ${topic.content || topic.id.startsWith('10.1') ? 'active:bg-white/5 cursor-pointer' : ''}`}
+                              className={`relative p-2 rounded-lg transition-colors flex items-center justify-between ${topic.content || topic.id.startsWith('10.1') || topic.id === 'tool_vocal_extension' ? 'active:bg-white/5 cursor-pointer' : ''}`}
                               onClick={() => {
-                                if (topic.content || topic.id.startsWith('10.1')) {
+                                if (topic.content || topic.id.startsWith('10.1') || topic.id === 'tool_vocal_extension') {
                                   handleLessonOpen(topic, module.id);
                                 }
                               }}
                             >
                               <div className="flex-1">
-                                <p className={`text-sm font-semibold ${checklistState[topic.id] ? 'text-gray-500 line-through' : (topic.content || topic.id.startsWith('10.1') ? 'text-[#0081FF]' : 'text-white')}`}>
+                                <p className={`text-sm font-semibold ${checklistState[topic.id] ? 'text-gray-500 line-through' : (topic.content || topic.id.startsWith('10.1') || topic.id === 'tool_vocal_extension' ? 'text-[#0081FF]' : 'text-white')}`}>
                                   {topic.title}
                                 </p>
                                 <p className="text-[10px] text-gray-600">{topic.description}</p>
                               </div>
                               <div className="flex items-center gap-2">
                                 {checklistState[topic.id] && <span className="material-symbols-rounded text-[#0081FF] text-sm">check_circle</span>}
-                                {(topic.content || topic.id.startsWith('10.1')) && (
+                                {(topic.content || topic.id.startsWith('10.1') || topic.id === 'tool_vocal_extension') && (
                                   <span className="material-symbols-rounded text-gray-600 text-sm">
-                                    {topic.id.startsWith('10.1') ? 'play_circle' : 'article'}
+                                    {topic.id.startsWith('10.1') ? 'play_circle' : (topic.id === 'tool_vocal_extension' ? 'mic' : 'article')}
                                   </span>
                                 )}
                               </div>
