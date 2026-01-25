@@ -93,49 +93,7 @@ export const LibraryScreen: React.FC<Props> = ({
       persistData(key, value);
     };
 
-    // Restore State on Slide Change
-    useEffect(() => {
-      if (!selectedTopic) return;
 
-      const restore = () => {
-        const savedData = JSON.parse(localStorage.getItem('vocal_questionnaire_temp') || '{}');
-
-        const setVal = (id: string, val: string) => {
-          const el = document.getElementById(id) as HTMLInputElement;
-          if (el && val) el.value = val;
-        };
-
-        setVal('artists_input', savedData.artists);
-        setVal('note_low_input', savedData.range_goal_low);
-        setVal('note_high_input', savedData.range_goal_high);
-
-        // Restore Options Visuals (Best Effort)
-        const restoreOption = (cat: string, val: string) => {
-          const container = document.getElementById(`options_${cat}`);
-          if (container && val) {
-            // Try to find the element that would set this value
-            // Since we don't have data-value attributes on them initially, we check the onclick string or just iterate
-            // Simple hack: We set the data-value on click, but initially it's not there.
-            // We can match by partial onclick string content which is unique enough here: selectVocalOption('color', 'lilas'...)
-            const optionEl = container.querySelector(`div[onclick*="'${val}'"]`) as HTMLElement;
-            if (optionEl) {
-              optionEl.style.borderColor = '#0081FF';
-              optionEl.style.backgroundColor = 'rgba(0, 129, 255, 0.2)';
-              optionEl.setAttribute('data-selected', 'true');
-              optionEl.setAttribute('data-value', val);
-            }
-          }
-        };
-
-        restoreOption('color', savedData.color);
-        restoreOption('texture', savedData.texture);
-        restoreOption('register', savedData.register);
-      };
-
-      // Small delay to ensure DOM update
-      const t = setTimeout(restore, 50);
-      return () => clearTimeout(t);
-    }, [currentPage, selectedTopic]);
 
     // Questionnaire Selection Handler
     (window as any).selectVocalOption = (category: string, value: string, element: HTMLElement) => {
@@ -221,6 +179,45 @@ export const LibraryScreen: React.FC<Props> = ({
       delete (window as any).saveQuestionnaire;
     };
   }, []);
+  // Restore questionnaire state on slide change
+  useEffect(() => {
+    if (!selectedTopic) return;
+
+    const restore = () => {
+      const savedData = JSON.parse(localStorage.getItem('vocal_questionnaire_temp') || '{}');
+
+      const setVal = (id: string, val: string) => {
+        const el = document.getElementById(id) as HTMLInputElement;
+        if (el && val) el.value = val;
+      };
+
+      setVal('artists_input', savedData.artists);
+      setVal('note_low_input', savedData.range_goal_low);
+      setVal('note_high_input', savedData.range_goal_high);
+
+      // Restore Options Visuals (Best Effort)
+      const restoreOption = (cat: string, val: string) => {
+        const container = document.getElementById(`options_${cat}`);
+        if (container && val) {
+          const optionEl = container.querySelector(`div[onclick*="'${val}'"]`) as HTMLElement;
+          if (optionEl) {
+            optionEl.style.borderColor = '#0081FF';
+            optionEl.style.backgroundColor = 'rgba(0, 129, 255, 0.2)';
+            optionEl.setAttribute('data-selected', 'true');
+            optionEl.setAttribute('data-value', val);
+          }
+        }
+      };
+
+      restoreOption('color', savedData.color);
+      restoreOption('texture', savedData.texture);
+      restoreOption('register', savedData.register);
+    };
+
+    // Small delay to ensure DOM update
+    const t = setTimeout(restore, 50);
+    return () => clearTimeout(t);
+  }, [currentPage, selectedTopic]);
 
   // Save scroll position on unmount
   useEffect(() => {
