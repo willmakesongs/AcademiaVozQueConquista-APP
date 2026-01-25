@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Vocalize, Screen } from '../types';
 import { useAuth } from '../contexts/AuthContext';
-import { LORENA_AVATAR_URL, MODULES, VOCALIZES } from '../constants';
+import { LORENA_AVATAR_URL, MODULES, VOCALIZES, MINIMALIST_LOGO_URL } from '../constants';
 
 interface Props {
     onNavigate: (screen: Screen) => void;
@@ -194,7 +194,7 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
                     <div className="absolute -left-10 top-1/2 -translate-y-1/2 w-20 h-full bg-[#0081FF]/5 skew-x-12"></div>
 
                     <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2 relative z-10">
-                        <span className="material-symbols-rounded text-[#0081FF]">construction</span>
+                        <img src={MINIMALIST_LOGO_URL} alt="VQC" className="h-5 w-auto object-contain opacity-90" />
                         VQC Studio
                     </h3>
                     <p className="text-sm text-gray-300 mb-4 relative z-10">
@@ -203,7 +203,7 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
 
                     <div className="grid grid-cols-2 gap-3 relative z-10">
                         <div className="bg-[#151A23] p-4 rounded-xl border border-white/5 hover:border-[#0081FF]/30 transition-colors shadow-lg shadow-black/20 group">
-                            <span className="material-symbols-rounded text-[#0081FF] mb-2 block text-2xl group-hover:scale-110 transition-transform">timer</span>
+                            <span className="material-symbols-rounded text-[#0081FF] mb-2 block text-2xl group-hover:scale-110 transition-transform">metronome</span>
                             <strong className="text-white text-xs block mb-1 uppercase tracking-wider">Metrônomo VQC</strong>
                             <p className="text-[10px] text-gray-500">Desenvolva sua precisão rítmica com a melhor ferramenta de estudo.</p>
                         </div>
