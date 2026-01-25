@@ -203,7 +203,7 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
 
                     <div className="grid grid-cols-2 gap-3 relative z-10">
                         <div className="bg-[#151A23] p-4 rounded-xl border border-white/5 hover:border-[#0081FF]/30 transition-colors shadow-lg shadow-black/20 group">
-                            <span className="material-symbols-rounded text-[#0081FF] mb-2 block text-2xl group-hover:scale-110 transition-transform">metronome</span>
+                            <span className="material-symbols-rounded text-[#0081FF] mb-2 block text-2xl group-hover:scale-110 transition-transform">timer</span>
                             <strong className="text-white text-xs block mb-1 uppercase tracking-wider">Metrônomo VQC</strong>
                             <p className="text-[10px] text-gray-500">Desenvolva sua precisão rítmica com a melhor ferramenta de estudo.</p>
                         </div>

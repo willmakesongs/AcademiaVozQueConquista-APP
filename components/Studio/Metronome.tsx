@@ -413,7 +413,6 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
 
                     {/* HEADER */}
                     <div className="w-full flex items-center justify-center border-b border-white/5 pb-4 gap-3">
-                        <span className="material-symbols-rounded text-[#6F4CE7] text-xl">metronome</span>
                         <h1 className="text-[#6F4CE7] font-black tracking-[0.3em] text-sm uppercase glow-text">
                             METRÔNOMO
                         </h1>
@@ -511,7 +510,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2">
                                 <div className="w-8 h-8 rounded-full bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
-                                    <span className="material-symbols-rounded text-lg">metronome</span>
+                                    <span className="material-symbols-rounded text-lg">timer</span>
                                 </div>
                                 <span className="text-xs font-bold text-white uppercase tracking-wider">
                                     Tempo de Estudo
