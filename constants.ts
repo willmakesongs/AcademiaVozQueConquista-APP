@@ -360,23 +360,30 @@ export const MODULES: Module[] = [
                     <div class="h-px bg-white/5"></div>
 
                     <div class="space-y-4">
-                        <label class="text-sm font-bold text-white uppercase tracking-wider block">Se eu pudesse dar uma cor para minha voz, ela seria:</label>
+                        <label class="text-sm font-bold text-white uppercase tracking-wider block">Identifique onde sua voz se encaixa na nossa escala de ressonância:</label>
                         <div id="options_color" class="grid grid-cols-1 gap-3">
-                             <div onclick="window.selectVocalOption('color', 'lilas', this)" class="cursor-pointer p-4 bg-black/40 rounded-xl border border-white/5 flex items-center gap-3 hover:bg-white/5 transition-all">
-                                <div class="w-6 h-6 rounded-full bg-[#3D00B8]"></div>
-                                <span class="text-xs text-gray-300"><strong>Lilás escuro:</strong> (Baixos e Contraltos)</span>
+                             <div onclick="window.selectVocalOption('color', 'solar', this)" class="cursor-pointer p-4 bg-black/40 rounded-xl border border-white/5 flex flex-col gap-1 hover:bg-white/5 transition-all">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="material-symbols-rounded text-[#FFD700]">light_mode</span>
+                                    <span class="text-sm font-bold text-white">Timbre Solar (Brilhante)</span>
+                                </div>
+                                <p class="text-[10px] text-gray-400 leading-tight">Brilho natural intenso. Foco na máscara facial. (Sopranos/Tenores)</p>
                              </div>
-                             <div onclick="window.selectVocalOption('color', 'vermelho', this)" class="cursor-pointer p-4 bg-black/40 rounded-xl border border-white/5 flex items-center gap-3 hover:bg-white/5 transition-all">
-                                <div class="w-6 h-6 rounded-full bg-[#CC0000]"></div>
-                                <span class="text-xs text-gray-300"><strong>Vermelho intenso:</strong> (Mezzo-sopranos e Barítonos)</span>
+
+                             <div onclick="window.selectVocalOption('color', 'crepuscular', this)" class="cursor-pointer p-4 bg-black/40 rounded-xl border border-white/5 flex flex-col gap-1 hover:bg-white/5 transition-all">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="material-symbols-rounded text-[#FF8C00]">wb_twilight</span>
+                                    <span class="text-sm font-bold text-white">Timbre Crepuscular (Misto)</span>
+                                </div>
+                                <p class="text-[10px] text-gray-400 leading-tight">Equilíbrio entre corpo e brilho. Versátil e suave. (Mezzos/Barítonos)</p>
                              </div>
-                             <div onclick="window.selectVocalOption('color', 'laranja', this)" class="cursor-pointer p-4 bg-black/40 rounded-xl border border-white/5 flex items-center gap-3 hover:bg-white/5 transition-all">
-                                <div class="w-6 h-6 rounded-full bg-[#FF8C00]"></div>
-                                <span class="text-xs text-gray-300"><strong>Laranja:</strong> (Mezzos, Sopranos, Barítonos e Tenores)</span>
-                             </div>
-                             <div onclick="window.selectVocalOption('color', 'amarelo', this)" class="cursor-pointer p-4 bg-black/40 rounded-xl border border-white/5 flex items-center gap-3 hover:bg-white/5 transition-all">
-                                <div class="w-6 h-6 rounded-full bg-[#FFEA00]"></div>
-                                <span class="text-xs text-gray-300"><strong>Amarelo vivo:</strong> (Sopranos e Tenores)</span>
+
+                             <div onclick="window.selectVocalOption('color', 'noturno', this)" class="cursor-pointer p-4 bg-black/40 rounded-xl border border-white/5 flex flex-col gap-1 hover:bg-white/5 transition-all">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="material-symbols-rounded text-[#4B0082]">dark_mode</span>
+                                    <span class="text-sm font-bold text-white">Timbre Noturno (Escuro/Profundo)</span>
+                                </div>
+                                <p class="text-[10px] text-gray-400 leading-tight">Rico em harmônicos graves. Aveludado e encorpado. (Contraltos/Baixos)</p>
                              </div>
                         </div>
                     </div>
@@ -389,34 +396,29 @@ export const MODULES: Module[] = [
           <div class="space-y-6">
             <div class="space-y-6">
                 <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5">
-                    <label class="text-sm font-bold text-white uppercase tracking-wider block mb-4">Minha voz tem características de textura como:</label>
+                    <label class="text-sm font-bold text-white uppercase tracking-wider block mb-2">Exercício de Percepção (Textura):</label>
+                    <p class="text-xs text-gray-400 mb-4">Ao fazer o alongamento vocal, sua voz soa mais como:</p>
                     <div id="options_texture" class="space-y-2">
-                        <div onclick="window.selectVocalOption('texture', 'chocolate', this)" class="cursor-pointer flex items-center gap-3 p-3 bg-black/20 rounded-xl border border-transparent hover:border-white/10 transition-all">
-                            <span class="material-symbols-rounded text-[#8B4513]">cookie</span>
-                            <span class="text-sm text-gray-300"><strong>Chocolate</strong> (Baixos/Barítonos)</span>
+                        <div onclick="window.selectVocalOption('texture', 'denso', this)" class="cursor-pointer flex items-center gap-3 p-3 bg-black/20 rounded-xl border border-transparent hover:border-white/10 transition-all">
+                            <span class="material-symbols-rounded text-[#CCCCCC]">texture</span>
+                            <span class="text-sm text-gray-300"><strong>Creme denso e amanteigado</strong></span>
                         </div>
-                        <div onclick="window.selectVocalOption('texture', 'veludo', this)" class="cursor-pointer flex items-center gap-3 p-3 bg-black/20 rounded-xl border border-transparent hover:border-white/10 transition-all">
-                            <span class="material-symbols-rounded text-[#C71585]">texture</span>
-                            <span class="text-sm text-gray-300"><strong>Veludo</strong> (Mezzos)</span>
-                        </div>
-                        <div onclick="window.selectVocalOption('texture', 'creme', this)" class="cursor-pointer flex items-center gap-3 p-3 bg-black/20 rounded-xl border border-transparent hover:border-white/10 transition-all">
-                            <span class="material-symbols-rounded text-[#F0E68C]">water_drop</span>
-                            <span class="text-sm text-gray-300"><strong>Creme denso</strong> (Tenores/Sopranos)</span>
+                        <div onclick="window.selectVocalOption('texture', 'leve', this)" class="cursor-pointer flex items-center gap-3 p-3 bg-black/20 rounded-xl border border-transparent hover:border-white/10 transition-all">
+                            <span class="material-symbols-rounded text-[#FFFFE0]">light_mode</span>
+                            <span class="text-sm text-gray-300"><strong>Leve e luminoso</strong></span>
                         </div>
                     </div>
                 </div>
 
                 <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5">
-                    <label class="text-sm font-bold text-white uppercase tracking-wider block mb-4">Eu gosto de cantar mais com:</label>
+                    <label class="text-sm font-bold text-white uppercase tracking-wider block mb-2">Registro e Conforto:</label>
+                    <p class="text-xs text-gray-400 mb-4">Onde sua voz "mora" e flui sem esforço?</p>
                     <div id="options_register" class="space-y-2">
                          <div onclick="window.selectVocalOption('register', 'peito', this)" class="cursor-pointer p-3 bg-black/20 rounded-xl text-sm text-gray-300 border border-transparent hover:border-white/10 transition-all">
-                            <strong>Voz de peito</strong> (Baixo/Contralto)
+                            <strong>Voz de Peito</strong> (Grave/Médio - Mais corpo)
                          </div>
-                         <div onclick="window.selectVocalOption('register', 'mista', this)" class="cursor-pointer p-3 bg-black/20 rounded-xl text-sm text-gray-300 border border-transparent hover:border-white/10 transition-all">
-                            <strong>Voz mista e cabeça</strong> (Soprano/Tenor)
-                         </div>
-                         <div onclick="window.selectVocalOption('register', 'todos', this)" class="cursor-pointer p-3 bg-black/20 rounded-xl text-sm text-gray-300 border border-transparent hover:border-white/10 transition-all">
-                            <strong>Todos os registros</strong> (Mezzos/Barítonos)
+                         <div onclick="window.selectVocalOption('register', 'kbca', this)" class="cursor-pointer p-3 bg-black/20 rounded-xl text-sm text-gray-300 border border-transparent hover:border-white/10 transition-all">
+                            <strong>Voz de Cabeça</strong> (Agudo - Mais brilho)
                          </div>
                     </div>
                 </div>

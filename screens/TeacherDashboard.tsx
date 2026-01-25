@@ -68,6 +68,9 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     const [editScheduleDay, setEditScheduleDay] = useState('Seg');
     const [editScheduleTime, setEditScheduleTime] = useState('');
     const [editAge, setEditAge] = useState('');
+
+    // UI States
+    const [showCourseSelector, setShowCourseSelector] = useState(false);
     const [editAddress, setEditAddress] = useState('');
     const [editInstagram, setEditInstagram] = useState('');
     const [editAmount, setEditAmount] = useState(97);
@@ -529,6 +532,12 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         if (!cleanPhone) return;
         const finalPhone = cleanPhone.length <= 11 ? `55${cleanPhone}` : cleanPhone;
         window.open(`https://wa.me/${finalPhone}`, '_blank');
+    };
+
+    const openInstagram = (handle: string) => {
+        if (!handle) return;
+        const username = handle.replace('@', '').trim();
+        window.open(`https://instagram.com/${username}`, '_blank');
     };
 
     const handleSaveChanges = async () => {
@@ -1654,110 +1663,126 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                             {/* NOTE: Preserving the existing form logic, just ensuring scroll container is good */}
 
                             <div className="grid grid-cols-2 gap-3">
-                                <div className="p-3 bg-white/5 rounded-xl border border-white/5">
-                                    <div className="flex justify-between items-center mb-2">
-                                        <p className="text-[10px] text-gray-500 font-bold uppercase">Pagamento & Ciclo</p>
-                                        {selectedStudent?.nextDueDate && (
-                                            <p className={`text-[10px] font-bold ${new Date(selectedStudent.nextDueDate) < new Date() ? 'text-red-400' : 'text-green-400'}`}>
-                                                Vence: {new Date(selectedStudent.nextDueDate).toLocaleDateString('pt-BR')}
-                                            </p>
-                                        )}
+                                {/* 1. Mensalidade */}
+                                <div className="p-4 rounded-xl bg-gradient-to-br from-[#1A202C] to-[#161b22] border border-white/5 relative overflow-hidden flex flex-col justify-center">
+                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1">Mensalidade</p>
+                                    <div className="flex items-baseline gap-0.5">
+                                        <span className="text-sm font-medium text-gray-500">R$</span>
+                                        <input
+                                            type="number"
+                                            value={editAmount}
+                                            onChange={(e) => setEditAmount(parseInt(e.target.value) || 0)}
+                                            className="bg-transparent border-none text-white text-2xl font-black focus:outline-none w-24"
+                                        />
                                     </div>
-
-                                    <button
-                                        onClick={handleConfirmPayment}
-                                        className="w-full bg-[#0081FF]/20 text-[#0081FF] h-10 rounded-lg flex items-center justify-center gap-2 text-xs font-bold hover:bg-[#0081FF]/30 transition-all mb-3"
-                                    >
-                                        <span className="material-symbols-rounded text-sm">payments</span>
-                                        Confirmar Pagamento Recebido
-                                    </button>
-
-                                    {/* Link para o Comprovante se existir pendente */}
-                                    {receipts.find(r => r.userId === selectedStudent.id && r.status === 'pending') && (
-                                        <a
-                                            href={receipts.find(r => r.userId === selectedStudent.id && r.status === 'pending')?.receiptUrl}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="w-full bg-[#6F4CE7]/20 text-yellow-600 h-10 rounded-lg flex items-center justify-center gap-2 text-xs font-bold hover:bg-[#6F4CE7]/30 transition-all mb-3 border border-[#6F4CE7]/20"
-                                        >
-                                            <span className="material-symbols-rounded text-sm">visibility</span>
-                                            Ver Comprovante Enviado
-                                        </a>
-                                    )}
-
-                                    <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Dia de Vencimento Preferencial</p>
-                                    <select
-                                        value={editPaymentDay}
-                                        onChange={(e) => setEditPaymentDay(e.target.value)}
-                                        className="w-full bg-transparent border-none text-white text-sm focus:outline-none appearance-none"
-                                    >
-                                        {['01', '05', '10', '15', '20', '25'].map(d => (
-                                            <option key={d} value={d} className="bg-[#1A202C]">Dia {d}</option>
-                                        ))}
-                                    </select>
+                                    <div className="absolute top-2 right-2 opacity-10">
+                                        <span className="material-symbols-rounded text-4xl text-white">savings</span>
+                                    </div>
                                 </div>
-                                <div className="p-3 bg-white/5 rounded-xl border border-white/5">
-                                    <p className="text-[10px] text-gray-500 font-bold uppercase mb-1">Agenda</p>
-                                    <div className="flex gap-2">
+
+                                {/* 2. Vencimento */}
+                                <div className="p-4 rounded-xl bg-[#1A202C] border border-white/5 flex flex-col justify-center relative overflow-hidden">
+                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1">Vence dia</p>
+                                    <div className="flex items-center gap-1">
+                                        <span className="text-2xl font-black text-white">{editPaymentDay}</span>
+                                        <select
+                                            value={editPaymentDay}
+                                            onChange={(e) => setEditPaymentDay(e.target.value)}
+                                            className="absolute inset-0 opacity-0 cursor-pointer"
+                                        >
+                                            {['01', '05', '10', '15', '20', '25'].map(d => (
+                                                <option key={d} value={d}>Dia {d}</option>
+                                            ))}
+                                        </select>
+                                        <span className="material-symbols-rounded text-gray-600 text-sm">edit</span>
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-5">
+                                        <span className="material-symbols-rounded text-4xl text-white">calendar_month</span>
+                                    </div>
+                                </div>
+
+                                {/* 3. Idade */}
+                                <div className="p-4 rounded-xl bg-[#1A202C] border border-white/5 flex flex-col justify-center">
+                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1">Idade do Aluno</p>
+                                    <div className="flex items-baseline gap-1">
+                                        <input
+                                            type="number"
+                                            value={editAge}
+                                            onChange={(e) => setEditAge(e.target.value)}
+                                            className="bg-transparent border-none text-white text-xl font-black focus:outline-none w-12"
+                                            placeholder="--"
+                                        />
+                                        <span className="text-xs text-gray-500 font-bold uppercase">anos</span>
+                                    </div>
+                                </div>
+
+                                {/* 4. Agenda */}
+                                <div className="p-4 rounded-xl bg-[#1A202C] border border-white/5 flex flex-col justify-center relative">
+                                    <p className="text-[9px] text-gray-400 font-bold uppercase tracking-widest mb-1">Agenda Semanal</p>
+                                    <div className="flex items-center gap-2">
                                         <select
                                             value={editScheduleDay}
                                             onChange={(e) => setEditScheduleDay(e.target.value)}
-                                            className="bg-transparent border-none text-white text-sm focus:outline-none appearance-none font-bold cursor-pointer"
+                                            className="bg-transparent text-lg font-black text-white border-none focus:outline-none cursor-pointer appearance-none p-0"
                                         >
                                             {['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'].map(d => (
                                                 <option key={d} value={d} className="bg-[#1A202C]">{d}</option>
                                             ))}
                                         </select>
+                                        <span className="text-gray-600 text-xs">•</span>
                                         <input
                                             type="time"
                                             value={editScheduleTime}
                                             onChange={(e) => setEditScheduleTime(e.target.value)}
-                                            className="flex-1 bg-transparent border-none text-white text-sm focus:outline-none font-bold text-right cursor-pointer"
+                                            className="bg-transparent border-none text-white text-sm font-bold focus:outline-none w-14"
                                         />
+                                    </div>
+                                    <div className="absolute top-2 right-2 opacity-5">
+                                        <span className="material-symbols-rounded text-4xl text-white">schedule</span>
                                     </div>
                                 </div>
                             </div>
-
-                            <div className="grid grid-cols-2 gap-3">
-                                <div className="p-3 bg-white/5 rounded-xl border border-white/5">
-                                    <p className="text-[10px] text-gray-500 font-bold uppercase">Idade</p>
-                                    <input
-                                        type="number"
-                                        value={editAge}
-                                        onChange={(e) => setEditAge(e.target.value)}
-                                        className="w-full bg-transparent border-none text-white text-sm focus:outline-none"
-                                        placeholder="Idade"
-                                    />
-                                </div>
-                                <div className="p-3 bg-white/5 rounded-xl border border-white/5">
-                                    <p className="text-[10px] text-gray-500 font-bold uppercase">Mensalidade</p>
-                                    <div className="flex items-center gap-1">
-                                        <span className="text-white text-sm">R$</span>
-                                        <input
-                                            type="number"
-                                            value={editAmount}
-                                            onChange={(e) => setEditAmount(parseInt(e.target.value) || 0)}
-                                            className="w-full bg-transparent border-none text-white text-sm focus:outline-none"
-                                        />
-                                    </div>
-                                </div>
+                            {/* Payment Action Bar */}
+                            <div className="mt-3 flex items-center gap-2">
+                                <button
+                                    onClick={handleConfirmPayment}
+                                    className="flex-1 bg-[#0081FF] text-white h-12 rounded-xl flex items-center justify-center gap-3 text-xs font-bold shadow-lg shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all"
+                                >
+                                    <span className="material-symbols-rounded text-xl">check_circle</span>
+                                    <span className="uppercase tracking-wide">Confirmar Pagamento</span>
+                                </button>
+                                {receipts.find(r => r.userId === selectedStudent.id && r.status === 'pending') && (
+                                    <a
+                                        href={receipts.find(r => r.userId === selectedStudent.id && r.status === 'pending')?.receiptUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="w-12 h-12 rounded-xl bg-[#6F4CE7]/10 text-[#6F4CE7] flex items-center justify-center border border-[#6F4CE7]/20 hover:bg-[#6F4CE7]/20 transition-all"
+                                        title="Ver Comprovante"
+                                    >
+                                        <span className="material-symbols-rounded text-xl">receipt</span>
+                                    </a>
+                                )}
                             </div>
 
                             <div className="p-3 bg-white/5 rounded-xl border border-white/5 space-y-2">
                                 <p className="text-[10px] text-gray-500 font-bold uppercase">Redes Sociais & Contato</p>
                                 <div className="flex items-center gap-3">
-                                    <span className="text-gray-500 text-sm">@</span>
+                                    <button
+                                        onClick={() => openInstagram(editInstagram)}
+                                        className="w-8 h-8 rounded-lg hover:scale-105 active:scale-95 transition-all overflow-hidden"
+                                    >
+                                        <img src="/assets/icons/instagram.png" alt="Instagram" className="w-full h-full object-cover" />
+                                    </button>
                                     <input
                                         type="text"
                                         value={editInstagram}
                                         onChange={(e) => setEditInstagram(e.target.value)}
                                         placeholder="Instagram"
-                                        className="flex-1 bg-transparent border-none text-white text-sm focus:outline-none"
+                                        className="flex-1 bg-transparent border-none text-white text-sm focus:outline-none placeholder-gray-600"
                                     />
                                 </div>
-                                {/* ... address and phone ... */}
                                 <div className="flex items-center gap-3 border-t border-white/5 pt-2">
-                                    <span className="material-symbols-rounded text-gray-500 text-sm">location_on</span>
+                                    <span className="material-symbols-rounded text-gray-500 text-sm w-8 text-center">location_on</span>
                                     <input
                                         type="text"
                                         value={editAddress}
@@ -1767,7 +1792,12 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     />
                                 </div>
                                 <div className="flex items-center gap-3 border-t border-white/5 pt-2">
-                                    <span className="material-symbols-rounded text-gray-500 text-sm">call</span>
+                                    <button
+                                        onClick={() => openWhatsApp(editPhone)}
+                                        className="w-8 h-8 rounded-lg hover:scale-105 active:scale-95 transition-all overflow-hidden"
+                                    >
+                                        <img src="/assets/icons/whatsapp.png" alt="WhatsApp" className="w-full h-full object-cover" />
+                                    </button>
                                     <input
                                         type="text"
                                         value={editPhone}
@@ -1775,39 +1805,69 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                         placeholder="Telefone"
                                         className="flex-1 bg-transparent border-none text-white text-sm focus:outline-none"
                                     />
-                                    <button
-                                        onClick={() => openWhatsApp(editPhone)}
-                                        className="w-8 h-8 rounded-lg bg-[#0081FF]/20 text-[#0081FF] flex items-center justify-center hover:bg-[#0081FF]/30 transition-all"
-                                    >
-                                        <span className="material-symbols-rounded text-lg">chat</span>
-                                    </button>
                                 </div>
                             </div>
 
                             <div className="p-3 bg-white/5 rounded-xl border border-white/5 space-y-3">
-                                <p className="text-[10px] text-gray-500 font-bold uppercase">Cursos Vinculados</p>
-                                <div className="space-y-2">
-                                    {courses.map(course => {
-                                        const isLinked = selectedStudent.courses?.some(sc => sc.course_id === course.id);
-                                        return (
-                                            <div key={course.id} className="flex items-center justify-between p-2 rounded-lg bg-black/20 border border-white/5">
-                                                <div className="flex items-center gap-2">
-                                                    <div className={`w-1.5 h-1.5 rounded-full ${isLinked ? 'bg-[#0081FF]' : 'bg-gray-700'}`}></div>
-                                                    <span className="text-xs text-white font-medium">{course.nome}</span>
-                                                </div>
-                                                <button
-                                                    onClick={() => toggleStudentCourse(course.id, !!isLinked)}
-                                                    className={`px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-wider transition-all ${isLinked
-                                                        ? 'bg-[#FF00BC]/10 text-[#FF00BC] border border-[#FF00BC]/20 hover:bg-[#FF00BC]/20'
-                                                        : 'bg-[#0081FF]/10 text-[#0081FF] border border-[#0081FF]/20 hover:bg-[#0081FF]/20'
-                                                        }`}
-                                                >
-                                                    {isLinked ? 'Remover' : 'Adicionar'}
-                                                </button>
-                                            </div>
-                                        );
-                                    })}
+                                <div className="flex items-center justify-between">
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase">Cursos Vinculados</p>
+                                    <button
+                                        onClick={() => setShowCourseSelector(!showCourseSelector)}
+                                        className="text-[10px] text-[#0081FF] font-bold uppercase hover:bg-[#0081FF]/10 px-2 py-1 rounded transition-colors"
+                                    >
+                                        {showCourseSelector ? 'Fechar' : 'Gerenciar'}
+                                    </button>
                                 </div>
+
+                                {/* Active Courses Summary */}
+                                {!showCourseSelector && (
+                                    <div className="flex flex-wrap gap-2">
+                                        {selectedStudent.courses && selectedStudent.courses.length > 0 ? (
+                                            selectedStudent.courses.map(sc => {
+                                                const c = courses.find(course => course.id === sc.course_id);
+                                                if (!c) return null;
+                                                return (
+                                                    <div key={sc.id} className="flex items-center gap-1.5 px-2 py-1 bg-[#0081FF]/10 border border-[#0081FF]/20 rounded-md">
+                                                        {getCourseIcon(c.slug) && <span className="text-xs">{getCourseIcon(c.slug)}</span>}
+                                                        <span className="text-[10px] text-[#0081FF] font-black uppercase tracking-wider">{c.nome}</span>
+                                                    </div>
+                                                );
+                                            })
+                                        ) : (
+                                            <span className="text-xs text-gray-500 italic">Nenhum curso vinculado</span>
+                                        )}
+                                        <button
+                                            onClick={() => setShowCourseSelector(true)}
+                                            className="w-6 h-6 rounded-md bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 text-gray-400 hover:text-white transition-all"
+                                        >
+                                            <span className="material-symbols-rounded text-sm">add</span>
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* Course Selector Drawer */}
+                                {showCourseSelector && (
+                                    <div className="space-y-1 bg-black/20 rounded-lg p-2 border border-white/5 max-h-48 overflow-y-auto">
+                                        {courses.map(course => {
+                                            const isLinked = selectedStudent.courses?.some(sc => sc.course_id === course.id);
+                                            return (
+                                                <button
+                                                    key={course.id}
+                                                    onClick={() => toggleStudentCourse(course.id, !!isLinked)}
+                                                    className={`w-full flex items-center justify-between p-2 rounded-md border transition-all ${isLinked
+                                                        ? 'bg-[#0081FF]/10 border-[#0081FF]/20'
+                                                        : 'bg-transparent border-transparent hover:bg-white/5'}`}
+                                                >
+                                                    <div className="flex items-center gap-2">
+                                                        <span className="text-xs">{getCourseIcon(course.slug)}</span>
+                                                        <span className={`text-xs font-medium ${isLinked ? 'text-white' : 'text-gray-400'}`}>{course.nome}</span>
+                                                    </div>
+                                                    {isLinked && <span className="material-symbols-rounded text-[#0081FF] text-sm">check_circle</span>}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                )}
                             </div>
 
                             {/* Assessment Section */}
@@ -1820,20 +1880,33 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     <div className="space-y-2">
                                         {vocalAssessment.color && (
                                             <div className="flex justify-between text-xs">
-                                                <span className="text-gray-400">Cor Vocal:</span>
-                                                <span className="text-white font-medium capitalize">{vocalAssessment.color}</span>
+                                                <span className="text-gray-400">Timbre (Ressonância):</span>
+                                                <span className="text-white font-medium capitalize">
+                                                    {vocalAssessment.color === 'solar' && '☀️ Solar (Brilhante)'}
+                                                    {vocalAssessment.color === 'crepuscular' && '🌅 Crepuscular (Misto)'}
+                                                    {vocalAssessment.color === 'noturno' && '🌑 Noturno (Escuro)'}
+                                                    {!['solar', 'crepuscular', 'noturno'].includes(vocalAssessment.color) && vocalAssessment.color}
+                                                </span>
                                             </div>
                                         )}
                                         {vocalAssessment.texture && (
                                             <div className="flex justify-between text-xs">
                                                 <span className="text-gray-400">Textura:</span>
-                                                <span className="text-white font-medium capitalize">{vocalAssessment.texture}</span>
+                                                <span className="text-white font-medium capitalize">
+                                                    {vocalAssessment.texture === 'denso' && 'Creme Denso/Amanteigado'}
+                                                    {vocalAssessment.texture === 'leve' && 'Leve e Luminoso'}
+                                                    {!['denso', 'leve'].includes(vocalAssessment.texture) && vocalAssessment.texture}
+                                                </span>
                                             </div>
                                         )}
                                         {vocalAssessment.register && (
                                             <div className="flex justify-between text-xs">
-                                                <span className="text-gray-400">Preferência:</span>
-                                                <span className="text-white font-medium capitalize">{vocalAssessment.register === 'todos' ? 'Todos os Registros' : `Voz de ${vocalAssessment.register}`}</span>
+                                                <span className="text-gray-400">Conforto/Registro:</span>
+                                                <span className="text-white font-medium capitalize">
+                                                    {vocalAssessment.register === 'peito' && 'Voz de Peito'}
+                                                    {vocalAssessment.register === 'kbca' && 'Voz de Cabeça'}
+                                                    {!['peito', 'kbca'].includes(vocalAssessment.register) && `Voz de ${vocalAssessment.register}`}
+                                                </span>
                                             </div>
                                         )}
                                         {vocalAssessment.artists && (
