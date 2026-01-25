@@ -613,103 +613,118 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                         {/* Content */}
                         <div className="flex-1 overflow-y-auto p-6 pb-32 text-gray-300 space-y-8 leading-relaxed text-sm scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
 
-                            <div className="bg-[#6F4CE7]/5 rounded-xl p-4 border border-[#6F4CE7]/10">
-                                <p className="text-[#6F4CE7] font-medium italic text-center">
-                                    "O metrônomo não é apenas uma ferramenta de marcação de tempo; é o seu árbitro da verdade musical. Ele remove a subjetividade e expõe onde sua técnica vacila sob pressão."
+                            <div className="bg-[#6F4CE7]/10 rounded-2xl p-6 border border-[#6F4CE7]/20 shadow-lg shadow-[#6F4CE7]/5">
+                                <h3 className="text-[#6F4CE7] font-black text-lg mb-2 flex items-center gap-2">
+                                    <span>🎯</span> O METRÔNOMO NÃO É PRESSA — É CONTROLE
+                                </h3>
+                                <p className="text-white text-sm font-medium leading-relaxed">
+                                    O objetivo do metrônomo não é tocar rápido. É tocar certo, estável e consciente.
+                                    <span className="block mt-2 text-[#8B5CF6]">Velocidade vem sozinha quando o cérebro aprende o movimento com precisão.</span>
                                 </p>
                             </div>
 
-                            <section>
-                                <h3 className="text-white font-bold text-base mb-3 flex items-center gap-2">
-                                    <span className="text-[#6F4CE7]">01.</span> O Princípio da Velocidade de Cruzeiro
-                                </h3>
-                                <p className="mb-4">Muitos estudantes cometem o erro de praticar no limite da sua capacidade. A verdadeira disciplina começa quando você reduz o tempo para onde a execução é perfeita.</p>
-                                <ul className="space-y-3">
-                                    <li className="bg-black/20 p-3 rounded-lg border border-white/5">
-                                        <span className="text-white font-bold block mb-1">A Regra dos 5</span>
-                                        Só aumente a velocidade após executar o trecho 5 vezes seguidas sem erro. Se errar na quinta, volte para a primeira.
-                                    </li>
-                                    <li className="bg-black/20 p-3 rounded-lg border border-white/5">
-                                        <span className="text-white font-bold block mb-1">Incrementos de 2 a 4 BPM</span>
-                                        Não salte grandes velocidades. O progresso sólido é construído em camadas invisíveis de milissegundos.
-                                    </li>
-                                </ul>
-                            </section>
-
-                            <section>
-                                <h3 className="text-white font-bold text-base mb-3 flex items-center gap-2">
-                                    <span className="text-[#6F4CE7]">02.</span> Subdivisão: O Microscópio do Tempo
-                                </h3>
-                                <p className="mb-4">Ouvir apenas a batida da semínima pode mascarar imprecisões entre os tempos.</p>
-                                <div className="bg-black/20 p-3 rounded-lg border border-white/5">
-                                    <span className="text-white font-bold block mb-1">Ative as subdivisões</span>
-                                    Isso força você a preencher o espaço rítmico com exatidão, eliminando o hábito de "correr" ou "atrasar" as notas de menor valor.
+                            <section className="space-y-4">
+                                <h4 className="text-white font-bold text-base flex items-center gap-2">
+                                    <span>📏</span> REGRA DE OURO
+                                </h4>
+                                <div className="bg-black/20 p-4 rounded-xl border border-white/5 space-y-2">
+                                    <p>Sempre comece mais lento do que você acha que precisa.</p>
+                                    <ul className="grid grid-cols-1 gap-2 text-xs">
+                                        <li className="flex items-center gap-2 text-green-400">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                                            Se parece fácil → está no tempo certo.
+                                        </li>
+                                        <li className="flex items-center gap-2 text-red-400">
+                                            <span className="w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                                            Se parece difícil → está rápido demais.
+                                        </li>
+                                    </ul>
+                                    <p className="text-[10px] text-gray-500 italic mt-2">A evolução acontece no conforto controlado, não no desespero.</p>
                                 </div>
                             </section>
 
-                            <section>
-                                <h3 className="text-white font-bold text-base mb-3 flex items-center gap-2">
-                                    <span className="text-[#6F4CE7]">03.</span> O Metrônomo Silencioso (Teste de Autonomia)
-                                </h3>
-                                <p className="mb-4">Não se torne dependente da máquina; use-a para internalizar o pulso.</p>
-                                <div className="bg-black/20 p-3 rounded-lg border border-white/5">
-                                    <span className="text-white font-bold block mb-1">Pratique o "Gap Click"</span>
-                                    Silencie o metrônomo mentalmente ou fisicamente por alguns compassos. Se, quando o som voltar, você estiver fora do tempo, sua percepção interna ainda precisa de trabalho.
+                            <section className="space-y-4">
+                                <h4 className="text-white font-bold text-base flex items-center gap-2">
+                                    <span>⏱️</span> COMO USAR CORRETAMENTE
+                                </h4>
+                                <div className="space-y-3">
+                                    <div className="bg-black/20 p-4 rounded-xl border border-white/5">
+                                        <span className="text-[#6F4CE7] font-bold block mb-1">1. Escolha um tempo confortável</span>
+                                        <p>Algo entre 50 e 70 BPM para começar. Se errar → abaixe o BPM. <span className="text-[#6F4CE7] font-bold">Sem ego.</span></p>
+                                    </div>
+                                    <div className="bg-black/20 p-4 rounded-xl border border-white/5">
+                                        <span className="text-[#6F4CE7] font-bold block mb-1">2. Toque sem correr atrás do clique</span>
+                                        <p>O clique não é algo pra “perseguir”. Ele é o chão firme onde você pisa. Você deve encaixar as notas dentro do pulso, não depois.</p>
+                                    </div>
+                                    <div className="bg-black/20 p-4 rounded-xl border border-white/5">
+                                        <span className="text-[#6F4CE7] font-bold block mb-1">3. Só aumente quando estiver 100% limpo</span>
+                                        <ul className="flex flex-wrap gap-3 mt-2">
+                                            <li className="text-[10px] font-bold bg-white/5 px-2 py-1 rounded-md text-green-400">✔ SEM TROPEÇAR</li>
+                                            <li className="text-[10px] font-bold bg-white/5 px-2 py-1 rounded-md text-green-400">✔ SEM ACELERAR</li>
+                                            <li className="text-[10px] font-bold bg-white/5 px-2 py-1 rounded-md text-green-400">✔ SEM TENSÃO</li>
+                                        </ul>
+                                        <p className="mt-3">Aí sim aumente 2 a 5 BPM no máximo. Mais que isso é sabotagem.</p>
+                                    </div>
                                 </div>
                             </section>
 
-                            <section>
-                                <h3 className="text-white font-bold text-base mb-3 flex items-center gap-2">
-                                    <span className="text-[#6F4CE7]">04.</span> Estabilidade Mental e Postural
-                                </h3>
-                                <ul className="space-y-3">
-                                    <li className="bg-black/20 p-3 rounded-lg border border-white/5">
-                                        <span className="text-white font-bold block mb-1">Respire com o pulso</span>
-                                        Sincronize sua respiração com a batida. Isso evita a tensão muscular que surge quando o andamento aumenta.
-                                    </li>
-                                    <li className="bg-black/20 p-3 rounded-lg border border-white/5">
-                                        <span className="text-white font-bold block mb-1">Foco no "Click" Desaparecido</span>
-                                        Quando você está perfeitamente alinhado, o som do metrônomo parece "desaparecer" sob a sua nota. Busque esse estado.
-                                    </li>
-                                </ul>
-                            </section>
-
-                            <section>
-                                <h3 className="text-white font-bold text-base mb-4">Tabela de Progresso Diário</h3>
-                                <div className="w-full bg-black/40 rounded-xl overflow-hidden border border-white/10">
-                                    <table className="w-full text-left">
-                                        <thead>
-                                            <tr className="bg-white/5 text-[#6F4CE7] uppercase text-[10px] tracking-widest font-bold">
-                                                <th className="p-3">Fase</th>
-                                                <th className="p-3">Objetivo</th>
-                                                <th className="p-3">Atitude</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="text-xs font-medium divide-y divide-white/5 text-gray-300">
-                                            <tr>
-                                                <td className="p-3 text-white">Lento</td>
-                                                <td className="p-3">Clareza e Postura</td>
-                                                <td className="p-3">Analítica e Crítica</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="p-3 text-white">Médio</td>
-                                                <td className="p-3">Consistência e Ritmo</td>
-                                                <td className="p-3">Vigilante</td>
-                                            </tr>
-                                            <tr>
-                                                <td className="p-3 text-white">Meta</td>
-                                                <td className="p-3">Fluidez e Performance</td>
-                                                <td className="p-3">Relaxada e Precisa</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </section>
-
-                            <div className="bg-red-500/10 rounded-xl p-4 border border-red-500/20 text-red-200 text-xs">
-                                <strong className="text-red-400 font-bold block mb-1 uppercase tracking-wider">Nota de Realidade</strong>
-                                Se você sente que o metrônomo está "errado" ou "oscilando", é o sinal definitivo de que sua percepção rítmica precisa de correção imediata. O metrônomo é matematicamente exato; sua percepção é humana e falível. Aceite o erro para corrigi-lo.
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                                <section className="bg-black/20 p-4 rounded-xl border border-white/5">
+                                    <h4 className="text-white font-bold mb-2 flex items-center gap-2">
+                                        <span>🧠</span> EXPECTATIVA
+                                    </h4>
+                                    <p className="text-gray-400">Não vai soar incrível em 10 minutos. Sólido em semanas. Excelente em meses. Profissional em anos.</p>
+                                </section>
+                                <section className="bg-black/20 p-4 rounded-xl border border-white/5">
+                                    <h4 className="text-white font-bold mb-2 flex items-center gap-2">
+                                        <span>🧘</span> EFICIÊNCIA
+                                    </h4>
+                                    <p className="text-gray-400">Estudar devagar: fixa coordenação, melhora precisão, elimina erros de raiz.</p>
+                                </section>
                             </div>
+
+                            <section className="bg-[#1A1F2E] p-5 rounded-2xl border border-[#6F4CE7]/20">
+                                <h4 className="text-white font-bold text-base mb-3 flex items-center gap-2">
+                                    <span>📈</span> USO INTELIGENTE
+                                </h4>
+                                <ul className="space-y-2 text-xs">
+                                    <li className="flex justify-between items-center bg-black/20 p-2 rounded-lg">
+                                        <span className="text-gray-400">Tempo Ideal</span>
+                                        <span className="text-white font-bold">10 a 20 min</span>
+                                    </li>
+                                    <li className="flex justify-between items-center bg-black/20 p-2 rounded-lg">
+                                        <span className="text-gray-400">Foco</span>
+                                        <span className="text-white font-bold">Total</span>
+                                    </li>
+                                    <li className="flex justify-between items-center bg-black/20 p-2 rounded-lg">
+                                        <span className="text-gray-400">Aumento</span>
+                                        <span className="text-white font-bold">Gradual</span>
+                                    </li>
+                                </ul>
+                                <p className="text-[10px] text-center text-[#6F4CE7] font-bold mt-4 uppercase tracking-widest">Pouco tempo bem feito &gt; horas bagunçadas</p>
+                            </section>
+
+                            <section className="bg-red-500/5 p-5 rounded-2xl border border-red-500/10">
+                                <h4 className="text-red-400 font-bold text-base mb-3 flex items-center gap-2">
+                                    <span>🚫</span> ERROS CLÁSSICOS (EVITE)
+                                </h4>
+                                <ul className="grid grid-cols-2 gap-2 text-[10px] font-bold uppercase tracking-tight" style={{ gridTemplateColumns: 'repeat(2, minmax(0, 1fr))' }}>
+                                    <li className="bg-red-500/10 p-2 rounded-lg border border-red-500/10 text-red-300">❌ SÓ PRA AQUECER</li>
+                                    <li className="bg-red-500/10 p-2 rounded-lg border border-red-500/10 text-red-300">❌ SUBIR POR ANSIEDADE</li>
+                                    <li className="bg-red-500/10 p-2 rounded-lg border border-red-500/10 text-red-300">❌ IGNORAR ERROS</li>
+                                    <li className="bg-red-500/10 p-2 rounded-lg border border-red-500/10 text-red-300">❌ COMPETIR</li>
+                                </ul>
+                            </section>
+
+                            <section className="bg-green-500/5 p-5 rounded-2xl border border-green-500/10">
+                                <h4 className="text-green-400 font-bold text-base mb-3 flex items-center gap-2">
+                                    <span>✅</span> A VERDADE REAL
+                                </h4>
+                                <p className="text-xs mb-3 text-green-200/70">O metrônomo melhora groove, afinação rítmica, segurança e acelera o aprendizado.</p>
+                                <div className="text-[#6F4CE7] font-bold italic text-center p-4 bg-[#6F4CE7]/5 rounded-xl border border-[#6F4CE7]/10">
+                                    “Quem domina o tempo domina a música. O metrônomo não limita — ele liberta sua evolução.”
+                                </div>
+                            </section>
 
                         </div>
                     </div>
