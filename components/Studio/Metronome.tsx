@@ -352,7 +352,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
     }, [currentMarking]);
 
     return (
-        <div className="w-full h-full bg-[#101622] flex flex-col font-sans relative">
+        <div className="w-full h-full bg-[#101622] flex flex-col font-sans relative overflow-y-auto">
             <style>{`
                 input[type=range].vertical-slider {
                     writing-mode: bt-lr; /* IE/Edge */
@@ -371,7 +371,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
             `}</style>
 
             {/* --- VISUALIZER SECTION (35%) --- */}
-            <div className="relative w-full h-[35%] transition-all duration-500 bg-[#0D121C] overflow-hidden border-b border-white/5">
+            <div className="relative w-full h-[35vh] shrink-0 transition-all duration-500 bg-[#0D121C] overflow-hidden border-b border-white/5">
                 {/* Flash Effect */}
                 {/* Flash Effect */}
                 <div className={`absolute inset-0 bg-[#6F4CE7]/20 pointer-events-none z-10 ${visualBeat ? 'opacity-100 transition-none' : 'opacity-0 transition-opacity duration-300'}`} />
@@ -408,7 +408,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
             </div>
 
             {/* --- MAIN CONTENT AREA --- */}
-            <div className="flex-1 flex flex-col justify-start py-6 px-6 pb-48 bg-[#101622] overflow-y-auto">
+            <div className="flex flex-col justify-start py-6 px-6 pb-48 bg-[#101622]">
                 <div className="w-full max-w-md mx-auto flex flex-col gap-6">
 
                     {/* HEADER */}
