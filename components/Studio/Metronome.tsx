@@ -356,32 +356,34 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
             <style>{`
                 input[type=range].vertical-slider {
                     writing-mode: bt-lr; /* IE/Edge */
-    -webkit - appearance: slider - vertical; /* Webkit */
-    appearance: slider - vertical;
-    width: 100 %;
-    height: 100 %;
-}
-                .hide - scrollbar:: -webkit - scrollbar {
-    display: none;
-}
-                .hide - scrollbar {
-    -ms - overflow - style: none;
-    scrollbar - width: none;
-}
-`}</style>
+                    -webkit-appearance: slider-vertical; /* Webkit */
+                    appearance: slider-vertical;
+                    width: 100%;
+                    height: 100%;
+                }
+                .hide-scrollbar::-webkit-scrollbar {
+                    display: none;
+                }
+                .hide-scrollbar {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                }
+            `}</style>
 
             {/* --- VISUALIZER SECTION (35%) --- */}
             <div className="relative w-full h-[35%] transition-all duration-500 bg-[#0D121C] overflow-hidden border-b border-white/5">
                 {/* Flash Effect */}
-                <div className={`absolute inset - 0 bg - [#6F4CE7] / 20 pointer - events - none z - 10 ${visualBeat ? 'opacity-100 transition-none' : 'opacity-0 transition-opacity duration-300'} `} />
+                {/* Flash Effect */}
+                <div className={`absolute inset-0 bg-[#6F4CE7]/20 pointer-events-none z-10 ${visualBeat ? 'opacity-100 transition-none' : 'opacity-0 transition-opacity duration-300'}`} />
 
+                {/* Big Beat Number */}
                 {/* Big Beat Number */}
                 <div className="absolute inset-0 flex items-center justify-center z-20">
                     <span
-                        className={`text - [100px] font - black tracking - tighter transition - all duration - 75 select - none ${isPlaying
+                        className={`text-[100px] font-black tracking-tighter transition-all duration-75 select-none ${isPlaying
                             ? 'opacity-100 scale-100 text-white'
                             : 'opacity-20 scale-95 text-[#6F4CE7]/30'
-                            } `}
+                            }`}
                         style={{ fontVariantNumeric: 'tabular-nums' }}
                     >
                         {isPlaying ? measureBeat + 1 : '1'}
@@ -397,11 +399,11 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                         />
                     )}
                     <style>{`
-@keyframes pendulumScan {
+                        @keyframes pendulumScan {
                             from { left: 0; }
-                            to { left: 100 %; transform: translateX(-100 %); }
-}
-`}</style>
+                            to { left: 100%; transform: translateX(-100%); }
+                        }
+                    `}</style>
                 </div>
             </div>
 
@@ -469,10 +471,10 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                                         else itemsRef.current.delete(m.label);
                                     }}
                                     onClick={() => setBpm((m.min + m.max) / 2)}
-                                    className={`whitespace - nowrap text - xs tracking - [0.2em] uppercase transition - all duration - 300 snap - center shrink - 0 ${currentMarking === m.label
+                                    className={`whitespace-nowrap text-xs tracking-[0.2em] uppercase transition-all duration-300 snap-center shrink-0 ${currentMarking === m.label
                                         ? 'text-[#6F4CE7] font-black scale-110'
                                         : 'text-zinc-500 hover:text-zinc-300 font-medium'
-                                        } `}
+                                        }`}
                                 >
                                     {m.label}
                                 </button>
@@ -525,10 +527,10 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                             <div className="flex gap-2">
                                 <button
                                     onClick={() => setTargetDuration(null)}
-                                    className={`px - 4 py - 2 rounded - lg text - [10px] font - bold uppercase tracking - widest whitespace - nowrap transition - all border ${targetDuration === null
+                                    className={`px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest whitespace-nowrap transition-all border ${targetDuration === null
                                         ? 'bg-[#6F4CE7] text-white border-[#6F4CE7] shadow-lg shadow-[#6F4CE7]/20'
                                         : 'bg-black/20 text-gray-500 border-white/5 hover:border-white/10 hover:text-gray-300'
-                                        } `}
+                                        }`}
                                 >
                                     Livre
                                 </button>
@@ -536,10 +538,10 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                                     <button
                                         key={min}
                                         onClick={() => setTargetDuration(min)}
-                                        className={`px - 4 py - 2 rounded - lg text - [10px] font - bold uppercase tracking - widest whitespace - nowrap transition - all border ${targetDuration === min
+                                        className={`px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest whitespace-nowrap transition-all border ${targetDuration === min
                                             ? 'bg-[#6F4CE7] text-white border-[#6F4CE7] shadow-lg shadow-[#6F4CE7]/20'
                                             : 'bg-black/20 text-gray-500 border-white/5 hover:border-white/10 hover:text-gray-300'
-                                            } `}
+                                            }`}
                                     >
                                         {min} min
                                     </button>
