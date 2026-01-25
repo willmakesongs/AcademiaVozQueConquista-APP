@@ -413,6 +413,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
 
                     {/* HEADER */}
                     <div className="w-full flex items-center justify-center border-b border-white/5 pb-4 gap-3">
+                        <span className="material-symbols-rounded text-[#6F4CE7] text-xl">timer</span>
                         <h1 className="text-[#6F4CE7] font-black tracking-[0.3em] text-sm uppercase glow-text">
                             METRÔNOMO
                         </h1>
