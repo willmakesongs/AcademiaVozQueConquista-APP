@@ -63,7 +63,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentScreen, onNavigate,
           onClick={() => handleNavClick(Screen.CHAT)}
         >
           {/* CAMADA 1: Botão Flutuante (Fundo) */}
-          <div className="absolute -top-14 w-20 h-20 z-0 pointer-events-none">
+          <div className="absolute -top-10 w-16 h-16 z-0 pointer-events-none">
             <div className={`absolute inset-0 bg-brand-gradient rounded-full blur-md opacity-50 animate-pulse duration-2000 ${isBlocked || isOverdue ? 'hidden' : ''}`}></div>
             <div
               className="relative flex items-center justify-center w-full h-full rounded-full bg-[#1A202C] shadow-[0_8px_24px_rgba(238,19,202,0.5)] border-4 border-[#101622] overflow-hidden"
