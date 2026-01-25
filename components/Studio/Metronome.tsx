@@ -408,7 +408,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
             </div>
 
             {/* --- MAIN CONTENT AREA --- */}
-            <div className="flex-1 flex flex-col justify-start py-6 px-6 pb-32 bg-[#101622] overflow-y-auto">
+            <div className="flex-1 flex flex-col justify-start py-6 px-6 pb-48 bg-[#101622] overflow-y-auto">
                 <div className="w-full max-w-md mx-auto flex flex-col gap-6">
 
                     {/* HEADER */}
@@ -611,7 +611,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                         </div>
 
                         {/* Content */}
-                        <div className="flex-1 overflow-y-auto p-6 text-gray-300 space-y-8 leading-relaxed text-sm scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                        <div className="flex-1 overflow-y-auto p-6 pb-32 text-gray-300 space-y-8 leading-relaxed text-sm scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
 
                             <div className="bg-[#6F4CE7]/5 rounded-xl p-4 border border-[#6F4CE7]/10">
                                 <p className="text-[#6F4CE7] font-medium italic text-center">
