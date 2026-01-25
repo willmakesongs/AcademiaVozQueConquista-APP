@@ -198,19 +198,19 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
                         VQC Studio
                     </h3>
                     <p className="text-sm text-gray-300 mb-4 relative z-10">
-                        O estúdio guarda segredos! Lá você encontra ferramentas tecnológicas essenciais para o seu treino diário:
+                        O estúdio guarda segredos! Acesse a ferramenta essencial para o seu treino diário:
                     </p>
 
                     <div className="grid grid-cols-2 gap-3 relative z-10">
-                        <div className="bg-[#151A23] p-3 rounded-xl border border-white/5 hover:border-[#0081FF]/30 transition-colors">
-                            <span className="material-symbols-rounded text-[#0081FF] mb-2 block text-xl">graphic_eq</span>
-                            <strong className="text-white text-xs block mb-1">Afinador, Metrônomo e Acordes</strong>
-                            <p className="text-[10px] text-gray-400">As ferramentas essenciais para o seu treino diário, agora em um só lugar.</p>
+                        <div className="bg-[#151A23] p-4 rounded-xl border border-white/5 hover:border-[#0081FF]/30 transition-colors shadow-lg shadow-black/20 group">
+                            <span className="material-symbols-rounded text-[#0081FF] mb-2 block text-2xl group-hover:scale-110 transition-transform">timer</span>
+                            <strong className="text-white text-xs block mb-1 uppercase tracking-wider">Metrônomo VQC</strong>
+                            <p className="text-[10px] text-gray-500">Desenvolva sua precisão rítmica com a melhor ferramenta de estudo.</p>
                         </div>
-                        <div className="bg-[#151A23] p-3 rounded-xl border border-white/5 hover:border-[#FF00BC]/30 transition-colors">
-                            <span className="material-symbols-rounded text-[#FF00BC] mb-2 block text-xl">piano</span>
-                            <strong className="text-white text-xs block mb-1">Teclado Virtual</strong>
-                            <p className="text-[10px] text-gray-400">Piano completo para pegar referências auditivas onde estiver.</p>
+                        <div className="bg-[#151A23]/50 p-4 rounded-xl border border-dashed border-white/5 flex flex-col items-center justify-center text-center opacity-60">
+                            <span className="material-symbols-rounded text-gray-600 mb-2 block text-xl">pending</span>
+                            <strong className="text-gray-500 text-[10px] block uppercase tracking-widest">Breve: Novos Apps</strong>
+                            <p className="text-[9px] text-gray-700">Grave, Teclado e mais...</p>
                         </div>
                     </div>
                 </div>
