@@ -599,7 +599,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                                 </div>
                                 <div>
                                     <h2 className="text-white font-bold text-lg leading-tight">Diretrizes Fundamentais</h2>
-                                    <span className="text-gray-400 text-xs font-medium uppercase tracking-wider">O Árbitro da Verdade Musical</span>
+                                    <span className="text-gray-400 text-[10px] font-medium uppercase tracking-wider">O que separa o músico amador do profissional!</span>
                                 </div>
                             </div>
                             <button
