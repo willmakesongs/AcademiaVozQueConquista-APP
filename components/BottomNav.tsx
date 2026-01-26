@@ -58,12 +58,12 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentScreen, onNavigate,
           </span>
         </button>
 
-        <div
-          className={`relative flex flex-col items-center gap-1 w-16 cursor-pointer active:scale-95 transition-transform ${isBlocked || isOverdue || isInactive ? 'opacity-30 pointer-events-none grayscale' : ''}`}
+        <button
           onClick={() => handleNavClick(Screen.CHAT)}
+          className={`relative flex flex-col items-center gap-1 w-16 active:scale-95 transition-transform ${isBlocked || isOverdue || isInactive ? 'opacity-30 pointer-events-none grayscale' : ''}`}
         >
           {/* CAMADA 1: Botão Flutuante (Fundo) */}
-          <div className="absolute -top-10 w-16 h-16 z-0 pointer-events-none">
+          <div className="absolute -top-10 w-16 h-16 z-0">
             <div className={`absolute inset-0 bg-brand-gradient rounded-full blur-md opacity-50 animate-pulse duration-2000 ${isBlocked || isOverdue ? 'hidden' : ''}`}></div>
             <div
               className="relative flex items-center justify-center w-full h-full rounded-full bg-[#1A202C] shadow-[0_8px_24px_rgba(238,19,202,0.5)] border-4 border-[#101622] overflow-hidden"
@@ -81,7 +81,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentScreen, onNavigate,
           <span className={`text-[10px] font-medium relative z-10 ${getIconColor(Screen.CHAT)}`}>
             Lorena IA
           </span>
-        </div>
+        </button>
 
         <button
           onClick={() => handleNavClick(Screen.ROUTINE)}
