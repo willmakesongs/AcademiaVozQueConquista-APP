@@ -187,10 +187,7 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
                 </div>
 
                 {/* Section: FERRAMENTAS DE ESTÚDIO (PERFIL) */}
-                <div
-                    onClick={() => onNavigate(Screen.STUDIO)}
-                    className="bg-[#1A202C] p-5 rounded-2xl border border-[#0081FF]/20 cursor-pointer active:bg-[#0081FF]/5 active:scale-[0.98] transition-all relative overflow-hidden touch-manipulation"
-                >
+                <div className="bg-[#1A202C] p-5 rounded-2xl border border-[#0081FF]/20 relative overflow-hidden">
                     <div className="absolute -left-10 top-1/2 -translate-y-1/2 w-20 h-full bg-[#0081FF]/5 skew-x-12"></div>
 
                     <h3 className="text-lg font-bold text-white mb-2 flex items-center gap-2 relative z-10">
@@ -202,12 +199,18 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
                     </p>
 
                     <div className="grid grid-cols-2 gap-3 relative z-10">
-                        <div className="bg-[#151A23] p-4 rounded-xl border border-white/5 hover:border-[#0081FF]/30 transition-colors shadow-lg shadow-black/20 group">
-                            <img src="/metronome-icon.png" alt="Metrônomo" className="w-8 h-8 object-contain mb-2 group-hover:scale-110 transition-transform rounded-full" />
+                        <div
+                            onClick={() => onNavigate(Screen.STUDIO)}
+                            className="bg-[#151A23] p-4 rounded-xl border border-white/5 hover:border-[#0081FF]/30 transition-all shadow-lg shadow-black/20 group cursor-pointer active:scale-95 touch-manipulation flex flex-col items-center text-center"
+                        >
+                            <img src="/metronome-icon.png" alt="Metrônomo" className="w-8 h-8 object-contain mb-3 group-hover:scale-110 transition-transform rounded-full" />
                             <strong className="text-white text-xs block mb-1 uppercase tracking-wider">Metrônomo VQC</strong>
                             <p className="text-[10px] text-gray-500">Desenvolva sua precisão rítmica com a melhor ferramenta de estudo.</p>
                         </div>
-                        <div className="bg-[#151A23]/50 p-4 rounded-xl border border-dashed border-white/5 flex flex-col items-center justify-center text-center opacity-60">
+                        <div
+                            onClick={() => onNavigate(Screen.PROFILE)}
+                            className="bg-[#151A23]/50 p-4 rounded-xl border border-dashed border-white/5 flex flex-col items-center justify-center text-center opacity-60 cursor-pointer hover:border-white/20 active:scale-95 transition-all touch-manipulation"
+                        >
                             <span className="material-symbols-rounded text-gray-600 mb-2 block text-xl">pending</span>
                             <strong className="text-gray-500 text-[10px] block uppercase tracking-widest">Breve: Novos Apps</strong>
                             <p className="text-[9px] text-gray-700">Grave, Teclado e mais...</p>
