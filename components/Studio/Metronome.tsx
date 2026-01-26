@@ -32,6 +32,15 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
     const [startTime, setStartTime] = useState<number | null>(null);
     const [visualBeat, setVisualBeat] = useState(false); // For visual flash
     const [currentMarking, setCurrentMarking] = useState('Moderato');
+    const [soundMode, setSoundMode] = useState<'CLICKS' | 'BEEPS' | 'LOOP' | 'COWBEL' | 'HAT'>('CLICKS');
+
+    const SOUND_OPTIONS = [
+        { id: 'CLICKS', label: 'CLICKS' },
+        { id: 'BEEPS', label: 'BEEPS' },
+        { id: 'LOOP', label: 'LOOP DRUM' },
+        { id: 'COWBEL', label: 'COWBEL' },
+        { id: 'HAT', label: 'HAT' },
+    ];
 
     // Volumes state (0 to 1 for Gain)
     const [volumes, setVolumes] = useState({
@@ -151,12 +160,53 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
             envelope: { attack: 0.001, decay: 0.03, sustain: 0, release: 0.03 }
         });
 
+        // 3. Beeps: Sine Wave
+        const beepSynth = new Tone.Synth({
+            oscillator: { type: 'sine' },
+            envelope: { attack: 0.001, decay: 0.1, sustain: 0, release: 0.1 }
+        });
+
+        // 4. Drum Kit (Synthesized - Refined for "EzDRUMMER" feel)
+        const kick = new Tone.MembraneSynth({
+            pitchDecay: 0.05,
+            octaves: 10,
+            oscillator: { type: 'sine' },
+            envelope: { attack: 0.001, decay: 0.4, sustain: 0.01, release: 1.4 }
+        }).toDestination();
+
+        const snare = new Tone.NoiseSynth({
+            noise: { type: 'white' },
+            envelope: { attack: 0.001, decay: 0.2, sustain: 0, release: 0.2 }
+        }).toDestination();
+
+        const hihat = new Tone.MetalSynth({
+            envelope: { attack: 0.001, decay: 0.01, sustain: 0, release: 0.05 },
+            harmonicity: 5.1,
+            modulationIndex: 32,
+            resonance: 8000,
+            octaves: 1.5
+        }).toDestination();
+
+        // 5. Cowbell (Classic 808 Style)
+        const cowbell = new Tone.MetalSynth({
+            envelope: { attack: 0.001, decay: 0.1, release: 0.1 },
+            harmonicity: 1.5,
+            modulationIndex: 10,
+            resonance: 2000,
+            octaves: 0.5
+        }).toDestination();
+
         synthsRef.current = {
             accent: accentSynth.connect(gainsRef.current.accent),
-            quarter: subSynth('triangle').connect(gainsRef.current.quarter), // Distinct
-            eighth: subSynth('sine').connect(gainsRef.current.eighth),      // Softer
+            quarter: subSynth('triangle').connect(gainsRef.current.quarter),
+            eighth: subSynth('sine').connect(gainsRef.current.eighth),
             triplet: subSynth('sine').connect(gainsRef.current.triplet),
-            sixteenth: subSynth('sine').connect(gainsRef.current.sixteenth)
+            sixteenth: subSynth('sine').connect(gainsRef.current.sixteenth),
+            beep: beepSynth,
+            kick,
+            snare,
+            hihat,
+            cowbell
         };
 
         // Initialize Volumes
@@ -219,46 +269,44 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
             const synths = synthsRef.current;
 
             // --- MASTER CLOCK (16th Note Grid) ---
-            // Handles: Visuals, Accent, Quarter, Eighth, Sixteenth
             Tone.Transport.scheduleRepeat((time) => {
                 const step = stepRef.current;
-
-                // Calculate positions in 4/4
-                // A Measure has 16 sixteenths (0-15)
-                // A Quarter Note is every 4 steps (0, 4, 8, 12)
-
                 const isMeasureDownbeat = step % 16 === 0;
                 const isQuarterBeat = step % 4 === 0;
                 const isEighthNote = step % 2 === 0;
-                // isSixteenth is always true for every step
 
-                // 1. Visuals & Accent (Beat 1)
-                if (isMeasureDownbeat) {
-                    synths.accent.triggerAttackRelease('C6', '32n', time);
-                    triggerVisual(0, time);
-                }
-                else if (isQuarterBeat) {
-                    // Visual Update for counts 2, 3, 4
-                    const currentBeat = (step / 4) % 4; // 0, 1, 2, 3
+                // Visuals (Always On)
+                if (isQuarterBeat) {
+                    const currentBeat = (step / 4) % 4;
                     triggerVisual(currentBeat, time);
                 }
 
-                // 2. Audio Triggers (Mixer Layers)
+                // Audio Logic based on Mode
+                const mode = (Tone.Transport as any)._metronomeMode || 'CLICKS';
 
-                // Quarter Note Layer (Every 4 steps)
-                if (isQuarterBeat) {
-                    synths.quarter.triggerAttackRelease('C5', '32n', time);
+                if (mode === 'CLICKS') {
+                    if (isMeasureDownbeat) synths.accent.triggerAttackRelease('C6', '32n', time);
+                    else if (isQuarterBeat) synths.quarter.triggerAttackRelease('C5', '32n', time);
+                    if (isEighthNote) synths.eighth.triggerAttackRelease('G4', '32n', time);
+                    synths.sixteenth.triggerAttackRelease('A3', '32n', time);
+                }
+                else if (mode === 'BEEPS') {
+                    if (isMeasureDownbeat) synths.beep.triggerAttackRelease('C6', '16n', time);
+                    else if (isQuarterBeat) synths.beep.triggerAttackRelease('C5', '16n', time);
+                }
+                else if (mode === 'LOOP') {
+                    // Rock Loop: Kick on 1, Snare on 3, Hats on 8th notes
+                    if (isMeasureDownbeat) synths.kick.triggerAttackRelease('C1', '8n', time, 1);
+                    if (step % 16 === 8) synths.snare.triggerAttackRelease('16n', time, 1);
+                    if (isEighthNote) synths.hihat.triggerAttackRelease('32n', time, step % 4 === 0 ? 0.6 : 0.3);
+                }
+                else if (mode === 'COWBEL') {
+                    if (isQuarterBeat) synths.cowbell.triggerAttackRelease('C6', '32n', time, isMeasureDownbeat ? 1 : 0.7);
+                }
+                else if (mode === 'HAT') {
+                    if (isQuarterBeat) synths.hihat.triggerAttackRelease('32n', time, isMeasureDownbeat ? 1 : 0.7);
                 }
 
-                // Eighth Note Layer (Every 2 steps)
-                if (isEighthNote) { // Play on off-beats too? Yes, mixer controls volume
-                    synths.eighth.triggerAttackRelease('G4', '32n', time);
-                }
-
-                // Sixteenth Note Layer (Every step)
-                synths.sixteenth.triggerAttackRelease('A3', '32n', time);
-
-                // Increment Step
                 stepRef.current++;
             }, "16n");
 
@@ -274,13 +322,24 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
             setIsPlaying(true);
         } else {
             Tone.Transport.stop();
-            Tone.Transport.cancel(); // Clear all events
+            Tone.Transport.cancel();
             setIsPlaying(false);
             setVisualBeat(false);
             setMeasureBeat(0);
             stepRef.current = 0;
             if (startTime) setStartTime(null);
         }
+    };
+
+    // Keep soundMode synced with Transport
+    useEffect(() => {
+        (Tone.Transport as any)._metronomeMode = soundMode;
+    }, [soundMode]);
+
+    const cycleSoundMode = () => {
+        const currentIndex = SOUND_OPTIONS.findIndex(opt => opt.id === soundMode);
+        const nextIndex = (currentIndex + 1) % SOUND_OPTIONS.length;
+        setSoundMode(SOUND_OPTIONS[nextIndex].id as any);
     };
 
     const handleTap = () => {
@@ -486,22 +545,29 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                     <div className="grid grid-cols-3 gap-4 w-full h-14">
                         <button
                             onClick={handleTap}
-                            className="col-span-1 bg-[#1A1F2E] hover:bg-[#252A3B] rounded-xl text-gray-400 hover:text-white font-bold tracking-widest uppercase text-xs border border-white/5 transition-all active:scale-95 shadow-lg shadow-black/20"
+                            className="bg-[#1A1F2E] hover:bg-[#252A3B] rounded-xl text-gray-400 hover:text-white font-bold tracking-widest uppercase text-[10px] border border-white/5 transition-all active:scale-95 shadow-lg shadow-black/20"
                         >
                             Tap
                         </button>
                         <button
                             onClick={handleToggle}
-                            className={`col-span-2 rounded-full font-bold tracking-widest uppercase text-sm flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg ${isPlaying
+                            className={`rounded-xl font-bold tracking-widest uppercase text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg ${isPlaying
                                 ? 'bg-[#E11D48] text-white shadow-[#E11D48]/30 border border-[#E11D48]'
                                 : 'bg-gradient-to-r from-[#6F4CE7] to-[#8B5CF6] text-white hover:opacity-90 shadow-[#6F4CE7]/30 border border-[#6F4CE7]/20'
                                 }`}
                         >
                             {isPlaying ? (
-                                <><span className="material-symbols-rounded">stop</span> Stop</>
+                                <><span className="material-symbols-rounded text-lg">stop</span> Stop</>
                             ) : (
-                                <><span className="material-symbols-rounded">play_arrow</span> Play</>
+                                <><span className="material-symbols-rounded text-lg">play_arrow</span> Play</>
                             )}
+                        </button>
+                        <button
+                            onClick={cycleSoundMode}
+                            className="bg-[#1A1F2E] hover:bg-[#252A3B] rounded-xl text-[#6F4CE7] font-black tracking-tighter uppercase text-[9px] border border-[#6F4CE7]/20 transition-all active:scale-95 shadow-lg shadow-black/20 flex flex-col items-center justify-center leading-none px-1"
+                        >
+                            <span className="text-[8px] text-gray-500 font-bold mb-0.5 opacity-50">SOM:</span>
+                            {SOUND_OPTIONS.find(opt => opt.id === soundMode)?.label}
                         </button>
                     </div>
 
