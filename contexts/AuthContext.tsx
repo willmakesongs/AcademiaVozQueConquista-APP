@@ -230,7 +230,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           level: data.level || 1,
           streak: data.streak || 0,
           lastPracticeDate: data.last_practice_date,
-          badges: data.badges || []
+          badges: data.badges || [],
+          teacher_id: data.teacher_id
         };
 
         const updatedUser = await enforceSubscriptionStatus(userData);
@@ -280,14 +281,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Se temos sessão imediata (email confirm off), tentamos criar o perfil
       if (authData.user && authData.session) {
+        // Enforce specific teacher codes and elevate to admin if master code is correct
+        let finalRole: 'student' | 'teacher' | 'admin' = role;
+
+        if (role === 'teacher') {
+          if (adminCode === 'VQC_MASTER_2026') {
+            finalRole = 'admin';
+          } else if (adminCode === 'VQC_PROF_2026') {
+            finalRole = 'teacher';
+          } else {
+            // This should be caught by the UI, but safe-guarding here
+            throw new Error('Código de acesso inválido para professores.');
+          }
+        }
+
         const { error: profileError } = await supabase
           .from('profiles')
           .upsert([{
             id: authData.user.id,
             name: name,
-            role: role,
+            role: finalRole,
             phone: phone,
-            status: role === 'student' ? 'trial' : 'active',
+            status: finalRole === 'student' ? 'trial' : 'active',
             avatar_url: `https://ui-avatars.com/api/?name=${name}&background=random`
           }], { onConflict: 'id' });
 

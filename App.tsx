@@ -34,6 +34,7 @@ const AppContent = () => {
   const [libraryExpandedModule, setLibraryExpandedModule] = useState<string | null>(null);
   const [libraryScrollY, setLibraryScrollY] = useState(0);
   const [libraryActiveCourseSlug, setLibraryActiveCourseSlug] = useState<string | null>(null);
+  const isAdmin = user?.role === 'admin' || (user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase().trim()));
 
   // Visitor Warning State
   const [showVisitorWarning, setShowVisitorWarning] = useState(false);
@@ -118,7 +119,7 @@ const AppContent = () => {
       }
     }
     if (targetScreen === Screen.TEACHER_DASHBOARD || targetScreen === Screen.ADMIN_DASHBOARD || targetScreen === Screen.ADMIN_SETTINGS) {
-      if (targetScreen === Screen.ADMIN_DASHBOARD) setDashboardInitialTab('dashboard');
+      if (targetScreen === Screen.ADMIN_DASHBOARD || (targetScreen === Screen.TEACHER_DASHBOARD && isAdmin)) setDashboardInitialTab('dashboard');
       else if (targetScreen === Screen.ADMIN_SETTINGS) setDashboardInitialTab('settings');
       else if (dashboardInitialTab !== 'reports') setDashboardInitialTab('students');
 
@@ -171,7 +172,7 @@ const AppContent = () => {
     }
 
     if (targetScreen === Screen.TEACHER_DASHBOARD || targetScreen === Screen.ADMIN_DASHBOARD) {
-      setDashboardInitialTab(targetScreen === Screen.TEACHER_DASHBOARD ? 'students' : 'dashboard');
+      setDashboardInitialTab((targetScreen === Screen.TEACHER_DASHBOARD && !isAdmin) ? 'students' : 'dashboard');
       setDashboardResetKey(prev => prev + 1);
     }
 
@@ -207,7 +208,7 @@ const AppContent = () => {
           <TeacherDashboard
             key={dashboardResetKey}
             initialTab={dashboardInitialTab}
-            isAdminView={false}
+            isAdminView={isAdmin}
             onNavigate={handleNavigate}
             onLogout={handleLogout}
           />
@@ -329,7 +330,7 @@ const AppContent = () => {
         <BottomNav
           currentScreen={screen}
           onNavigate={handleBottomNav}
-          role={user?.role || 'student'}
+          role={isAdmin ? 'admin' : (user?.role || 'student')}
           status={user?.status}
         />
       )}

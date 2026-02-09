@@ -886,6 +886,44 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                     </div>
                 )}
 
+                {user?.role === 'admin' && (
+                    <div className="mb-8">
+                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 px-1">Área Administrativa</h3>
+                        <div className="bg-[#1A202C] rounded-2xl border border-white/5 overflow-hidden">
+                            <button
+                                onClick={() => onNavigate(Screen.ADMIN_DASHBOARD)}
+                                className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors border-b border-white/5"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className="w-8 h-8 rounded-lg bg-[#0081FF]/10 flex items-center justify-center text-[#0081FF]">
+                                        <span className="material-symbols-rounded text-lg">admin_panel_settings</span>
+                                    </div>
+                                    <div className="text-left">
+                                        <span className="text-sm font-semibold text-white block">Dashboard Admin</span>
+                                        <span className="text-[10px] text-gray-500 block">Visão global e relatórios</span>
+                                    </div>
+                                </div>
+                                <span className="material-symbols-rounded text-gray-600">chevron_right</span>
+                            </button>
+                            <button
+                                onClick={() => onNavigate(Screen.ADMIN_SETTINGS)}
+                                className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <div className="w-8 h-8 rounded-lg bg-[#6F4CE7]/10 flex items-center justify-center text-[#6F4CE7]">
+                                        <span className="material-symbols-rounded text-lg">settings</span>
+                                    </div>
+                                    <div className="text-left">
+                                        <span className="text-sm font-semibold text-white block">Configurações Master</span>
+                                        <span className="text-[10px] text-gray-500 block">Ajustes globais do sistema</span>
+                                    </div>
+                                </div>
+                                <span className="material-symbols-rounded text-gray-600">chevron_right</span>
+                            </button>
+                        </div>
+                    </div>
+                )}
+
                 {/* Seção Minha Conta */}
                 <div>
                     <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 px-1">Minha Conta</h3>

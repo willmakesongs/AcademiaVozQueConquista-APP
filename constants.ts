@@ -162,6 +162,55 @@ export const YOUTUBE_EMBED_TEMPLATE = (videoId: string, title: string) => `
 </div>
 `;
 
+// -----------------------------------------------------------
+// HTML PARA DICIONÁRIO DE ACORDES (Reutilizável)
+// -----------------------------------------------------------
+export const CHORD_CARD_TEMPLATE = (imageUrl: string, title: string, downloadUrl?: string) => `
+<div class="space-y-6">
+    <div class="bg-gradient-to-br from-[#0081FF]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
+        <div class="w-16 h-16 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] mb-8">
+            <span class="material-symbols-rounded text-4xl">piano</span>
+        </div>
+        <h3 class="text-3xl font-black text-white mb-6 tracking-tighter">${title}</h3>
+        <div class="rounded-3xl overflow-hidden border border-white/10 shadow-2xl bg-black/40">
+            <img 
+                src="${imageUrl}" 
+                alt="${title}"
+                class="w-full h-auto object-contain"
+                loading="lazy"
+            />
+        </div>
+        ${downloadUrl ? `
+        <a href="${downloadUrl}" target="_blank" class="flex items-center justify-center gap-3 w-full py-4 bg-white/5 border border-white/10 rounded-2xl text-white font-bold hover:bg-[#0081FF]/20 hover:border-[#0081FF]/50 transition-all mt-6 group no-underline">
+            <span class="material-symbols-rounded group-hover:scale-110 transition-transform">download</span>
+            BAIXAR PARA IMPRESSÃO
+        </a>
+        ` : ''}
+    </div>
+    
+    <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5">
+        <h4 class="text-[10px] font-black text-[#0081FF] uppercase tracking-widest mb-4">Como ler os gráficos</h4>
+        <div class="grid grid-cols-2 gap-4">
+            <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full bg-[#0081FF] border border-white/20 shadow-[0_0_10px_rgba(0,129,255,0.5)]"></div>
+                <span class="text-xs text-gray-300 font-bold">Mão Esquerda</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <div class="w-3 h-3 rounded-full bg-[#FF0000]"></div>
+                <span class="text-xs text-gray-300">Mão Direita</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="p-4 bg-white/5 rounded-2xl border border-white/5">
+        <p class="text-[10px] text-gray-400 italic text-center leading-tight">
+            " Visualize o formato de cada acorde para ganhar agilidade na execução."
+        </p>
+    </div>
+</div>
+`;
+
 // Base URL for vocalizes
 export const MINIMALIST_LOGO_URL = 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/PNGs-JPEG/VQLOGOMINIMALISTA.png';
 const VOCALIZES_BASE_URL = `${STORAGE_BASE_URL}/VOCALIZES%20mp3/`;
@@ -174,6 +223,7 @@ export const MODULES: Module[] = [
     // --- INTRODUÇÃO E FERRAMENTAS ---
     {
         id: 'm_classification',
+        courseId: 'canto',
         number: '00',
         title: 'CLASSIFICAÇÃO VOCAL',
         subtitle: 'Conheça sua Voz',
@@ -476,6 +526,7 @@ export const MODULES: Module[] = [
     // --- FASE 1: O INSTRUMENTO E A FONTE (O ALICERCE) ---
     {
         id: 'm_theory',
+        courseId: 'canto',
         number: '01',
         title: 'TEORIA',
         subtitle: 'Conhecimento é Poder',
@@ -5469,6 +5520,7 @@ export const MODULES: Module[] = [
     },
     {
         id: 'm_resp_vocalize',
+        courseId: 'canto',
         number: '12',
         title: 'Exercícios de Respiração',
         subtitle: 'Treino de Respiração',
@@ -5561,6 +5613,96 @@ export const MODULES: Module[] = [
                 </div>
             </div>
             `
+            }
+        ]
+    },
+    // --- PIANO: DICIONÁRIO E FUNDAMENTOS ---
+    {
+        id: 'm_piano_chords',
+        courseId: 'piano',
+        number: '01',
+        title: 'DICIONÁRIO DE ACORDES',
+        subtitle: 'Sua Biblioteca de Acordes',
+        description: 'Referência visual para tríades, tétrades e inversões de acordes no piano.',
+        icon: 'library_music',
+        topics: [
+            {
+                id: 'p_chord_major_triad',
+                title: 'Acordes Maiores (Tríades)',
+                description: 'Tríades maiores fundamentais.',
+                content: CHORD_CARD_TEMPLATE('https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/AULAS+PIANO-TECLADO/Dicion%C3%A1rio+de+Acordes/Acordes+Maiores+(Triades).png', 'Tríades Maiores', 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/AULAS+PIANO-TECLADO/Dicion%C3%A1rio+de+Acordes/Acordes+Maiores+(Triades).png')
+            },
+            {
+                id: 'p_chord_minor_triad',
+                title: 'Acordes Menores (Tríades)',
+                description: 'Tríades menores fundamentais.',
+                content: CHORD_CARD_TEMPLATE(`${STORAGE_BASE_URL}/DICIONARIO_PIANO/Acordes Menores (Triades).png`, 'Tríades Menores')
+            },
+            {
+                id: 'p_chord_first_inversion',
+                title: 'Primeira Inversão (Tríades)',
+                description: 'Inversões de tríades básicas.',
+                content: CHORD_CARD_TEMPLATE(`${STORAGE_BASE_URL}/DICIONARIO_PIANO/Primeira Inversão (Triade).png`, 'Primeira Inversão')
+            },
+            {
+                id: 'p_chord_dim_triad',
+                title: 'Acordes Diminutos (Tríades)',
+                description: 'Tríades diminutas.',
+                content: CHORD_CARD_TEMPLATE(`${STORAGE_BASE_URL}/DICIONARIO_PIANO/Acordes Diminutos (Triades).png`, 'Tríades Diminutas')
+            },
+            {
+                id: 'p_chord_major_maj7',
+                title: 'Maiores com 7M (Tétrades)',
+                description: 'Acordes de sétima maior.',
+                content: CHORD_CARD_TEMPLATE(`${STORAGE_BASE_URL}/DICIONARIO_PIANO/Acordes Maiores com 7M (Tetreades).png`, 'Maiores com 7M')
+            },
+            {
+                id: 'p_chord_major_7',
+                title: 'Maiores com 7 Menor (Tétrades)',
+                description: 'Acordes de sétima dominante.',
+                content: CHORD_CARD_TEMPLATE(`${STORAGE_BASE_URL}/DICIONARIO_PIANO/Acordes Maior com 7 Menor (Tetreades).png`, 'Dominantes (7)')
+            },
+            {
+                id: 'p_chord_minor_7',
+                title: 'Menores com 7 Menor (Tétrades)',
+                description: 'Acordes menores com sétima.',
+                content: CHORD_CARD_TEMPLATE(`${STORAGE_BASE_URL}/DICIONARIO_PIANO/Acordes Menores com 7 Menores (Tetreades).png`, 'Menores com 7')
+            },
+            {
+                id: 'p_chord_dim_7',
+                title: 'Acordes Diminutos (Tétrades)',
+                description: 'Tétrades diminutas.',
+                content: CHORD_CARD_TEMPLATE(`${STORAGE_BASE_URL}/DICIONARIO_PIANO/Acordes Diminutos (Tetreades).png`, 'Tétrades Diminutas')
+            },
+            {
+                id: 'p_chord_major_add9',
+                title: 'Acordes Maiores com (add9)',
+                description: 'Acordes maiores com nona adicionada.',
+                content: CHORD_CARD_TEMPLATE(`${STORAGE_BASE_URL}/DICIONARIO_PIANO/Acordes Maiores with (add9).png`, 'Maiores (add9)')
+            },
+            {
+                id: 'p_chord_major_7_9_a',
+                title: 'Acordes Maiores com 7(9) - Forma A',
+                description: 'Voicings de sétima e nona.',
+                content: CHORD_CARD_TEMPLATE(`${STORAGE_BASE_URL}/DICIONARIO_PIANO/Acordes Maiores with 7(9) (Forma A).png`, 'Maiores 7(9) [A]')
+            },
+            {
+                id: 'p_chord_major_7_9_b',
+                title: 'Acordes Maiores com 7(9) - Forma B',
+                description: 'Voicings de sétima e nona.',
+                content: CHORD_CARD_TEMPLATE(`${STORAGE_BASE_URL}/DICIONARIO_PIANO/Acordes Maiores with 7(9) (Forma B).png`, 'Maiores 7(9) [B]')
+            },
+            {
+                id: 'p_chord_major_maj7_9_b',
+                title: 'Acordes Maiores com 7M(9) - Forma B',
+                description: 'Sétima maior e nona.',
+                content: CHORD_CARD_TEMPLATE(`${STORAGE_BASE_URL}/DICIONARIO_PIANO/Acordes Maiores with 7M(9) (Forma B).png`, 'Maiores 7M(9) [B]')
+            },
+            {
+                id: 'p_chord_major_maj7_9_a',
+                title: 'Acordes Maiores com 7M(9) - Forma A',
+                description: 'Sétima maior e nona.',
+                content: CHORD_CARD_TEMPLATE(`${STORAGE_BASE_URL}/DICIONARIO_PIANO/Acordes com 7M(9) (Forma A).png`, 'Maiores 7M(9) [A]')
             }
         ]
     }
@@ -5974,6 +6116,26 @@ export const VOCALIZES: Vocalize[] = [
         exampleUrl: ''
     }
 ];
+
+export const PIANO_CHORDS: Record<string, { title: string, chords: { name: string, lh: number[], rh: number[] }[] }> = {
+    'p_chord_major_triad': {
+        title: 'Acordes Maiores (Tríades)',
+        chords: [
+            { name: 'C Maior', lh: [0, 7], rh: [12, 16, 19] },
+            { name: 'C# / Db Maior', lh: [1, 8], rh: [13, 17, 20] },
+            { name: 'D Maior', lh: [2, 9], rh: [14, 18, 21] },
+            { name: 'D# / Eb Maior', lh: [3, 10], rh: [15, 19, 22] },
+            { name: 'E Maior', lh: [4, 11], rh: [16, 20, 23] },
+            { name: 'F Maior', lh: [5, 12], rh: [17, 21, 24] },
+            { name: 'F# / Gb Maior', lh: [6, 13], rh: [18, 22, 25] },
+            { name: 'G Maior', lh: [7, 14], rh: [19, 23, 26] },
+            { name: 'G# / Ab Maior', lh: [8, 15], rh: [20, 24, 27] },
+            { name: 'A Maior', lh: [9, 16], rh: [21, 25, 28] },
+            { name: 'A# / Bb Maior', lh: [10, 17], rh: [22, 26, 29] },
+            { name: 'B Maior', lh: [11, 18], rh: [23, 27, 30] },
+        ]
+    }
+};
 
 export const INITIAL_TASKS: Task[] = [
     { id: 1, time: '08:00', title: 'Aquecimento Matinal', duration: '15 min', status: 'pending', category: 'Técnica', date: '02' },

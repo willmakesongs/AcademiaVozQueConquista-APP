@@ -53,7 +53,10 @@ export const LoginScreen: React.FC = () => {
       if (isSignUp) {
         if (!name.trim()) throw new Error('Por favor, informe seu nome.');
         if (!phone.trim()) throw new Error('Por favor, informe seu WhatsApp/Telefone.');
-        if (role === 'teacher' && !adminCode.trim()) throw new Error('Para cadastro de professor, a Senha Mestre é obrigatória.');
+        const validCodes = ['VQC_MASTER_2026', 'VQC_PROF_2026'];
+        if (role === 'teacher' && !validCodes.includes(adminCode.trim())) {
+          throw new Error('Senha Mestre ou do Professor inválida. Contate a direção.');
+        }
 
         const { error, data } = await signUp(email, password, name, phone, role, adminCode);
         if (error) {
@@ -97,6 +100,9 @@ export const LoginScreen: React.FC = () => {
       else if (lowerMsg.includes('already registered') || lowerMsg.includes('already exists') || lowerMsg.includes('unique constraint')) {
         setError('Este email já possui uma conta.');
         setEmailExistsError(true);
+      }
+      else if (lowerMsg.includes('database error saving new user') || lowerMsg.includes('database save new user')) {
+        setError('(Contate a direção para adquirir sua senha mestre)');
       }
       else {
         msg = msg.replace(/{"message":"|","code":.*}/g, '');

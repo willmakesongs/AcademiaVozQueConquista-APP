@@ -95,6 +95,7 @@ export interface User {
   streak?: number;
   lastPracticeDate?: string;
   badges?: string[];
+  teacher_id?: string;
 }
 
 export interface PaymentReceipt {
@@ -131,6 +132,7 @@ export interface StudentSummary {
   // Gamification
   xp?: number;
   streak?: number;
+  teacher_id?: string;
 }
 
 export interface Appointment {
@@ -170,6 +172,9 @@ export interface StudentCourse {
   status: 'ativo' | 'bloqueado';
   created_at?: string;
   course?: Course;
+  amount?: number;
+  schedule_day?: string;
+  schedule_time?: string;
 }
 
 export type FretboardMode = 'notes' | 'fingers' | 'intervals';

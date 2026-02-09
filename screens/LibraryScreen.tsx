@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Screen, Module, Vocalize, Course, StudentCourse } from '../types';
-import { MODULES, VOCALIZES, DISABLE_ALL_PLAYERS, MINIMALIST_LOGO_URL, LORENA_AVATAR_URL } from '../constants';
+import { MODULES, VOCALIZES, DISABLE_ALL_PLAYERS, MINIMALIST_LOGO_URL, LORENA_AVATAR_URL, PIANO_CHORDS } from '../constants';
+import { PianoChordViewer } from '../components/PianoChordViewer';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import { usePlayback } from '../contexts/PlaybackContext';
@@ -229,9 +230,10 @@ export const LibraryScreen: React.FC<Props> = ({
   }, []);
 
   const { play: playGlobal, stop: stopGlobal, isPlaying, activeUrl, setPlaybackSpeed, playbackSpeed } = usePlayback();
+  const [isChordFullscreen, setIsChordFullscreen] = useState(false);
   const [activeInlineBtn, setActiveInlineBtn] = useState<HTMLElement | null>(null);
 
-  const isAdmin = user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase());
+  const isAdmin = user?.role === 'admin' || (user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase()));
 
   const visualizerIntervalRef = useRef<number | null>(null);
 
@@ -258,7 +260,19 @@ export const LibraryScreen: React.FC<Props> = ({
           supabase.from('student_courses').select('*').eq('student_id', user.id)
         ]);
 
-        if (cRes.data) setCourses(cRes.data);
+        if (cRes.data) {
+          const sorted = [...cRes.data].sort((a, b) => {
+            const priority = ['canto', 'piano'];
+            const indexA = priority.indexOf(a.slug.toLowerCase());
+            const indexB = priority.indexOf(b.slug.toLowerCase());
+
+            if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+            if (indexA !== -1) return -1;
+            if (indexB !== -1) return 1;
+            return 0;
+          });
+          setCourses(sorted);
+        }
         if (scRes.data) {
           setUserCourses(scRes.data);
 
@@ -609,7 +623,7 @@ export const LibraryScreen: React.FC<Props> = ({
   };
 
   const onTouchEnd = (e: React.TouchEvent) => {
-    if (!touchStart) return;
+    if (!touchStart || !selectedTopic) return;
 
     // Use changedTouches if touchEnd wasn't set by onTouchMove
     const finalTouch = touchEnd || {
@@ -622,13 +636,17 @@ export const LibraryScreen: React.FC<Props> = ({
 
     // Garante que o swipe foi predominantemente horizontal
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
+      const pianoData = PIANO_CHORDS[selectedTopic.id];
+      const totalSlides = pianoData
+        ? pianoData.chords.length + 1
+        : (selectedTopic.content?.split('<!-- slide -->').length || 1);
+
       if (deltaX > 0) {
         // Swipe para a Esquerda -> Próximo
-        const slides = selectedTopic?.content?.split('<!-- slide -->') || [];
-        if (currentPage < slides.length - 1) {
+        if (currentPage < totalSlides - 1) {
           setCurrentPage(prev => prev + 1);
           contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-        } else if (slides.length > 1) {
+        } else if (totalSlides > 1) {
           setSelectedTopic(null);
         }
       } else {
@@ -668,7 +686,7 @@ export const LibraryScreen: React.FC<Props> = ({
     <div className="min-h-screen bg-[#101622] pb-24 flex flex-col relative">
       {/* Topic Content Modal */}
       {selectedTopic && (
-        <div className="fixed inset-0 z-[60] bg-[#101622] flex flex-col animate-in slide-in-from-bottom duration-300 max-w-md mx-auto left-0 right-0 shadow-2xl">
+        <div className={`fixed inset-0 ${isChordFullscreen ? 'z-[200]' : 'z-[60]'} bg-[#101622] flex flex-col animate-in slide-in-from-bottom duration-300 max-w-md mx-auto left-0 right-0 shadow-2xl transition-all`}>
           {selectedTopic.id === 'tool_vocal_extension' ? (
             <div className="flex-1 bg-[#101622] flex flex-col">
               <VocalAnalyzer onBack={() => setSelectedTopic(null)} />
@@ -679,86 +697,163 @@ export const LibraryScreen: React.FC<Props> = ({
             </div>
           ) : (
             <>
-              <div className="pt-8 px-6 pb-4 bg-[#101622]/95 border-b border-white/5 flex items-center gap-3 sticky top-0">
-                <button
-                  onClick={() => setSelectedTopic(null)}
-                  className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-white/10"
-                >
-                  <span className="material-symbols-rounded">close</span>
-                </button>
-                <div className="flex-1 flex flex-col justify-center min-w-0">
-                  <h2 className="text-lg font-bold text-white truncate">{selectedTopic.title}</h2>
-                  {selectedTopic.content?.includes('<!-- slide -->') && (
-                    <div className="flex items-center gap-3 mt-1">
-                      <div className="flex gap-1">
-                        {selectedTopic.content.split('<!-- slide -->').map((_, i) => (
-                          <div
-                            key={i}
-                            className={`h-1 rounded-full transition-all duration-300 ${i === currentPage ? 'w-4 bg-[#0081FF]' : 'w-1 bg-white/20'}`}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">
-                        Página {currentPage + 1} de {selectedTopic.content.split('<!-- slide -->').length}
-                      </span>
-                    </div>
-                  )}
+              {!isChordFullscreen && (
+                <div className="pt-8 px-6 pb-4 bg-[#101622]/95 border-b border-white/5 flex items-center gap-3 sticky top-0">
+                  <button
+                    onClick={() => setSelectedTopic(null)}
+                    className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white hover:bg-white/10"
+                  >
+                    <span className="material-symbols-rounded">close</span>
+                  </button>
+                  <div className="flex-1 flex flex-col justify-center min-w-0">
+                    <h2 className="text-lg font-bold text-white truncate">{selectedTopic.title}</h2>
+                    {(() => {
+                      const pianoData = PIANO_CHORDS[selectedTopic.id];
+                      const totalSlides = pianoData
+                        ? pianoData.chords.length + 1
+                        : (selectedTopic.content?.split('<!-- slide -->').length || 1);
+
+                      if (totalSlides > 1) {
+                        return (
+                          <div className="flex items-center gap-3 mt-1">
+                            <div className="flex gap-1">
+                              {Array.from({ length: totalSlides }).map((_, i) => (
+                                <div
+                                  key={i}
+                                  className={`h-1 rounded-full transition-all duration-300 ${i === currentPage ? 'w-4 bg-[#0081FF]' : 'w-1 bg-white/20'}`}
+                                />
+                              ))}
+                            </div>
+                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">
+                              Página {currentPage + 1} de {totalSlides}
+                            </span>
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
+                  </div>
                 </div>
-              </div>
+              )}
               <div
                 className="flex-1 overflow-y-auto p-6 hide-scrollbar relative touch-pan-y"
                 ref={contentRef}
                 onClick={handleContentClick}
-                onTouchStart={selectedTopic.content?.includes('<!-- slide -->') ? onTouchStart : undefined}
-                onTouchMove={selectedTopic.content?.includes('<!-- slide -->') ? onTouchMove : undefined}
-                onTouchEnd={selectedTopic.content?.includes('<!-- slide -->') ? onTouchEnd : undefined}
+                onTouchStart={(() => {
+                  const pianoData = PIANO_CHORDS[selectedTopic.id];
+                  const totalSlides = pianoData ? pianoData.chords.length + 1 : (selectedTopic.content?.split('<!-- slide -->').length || 1);
+                  return (totalSlides > 1 && !pianoData) ? onTouchStart : undefined;
+                })()}
+                onTouchMove={(() => {
+                  const pianoData = PIANO_CHORDS[selectedTopic.id];
+                  const totalSlides = pianoData ? pianoData.chords.length + 1 : (selectedTopic.content?.split('<!-- slide -->').length || 1);
+                  return (totalSlides > 1 && !pianoData) ? onTouchMove : undefined;
+                })()}
+                onTouchEnd={(() => {
+                  const pianoData = PIANO_CHORDS[selectedTopic.id];
+                  const totalSlides = pianoData ? pianoData.chords.length + 1 : (selectedTopic.content?.split('<!-- slide -->').length || 1);
+                  return (totalSlides > 1 && !pianoData) ? onTouchEnd : undefined;
+                })()}
               >
                 <div
                   className="prose prose-invert prose-sm max-w-none animate-in fade-in duration-500"
                   key={currentPage}
-                  dangerouslySetInnerHTML={{
-                    __html: selectedTopic.content?.includes('<!-- slide -->')
-                      ? selectedTopic.content.split('<!-- slide -->')[currentPage]
-                      : (selectedTopic.content || '')
-                  }}
-                />
+                >
+                  {(() => {
+                    const pianoData = PIANO_CHORDS[selectedTopic.id];
+                    if (pianoData) {
+                      const totalChords = pianoData.chords.length;
+                      if (currentPage < totalChords) {
+                        return (
+                          <PianoChordViewer
+                            chord={pianoData.chords[currentPage]}
+                            currentIndex={currentPage}
+                            total={totalChords}
+                            isFullscreen={isChordFullscreen}
+                            onToggleFullscreen={() => setIsChordFullscreen(!isChordFullscreen)}
+                            onNext={() => {
+                              if (currentPage < totalChords) {
+                                setCurrentPage(prev => prev + 1);
+                                contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+                              }
+                            }}
+                            onPrev={() => {
+                              if (currentPage > 0) {
+                                setCurrentPage(prev => prev - 1);
+                                contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+                              }
+                            }}
+                          />
+                        );
+                      }
+                      // Regular content (printable sheet) as the last page
+                      return (
+                        <div dangerouslySetInnerHTML={{ __html: selectedTopic.content || '' }} />
+                      );
+                    }
+
+                    // Default content rendering
+                    return (
+                      <div dangerouslySetInnerHTML={{
+                        __html: selectedTopic.content?.includes('<!-- slide -->')
+                          ? selectedTopic.content.split('<!-- slide -->')[currentPage]
+                          : (selectedTopic.content || '')
+                      }} />
+                    );
+                  })()}
+                </div>
                 <div className="h-44"></div>
               </div>
 
               {/* Navigation Controls for Slideshow */}
-              {selectedTopic.content?.includes('<!-- slide -->') && (
-                <div className="absolute bottom-28 left-0 right-0 px-6 flex justify-between items-center pointer-events-none">
-                  <button
-                    onClick={() => {
-                      if (currentPage > 0) {
-                        setCurrentPage(prev => prev - 1);
-                        contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-                      }
-                    }}
-                    disabled={currentPage === 0}
-                    className={`w-14 h-14 rounded-full flex items-center justify-center transition-all pointer-events-auto shadow-lg backdrop-blur-md ${currentPage === 0 ? 'bg-white/5 text-gray-700' : 'bg-white/10 text-white hover:bg-white/20 active:scale-95'}`}
-                  >
-                    <span className="material-symbols-rounded text-3xl">arrow_back</span>
-                  </button>
+              {(() => {
+                const pianoData = PIANO_CHORDS[selectedTopic.id];
+                const totalSlides = pianoData ? pianoData.chords.length + 1 : (selectedTopic.content?.split('<!-- slide -->').length || 1);
+                return totalSlides > 1 && !isChordFullscreen;
+              })() && (
+                  <div className="absolute bottom-28 left-0 right-0 px-6 flex justify-between items-center pointer-events-none">
+                    <button
+                      onClick={() => {
+                        if (currentPage > 0) {
+                          setCurrentPage(prev => prev - 1);
+                          contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+                        } else {
+                          setSelectedTopic(null);
+                        }
+                      }}
+                      className="w-14 h-14 rounded-full flex items-center justify-center transition-all pointer-events-auto shadow-lg backdrop-blur-md bg-white/10 text-white hover:bg-white/20 active:scale-95"
+                    >
+                      <span className="material-symbols-rounded text-3xl">arrow_back</span>
+                    </button>
 
-                  <button
-                    onClick={() => {
-                      const slides = selectedTopic.content?.split('<!-- slide -->') || [];
-                      if (currentPage < slides.length - 1) {
-                        setCurrentPage(prev => prev + 1);
-                        contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
-                      } else {
-                        setSelectedTopic(null);
-                      }
-                    }}
-                    className="w-14 h-14 rounded-full bg-black text-white flex items-center justify-center transition-all pointer-events-auto active:scale-95 shadow-xl"
-                  >
-                    <span className="material-symbols-rounded text-3xl">
-                      {currentPage === (selectedTopic.content?.split('<!-- slide -->').length || 0) - 1 ? 'check' : 'arrow_forward'}
-                    </span>
-                  </button>
-                </div>
-              )}
+                    <button
+                      onClick={() => {
+                        const pianoData = PIANO_CHORDS[selectedTopic.id];
+                        const slides = pianoData
+                          ? pianoData.chords.length + 1
+                          : (selectedTopic.content?.split('<!-- slide -->').length || 1);
+
+                        if (currentPage < slides - 1) {
+                          setCurrentPage(prev => prev + 1);
+                          contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+                        } else {
+                          setSelectedTopic(null);
+                        }
+                      }}
+                      className="w-14 h-14 rounded-full bg-black text-white flex items-center justify-center transition-all pointer-events-auto active:scale-95 shadow-xl"
+                    >
+                      <span className="material-symbols-rounded text-3xl">
+                        {(() => {
+                          const pianoData = PIANO_CHORDS[selectedTopic.id];
+                          const totalSlides = pianoData
+                            ? pianoData.chords.length + 1
+                            : (selectedTopic.content?.split('<!-- slide -->').length || 1);
+                          return currentPage === totalSlides - 1 ? 'check' : 'arrow_forward';
+                        })()}
+                      </span>
+                    </button>
+                  </div>
+                )}
             </>
           )}
         </div>
@@ -798,19 +893,32 @@ export const LibraryScreen: React.FC<Props> = ({
           >
             Módulos
           </button>
-          <button
-            onClick={() => {
-              setActiveTab('modules');
-              onExpandedModuleChange('m_vqc_pro');
-              setTimeout(() => {
-                const el = document.getElementById('module-m_vqc_pro');
-                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              }, 100);
-            }}
-            className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'routine' ? 'bg-[#1A202C] text-white shadow-sm' : 'text-gray-500'}`}
-          >
-            VOCALIZES VQC PRO
-          </button>
+          {activeCourseSlug === 'canto' ? (
+            <button
+              onClick={() => {
+                setActiveTab('modules');
+                onExpandedModuleChange('m_vqc_pro');
+                setTimeout(() => {
+                  const el = document.getElementById('module-m_vqc_pro');
+                  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+              }}
+              className={`flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === 'routine' ? 'bg-[#1A202C] text-white shadow-sm' : 'text-gray-500'}`}
+            >
+              VOCALIZES VQC PRO
+            </button>
+          ) : lastLesson && lastLesson.moduleId && MODULES.some(m => m.id === lastLesson.moduleId && (m.courseId || 'canto') === activeCourseSlug) ? (
+            <button
+              onClick={() => {
+                if (scrollContainerRef.current) {
+                  scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+                }
+              }}
+              className="flex-1 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest text-[#0081FF] transition-all active:scale-95"
+            >
+              ÚLTIMA AULA
+            </button>
+          ) : null}
         </div>
       </header>
 
@@ -821,7 +929,7 @@ export const LibraryScreen: React.FC<Props> = ({
         {activeTab === 'modules' ? (
           <>
             {/* CONTINUAR DE ONDE PAREI */}
-            {lastLesson && lastLesson.moduleId && (
+            {lastLesson && lastLesson.moduleId && MODULES.some(m => m.id === lastLesson.moduleId && (m.courseId || 'canto') === activeCourseSlug) && (
               <div
                 onClick={() => {
                   const mod = MODULES.find(m => m.id === lastLesson.moduleId);

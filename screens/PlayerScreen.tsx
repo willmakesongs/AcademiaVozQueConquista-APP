@@ -14,7 +14,7 @@ interface Props {
 
 export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev }) => {
   const { user, updateGamification } = useAuth();
-  const isAdmin = user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase());
+  const isAdmin = user?.role === 'admin' || (user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase()));
   const scaleIds = [
     'vqc-major-asc', 'vqc-minor-asc', 'vqc-major-desc', 'vqc-minor-desc',
     'vqc-triad-major', 'vqc-triad-minor', 'vqc-octave-jump', 'vqc-arpeggio-maj7',

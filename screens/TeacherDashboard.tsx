@@ -31,6 +31,8 @@ const getCourseIcon = (slug: string) => {
 
 export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initialTab = 'dashboard', isAdminView = false }) => {
     const { user } = useAuth();
+    const isActuallyAdmin = user?.role === 'admin' || (user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase().trim()));
+
     const [showConfig, setShowConfig] = useState(false);
     const [students, setStudents] = useState<StudentSummary[]>([]);
     const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -146,89 +148,151 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     const fetchData = async (force: boolean = false) => {
         setLoadingAction(true);
         try {
-            const { data: sData, error: sError } = await supabase
+            // Fetch Courses - Filter by teacher if not admin
+            let coursesQuery = supabase.from('courses').select('*').eq('ativo', true);
+            if (user?.role === 'teacher' && !isAdminView && !isActuallyAdmin) {
+                coursesQuery = coursesQuery.eq('teacher_id', user.id);
+            }
+            const { data: coursesData } = await coursesQuery;
+            if (coursesData) {
+                setCourses(coursesData);
+                // If only one course, select it automatically for teachers
+                if (user?.role === 'teacher' && !isAdminView && !isActuallyAdmin && coursesData.length === 1) {
+                    setSelectedCourseId(coursesData[0].id);
+                }
+            }
+
+            // Role-based student filtering
+            let studentQuery = supabase
                 .from('profiles')
                 .select('*')
                 .eq('role', 'student');
 
-            if (sError) throw sError;
+            // If teacher and NOT in admin view, filter students
+            if (user?.role === 'teacher' && !isAdminView && !isActuallyAdmin) {
+                // Determine if we should filter by specific course or just show all their students
+                // For now, if we have limited courses, we might want to fetch all their students anyway
+                // but the UI filters by courseId. 
+                // CRITICAL: We need students that ARE in the teacher's courses.
+                if (coursesData && coursesData.length > 0) {
+                    const teacherCourseIds = coursesData.map(c => c.id);
+                    // Fetch students enrolled in these courses
+                    const { data: enrollmentData } = await supabase
+                        .from('student_courses')
+                        .select('student_id')
+                        .in('course_id', teacherCourseIds);
 
-            if (sData) {
-                // Fetch Courses and Student-Course relations
-                const { data: coursesData } = await supabase.from('courses').select('*').eq('ativo', true);
-                if (coursesData) setCourses(coursesData);
+                    const enrolledStudentIds = Array.from(new Set(enrollmentData?.map(e => e.student_id) || []));
 
-                const { data: teachersData } = await supabase.from('profiles').select('*').eq('role', 'teacher');
-                if (teachersData) setTeachers(teachersData);
-
-                const { data: relationsData } = await supabase.from('student_courses').select('*');
-
-                const dbStudents: StudentSummary[] = sData.map(s => {
-                    const studentCourses = relationsData?.filter(r => r.student_id === s.id) || [];
-
-                    return {
-                        id: s.id,
-                        name: s.name,
-                        avatarUrl: s.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=random`,
-                        level: 'Iniciante',
-                        lastPractice: 'Hoje',
-                        progress: 0,
-                        status: (s.status as any) || 'active',
-                        phone: s.phone || '',
-                        age: s.age ? String(s.age) : '',
-                        paymentDay: s.payment_day || '05',
-                        notes: s.notes || '',
-                        modality: s.modality || 'Online',
-                        scheduleDay: s.schedule_day || 'Seg',
-                        scheduleTime: s.schedule_time || '14:00',
-                        amount: (s.amount !== null && s.amount !== undefined) ? s.amount : 97,
-                        address: s.address || '',
-                        contractAgreed: s.contract_agreed,
-                        contractAgreedAt: s.contract_agreed_at,
-                        signatureUrl: s.signature_url,
-                        courses: studentCourses
-                    };
-                });
-
-                // Update local storage and state with fresh data from DB
-                // SERVER IS SOURCE OF TRUTH
-                localStorage.setItem('vocalizes_local_students', JSON.stringify(dbStudents));
-                setStudents(dbStudents);
-
-                // Fetch Receipts
-                const { data: rData } = await supabase
-                    .from('payment_receipts')
-                    .select('*, profiles:user_id(name, avatar_url)')
-                    .order('created_at', { ascending: false });
-
-                if (rData) {
-                    const mappedReceipts = rData.map((r: any) => ({
-                        id: r.id,
-                        userId: r.user_id,
-                        userName: r.profiles?.name || 'Aluno',
-                        userAvatar: r.profiles?.avatar_url,
-                        amount: r.amount,
-                        receiptUrl: r.receipt_url,
-                        status: r.status,
-                        createdAt: r.created_at
-                    }));
-                    setReceipts(mappedReceipts);
-                    setReceipts(mappedReceipts);
+                    if (enrolledStudentIds.length > 0) {
+                        studentQuery = studentQuery.in('id', enrolledStudentIds);
+                    } else {
+                        // No students enrolled in their courses
+                        setStudents([]);
+                        setLoadingAction(false);
+                        return;
+                    }
+                } else {
+                    // No courses found for this teacher
+                    setStudents([]);
+                    setLoadingAction(false);
+                    return;
                 }
-
-                // Fetch Payment History (confirmed manual + receipts)
-                const { data: hData } = await supabase
-                    .from('payment_history')
-                    .select('*')
-                    .order('payment_date', { ascending: false });
-
-                if (hData) {
-                    setPaymentHistory(hData);
-                }
-
-                if (force) alert('Dados atualizados com sucesso da nuvem! ☁️');
-                setSyncStatus('synced');
             }
+
+            const { data: sData, error: sError } = await studentQuery;
+
+            const { data: teachersData } = await supabase.from('profiles').select('*').eq('role', 'teacher');
+            if (teachersData) setTeachers(teachersData);
+
+            const { data: relationsData } = await supabase.from('student_courses').select('*');
+
+            const dbStudents: StudentSummary[] = sData.map(s => {
+                const studentCourses = relationsData?.filter(r => r.student_id === s.id) || [];
+
+                // Use profile as fallback, but specific course might override these later in UI
+                return {
+                    id: s.id,
+                    name: s.name,
+                    avatarUrl: s.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(s.name)}&background=random`,
+                    level: 'Iniciante',
+                    lastPractice: 'Hoje',
+                    progress: 0,
+                    status: (s.status as any) || 'active',
+                    phone: s.phone || '',
+                    age: s.age ? String(s.age) : '',
+                    paymentDay: s.payment_day || '05',
+                    notes: s.notes || '',
+                    modality: s.modality || 'Online',
+                    scheduleDay: s.schedule_day || 'Seg',
+                    scheduleTime: s.schedule_time || '14:00',
+                    amount: (val => isNaN(val) ? 97 : val)(parseFloat(String(s.amount).replace(',', '.'))),
+                    address: s.address || '',
+                    contractAgreed: s.contract_agreed,
+                    contractAgreedAt: s.contract_agreed_at,
+                    signatureUrl: s.signature_url,
+                    courses: studentCourses,
+                    teacher_id: s.teacher_id
+                };
+            });
+
+            // Update local storage and state with fresh data from DB
+            // SERVER IS SOURCE OF TRUTH
+            localStorage.setItem('vocalizes_local_students', JSON.stringify(dbStudents));
+            setStudents(dbStudents);
+
+            // Fetch Receipts - Filtered for teachers
+            let receiptQuery = supabase
+                .from('payment_receipts')
+                .select('*, profiles:user_id(name, avatar_url, teacher_id)');
+
+            if (user?.role === 'teacher' && !isAdminView && !isActuallyAdmin) {
+                // This requires profiles join or a subquery. Supabase handles inner join filters
+            }
+
+            const { data: rData } = await receiptQuery.order('created_at', { ascending: false });
+
+            if (rData) {
+                let mappedReceipts = rData.map((r: any) => ({
+                    id: r.id,
+                    userId: r.user_id,
+                    userName: r.profiles?.name || 'Aluno',
+                    userAvatar: r.profiles?.avatar_url,
+                    amount: r.amount,
+                    receiptUrl: r.receipt_url,
+                    status: r.status,
+                    createdAt: r.created_at,
+                    teacher_id: r.profiles?.teacher_id
+                }));
+
+                // Client-side filter for receipts if teacher
+                if (user?.role === 'teacher' && !isAdminView && !isActuallyAdmin) {
+                    mappedReceipts = mappedReceipts.filter(r => r.teacher_id === user.id);
+                }
+
+                setReceipts(mappedReceipts);
+                setReceipts(mappedReceipts);
+            }
+
+            // Fetch Payment History - Filtered for teachers
+            let historyQuery = supabase
+                .from('payment_history')
+                .select('*')
+                .order('payment_date', { ascending: false });
+
+            const { data: hData } = await historyQuery;
+
+            if (hData) {
+                let filteredHistory = hData;
+                if (user?.role === 'teacher' && !isAdminView && !isActuallyAdmin) {
+                    const myStudentIds = sData.map(s => s.id);
+                    filteredHistory = hData.filter(h => myStudentIds.includes(h.student_id));
+                }
+                setPaymentHistory(filteredHistory);
+            }
+
+            if (force) alert('Dados atualizados com sucesso da nuvem! ☁️');
+            setSyncStatus('synced');
         } catch (error: any) {
             console.warn('Network/DB error, using fallback:', error);
             setSyncStatus('error');
@@ -403,8 +467,26 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             if (error) throw error;
 
             const savedStudent = data?.[0];
-            const newStudentLocal: StudentSummary = {
-                id: savedStudent?.id || fakeId,
+            const studentId = savedStudent?.id || fakeId;
+
+            // 2. Link student to current course if selected
+            if (selectedCourseId && selectedCourseId !== 'all') {
+                const amountVal = (val => isNaN(val) ? 97 : val)(parseFloat(String(newStudentAmount).replace(',', '.')));
+                const { error: courseError } = await supabase.from('student_courses').insert([{
+                    student_id: studentId,
+                    course_id: selectedCourseId,
+                    status: 'ativo',
+                    amount: amountVal,
+                    schedule_day: scheduleDay,
+                    schedule_time: scheduleTime
+                }]);
+                if (courseError) {
+                    console.error('Error linking student to course:', courseError);
+                }
+            }
+
+            const newStudentSummary: StudentSummary = {
+                id: studentId,
                 name: newStudentName,
                 avatarUrl,
                 level: newStudentLevel,
@@ -425,10 +507,10 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
             const existingLocal = localStorage.getItem('vocalizes_local_students');
             const localList = existingLocal ? JSON.parse(existingLocal) : [];
-            localList.push(newStudentLocal);
+            localList.push(newStudentSummary);
             localStorage.setItem('vocalizes_local_students', JSON.stringify(localList));
 
-            setStudents(prev => [...prev, newStudentLocal]);
+            setStudents(prev => [...prev, newStudentSummary]);
 
             // Reset fields
             setNewStudentName('');
@@ -456,12 +538,22 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         if (selectedStudent) {
             setNotesInput(selectedStudent.notes || '');
             setEditPhone(selectedStudent.phone || '');
-            setEditScheduleDay(selectedStudent.scheduleDay || 'Seg');
-            setEditScheduleTime(selectedStudent.scheduleTime || '14:00');
+
+            // Per-course scheduling check
+            const currentEnrollment = selectedCourseId !== 'all'
+                ? selectedStudent.courses?.find(c => c.course_id === selectedCourseId)
+                : null;
+
+            setEditScheduleDay(currentEnrollment?.schedule_day || selectedStudent.scheduleDay || 'Seg');
+            setEditScheduleTime(currentEnrollment?.schedule_time || selectedStudent.scheduleTime || '14:00');
             setEditAge(selectedStudent.age || '');
             setEditAddress(selectedStudent.address || '');
             setEditInstagram(selectedStudent.instagram || '');
-            setEditAmount((selectedStudent.amount !== null && selectedStudent.amount !== undefined) ? selectedStudent.amount : 97);
+
+            // Per-course amount check
+            const courseAmount = currentEnrollment?.amount;
+            setEditAmount(courseAmount !== undefined && courseAmount !== null ? courseAmount : (selectedStudent.amount || 97));
+
             setEditPaymentDay(selectedStudent.paymentDay || '05');
             setEditStatus(selectedStudent.status as any || 'active');
 
@@ -486,7 +578,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             // Clear assessment when no student is selected
             setVocalAssessment(null);
         }
-    }, [selectedStudent]);
+    }, [selectedStudent, selectedCourseId]);
 
     const toggleStudentCourse = async (courseId: string, currentStatus: boolean) => {
         if (!selectedStudent) return;
@@ -558,20 +650,42 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         };
 
         try {
+            // 1. Update Profile (Global data)
             const { data, error } = await supabase.from('profiles').update({
                 phone: editPhone,
                 notes: notesInput,
-                schedule_day: editScheduleDay,
-                schedule_time: editScheduleTime,
                 age: editAge ? parseInt(editAge) : null,
                 address: editAddress,
                 instagram: editInstagram,
-                amount: typeof editAmount === 'string' ? parseFloat(editAmount.replace(',', '.')) : editAmount,
                 payment_day: editPaymentDay,
                 status: editStatus
             }).eq('id', selectedStudent.id).select();
 
             if (error) throw error;
+
+            if (selectedCourseId && selectedCourseId !== 'all') {
+                const amountVal = typeof editAmount === 'string' ? parseFloat(editAmount.replace(',', '.')) : editAmount;
+                const { error: courseError } = await supabase
+                    .from('student_courses')
+                    .update({
+                        amount: amountVal,
+                        schedule_day: editScheduleDay,
+                        schedule_time: editScheduleTime
+                    })
+                    .eq('student_id', selectedStudent.id)
+                    .eq('course_id', selectedCourseId);
+
+                if (courseError) {
+                    console.error('Error updating course specific data:', courseError);
+                }
+            } else {
+                // If "All Courses" is selected, we keep updating the global schedule for backward compatibility/global view
+                await supabase.from('profiles').update({
+                    schedule_day: editScheduleDay,
+                    schedule_time: editScheduleTime,
+                    amount: typeof editAmount === 'string' ? parseFloat(editAmount.replace(',', '.')) : editAmount,
+                }).eq('id', selectedStudent.id);
+            }
 
             if (!data || data.length === 0) {
                 alert('⚠️ Atenção: As alterações NÃO foram salvas no servidor. \n\nIsso acontece se você não tiver permissão para editar este aluno. As mudanças serão perdidas ao recarregar o app.');
@@ -1132,22 +1246,49 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         const weekDates = getWeekDates(selectedDate);
         const selectedDayLabel = WEEK_DAYS[selectedDate.getDay() === 0 ? 6 : selectedDate.getDay() - 1];
 
-        const dayAppointments = students.filter(s => s.scheduleDay === selectedDayLabel && s.status !== 'inactive').map(s => ({
-            id: s.id,
-            studentName: s.name,
-            time: s.scheduleTime || '00:00',
-            endTime: s.scheduleTime ? (() => {
-                const [h, m] = s.scheduleTime.split(':');
-                const date = new Date();
-                date.setHours(parseInt(h), parseInt(m) + 60);
-                return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-            })() : '01:00',
-            type: `${s.level || 'Iniciante'} • ${s.modality || 'Presencial'}`,
-            paymentStatus: s.status,
-            avatarUrl: s.avatarUrl,
-            phone: s.phone,
-            instrument: 'Canto' // Default or derived if available
-        })).sort((a, b) => a.time.localeCompare(b.time));
+        const dayAppointments = students.filter(s => {
+            if (s.status === 'inactive') return false;
+
+            // If a specific course is selected, check only its enrollment
+            if (selectedCourseId !== 'all') {
+                const enrollment = s.courses?.find(c => c.course_id === selectedCourseId);
+                if (enrollment) {
+                    return enrollment.schedule_day === selectedDayLabel;
+                }
+                // Fallback to profile if no specific enrollment data but course is associated
+                const isEnrolled = s.courses?.some(c => c.course_id === selectedCourseId);
+                return isEnrolled && s.scheduleDay === selectedDayLabel;
+            }
+
+            // If "All Courses" is selected, match if profile OR any enrollment matches
+            const profileMatches = s.scheduleDay === selectedDayLabel;
+            const anyCourseMatches = s.courses?.some(c => c.schedule_day === selectedDayLabel);
+            return profileMatches || anyCourseMatches;
+        }).map(s => {
+            // Get data based on context
+            const enrollment = selectedCourseId !== 'all'
+                ? s.courses?.find(c => c.course_id === selectedCourseId)
+                : s.courses?.find(c => c.schedule_day === selectedDayLabel); // Pick first matching enrollment if in "All" view
+
+            const scheduleTime = enrollment?.schedule_time || s.scheduleTime || '14:00';
+
+            return {
+                id: s.id,
+                studentName: s.name,
+                time: scheduleTime,
+                endTime: (() => {
+                    const [h, m] = scheduleTime.split(':').map(Number);
+                    const date = new Date();
+                    date.setHours(h, m + 60);
+                    return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+                })(),
+                type: `${s.level || 'Iniciante'} • ${s.modality || 'Presencial'}`,
+                paymentStatus: s.status,
+                avatarUrl: s.avatarUrl,
+                phone: s.phone,
+                instrument: courses.find(c => c.id === enrollment?.course_id)?.nome || 'Aula'
+            };
+        }).sort((a, b) => a.time.localeCompare(b.time));
 
         const studentsTodayCount = dayAppointments.length;
         const pendingPaymentsCount = students.filter(s => s.status === 'overdue' || s.status === 'blocked').length;
@@ -1374,15 +1515,17 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
                     {/* Course Filter Tabs */}
                     <div className="mt-6 flex gap-2 overflow-x-auto hide-scrollbar pb-2">
-                        <button
-                            onClick={() => setSelectedCourseId('all')}
-                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${selectedCourseId === 'all'
-                                ? 'bg-[#0081FF] text-white border-[#0081FF] shadow-lg shadow-[#0081FF]/20'
-                                : 'bg-[#1A202C] text-gray-500 border-white/5 hover:border-white/10'
-                                }`}
-                        >
-                            Todos os Cursos
-                        </button>
+                        {(!user?.role || user?.role === 'admin' || isAdminView || isActuallyAdmin || courses.length > 1) && (
+                            <button
+                                onClick={() => setSelectedCourseId('all')}
+                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${selectedCourseId === 'all'
+                                    ? 'bg-[#0081FF] text-white border-[#0081FF] shadow-lg shadow-[#0081FF]/20'
+                                    : 'bg-[#1A202C] text-gray-500 border-white/5 hover:border-white/10'
+                                    }`}
+                            >
+                                Todos os Cursos
+                            </button>
+                        )}
                         {courses.map(course => (
                             <button
                                 key={course.id}
@@ -1444,6 +1587,18 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     </div>
                                 </div>
                                 <div className="text-right">
+                                    {/* Schedule Context */}
+                                    {selectedCourseId !== 'all' && (
+                                        <div className="mb-2">
+                                            <p className="text-[10px] text-[#0081FF] font-black uppercase tracking-wider mb-0.5 flex items-center justify-end gap-1">
+                                                <span className="material-symbols-rounded text-xs">schedule</span>
+                                                {(() => {
+                                                    const currentEnrollment = student.courses?.find(c => c.course_id === selectedCourseId);
+                                                    return `${currentEnrollment?.schedule_day || student.scheduleDay || '---'} • ${currentEnrollment?.schedule_time || student.scheduleTime || '--:--'}`;
+                                                })()}
+                                            </p>
+                                        </div>
+                                    )}
                                     <p className="text-[10px] text-gray-500 font-bold uppercase mb-0.5">Pagamento</p>
                                     <p className="text-xs font-black text-white">Dia {student.paymentDay || '05'}</p>
                                 </div>
@@ -1517,13 +1672,13 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 {/* Navigation Tabs (Novas Abas Superiores) */}
                 <div className="px-6 pb-0 overflow-x-auto hide-scrollbar flex gap-4">
                     {(isAdminView ? [
-                        { id: 'reports', label: 'Financeiro', icon: 'payments' },
-                        { id: 'settings', label: 'Ajustes', icon: 'settings' }
-                    ] : [
                         { id: 'dashboard', label: 'Início', icon: 'calendar_month' },
                         { id: 'students', label: 'Alunos', icon: 'groups' },
                         { id: 'reports', label: 'Financeiro', icon: 'payments' },
                         { id: 'settings', label: 'Ajustes', icon: 'settings' }
+                    ] : [
+                        { id: 'dashboard', label: 'Início', icon: 'calendar_month' },
+                        { id: 'students', label: 'Alunos', icon: 'groups' }
                     ]).map(tab => (
                         <button
                             key={tab.id}
@@ -1536,7 +1691,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                             <span className={`material-symbols-rounded text-lg ${activeTab === tab.id ? 'filled' : ''}`}>{tab.icon}</span>
                             <span>{tab.label}</span>
 
-                            {/* Dashboard/Financial Badge */}
+                            {/* Dashboard/Financial Badge - Only if reports tab exists */}
                             {tab.id === 'reports' && receipts.some(r => r.status === 'pending') && (
                                 <span className="absolute top-0 -right-1 w-2 h-2 bg-[#FF00BC] rounded-full border border-[#101622] animate-pulse"></span>
                             )}
@@ -1553,26 +1708,28 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             {/* Spacer for Global Bottom Nav (This ensures content isn't covered) */}
             <div className="h-[150px] shrink-0 w-full bg-[#101622]"></div>
 
-            {/* Botão de Add - FIXED e sem sobreposição */}
-            <button
-                onClick={() => setIsAddModalOpen(true)}
-                className="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-[#0081FF] text-white shadow-lg flex items-center justify-center z-50 hover:scale-110 active:scale-95 transition-all shadow-[#0081FF]/30"
-                style={{ marginBottom: 'env(safe-area-inset-bottom)' }}
-            >
-                <span className="material-symbols-rounded text-3xl">add</span>
-            </button>
+            {/* Botão de Add - FIXED e sem sobreposição - HIDE for non-admins if preferred by user rule */}
+            {isAdminView && (
+                <button
+                    onClick={() => setIsAddModalOpen(true)}
+                    className="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-[#0081FF] text-white shadow-lg flex items-center justify-center z-50 hover:scale-110 active:scale-95 transition-all shadow-[#0081FF]/30"
+                    style={{ marginBottom: 'env(safe-area-inset-bottom)' }}
+                >
+                    <span className="material-symbols-rounded text-3xl">add</span>
+                </button>
+            )}
 
 
             {/* Modals */}
             {selectedStudent && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
                     <div className="w-full max-w-sm bg-[#1A202C] rounded-[32px] border border-white/10 shadow-2xl overflow-hidden flex flex-col h-full max-h-[90vh]">
                         <div className="px-6 py-4 border-b border-white/5 flex justify-between items-center bg-[#151A23] shrink-0">
                             <h3 className="font-bold text-white">Detalhes do Aluno</h3>
                             <button onClick={() => setSelectedStudent(null)} className="text-gray-400 hover:text-white"><span className="material-symbols-rounded">close</span></button>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto hide-scrollbar p-6 space-y-4">
+                        <div className="flex-1 overflow-y-auto hide-scrollbar p-6 space-y-4 pb-32">
                             <div className="flex gap-4 items-center">
                                 <div className="relative">
                                     <div className="w-16 h-16 rounded-full border-2 border-[#0081FF] overflow-hidden">
@@ -1987,7 +2144,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
                     {/* Pop-up de Confirmação Exclusão */}
                     {showDeleteConfirm && (
-                        <div className="absolute inset-0 z-[70] flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-in fade-in zoom-in duration-200">
+                        <div className="absolute inset-0 z-[210] flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-in fade-in zoom-in duration-200">
                             <div className="w-full max-w-[280px] bg-[#1A202C] rounded-[32px] border border-white/10 p-8 shadow-2xl flex flex-col items-center text-center">
                                 <div className="w-16 h-16 rounded-full bg-[#FF00BC]/20 text-[#FF00BC] flex items-center justify-center mb-6">
                                     <span className="material-symbols-rounded text-3xl">delete_forever</span>
@@ -2018,7 +2175,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
 
             {isAddModalOpen && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-300 p-4">
+                <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm animate-in fade-in duration-300 p-4">
                     <div className="w-full max-w-md h-full max-h-[90dvh] flex flex-col bg-[#101622] rounded-[32px] overflow-hidden shadow-2xl animate-in slide-in-from-bottom duration-300">
                         <div className="w-full h-full flex flex-col">
                             {/* Header Fixado */}

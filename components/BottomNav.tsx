@@ -6,7 +6,7 @@ import { LORENA_AVATAR_URL } from '../constants';
 interface BottomNavProps {
   currentScreen: Screen;
   onNavigate: (screen: Screen) => void;
-  role: 'student' | 'teacher';
+  role: 'student' | 'teacher' | 'admin';
   status?: SubscriptionStatus;
 }
 
@@ -35,13 +35,17 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentScreen, onNavigate,
     <div className="fixed bottom-0 left-0 right-0 bg-[#1A202C] border-t border-gray-800 pb-safe pt-2 px-6 shadow-2xl z-[150] touch-manipulation">
       <div className="flex justify-between items-center h-16 max-w-md mx-auto">
         <button
-          onClick={() => handleNavClick(role === 'student' ? Screen.STUDENT_DASHBOARD : Screen.TEACHER_DASHBOARD)}
+          onClick={() => {
+            const isActuallyAdmin = role === 'admin';
+            if (isActuallyAdmin) handleNavClick(Screen.ADMIN_DASHBOARD);
+            else handleNavClick(role === 'student' ? Screen.STUDENT_DASHBOARD : Screen.TEACHER_DASHBOARD);
+          }}
           className={`flex flex-col items-center gap-1 w-16 ${(isBlocked || isInactive) ? 'opacity-30 grayscale' : ''}`}
         >
-          <span className={`material-symbols-rounded text-2xl ${getIconColor(role === 'student' ? Screen.STUDENT_DASHBOARD : Screen.TEACHER_DASHBOARD)}`}>
+          <span className={`material-symbols-rounded text-2xl ${getIconColor(role === 'admin' ? Screen.ADMIN_DASHBOARD : (role === 'student' ? Screen.STUDENT_DASHBOARD : Screen.TEACHER_DASHBOARD))}`}>
             dashboard
           </span>
-          <span className={`text-[10px] font-medium ${getIconColor(role === 'student' ? Screen.STUDENT_DASHBOARD : Screen.TEACHER_DASHBOARD)}`}>
+          <span className={`text-[10px] font-medium ${getIconColor(role === 'admin' ? Screen.ADMIN_DASHBOARD : (role === 'student' ? Screen.STUDENT_DASHBOARD : Screen.TEACHER_DASHBOARD))}`}>
             Início
           </span>
         </button>
