@@ -1,25 +1,27 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { Screen, Vocalize } from './types';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { PlaybackProvider, usePlayback } from './contexts/PlaybackContext';
 import { LoginScreen } from './screens/LoginScreen';
-import { OnboardingScreen } from './screens/OnboardingScreen';
 import { StudentDashboard } from './screens/StudentDashboard';
-import { TeacherDashboard } from './screens/TeacherDashboard';
-import { PlayerScreen } from './screens/PlayerScreen';
-import { LibraryScreen } from './screens/LibraryScreen';
-import { RoutineScreen } from './screens/RoutineScreen';
-import { ProfileScreen } from './screens/ProfileScreen';
-import { CalendarScreen } from './screens/CalendarScreen';
-import { TwisterScreen } from './screens/TwisterScreen';
-import { BreathingScreen } from './screens/BreathingScreen';
-import { ChatScreen } from './screens/ChatScreen';
-import { StudioScreen } from './screens/StudioScreen';
-import { BlockedScreen } from './screens/BlockedScreen';
-import { VisitorConversionScreen } from './screens/VisitorConversionScreen';
 import { BottomNav } from './components/BottomNav';
 import { VOCALIZES } from './constants';
+
+// Code-splitting: telas carregadas sob demanda para melhorar performance inicial
+const OnboardingScreen = React.lazy(() => import('./screens/OnboardingScreen').then(m => ({ default: m.OnboardingScreen })));
+const TeacherDashboard = React.lazy(() => import('./screens/TeacherDashboard').then(m => ({ default: m.TeacherDashboard })));
+const PlayerScreen = React.lazy(() => import('./screens/PlayerScreen').then(m => ({ default: m.PlayerScreen })));
+const LibraryScreen = React.lazy(() => import('./screens/LibraryScreen').then(m => ({ default: m.LibraryScreen })));
+const RoutineScreen = React.lazy(() => import('./screens/RoutineScreen').then(m => ({ default: m.RoutineScreen })));
+const ProfileScreen = React.lazy(() => import('./screens/ProfileScreen').then(m => ({ default: m.ProfileScreen })));
+const CalendarScreen = React.lazy(() => import('./screens/CalendarScreen').then(m => ({ default: m.CalendarScreen })));
+const TwisterScreen = React.lazy(() => import('./screens/TwisterScreen').then(m => ({ default: m.TwisterScreen })));
+const BreathingScreen = React.lazy(() => import('./screens/BreathingScreen').then(m => ({ default: m.BreathingScreen })));
+const ChatScreen = React.lazy(() => import('./screens/ChatScreen').then(m => ({ default: m.ChatScreen })));
+const StudioScreen = React.lazy(() => import('./screens/StudioScreen').then(m => ({ default: m.StudioScreen })));
+const BlockedScreen = React.lazy(() => import('./screens/BlockedScreen').then(m => ({ default: m.BlockedScreen })));
+const VisitorConversionScreen = React.lazy(() => import('./screens/VisitorConversionScreen').then(m => ({ default: m.VisitorConversionScreen })));
 
 const AppContent = () => {
   const { user, loading, signOut, visitorTimeRemaining } = useAuth();
@@ -323,7 +325,9 @@ const AppContent = () => {
         </div>
       )}
 
-      {renderScreen()}
+      <Suspense fallback={<div className="min-h-screen bg-[#101622] flex items-center justify-center text-white/60">Carregando...</div>}>
+        {renderScreen()}
+      </Suspense>
 
       {/* Menu rodapé presente em quase todas as telas para navegação rápida */}
       {user && screen !== Screen.LOGIN && screen !== Screen.CALENDAR && user.status !== 'blocked' && !(user.id === 'guest' && visitorTimeRemaining === 0) && (
