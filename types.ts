@@ -175,6 +175,8 @@ export interface StudentCourse {
   amount?: number;
   schedule_day?: string;
   schedule_time?: string;
+  repasse_fixed_amount?: number;
+  repasse_custom_percentage?: number;
 }
 
 export type FretboardMode = 'notes' | 'fingers' | 'intervals';

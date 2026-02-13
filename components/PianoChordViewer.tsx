@@ -105,44 +105,66 @@ export const PianoChordViewer: React.FC<Props> = ({
         return count;
     };
 
+    const getRootIndex = () => {
+        const rootPart = chord.name.split('/')[0].split(' ')[0];
+        const names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const flatNames = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'];
+        let rootIdx = names.indexOf(rootPart);
+        if (rootIdx === -1) rootIdx = flatNames.indexOf(rootPart);
+        if (rootIdx === -1) {
+            if (rootPart.startsWith('Dó')) rootIdx = 0;
+            else if (rootPart.startsWith('Ré')) rootIdx = 2;
+            else if (rootPart.startsWith('Mi')) rootIdx = 4;
+            else if (rootPart.startsWith('Fá')) rootIdx = 5;
+            else if (rootPart.startsWith('Sol')) rootIdx = 7;
+            else if (rootPart.startsWith('Lá')) rootIdx = 9;
+            else if (rootPart.startsWith('Si')) rootIdx = 11;
+        }
+        return rootIdx === -1 ? 0 : rootIdx;
+    };
+
     const getNoteName = (index: number) => {
-        const names = ['Dó', 'Dó#', 'Ré', 'Ré#', 'Mi', 'Fá', 'Fá#', 'Sol', 'Sol#', 'Lá', 'Lá#', 'Si'];
-        return names[index % 12];
+        const rootIdx = getRootIndex();
+        const noteIdx = index % 12;
+        const interval = (noteIdx - rootIdx + 12) % 12;
+        const isMinor = chord.name.toLowerCase().includes('menor') || (chord.name.includes('m') && !chord.name.toLowerCase().includes('major'));
+
+        // Pedagogical rule: Minor chords force ALL accidental notes to flats (isMinor = true)
+        const flatKeys = ['Db', 'Eb', 'F', 'Gb', 'Ab', 'Bb', 'Dbm', 'Ebm', 'Fm', 'Gbm', 'Abm', 'Bbm', 'Cm', 'Gm'];
+        const useFlats = isMinor || flatKeys.some(k => chord.name.startsWith(k)) || chord.name.includes('b') || chord.name.includes('/Ab') || chord.name.includes('/Bb') || chord.name.includes('/Db') || chord.name.includes('/Eb') || chord.name.includes('/Gb');
+
+        const sharpNames = ['Dó', 'Dó#', 'Ré', 'Ré#', 'Mi', 'Fá', 'Fá#', 'Sol', 'Sol#', 'Lá', 'Lá#', 'Si'];
+        const flatNames = ['Dó', 'Réb', 'Ré', 'Mib', 'Mi', 'Fá', 'Solb', 'Sol', 'Láb', 'Lá', 'Sib', 'Si'];
+
+        return useFlats ? flatNames[noteIdx] : sharpNames[noteIdx];
     };
 
     const getNoteDegree = (index: number) => {
-        // Get root note from name (e.g. "C Maior" -> "C")
-        const rootLetter = chord.name.split(' ')[0];
-        const names = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-        const rootIdx = names.indexOf(rootLetter);
+        const rootIdx = getRootIndex();
         const noteIdx = index % 12;
-
         const interval = (noteIdx - rootIdx + 12) % 12;
 
-        if (interval === 0) return '1';
-        if (interval === 4) return '3';
-        if (interval === 7) return '5';
-        return '';
+        const degreeMap: Record<number, string> = {
+            0: '1', 1: '2b', 2: '2', 3: '3', 4: '3', 5: '4', 6: '4#', 7: '5', 8: '6b', 9: '6', 10: '7b', 11: '7'
+        };
+        return degreeMap[interval] || '';
     };
 
-    // Get triad notes from RH indices with degrees
     const getTriadNotesWithDegrees = () => {
         const noteData = chord.rh.map(idx => ({ name: getNoteName(idx), degree: getNoteDegree(idx) }));
-
-        // Filter unique by degree (since New Set doesn't work on object literals)
         const uniqueNotes: { name: string; degree: string }[] = [];
         const seenDegrees = new Set<string>();
-
         noteData.forEach(n => {
             if (n.degree && !seenDegrees.has(n.degree)) {
                 uniqueNotes.push(n);
                 seenDegrees.add(n.degree);
             }
         });
-
-        // Sort by degree
         uniqueNotes.sort((a, b) => parseInt(a.degree) - parseInt(b.degree));
-        return uniqueNotes.map(n => `${n.degree} ${n.name}`).join(' - ');
+        return uniqueNotes.map(n => {
+            const displayNote = n.name.replace('b', 'b').toUpperCase().replace('B', 'b');
+            return `${n.degree} ${displayNote}`;
+        }).join(' - ');
     };
 
     const whiteKeyCount = getWhiteKeyIndex(totalKeys);
@@ -162,7 +184,7 @@ export const PianoChordViewer: React.FC<Props> = ({
                         <h3 className="text-5xl font-black text-white tracking-tighter drop-shadow-[0_4px_10px_rgba(0,0,0,0.8)]">
                             {chord.name}
                         </h3>
-                        <p className="text-xl font-bold text-white/80 mt-2 tracking-widest uppercase drop-shadow-[0_2px_5px_rgba(0,0,0,0.5)]">
+                        <p className="text-xl font-bold text-white/80 mt-2 tracking-widest drop-shadow-[0_2px_5px_rgba(0,0_0,0.5)]">
                             {getTriadNotesWithDegrees()}
                         </p>
                     </div>
@@ -177,10 +199,10 @@ export const PianoChordViewer: React.FC<Props> = ({
                                 <span className="material-symbols-rounded text-4xl">chevron_left</span>
                             </button>
                         )}
-                        {onNext && currentIndex < total - 1 && (
+                        {onNext && (
                             <button
                                 onClick={(e) => { e.stopPropagation(); onNext(); }}
-                                className="w-16 h-16 rounded-full bg-black/40 border border-white/20 backdrop-blur-md flex items-center justify-center text-white pointer-events-auto active:scale-90 transition-transform"
+                                className={`w-16 h-16 rounded-full bg-black/40 border border-white/20 backdrop-blur-md flex items-center justify-center text-white pointer-events-auto active:scale-90 transition-transform ${currentIndex >= total ? 'opacity-20' : ''}`}
                             >
                                 <span className="material-symbols-rounded text-4xl">chevron_right</span>
                             </button>
@@ -215,7 +237,7 @@ export const PianoChordViewer: React.FC<Props> = ({
                             ACORDE {currentIndex + 1} DE {total}
                         </p>
                         <div className="inline-block px-4 py-1.5 bg-white/5 rounded-full border border-white/5 mx-auto">
-                            <p className="text-[12px] font-bold text-gray-400 tracking-widest uppercase">
+                            <p className="text-[12px] font-bold text-gray-400 tracking-widest">
                                 <span className="text-[#6F4CE7]">{getTriadNotesWithDegrees()}</span>
                             </p>
                         </div>

@@ -5,7 +5,8 @@ export const DISABLE_ALL_PLAYERS = false;
 
 // URL BASE PARA ARMAZENAMENTO (Áudio e Vídeo)
 // Quando migrar para o Backblaze, basta trocar esta URL pela nova URL do Bucket
-export const STORAGE_BASE_URL = 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com';
+// export const STORAGE_BASE_URL = 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com';
+export const STORAGE_BASE_URL = 'https://sedjnyryixudxmmkeoam.supabase.co/storage/v1/object/public/avatars';
 
 // URL da foto da Lorena (IA).
 export const LORENA_AVATAR_URL = 'https://academiavqc-app.s3.us-east-005.backblazeb2.com/PNGs-JPEG/LorenaIA.png';
@@ -4478,23 +4479,7 @@ export const MODULES: Module[] = [
             }
         ]
     },
-    // Módulo de Teste: Guitarra
-    {
-        id: 'mg1',
-        courseId: 'guitarra',
-        number: '01',
-        title: 'Power Chords e Drive',
-        subtitle: 'Rock & Blues',
-        description: 'Fundamentos da guitarra elétrica.',
-        topics: [
-            {
-                id: 'g1.1',
-                title: 'O Som do Rock',
-                description: 'Power chords e timbragem básica.',
-                content: '<div class="p-8 text-center text-gray-400">Conteúdo em desenvolvimento...</div>'
-            }
-        ]
-    },
+
     // --- CURSO DE ORATÓRIA ---
     {
         id: "ora_m1",
@@ -5636,13 +5621,13 @@ export const MODULES: Module[] = [
                 id: 'p_chord_minor_triad',
                 title: 'Acordes Menores (Tríades)',
                 description: 'Tríades menores fundamentais.',
-                content: CHORD_CARD_TEMPLATE(`${STORAGE_BASE_URL}/DICIONARIO_PIANO/Acordes Menores (Triades).png`, 'Tríades Menores')
+                content: CHORD_CARD_TEMPLATE('https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/AULAS+PIANO-TECLADO/Dicion%C3%A1rio+de+Acordes/Acordes+Menores+(Triades).png', 'Tríades Menores', 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/AULAS+PIANO-TECLADO/Dicion%C3%A1rio+de+Acordes/Acordes+Menores+(Triades).png')
             },
             {
                 id: 'p_chord_first_inversion',
                 title: 'Primeira Inversão (Tríades)',
                 description: 'Inversões de tríades básicas.',
-                content: CHORD_CARD_TEMPLATE(`${STORAGE_BASE_URL}/DICIONARIO_PIANO/Primeira Inversão (Triade).png`, 'Primeira Inversão')
+                content: CHORD_CARD_TEMPLATE('https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/AULAS+PIANO-TECLADO/Dicion%C3%A1rio+de+Acordes/Primeira+Inversa%CC%83o+(Triade).png', 'Primeira Inversão', 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/AULAS+PIANO-TECLADO/Dicion%C3%A1rio+de+Acordes/Primeira+Inversa%CC%83o+(Triade).png')
             },
             {
                 id: 'p_chord_dim_triad',
@@ -5705,7 +5690,1134 @@ export const MODULES: Module[] = [
                 content: CHORD_CARD_TEMPLATE(`${STORAGE_BASE_URL}/DICIONARIO_PIANO/Acordes com 7M(9) (Forma A).png`, 'Maiores 7M(9) [A]')
             }
         ]
-    }
+    },
+    // --- CURSO: FUNDAMENTOS DA TEORIA MUSICAL ---
+    {
+        id: 'tm_m1',
+        courseId: 'teoria_musical',
+        number: '01',
+        title: 'Fundamentos do Som e da Música',
+        subtitle: 'A Base de Tudo',
+        description: 'Entenda o que é música, as propriedades do som e o sistema tonal.',
+        topics: [
+            {
+                id: 'tm_1.1',
+                title: 'O que é Música e Som?',
+                description: 'Definição, propriedades do som e elementos musicais.',
+                content: `
+            <div class="space-y-8 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
+                    <div class="relative z-10">
+                        <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                            <span class="w-8 h-8 rounded-lg bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] text-sm font-bold">1</span>
+                            O que é Música?
+                        </h3>
+                        <p class="text-sm text-gray-300 leading-relaxed">
+                            <b>Música</b> é a arte de expressar sentimentos e ideias através do <b>som</b>. É uma linguagem universal que combina sons organizados no tempo.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-lg bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] text-sm font-bold">2</span>
+                        Propriedades do Som
+                    </h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-black/20 p-4 rounded-xl border border-white/5">
+                            <strong class="text-[#0081FF] text-xs uppercase tracking-wide block mb-1">Duração</strong>
+                            <p class="text-[11px] text-gray-400">Tempo que o som permanece soando (longo ou curto).</p>
+                        </div>
+                        <div class="bg-black/20 p-4 rounded-xl border border-white/5">
+                            <strong class="text-[#FF00BC] text-xs uppercase tracking-wide block mb-1">Intensidade</strong>
+                            <p class="text-[11px] text-gray-400">Volume do som (forte ou fraco).</p>
+                        </div>
+                        <div class="bg-black/20 p-4 rounded-xl border border-white/5">
+                            <strong class="text-[#6F4CE7] text-xs uppercase tracking-wide block mb-1">Altura</strong>
+                            <p class="text-[11px] text-gray-400">Frequência do som (grave ou agudo).</p>
+                        </div>
+                        <div class="bg-black/20 p-4 rounded-xl border border-white/5">
+                            <strong class="text-[#0081FF] text-xs uppercase tracking-wide block mb-1">Timbre</strong>
+                            <p class="text-[11px] text-gray-400">A "cor" do som. Diferencia instrumentos entre si.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">Os 3 Elementos da Música</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3 p-3 bg-[#0081FF]/10 rounded-xl border border-[#0081FF]/20">
+                            <span class="material-symbols-rounded text-[#0081FF]">music_note</span>
+                            <div>
+                                <strong class="text-white text-sm">Melodia</strong>
+                                <p class="text-[11px] text-gray-400">Sequência de notas tocadas uma após a outra. É o que você cantarola.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 p-3 bg-[#6F4CE7]/10 rounded-xl border border-[#6F4CE7]/20">
+                            <span class="material-symbols-rounded text-[#6F4CE7]">queue_music</span>
+                            <div>
+                                <strong class="text-white text-sm">Harmonia</strong>
+                                <p class="text-[11px] text-gray-400">Sons tocados simultaneamente (acordes). É o suporte da melodia.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 p-3 bg-[#FF00BC]/10 rounded-xl border border-[#FF00BC]/20">
+                            <span class="material-symbols-rounded text-[#FF00BC]">timer</span>
+                            <div>
+                                <strong class="text-white text-sm">Ritmo</strong>
+                                <p class="text-[11px] text-gray-400">Organização dos sons no tempo. É a pulsação que nos faz querer dançar.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                `
+            },
+            {
+                id: 'tm_1.2',
+                title: 'Notas e Sistema Tonal',
+                description: 'As 7 notas, tons, semitons, acidentes e enarmonia.',
+                content: `
+            <div class="space-y-8 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">As 7 Notas Musicais</h3>
+                    <div class="flex justify-between items-center bg-black/30 p-4 rounded-xl border border-white/5 mb-4">
+                        <span class="text-center"><span class="block text-lg font-black text-[#0081FF]">Dó</span><span class="text-[9px] text-gray-500">C</span></span>
+                        <span class="text-center"><span class="block text-lg font-black text-[#6F4CE7]">Ré</span><span class="text-[9px] text-gray-500">D</span></span>
+                        <span class="text-center"><span class="block text-lg font-black text-[#FF00BC]">Mi</span><span class="text-[9px] text-gray-500">E</span></span>
+                        <span class="text-center"><span class="block text-lg font-black text-[#0081FF]">Fá</span><span class="text-[9px] text-gray-500">F</span></span>
+                        <span class="text-center"><span class="block text-lg font-black text-[#6F4CE7]">Sol</span><span class="text-[9px] text-gray-500">G</span></span>
+                        <span class="text-center"><span class="block text-lg font-black text-[#FF00BC]">Lá</span><span class="text-[9px] text-gray-500">A</span></span>
+                        <span class="text-center"><span class="block text-lg font-black text-[#0081FF]">Si</span><span class="text-[9px] text-gray-500">B</span></span>
+                    </div>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">Tom e Semitom</h3>
+                    <div class="grid grid-cols-2 gap-3 mb-4">
+                        <div class="bg-[#0081FF]/10 p-4 rounded-xl border border-[#0081FF]/20 text-center">
+                            <strong class="text-[#0081FF] text-sm block mb-1">Semitom (ST)</strong>
+                            <p class="text-[11px] text-gray-400">A menor distância entre duas notas.</p>
+                            <p class="text-xs text-white mt-2 font-mono">Mi→Fá | Si→Dó</p>
+                        </div>
+                        <div class="bg-[#6F4CE7]/10 p-4 rounded-xl border border-[#6F4CE7]/20 text-center">
+                            <strong class="text-[#6F4CE7] text-sm block mb-1">Tom (T)</strong>
+                            <p class="text-[11px] text-gray-400">Soma de dois semitons.</p>
+                            <p class="text-xs text-white mt-2 font-mono">Dó→Ré | Ré→Mi</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">Acidentes Musicais</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 p-3 bg-white/5 rounded-xl">
+                            <span class="text-2xl font-black text-[#0081FF] w-8 text-center">#</span>
+                            <div><strong class="text-white text-sm">Sustenido</strong><p class="text-[10px] text-gray-500">Eleva a nota em 1 semitom.</p></div>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-white/5 rounded-xl">
+                            <span class="text-2xl font-black text-[#FF00BC] w-8 text-center">b</span>
+                            <div><strong class="text-white text-sm">Bemol</strong><p class="text-[10px] text-gray-500">Abaixa a nota em 1 semitom.</p></div>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-white/5 rounded-xl">
+                            <span class="text-2xl font-black text-[#6F4CE7] w-8 text-center">♮</span>
+                            <div><strong class="text-white text-sm">Bequadro</strong><p class="text-[10px] text-gray-500">Anula o efeito do sustenido ou bemol.</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#0081FF]/10 border border-[#0081FF]/20 p-5 rounded-2xl">
+                    <h4 class="text-white font-bold text-sm mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-[#0081FF]">lightbulb</span> Enarmonia
+                    </h4>
+                    <p class="text-xs text-gray-300">Notas com <b>nomes diferentes</b> mas <b>mesmo som</b>. Exemplo: Dó# = Réb, Fá# = Solb.</p>
+                </div>
+            </div>
+                `
+            }
+        ]
+    },
+    {
+        id: 'tm_m2',
+        courseId: 'teoria_musical',
+        number: '02',
+        title: 'Notação Musical (O Código)',
+        subtitle: 'Leitura e Escrita',
+        description: 'Aprenda a ler e escrever música: pentagrama, claves, figuras e cifras.',
+        topics: [
+            {
+                id: 'tm_2.1',
+                title: 'O Pentagrama e Claves',
+                description: 'Pauta, linhas, espaços e as claves de Sol e Fá.',
+                content: `
+            <div class="space-y-8 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+                    <div class="relative z-10">
+                        <h3 class="text-xl font-bold text-white mb-4">O Pentagrama (Pauta)</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed mb-4">
+                            O pentagrama é formado por <b>5 linhas</b> e <b>4 espaços</b>, numerados de baixo para cima. É onde escrevemos as notas musicais.
+                        </p>
+                        <div class="bg-black/30 p-4 rounded-xl border border-white/5 text-center">
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2"><div class="flex-1 h-[1px] bg-white/30"></div><span class="text-[9px] text-gray-500 w-16">5ª linha</span></div>
+                                <div class="flex items-center gap-2"><div class="flex-1 h-[1px] bg-white/30"></div><span class="text-[9px] text-gray-500 w-16">4ª linha</span></div>
+                                <div class="flex items-center gap-2"><div class="flex-1 h-[1px] bg-white/30"></div><span class="text-[9px] text-gray-500 w-16">3ª linha</span></div>
+                                <div class="flex items-center gap-2"><div class="flex-1 h-[1px] bg-white/30"></div><span class="text-[9px] text-gray-500 w-16">2ª linha</span></div>
+                                <div class="flex items-center gap-2"><div class="flex-1 h-[1px] bg-white/30"></div><span class="text-[9px] text-gray-500 w-16">1ª linha</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-4">
+                    <div class="bg-[#1A202C] p-5 rounded-2xl border border-white/5 border-t-2 border-t-[#0081FF]">
+                        <h4 class="text-[#0081FF] font-bold text-sm mb-2 uppercase tracking-wide">Clave de Sol 𝄞</h4>
+                        <p class="text-xs text-gray-400 mb-2">Referência na <b>2ª linha</b> do pentagrama (nota Sol).</p>
+                        <p class="text-[10px] text-gray-500">Usada em: Violão, Guitarra, Piano (mão direita), Canto, Flauta.</p>
+                    </div>
+                    <div class="bg-[#1A202C] p-5 rounded-2xl border border-white/5 border-t-2 border-t-[#FF00BC]">
+                        <h4 class="text-[#FF00BC] font-bold text-sm mb-2 uppercase tracking-wide">Clave de Fá 𝄢</h4>
+                        <p class="text-xs text-gray-400 mb-2">Referência na <b>4ª linha</b> do pentagrama (nota Fá).</p>
+                        <p class="text-[10px] text-gray-500">Usada em: Piano (mão esquerda), Baixo, Violoncelo.</p>
+                    </div>
+                </div>
+            </div>
+                `
+            },
+            {
+                id: 'tm_2.2',
+                title: 'Figuras de Tempo e Cifras',
+                description: 'Hierarquia das notas, pausas e o sistema de cifras.',
+                content: `
+            <div class="space-y-8 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">Hierarquia das Figuras de Tempo</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white font-bold">Semibreve</span>
+                            <span class="text-xs text-[#0081FF] font-mono">4 tempos</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white font-bold">Mínima</span>
+                            <span class="text-xs text-[#0081FF] font-mono">2 tempos</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white font-bold">Semínima</span>
+                            <span class="text-xs text-[#0081FF] font-mono">1 tempo</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white font-bold">Colcheia</span>
+                            <span class="text-xs text-[#6F4CE7] font-mono">1/2 tempo</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white font-bold">Semicolcheia</span>
+                            <span class="text-xs text-[#6F4CE7] font-mono">1/4 tempo</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white font-bold">Fusa</span>
+                            <span class="text-xs text-[#FF00BC] font-mono">1/8 tempo</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white font-bold">Semifusa</span>
+                            <span class="text-xs text-[#FF00BC] font-mono">1/16 tempo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#0081FF]/10 border border-[#0081FF]/20 p-5 rounded-2xl">
+                    <h4 class="text-white font-bold text-sm mb-2">Pausas</h4>
+                    <p class="text-xs text-gray-300">Cada figura tem sua respectiva pausa com a <b>mesma duração</b>. A pausa é o valor do <b>silêncio</b> na música.</p>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">Sistema de Cifras</h3>
+                    <p class="text-xs text-gray-400 mb-4">Letras do alfabeto representando notas musicais:</p>
+                    <div class="flex justify-between items-center bg-black/30 p-4 rounded-xl border border-white/5">
+                        <span class="text-center"><span class="block text-lg font-black text-white">A</span><span class="text-[9px] text-[#0081FF]">Lá</span></span>
+                        <span class="text-center"><span class="block text-lg font-black text-white">B</span><span class="text-[9px] text-[#0081FF]">Si</span></span>
+                        <span class="text-center"><span class="block text-lg font-black text-white">C</span><span class="text-[9px] text-[#0081FF]">Dó</span></span>
+                        <span class="text-center"><span class="block text-lg font-black text-white">D</span><span class="text-[9px] text-[#0081FF]">Ré</span></span>
+                        <span class="text-center"><span class="block text-lg font-black text-white">E</span><span class="text-[9px] text-[#0081FF]">Mi</span></span>
+                        <span class="text-center"><span class="block text-lg font-black text-white">F</span><span class="text-[9px] text-[#0081FF]">Fá</span></span>
+                        <span class="text-center"><span class="block text-lg font-black text-white">G</span><span class="text-[9px] text-[#0081FF]">Sol</span></span>
+                    </div>
+                </div>
+            </div>
+                `
+            }
+        ]
+    },
+    {
+        id: 'tm_m3',
+        courseId: 'teoria_musical',
+        number: '03',
+        title: 'Ritmo e Divisão',
+        subtitle: 'Pulsação e Tempo',
+        description: 'Domine fórmulas de compasso, ligaduras, dinâmica e sinais de repetição.',
+        topics: [
+            {
+                id: 'tm_3.1',
+                title: 'Unidade de Tempo e Compasso',
+                description: 'Fórmulas de compasso, tipos de pulsação, ligaduras e pontos.',
+                content: `
+            <div class="space-y-8 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#FF00BC] blur-[80px] opacity-20"></div>
+                    <div class="relative z-10">
+                        <h3 class="text-xl font-bold text-white mb-4">Fórmula de Compasso</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed mb-4">A fórmula de compasso é representada por dois números:</p>
+                        <div class="bg-black/30 p-6 rounded-xl border border-white/5 text-center">
+                            <div class="inline-flex flex-col items-center">
+                                <span class="text-3xl font-black text-[#0081FF]">4</span>
+                                <div class="w-12 h-[2px] bg-white/40 my-1"></div>
+                                <span class="text-3xl font-black text-[#FF00BC]">4</span>
+                            </div>
+                            <div class="mt-4 grid grid-cols-2 gap-3 text-left">
+                                <div class="p-3 bg-[#0081FF]/10 rounded-lg border border-[#0081FF]/20">
+                                    <strong class="text-[#0081FF] text-[10px] uppercase block">Numerador</strong>
+                                    <p class="text-[11px] text-gray-300">Quantos tempos por compasso.</p>
+                                </div>
+                                <div class="p-3 bg-[#FF00BC]/10 rounded-lg border border-[#FF00BC]/20">
+                                    <strong class="text-[#FF00BC] text-[10px] uppercase block">Denominador</strong>
+                                    <p class="text-[11px] text-gray-300">Qual figura vale 1 tempo.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">Tipos de Compasso</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 p-3 bg-[#0081FF]/10 rounded-xl border border-[#0081FF]/20">
+                            <span class="text-xl font-black text-[#0081FF] w-8 text-center">2</span>
+                            <div><strong class="text-white text-sm">Binário</strong><p class="text-[10px] text-gray-400">Marcha, Polca – FORTE-fraco</p></div>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-[#6F4CE7]/10 rounded-xl border border-[#6F4CE7]/20">
+                            <span class="text-xl font-black text-[#6F4CE7] w-8 text-center">3</span>
+                            <div><strong class="text-white text-sm">Ternário</strong><p class="text-[10px] text-gray-400">Valsa – FORTE-fraco-fraco</p></div>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 bg-[#FF00BC]/10 rounded-xl border border-[#FF00BC]/20">
+                            <span class="text-xl font-black text-[#FF00BC] w-8 text-center">4</span>
+                            <div><strong class="text-white text-sm">Quaternário</strong><p class="text-[10px] text-gray-400">Pop, Rock – FORTE-fraco-meio forte-fraco</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-[#1A202C] p-5 rounded-2xl border border-white/5">
+                        <h4 class="text-[#0081FF] font-bold text-xs uppercase mb-2">Ligadura</h4>
+                        <p class="text-[11px] text-gray-400">Uma linha curva que une duas notas somando suas durações.</p>
+                    </div>
+                    <div class="bg-[#1A202C] p-5 rounded-2xl border border-white/5">
+                        <h4 class="text-[#6F4CE7] font-bold text-xs uppercase mb-2">Ponto de Aumento</h4>
+                        <p class="text-[11px] text-gray-400">Aumenta a duração da nota em metade do seu valor original.</p>
+                    </div>
+                </div>
+            </div>
+                `
+            },
+            {
+                id: 'tm_3.2',
+                title: 'Dinâmica e Agógica',
+                description: 'Metrônomo, andamentos, intensidade e sinais de repetição.',
+                content: `
+            <div class="space-y-8 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-[#0081FF]">speed</span> Andamentos (BPM)
+                    </h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white font-bold">Largo</span>
+                            <span class="text-xs text-gray-400 font-mono">40-60 BPM</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white font-bold">Adagio</span>
+                            <span class="text-xs text-gray-400 font-mono">66-76 BPM</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white font-bold">Andante</span>
+                            <span class="text-xs text-[#0081FF] font-mono">76-108 BPM</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white font-bold">Allegro</span>
+                            <span class="text-xs text-[#6F4CE7] font-mono">120-156 BPM</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white font-bold">Presto</span>
+                            <span class="text-xs text-[#FF00BC] font-mono">168-200 BPM</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">Dinâmica (Intensidade)</h3>
+                    <div class="flex items-center justify-between bg-black/30 p-4 rounded-xl border border-white/5">
+                        <span class="text-center"><span class="block text-lg font-black text-gray-600">pp</span><span class="text-[8px] text-gray-500">Pianíssimo</span></span>
+                        <span class="text-center"><span class="block text-lg font-black text-gray-500">p</span><span class="text-[8px] text-gray-500">Piano</span></span>
+                        <span class="text-center"><span class="block text-lg font-black text-gray-400">mp</span><span class="text-[8px] text-gray-500">Mezzo P.</span></span>
+                        <span class="text-center"><span class="block text-lg font-black text-[#0081FF]">mf</span><span class="text-[8px] text-gray-500">Mezzo F.</span></span>
+                        <span class="text-center"><span class="block text-lg font-black text-[#6F4CE7]">f</span><span class="text-[8px] text-gray-500">Forte</span></span>
+                        <span class="text-center"><span class="block text-lg font-black text-[#FF00BC]">ff</span><span class="text-[8px] text-gray-500">Fortíssimo</span></span>
+                    </div>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">Sinais de Repetição</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3 p-3 bg-white/5 rounded-xl">
+                            <span class="text-[#0081FF] font-black text-sm shrink-0">𝄆 𝄇</span>
+                            <div><strong class="text-white text-sm">Ritornello</strong><p class="text-[10px] text-gray-400">Repete o trecho entre os sinais.</p></div>
+                        </div>
+                        <div class="flex items-start gap-3 p-3 bg-white/5 rounded-xl">
+                            <span class="text-[#6F4CE7] font-black text-sm shrink-0">1. 2.</span>
+                            <div><strong class="text-white text-sm">Casas (1ª e 2ª)</strong><p class="text-[10px] text-gray-400">Na 1ª vez toca a Casa 1, na repetição pula para a Casa 2.</p></div>
+                        </div>
+                        <div class="flex items-start gap-3 p-3 bg-white/5 rounded-xl">
+                            <span class="text-[#FF00BC] font-black text-sm shrink-0">D.C.</span>
+                            <div><strong class="text-white text-sm">Da Capo</strong><p class="text-[10px] text-gray-400">Volta ao início da música.</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                `
+            }
+        ]
+    },
+    {
+        id: 'tm_m4',
+        courseId: 'teoria_musical',
+        number: '04',
+        title: 'Escala Maior (A Base da Harmonia)',
+        subtitle: 'Estrutura Diatônica',
+        description: 'Domine o padrão de tons e semitons, graus da escala e o ciclo de quintas.',
+        topics: [
+            {
+                id: 'tm_4.1',
+                title: 'Estrutura Diatônica',
+                description: 'Padrão T-T-ST-T-T-T-ST e os graus da escala.',
+                content: `
+            <div class="space-y-8 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
+                    <div class="relative z-10">
+                        <h3 class="text-xl font-bold text-white mb-4">A Fórmula da Escala Maior</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed mb-4">Toda escala maior segue o mesmo padrão de intervalos:</p>
+                        <div class="flex items-center justify-center gap-1 bg-black/30 p-4 rounded-xl border border-white/5 flex-wrap">
+                            <span class="px-3 py-2 bg-[#0081FF]/20 rounded-lg text-[#0081FF] font-black text-sm">T</span>
+                            <span class="text-gray-600">-</span>
+                            <span class="px-3 py-2 bg-[#0081FF]/20 rounded-lg text-[#0081FF] font-black text-sm">T</span>
+                            <span class="text-gray-600">-</span>
+                            <span class="px-3 py-2 bg-[#FF00BC]/20 rounded-lg text-[#FF00BC] font-black text-sm">ST</span>
+                            <span class="text-gray-600">-</span>
+                            <span class="px-3 py-2 bg-[#0081FF]/20 rounded-lg text-[#0081FF] font-black text-sm">T</span>
+                            <span class="text-gray-600">-</span>
+                            <span class="px-3 py-2 bg-[#0081FF]/20 rounded-lg text-[#0081FF] font-black text-sm">T</span>
+                            <span class="text-gray-600">-</span>
+                            <span class="px-3 py-2 bg-[#0081FF]/20 rounded-lg text-[#0081FF] font-black text-sm">T</span>
+                            <span class="text-gray-600">-</span>
+                            <span class="px-3 py-2 bg-[#FF00BC]/20 rounded-lg text-[#FF00BC] font-black text-sm">ST</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">Graus da Escala</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <div class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-[#0081FF] text-white text-xs font-bold flex items-center justify-center">I</span><span class="text-sm text-white font-bold">Tônica</span></div>
+                            <span class="text-[10px] text-gray-500">Centro tonal</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <div class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center">II</span><span class="text-sm text-white">Supertônica</span></div>
+                            <span class="text-[10px] text-gray-500">Acima da tônica</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <div class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center">III</span><span class="text-sm text-white">Mediante</span></div>
+                            <span class="text-[10px] text-gray-500">Define maior/menor</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <div class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-[#6F4CE7] text-white text-xs font-bold flex items-center justify-center">IV</span><span class="text-sm text-white font-bold">Subdominante</span></div>
+                            <span class="text-[10px] text-gray-500">Movimento</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <div class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-[#FF00BC] text-white text-xs font-bold flex items-center justify-center">V</span><span class="text-sm text-white font-bold">Dominante</span></div>
+                            <span class="text-[10px] text-gray-500">Tensão → Tônica</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <div class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center">VI</span><span class="text-sm text-white">Superdominante</span></div>
+                            <span class="text-[10px] text-gray-500">Relativa menor</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <div class="flex items-center gap-2"><span class="w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center">VII</span><span class="text-sm text-white">Sensível</span></div>
+                            <span class="text-[10px] text-gray-500">Resolve na tônica</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                `
+            },
+            {
+                id: 'tm_4.2',
+                title: 'Ciclo de Quintas e Quartas',
+                description: 'Armaduras de clave e como identificar tonalidades.',
+                content: `
+            <div class="space-y-8 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+                    <div class="relative z-10">
+                        <h3 class="text-xl font-bold text-white mb-4">Ciclo de Quintas</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed mb-4">O ciclo de quintas mostra a relação entre todas as tonalidades. A cada quinta justa ascendente, adicionamos um sustenido.</p>
+                        <div class="bg-black/30 p-4 rounded-xl border border-white/5">
+                            <p class="text-xs text-[#0081FF] font-bold mb-2">Ordem dos Sustenidos:</p>
+                            <p class="text-sm text-white font-mono tracking-wider">Fá → Dó → Sol → Ré → Lá → Mi → Si</p>
+                            <p class="text-xs text-[#FF00BC] font-bold mt-3 mb-2">Ordem dos Bemóis:</p>
+                            <p class="text-sm text-white font-mono tracking-wider">Si → Mi → Lá → Ré → Sol → Dó → Fá</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">Armaduras de Clave</h3>
+                    <p class="text-xs text-gray-400 mb-4">A armadura indica quais notas são alteradas durante toda a peça:</p>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white">Nenhum acidente</span>
+                            <span class="text-xs text-[#0081FF] font-bold">Dó Maior / Lá menor</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white">1 sustenido (Fá#)</span>
+                            <span class="text-xs text-[#0081FF] font-bold">Sol Maior / Mi menor</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white">2 sustenidos (Fá#, Dó#)</span>
+                            <span class="text-xs text-[#0081FF] font-bold">Ré Maior / Si menor</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white">1 bemol (Sib)</span>
+                            <span class="text-xs text-[#FF00BC] font-bold">Fá Maior / Ré menor</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white">2 bemóis (Sib, Mib)</span>
+                            <span class="text-xs text-[#FF00BC] font-bold">Sib Maior / Sol menor</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#0081FF]/10 border border-[#0081FF]/20 p-5 rounded-2xl">
+                    <h4 class="text-white font-bold text-sm mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-[#0081FF]">lightbulb</span> Dica Rápida
+                    </h4>
+                    <p class="text-xs text-gray-300">Para sustenidos: o <b>último sustenido + 1 semitom</b> = tom maior. Para bemóis: o <b>penúltimo bemol</b> = tom maior.</p>
+                </div>
+            </div>
+                `
+            }
+        ]
+    },
+    {
+        id: 'tm_m5',
+        courseId: 'teoria_musical',
+        number: '05',
+        title: 'Escalas Menores e Intervalos',
+        subtitle: 'Profundidade Harmônica',
+        description: 'Entenda a escala menor natural, relativas e a teoria dos intervalos.',
+        topics: [
+            {
+                id: 'tm_5.1',
+                title: 'A Escala Menor Natural',
+                description: 'Estrutura T-ST-T-T-ST-T-T e relativas maiores/menores.',
+                content: `
+            <div class="space-y-8 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#FF00BC] blur-[80px] opacity-20"></div>
+                    <div class="relative z-10">
+                        <h3 class="text-xl font-bold text-white mb-4">Fórmula da Escala Menor Natural</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed mb-4">A escala menor tem um caráter mais triste e tenso:</p>
+                        <div class="flex items-center justify-center gap-1 bg-black/30 p-4 rounded-xl border border-white/5 flex-wrap">
+                            <span class="px-3 py-2 bg-[#6F4CE7]/20 rounded-lg text-[#6F4CE7] font-black text-sm">T</span>
+                            <span class="text-gray-600">-</span>
+                            <span class="px-3 py-2 bg-[#FF00BC]/20 rounded-lg text-[#FF00BC] font-black text-sm">ST</span>
+                            <span class="text-gray-600">-</span>
+                            <span class="px-3 py-2 bg-[#6F4CE7]/20 rounded-lg text-[#6F4CE7] font-black text-sm">T</span>
+                            <span class="text-gray-600">-</span>
+                            <span class="px-3 py-2 bg-[#6F4CE7]/20 rounded-lg text-[#6F4CE7] font-black text-sm">T</span>
+                            <span class="text-gray-600">-</span>
+                            <span class="px-3 py-2 bg-[#FF00BC]/20 rounded-lg text-[#FF00BC] font-black text-sm">ST</span>
+                            <span class="text-gray-600">-</span>
+                            <span class="px-3 py-2 bg-[#6F4CE7]/20 rounded-lg text-[#6F4CE7] font-black text-sm">T</span>
+                            <span class="text-gray-600">-</span>
+                            <span class="px-3 py-2 bg-[#6F4CE7]/20 rounded-lg text-[#6F4CE7] font-black text-sm">T</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">Relativas Maior ↔ Menor</h3>
+                    <p class="text-xs text-gray-400 mb-4">Toda escala maior tem uma relativa menor que usa as mesmas notas:</p>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between p-3 bg-[#0081FF]/10 rounded-xl border border-[#0081FF]/20">
+                            <span class="text-sm text-white font-bold">Dó Maior</span>
+                            <span class="material-symbols-rounded text-gray-500 text-sm">swap_horiz</span>
+                            <span class="text-sm text-[#FF00BC] font-bold">Lá Menor</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white">Sol Maior</span>
+                            <span class="material-symbols-rounded text-gray-500 text-sm">swap_horiz</span>
+                            <span class="text-sm text-gray-300">Mi Menor</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white">Ré Maior</span>
+                            <span class="material-symbols-rounded text-gray-500 text-sm">swap_horiz</span>
+                            <span class="text-sm text-gray-300">Si Menor</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white">Fá Maior</span>
+                            <span class="material-symbols-rounded text-gray-500 text-sm">swap_horiz</span>
+                            <span class="text-sm text-gray-300">Ré Menor</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#0081FF]/10 border border-[#0081FF]/20 p-5 rounded-2xl">
+                    <h4 class="text-white font-bold text-sm mb-2 flex items-center gap-2">
+                        <span class="material-symbols-rounded text-[#0081FF]">lightbulb</span> Regra Prática
+                    </h4>
+                    <p class="text-xs text-gray-300">Para achar a relativa menor: desça <b>3 semitons</b> da tônica maior. Ex: Dó → Lá (3 ST abaixo).</p>
+                </div>
+            </div>
+                `
+            },
+            {
+                id: 'tm_5.2',
+                title: 'Teoria dos Intervalos',
+                description: 'Classificação quantitativa, qualitativa e inversão (Regra do 9).',
+                content: `
+            <div class="space-y-8 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">Classificação Quantitativa</h3>
+                    <p class="text-xs text-gray-400 mb-4">Contamos a distância entre duas notas incluindo ambas:</p>
+                    <div class="grid grid-cols-4 gap-2">
+                        <div class="bg-white/5 p-3 rounded-xl text-center"><span class="block text-lg font-black text-[#0081FF]">2ª</span><span class="text-[8px] text-gray-500">Segunda</span></div>
+                        <div class="bg-white/5 p-3 rounded-xl text-center"><span class="block text-lg font-black text-[#6F4CE7]">3ª</span><span class="text-[8px] text-gray-500">Terça</span></div>
+                        <div class="bg-white/5 p-3 rounded-xl text-center"><span class="block text-lg font-black text-[#0081FF]">4ª</span><span class="text-[8px] text-gray-500">Quarta</span></div>
+                        <div class="bg-white/5 p-3 rounded-xl text-center"><span class="block text-lg font-black text-[#FF00BC]">5ª</span><span class="text-[8px] text-gray-500">Quinta</span></div>
+                        <div class="bg-white/5 p-3 rounded-xl text-center"><span class="block text-lg font-black text-[#6F4CE7]">6ª</span><span class="text-[8px] text-gray-500">Sexta</span></div>
+                        <div class="bg-white/5 p-3 rounded-xl text-center"><span class="block text-lg font-black text-[#0081FF]">7ª</span><span class="text-[8px] text-gray-500">Sétima</span></div>
+                        <div class="bg-white/5 p-3 rounded-xl text-center col-span-2"><span class="block text-lg font-black text-[#FF00BC]">8ª</span><span class="text-[8px] text-gray-500">Oitava</span></div>
+                    </div>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">Classificação Qualitativa</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between p-3 bg-[#0081FF]/10 rounded-xl border border-[#0081FF]/20">
+                            <span class="text-sm text-white font-bold">Justos (J)</span>
+                            <span class="text-xs text-[#0081FF]">Uníssono, 4ª, 5ª, 8ª</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-[#6F4CE7]/10 rounded-xl border border-[#6F4CE7]/20">
+                            <span class="text-sm text-white font-bold">Maiores (M)</span>
+                            <span class="text-xs text-[#6F4CE7]">2ª, 3ª, 6ª, 7ª</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-[#FF00BC]/10 rounded-xl border border-[#FF00BC]/20">
+                            <span class="text-sm text-white font-bold">Menores (m)</span>
+                            <span class="text-xs text-[#FF00BC]">Maior - 1 semitom</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white">Aumentados (Aum)</span>
+                            <span class="text-xs text-gray-400">Justo/Maior + 1 ST</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white">Diminutos (Dim)</span>
+                            <span class="text-xs text-gray-400">Justo/Menor - 1 ST</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-[#1A202C] to-[#0D1117] p-6 rounded-2xl border border-white/10">
+                    <h3 class="text-lg font-bold text-white mb-3 text-center">Inversão de Intervalos</h3>
+                    <div class="bg-black/30 p-6 rounded-xl border border-white/5 text-center">
+                        <p class="text-3xl font-black text-[#0081FF] mb-2">A Regra do 9</p>
+                        <p class="text-xs text-gray-300">A soma de um intervalo com sua inversão é sempre <b>9</b>.</p>
+                        <div class="mt-4 space-y-1 text-xs text-gray-400">
+                            <p>2ª ↔ 7ª | 3ª ↔ 6ª | 4ª ↔ 5ª</p>
+                            <p class="text-[10px] text-gray-500 mt-2">Maior ↔ Menor | Aumentado ↔ Diminuto | Justo = Justo</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                `
+            }
+        ]
+    },
+    {
+        id: 'tm_m6',
+        courseId: 'teoria_musical',
+        number: '06',
+        title: 'Formação de Acordes (Tríades e Tétrades)',
+        subtitle: 'Construção Harmônica',
+        description: 'Aprenda a formar acordes maiores, menores, diminutos, aumentados e com sétima.',
+        topics: [
+            {
+                id: 'tm_6.1',
+                title: 'Tríades (Acordes de 3 notas)',
+                description: 'Formação: Fundamental + 3ª + 5ª. Tipos de tríades.',
+                content: `
+            <div class="space-y-8 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
+                    <div class="relative z-10">
+                        <h3 class="text-xl font-bold text-white mb-4">Como se Forma um Acorde?</h3>
+                        <p class="text-sm text-gray-300 leading-relaxed mb-4">Uma tríade é construída empilhando <b>terças</b> sobre uma nota fundamental:</p>
+                        <div class="bg-black/30 p-4 rounded-xl border border-white/5 text-center">
+                            <div class="flex items-center justify-center gap-3">
+                                <div class="text-center"><span class="block text-xl font-black text-[#0081FF]">1</span><span class="text-[9px] text-gray-500">Fundamental</span></div>
+                                <span class="text-gray-600 text-lg">+</span>
+                                <div class="text-center"><span class="block text-xl font-black text-[#6F4CE7]">3</span><span class="text-[9px] text-gray-500">Terça</span></div>
+                                <span class="text-gray-600 text-lg">+</span>
+                                <div class="text-center"><span class="block text-xl font-black text-[#FF00BC]">5</span><span class="text-[9px] text-gray-500">Quinta</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">Tipos de Tríades</h3>
+                    <div class="space-y-3">
+                        <div class="p-4 bg-[#0081FF]/10 rounded-xl border border-[#0081FF]/20">
+                            <div class="flex items-center justify-between mb-2">
+                                <strong class="text-[#0081FF] text-sm">Maior</strong>
+                                <span class="text-[10px] text-gray-400 font-mono">3M + 3m</span>
+                            </div>
+                            <p class="text-[11px] text-gray-300">Som brilhante e alegre. Ex: Dó-Mi-Sol (C)</p>
+                        </div>
+                        <div class="p-4 bg-[#6F4CE7]/10 rounded-xl border border-[#6F4CE7]/20">
+                            <div class="flex items-center justify-between mb-2">
+                                <strong class="text-[#6F4CE7] text-sm">Menor</strong>
+                                <span class="text-[10px] text-gray-400 font-mono">3m + 3M</span>
+                            </div>
+                            <p class="text-[11px] text-gray-300">Som triste e introspectivo. Ex: Lá-Dó-Mi (Am)</p>
+                        </div>
+                        <div class="p-4 bg-[#FF00BC]/10 rounded-xl border border-[#FF00BC]/20">
+                            <div class="flex items-center justify-between mb-2">
+                                <strong class="text-[#FF00BC] text-sm">Diminuto</strong>
+                                <span class="text-[10px] text-gray-400 font-mono">3m + 3m</span>
+                            </div>
+                            <p class="text-[11px] text-gray-300">Som tenso e instável. Ex: Si-Ré-Fá (Bdim)</p>
+                        </div>
+                        <div class="p-4 bg-white/5 rounded-xl border border-white/10">
+                            <div class="flex items-center justify-between mb-2">
+                                <strong class="text-white text-sm">Aumentado</strong>
+                                <span class="text-[10px] text-gray-400 font-mono">3M + 3M</span>
+                            </div>
+                            <p class="text-[11px] text-gray-300">Som misterioso e suspenso. Ex: Dó-Mi-Sol# (Caug)</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                `
+            },
+            {
+                id: 'tm_6.2',
+                title: 'Tétrades (Acordes de 4 notas)',
+                description: 'A sétima maior (7M), dominante (7) e inversões de acordes.',
+                content: `
+            <div class="space-y-8 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">A Sétima: Tríade + 1 nota</h3>
+                    <p class="text-xs text-gray-400 mb-4">Adicionamos uma <b>sétima</b> à tríade para criar acordes mais ricos:</p>
+                    <div class="space-y-3">
+                        <div class="p-4 bg-[#0081FF]/10 rounded-xl border border-[#0081FF]/20">
+                            <div class="flex items-center justify-between mb-2">
+                                <strong class="text-[#0081FF] text-sm">Sétima Maior (7M)</strong>
+                                <span class="text-xs text-gray-400 font-mono">Cmaj7</span>
+                            </div>
+                            <p class="text-[11px] text-gray-300">Tríade Maior + 7ª Maior. Som sofisticado e jazzy.</p>
+                            <p class="text-xs text-white mt-2 font-mono">Dó-Mi-Sol-Si</p>
+                        </div>
+                        <div class="p-4 bg-[#FF00BC]/10 rounded-xl border border-[#FF00BC]/20">
+                            <div class="flex items-center justify-between mb-2">
+                                <strong class="text-[#FF00BC] text-sm">Sétima Dominante (7)</strong>
+                                <span class="text-xs text-gray-400 font-mono">C7</span>
+                            </div>
+                            <p class="text-[11px] text-gray-300">Tríade Maior + 7ª Menor. Som tenso que pede resolução.</p>
+                            <p class="text-xs text-white mt-2 font-mono">Dó-Mi-Sol-Sib</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-lg font-bold text-white mb-4">Inversões de Acordes</h3>
+                    <p class="text-xs text-gray-400 mb-4">Mudamos qual nota fica no baixo (voz mais grave):</p>
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white font-bold">Estado Fundamental</span>
+                            <span class="text-xs text-[#0081FF]">Fundamental no baixo</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white font-bold">1ª Inversão</span>
+                            <span class="text-xs text-[#6F4CE7]">Terça no baixo</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white font-bold">2ª Inversão</span>
+                            <span class="text-xs text-[#FF00BC]">Quinta no baixo</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <span class="text-sm text-white font-bold">3ª Inversão</span>
+                            <span class="text-xs text-gray-400">Sétima no baixo (tétrades)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                `
+            },
+            {
+                id: 'tm_6.3',
+                title: 'Aplicação Prática (Piano e Guitarra)',
+                description: 'Distribuição das notas entre as mãos e no braço do instrumento.',
+                content: `
+            <div class="space-y-8 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+                    <div class="relative z-10">
+                        <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                            <span class="text-2xl">🎹</span> Piano / Teclado
+                        </h3>
+                        <div class="space-y-3">
+                            <div class="p-3 bg-white/5 rounded-xl">
+                                <strong class="text-[#0081FF] text-xs uppercase block mb-1">Mão Esquerda (ME)</strong>
+                                <p class="text-[11px] text-gray-400">Toca a fundamentação: fundamental e quinta (ou oitava).</p>
+                            </div>
+                            <div class="p-3 bg-white/5 rounded-xl">
+                                <strong class="text-[#FF00BC] text-xs uppercase block mb-1">Mão Direita (MD)</strong>
+                                <p class="text-[11px] text-gray-400">Toca o acorde completo: fundamental, terça e quinta (e sétima).</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5">
+                    <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                        <span class="text-2xl">🎸</span> Violão / Guitarra
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="p-3 bg-white/5 rounded-xl">
+                            <strong class="text-[#6F4CE7] text-xs uppercase block mb-1">Localização no Braço</strong>
+                            <p class="text-[11px] text-gray-400">Cada casa = 1 semitom. As notas se repetem a cada 12 casas (1 oitava).</p>
+                        </div>
+                        <div class="p-3 bg-white/5 rounded-xl">
+                            <strong class="text-[#0081FF] text-xs uppercase block mb-1">Shapes (Formas)</strong>
+                            <p class="text-[11px] text-gray-400">O sistema CAGED organiza os acordes em 5 formas fundamentais movíveis pelo braço.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#0081FF]/10 border border-[#0081FF]/20 p-5 rounded-2xl text-center">
+                    <span class="material-symbols-rounded text-[#0081FF] text-3xl mb-2">school</span>
+                    <h4 class="text-white font-bold text-sm mb-2">Parabéns!</h4>
+                    <p class="text-xs text-gray-300">Você concluiu os fundamentos da teoria musical. Use o Dicionário de Acordes do seu curso de instrumento para praticar!</p>
+                </div>
+            </div>
+                `
+            }
+        ]
+    },
+    {
+        id: 'tm_m7',
+        courseId: 'teoria_musical',
+        number: '07',
+        title: 'Quiz de Fixação',
+        subtitle: 'Teste seus Conhecimentos',
+        description: 'Questionário de avaliação e checklist de prática para consolidar tudo que você aprendeu.',
+        topics: [
+            {
+                id: 'tm_7.1',
+                title: 'Questionário de Avaliação',
+                description: '5 questões para testar seus conhecimentos de teoria musical.',
+                content: `
+            <style>
+                .quiz-q input[type="radio"] { display: none !important; }
+                .quiz-q .q-feedback { display: none !important; max-height: 0; overflow: hidden; }
+                .quiz-q .q-card { cursor: pointer; transition: all 0.2s; }
+                .quiz-q .q-card:hover { background: rgba(255,255,255,0.08); }
+                .quiz-q input[type="radio"]:checked + .q-card { pointer-events: none; }
+                .quiz-q input[type="radio"]:checked + .q-card .q-feedback { display: block !important; max-height: 100px; overflow: visible; }
+                .quiz-q input[type="radio"]:checked + .q-card.q-right { background: rgba(34,197,94,0.12) !important; border-color: rgba(34,197,94,0.4) !important; }
+                .quiz-q input[type="radio"]:checked + .q-card.q-wrong { background: rgba(239,68,68,0.12) !important; border-color: rgba(239,68,68,0.4) !important; }
+                .quiz-q input[type="radio"]:checked + .q-card.q-right .q-circle { background: #22C55E !important; }
+                .quiz-q input[type="radio"]:checked + .q-card.q-wrong .q-circle { background: #EF4444 !important; }
+            </style>
+            <div class="space-y-6 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
+                    <div class="relative z-10 text-center">
+                        <span class="material-symbols-rounded text-[#0081FF] text-4xl mb-2">quiz</span>
+                        <h3 class="text-xl font-bold text-white mb-2">🧠 Questionário de Fixação</h3>
+                        <p class="text-xs text-gray-400">Toque na alternativa que você acredita ser a correta para revelar a resposta!</p>
+                    </div>
+                </div>
+
+                <!-- Q1 -->
+                <div class="bg-[#1A202C] p-5 rounded-2xl border border-white/5">
+                    <div class="flex items-start gap-3 mb-4">
+                        <span class="w-8 h-8 rounded-lg bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] text-sm font-bold shrink-0">Q1</span>
+                        <p class="text-sm text-white font-bold leading-snug">Qual é o padrão de intervalos da escala Maior?</p>
+                    </div>
+                    <div class="space-y-2 quiz-q">
+                        <input type="radio" name="q1" id="q1a">
+                        <label for="q1a" class="q-card q-wrong block p-3 bg-white/5 rounded-xl border border-white/5">
+                            <div class="flex items-center gap-3">
+                                <span class="q-circle w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center shrink-0">A</span>
+                                <span class="text-xs text-gray-300 font-mono">T - ST - T - T - T - ST - T</span>
+                            </div>
+                            <div class="q-feedback mt-2 text-xs text-red-400 font-bold">❌ Incorreto. O padrão correto é T-T-ST-T-T-T-ST.</div>
+                        </label>
+
+                        <input type="radio" name="q1" id="q1b">
+                        <label for="q1b" class="q-card q-right block p-3 bg-white/5 rounded-xl border border-white/5">
+                            <div class="flex items-center gap-3">
+                                <span class="q-circle w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center shrink-0">B</span>
+                                <span class="text-xs text-gray-300 font-mono">T - T - ST - T - T - T - ST</span>
+                            </div>
+                            <div class="q-feedback mt-2 text-xs text-green-400 font-bold">✅ Correto! Este é o padrão da escala maior.</div>
+                        </label>
+
+                        <input type="radio" name="q1" id="q1c">
+                        <label for="q1c" class="q-card q-wrong block p-3 bg-white/5 rounded-xl border border-white/5">
+                            <div class="flex items-center gap-3">
+                                <span class="q-circle w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center shrink-0">C</span>
+                                <span class="text-xs text-gray-300 font-mono">ST - T - T - ST - T - T - T</span>
+                            </div>
+                            <div class="q-feedback mt-2 text-xs text-red-400 font-bold">❌ Incorreto. Este é outro padrão.</div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Q2 -->
+                <div class="bg-[#1A202C] p-5 rounded-2xl border border-white/5">
+                    <div class="flex items-start gap-3 mb-4">
+                        <span class="w-8 h-8 rounded-lg bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] text-sm font-bold shrink-0">Q2</span>
+                        <p class="text-sm text-white font-bold leading-snug">Quais são os Graus Tonais de uma escala?</p>
+                    </div>
+                    <div class="space-y-2 quiz-q">
+                        <input type="radio" name="q2" id="q2a">
+                        <label for="q2a" class="q-card q-wrong block p-3 bg-white/5 rounded-xl border border-white/5">
+                            <div class="flex items-center gap-3">
+                                <span class="q-circle w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center shrink-0">A</span>
+                                <span class="text-xs text-gray-300">II, III e VI</span>
+                            </div>
+                            <div class="q-feedback mt-2 text-xs text-red-400 font-bold">❌ Esses são graus modais, não tonais.</div>
+                        </label>
+
+                        <input type="radio" name="q2" id="q2b">
+                        <label for="q2b" class="q-card q-right block p-3 bg-white/5 rounded-xl border border-white/5">
+                            <div class="flex items-center gap-3">
+                                <span class="q-circle w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center shrink-0">B</span>
+                                <span class="text-xs text-gray-300">I, IV e V (Tônica, Subdominante, Dominante)</span>
+                            </div>
+                            <div class="q-feedback mt-2 text-xs text-green-400 font-bold">✅ Correto! Os graus tonais são I, IV e V.</div>
+                        </label>
+
+                        <input type="radio" name="q2" id="q2c">
+                        <label for="q2c" class="q-card q-wrong block p-3 bg-white/5 rounded-xl border border-white/5">
+                            <div class="flex items-center gap-3">
+                                <span class="q-circle w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center shrink-0">C</span>
+                                <span class="text-xs text-gray-300">III, VI e VII</span>
+                            </div>
+                            <div class="q-feedback mt-2 text-xs text-red-400 font-bold">❌ Incorreto.</div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Q3 -->
+                <div class="bg-[#1A202C] p-5 rounded-2xl border border-white/5">
+                    <div class="flex items-start gap-3 mb-4">
+                        <span class="w-8 h-8 rounded-lg bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC] text-sm font-bold shrink-0">Q3</span>
+                        <p class="text-sm text-white font-bold leading-snug">O que é Enarmonia?</p>
+                    </div>
+                    <div class="space-y-2 quiz-q">
+                        <input type="radio" name="q3" id="q3a">
+                        <label for="q3a" class="q-card q-wrong block p-3 bg-white/5 rounded-xl border border-white/5">
+                            <div class="flex items-center gap-3">
+                                <span class="q-circle w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center shrink-0">A</span>
+                                <span class="text-xs text-gray-300">Quando duas notas tocam juntas.</span>
+                            </div>
+                            <div class="q-feedback mt-2 text-xs text-red-400 font-bold">❌ Isso descreve harmonia, não enarmonia.</div>
+                        </label>
+
+                        <input type="radio" name="q3" id="q3b">
+                        <label for="q3b" class="q-card q-wrong block p-3 bg-white/5 rounded-xl border border-white/5">
+                            <div class="flex items-center gap-3">
+                                <span class="q-circle w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center shrink-0">B</span>
+                                <span class="text-xs text-gray-300">A distância entre um tom e um semitom.</span>
+                            </div>
+                            <div class="q-feedback mt-2 text-xs text-red-400 font-bold">❌ Isso descreve intervalos.</div>
+                        </label>
+
+                        <input type="radio" name="q3" id="q3c">
+                        <label for="q3c" class="q-card q-right block p-3 bg-white/5 rounded-xl border border-white/5">
+                            <div class="flex items-center gap-3">
+                                <span class="q-circle w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center shrink-0">C</span>
+                                <span class="text-xs text-gray-300">Notas com nomes diferentes para o mesmo som (ex: Dó# e Réb).</span>
+                            </div>
+                            <div class="q-feedback mt-2 text-xs text-green-400 font-bold">✅ Correto! Enarmonia = mesmo som, nomes diferentes.</div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Q4 -->
+                <div class="bg-[#1A202C] p-5 rounded-2xl border border-white/5">
+                    <div class="flex items-start gap-3 mb-4">
+                        <span class="w-8 h-8 rounded-lg bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] text-sm font-bold shrink-0">Q4</span>
+                        <p class="text-sm text-white font-bold leading-snug">Qual a regra de inversão de um intervalo de 3ª Maior?</p>
+                    </div>
+                    <div class="space-y-2 quiz-q">
+                        <input type="radio" name="q4" id="q4a">
+                        <label for="q4a" class="q-card q-right block p-3 bg-white/5 rounded-xl border border-white/5">
+                            <div class="flex items-center gap-3">
+                                <span class="q-circle w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center shrink-0">A</span>
+                                <span class="text-xs text-gray-300">Torna-se uma 6ª Menor.</span>
+                            </div>
+                            <div class="q-feedback mt-2 text-xs text-green-400 font-bold">✅ Correto! Regra do 9: 3+6=9 e Maior↔Menor.</div>
+                        </label>
+
+                        <input type="radio" name="q4" id="q4b">
+                        <label for="q4b" class="q-card q-wrong block p-3 bg-white/5 rounded-xl border border-white/5">
+                            <div class="flex items-center gap-3">
+                                <span class="q-circle w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center shrink-0">B</span>
+                                <span class="text-xs text-gray-300">Torna-se uma 5ª Justa.</span>
+                            </div>
+                            <div class="q-feedback mt-2 text-xs text-red-400 font-bold">❌ Pela Regra do 9, 3ª inverte para 6ª.</div>
+                        </label>
+
+                        <input type="radio" name="q4" id="q4c">
+                        <label for="q4c" class="q-card q-wrong block p-3 bg-white/5 rounded-xl border border-white/5">
+                            <div class="flex items-center gap-3">
+                                <span class="q-circle w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center shrink-0">C</span>
+                                <span class="text-xs text-gray-300">Torna-se uma 7ª Menor.</span>
+                            </div>
+                            <div class="q-feedback mt-2 text-xs text-red-400 font-bold">❌ Incorreto. 3+7≠9.</div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Q5 -->
+                <div class="bg-[#1A202C] p-5 rounded-2xl border border-white/5">
+                    <div class="flex items-start gap-3 mb-4">
+                        <span class="w-8 h-8 rounded-lg bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] text-sm font-bold shrink-0">Q5</span>
+                        <p class="text-sm text-white font-bold leading-snug">Como se forma uma Tríade Diminuta?</p>
+                    </div>
+                    <div class="space-y-2 quiz-q">
+                        <input type="radio" name="q5" id="q5a">
+                        <label for="q5a" class="q-card q-wrong block p-3 bg-white/5 rounded-xl border border-white/5">
+                            <div class="flex items-center gap-3">
+                                <span class="q-circle w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center shrink-0">A</span>
+                                <span class="text-xs text-gray-300 font-mono">1, 3, 5 (Tríade Maior)</span>
+                            </div>
+                            <div class="q-feedback mt-2 text-xs text-red-400 font-bold">❌ Essa é a formação da Tríade Maior.</div>
+                        </label>
+
+                        <input type="radio" name="q5" id="q5b">
+                        <label for="q5b" class="q-card q-wrong block p-3 bg-white/5 rounded-xl border border-white/5">
+                            <div class="flex items-center gap-3">
+                                <span class="q-circle w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center shrink-0">B</span>
+                                <span class="text-xs text-gray-300 font-mono">1, 3b, 5 (Tríade Menor)</span>
+                            </div>
+                            <div class="q-feedback mt-2 text-xs text-red-400 font-bold">❌ Essa é a Tríade Menor (só a 3ª é bemol).</div>
+                        </label>
+
+                        <input type="radio" name="q5" id="q5c">
+                        <label for="q5c" class="q-card q-right block p-3 bg-white/5 rounded-xl border border-white/5">
+                            <div class="flex items-center gap-3">
+                                <span class="q-circle w-6 h-6 rounded-full bg-white/10 text-white text-xs font-bold flex items-center justify-center shrink-0">C</span>
+                                <span class="text-xs text-gray-300 font-mono">1, 3b, 5b (3m + 3m)</span>
+                            </div>
+                            <div class="q-feedback mt-2 text-xs text-green-400 font-bold">✅ Correto! Diminuta = duas terças menores empilhadas.</div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+                `
+            },
+            {
+                id: 'tm_7.2',
+                title: 'Prática Sugerida (Checklist)',
+                description: 'Exercícios práticos para consolidar o aprendizado no instrumento.',
+                content: `
+            <div class="space-y-6 font-sans">
+                <div class="bg-[#1A202C] p-6 rounded-2xl border border-white/5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-[#6F4CE7] blur-[80px] opacity-20"></div>
+                    <div class="relative z-10 text-center">
+                        <span class="text-4xl mb-2 block">🎸</span>
+                        <h3 class="text-xl font-bold text-white mb-2">Checklist de Prática</h3>
+                        <p class="text-xs text-gray-400">Aplique no seu instrumento tudo que aprendeu. Marque mentalmente cada etapa concluída!</p>
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex items-start gap-4 p-4 bg-[#1A202C] rounded-2xl border border-white/5 hover:border-[#0081FF]/30 transition-colors">
+                        <div class="w-10 h-10 rounded-xl bg-[#0081FF]/20 flex items-center justify-center shrink-0">
+                            <span class="text-[#0081FF] font-black text-sm">1</span>
+                        </div>
+                        <div>
+                            <strong class="text-white text-sm block mb-1">Identificar as 7 Notas Naturais</strong>
+                            <p class="text-[11px] text-gray-400">Localize visualmente no seu instrumento todas as notas: Dó, Ré, Mi, Fá, Sol, Lá, Si.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4 p-4 bg-[#1A202C] rounded-2xl border border-white/5 hover:border-[#6F4CE7]/30 transition-colors">
+                        <div class="w-10 h-10 rounded-xl bg-[#6F4CE7]/20 flex items-center justify-center shrink-0">
+                            <span class="text-[#6F4CE7] font-black text-sm">2</span>
+                        </div>
+                        <div>
+                            <strong class="text-white text-sm block mb-1">Montar a Escala de Dó Maior</strong>
+                            <p class="text-[11px] text-gray-400">Siga o padrão <b>T-T-ST-T-T-T-ST</b> partindo de Dó. Confirme que as notas são: Dó-Ré-Mi-Fá-Sol-Lá-Si-Dó.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4 p-4 bg-[#1A202C] rounded-2xl border border-white/5 hover:border-[#FF00BC]/30 transition-colors">
+                        <div class="w-10 h-10 rounded-xl bg-[#FF00BC]/20 flex items-center justify-center shrink-0">
+                            <span class="text-[#FF00BC] font-black text-sm">3</span>
+                        </div>
+                        <div>
+                            <strong class="text-white text-sm block mb-1">Tocar a Escala Relativa de Lá Menor</strong>
+                            <p class="text-[11px] text-gray-400">Use as mesmas notas de Dó Maior, mas começando por Lá: Lá-Si-Dó-Ré-Mi-Fá-Sol-Lá.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4 p-4 bg-[#1A202C] rounded-2xl border border-white/5 hover:border-[#0081FF]/30 transition-colors">
+                        <div class="w-10 h-10 rounded-xl bg-[#0081FF]/20 flex items-center justify-center shrink-0">
+                            <span class="text-[#0081FF] font-black text-sm">4</span>
+                        </div>
+                        <div>
+                            <strong class="text-white text-sm block mb-1">Localizar Intervalos (5ª Justa e 3ª Maior)</strong>
+                            <p class="text-[11px] text-gray-400">A partir de diferentes notas, encontre a 5ª Justa (7 semitons) e a 3ª Maior (4 semitons) em várias regiões.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start gap-4 p-4 bg-[#1A202C] rounded-2xl border border-white/5 hover:border-[#6F4CE7]/30 transition-colors">
+                        <div class="w-10 h-10 rounded-xl bg-[#6F4CE7]/20 flex items-center justify-center shrink-0">
+                            <span class="text-[#6F4CE7] font-black text-sm">5</span>
+                        </div>
+                        <div>
+                            <strong class="text-white text-sm block mb-1">Tríades Maiores no Ciclo de Quintas</strong>
+                            <p class="text-[11px] text-gray-400">Execute as tríades maiores em todas as 12 tonalidades seguindo o ciclo: C → G → D → A → E → B → F#/Gb → Db → Ab → Eb → Bb → F.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-br from-[#0081FF]/10 to-[#6F4CE7]/10 border border-[#0081FF]/20 p-5 rounded-2xl text-center">
+                    <span class="material-symbols-rounded text-[#0081FF] text-3xl mb-2">emoji_events</span>
+                    <h4 class="text-white font-bold text-sm mb-2">Missão Completa!</h4>
+                    <p class="text-xs text-gray-300">Se completou todos os itens acima, você possui uma base sólida de teoria musical. Continue praticando e explore os módulos do seu curso de instrumento!</p>
+                </div>
+            </div>
+                `
+            }
+        ]
+    },
 ];
 
 // -----------------------------------------------------------
@@ -6133,6 +7245,45 @@ export const PIANO_CHORDS: Record<string, { title: string, chords: { name: strin
             { name: 'A Maior', lh: [9, 16], rh: [21, 25, 28] },
             { name: 'A# / Bb Maior', lh: [10, 17], rh: [22, 26, 29] },
             { name: 'B Maior', lh: [11, 18], rh: [23, 27, 30] },
+        ]
+    },
+    'p_chord_minor_triad': {
+        title: 'Acordes Menores (Tríades)',
+        chords: [
+            { name: 'C Menor', lh: [0, 7], rh: [12, 15, 19] },
+            { name: 'C# Menor', lh: [1, 8], rh: [13, 16, 20] },
+            { name: 'Db Menor', lh: [1, 8], rh: [13, 16, 20] },
+            { name: 'D Menor', lh: [2, 9], rh: [14, 17, 21] },
+            { name: 'D# Menor', lh: [3, 10], rh: [15, 18, 22] },
+            { name: 'Eb Menor', lh: [3, 10], rh: [15, 18, 22] },
+            { name: 'E Menor', lh: [4, 11], rh: [16, 19, 23] },
+            { name: 'F Menor', lh: [5, 12], rh: [17, 20, 24] },
+            { name: 'F# Menor', lh: [6, 13], rh: [18, 21, 25] },
+            { name: 'Gb Menor', lh: [6, 13], rh: [18, 21, 25] },
+            { name: 'G Menor', lh: [7, 14], rh: [19, 22, 26] },
+            { name: 'G# Menor', lh: [8, 15], rh: [20, 23, 27] },
+            { name: 'Ab Menor', lh: [8, 15], rh: [20, 23, 27] },
+            { name: 'A Menor', lh: [9, 16], rh: [21, 24, 28] },
+            { name: 'A# Menor', lh: [10, 17], rh: [22, 25, 29] },
+            { name: 'Bb Menor', lh: [10, 17], rh: [22, 25, 29] },
+            { name: 'B Menor', lh: [11, 18], rh: [23, 26, 30] },
+        ]
+    },
+    'p_chord_first_inversion': {
+        title: 'Primeira Inversão (Tríades)',
+        chords: [
+            { name: 'C/E', lh: [4, 12], rh: [16, 19, 24] },
+            { name: 'C#/F  Db/F', lh: [5, 13], rh: [17, 20, 25] },
+            { name: 'D/F#', lh: [6, 14], rh: [18, 21, 26] },
+            { name: 'D#/G  Eb/G', lh: [7, 15], rh: [19, 22, 27] },
+            { name: 'E/G#', lh: [8, 16], rh: [20, 23, 28] },
+            { name: 'F/A', lh: [9, 17], rh: [21, 24, 29] },
+            { name: 'F#/A#  Gb/Bb', lh: [10, 18], rh: [22, 25, 30] },
+            { name: 'G/B', lh: [11, 19], rh: [23, 26, 31] },
+            { name: 'G#/C  Ab/C', lh: [12, 20], rh: [24, 27, 32] },
+            { name: 'A/C#', lh: [13, 21], rh: [25, 28, 33] },
+            { name: 'A#/D  Bb/D', lh: [14, 22], rh: [26, 29, 34] },
+            { name: 'B/D#', lh: [15, 23], rh: [27, 30, 35] },
         ]
     }
 };

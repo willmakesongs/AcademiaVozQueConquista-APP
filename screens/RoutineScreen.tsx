@@ -7,20 +7,38 @@ interface Props {
 }
 
 // Jan 2, 2026 is Friday.
-const WEEK_DAYS = [
-  { day: 'Seg', date: '29', active: false }, // Dec
-  { day: 'Ter', date: '30', active: false }, // Dec
-  { day: 'Qua', date: '31', active: false }, // Dec
-  { day: 'Qui', date: '01', active: false }, // Jan
-  { day: 'Sex', date: '02', active: true }, // Jan (Today)
-  { day: 'Sáb', date: '03', active: false }, // Jan
-  { day: 'Dom', date: '04', active: false }, // Jan
-];
+// Helper to generate current week starting from Monday
+const getWeekDays = () => {
+  const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+  const weekDays = [];
+  const today = new Date();
+
+  // Find current Monday
+  const dayOfWeek = today.getDay(); // 0 (Sun) to 6 (Sat)
+  const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+  const monday = new Date(today.setDate(diff));
+
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + i);
+    const dayName = days[date.getDay()];
+    const dateStr = date.getDate().toString().padStart(2, '0');
+    weekDays.push({
+      day: dayName === 'Seg' ? 'Seg' : dayName, // Just for consistency
+      date: dateStr,
+      fullDate: date.toISOString().split('T')[0] // Useful for storage if needed
+    });
+  }
+  return weekDays;
+};
 
 const CATEGORIES = ['Aquecimento', 'Técnica', 'Repertório', 'Saúde Vocal'];
 
 export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
-  const [selectedDate, setSelectedDate] = useState('02');
+  const weekDaysSnapshot = React.useMemo(() => getWeekDays(), []);
+  const todayStr = new Date().getDate().toString().padStart(2, '0');
+
+  const [selectedDate, setSelectedDate] = useState(todayStr);
 
   // INICIALIZAÇÃO COM LOCAL STORAGE
   // Se houver dados salvos, usa eles. Se não, usa o INITIAL_TASKS.
@@ -43,7 +61,7 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
   const [newTaskCategory, setNewTaskCategory] = useState('Técnica');
   const [newTaskTime, setNewTaskTime] = useState('10:00');
   const [newTaskDuration, setNewTaskDuration] = useState('15');
-  const [newTaskDate, setNewTaskDate] = useState('02');
+  const [newTaskDate, setNewTaskDate] = useState(todayStr);
 
   // PERSISTÊNCIA AUTOMÁTICA
   // Sempre que 'tasks' mudar (adicionar, editar, excluir), salva no localStorage
@@ -172,13 +190,13 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
       {/* Calendar Strip */}
       <div className="pl-6 mb-8 overflow-x-auto hide-scrollbar">
         <div className="flex gap-3 min-w-max pr-6">
-          {WEEK_DAYS.map((item) => (
+          {weekDaysSnapshot.map((item) => (
             <button
               key={item.date}
               onClick={() => setSelectedDate(item.date)}
               className={`flex flex-col items-center justify-center w-14 h-20 rounded-2xl border transition-all ${selectedDate === item.date
-                  ? 'bg-[#FF00BC] border-[#FF00BC] text-white shadow-[0_4px_20px_rgba(255,0,188,0.4)] transform scale-105'
-                  : 'bg-[#1A202C] border-white/5 text-gray-400 hover:bg-white/5'
+                ? 'bg-[#FF00BC] border-[#FF00BC] text-white shadow-[0_4px_20px_rgba(255,0,188,0.4)] transform scale-105'
+                : 'bg-[#1A202C] border-white/5 text-gray-400 hover:bg-white/5'
                 }`}
             >
               <span className="text-xs font-medium mb-1">{item.day}</span>
@@ -248,8 +266,8 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
                     <button
                       onClick={() => toggleTaskStatus(task.id)}
                       className={`absolute left-0 top-1 w-10 h-10 rounded-full border-4 border-[#101622] flex items-center justify-center z-10 transition-colors ${task.status === 'completed' ? 'bg-[#0081FF] text-white' :
-                          task.status === 'pending' ? 'bg-[#FF00BC] text-white hover:bg-[#FF00BC]/80' :
-                            'bg-[#1A202C] text-gray-600 border-white/5'
+                        task.status === 'pending' ? 'bg-[#FF00BC] text-white hover:bg-[#FF00BC]/80' :
+                          'bg-[#1A202C] text-gray-600 border-white/5'
                         }`}
                     >
                       <span className="material-symbols-rounded text-lg">
@@ -260,10 +278,10 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
 
                     {/* Card */}
                     <div
-                      onClick={() => task.status !== 'locked' && onNavigate(Screen.PLAYER)}
+                      onClick={() => task.status !== 'locked' && handleOpenEditModal(task)}
                       className={`p-4 rounded-xl border transition-all cursor-pointer group relative ${task.status === 'pending'
-                          ? 'bg-[#1A202C] border-[#FF00BC]/50 shadow-[0_0_20px_rgba(255,0,188,0.1)]'
-                          : 'bg-[#1A202C]/50 border-white/5 opacity-80'
+                        ? 'bg-[#1A202C] border-[#FF00BC]/50 shadow-[0_0_20px_rgba(255,0,188,0.1)]'
+                        : 'bg-[#1A202C]/50 border-white/5 opacity-80'
                         }`}
                     >
                       {/* MORE OPTIONS BUTTON CONTAINER */}
@@ -370,8 +388,8 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
                       key={cat}
                       onClick={() => setNewTaskCategory(cat)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${newTaskCategory === cat
-                          ? 'bg-[#6F4CE7] border-[#6F4CE7] text-white'
-                          : 'bg-[#101622] border-white/10 text-gray-400 hover:text-white'
+                        ? 'bg-[#6F4CE7] border-[#6F4CE7] text-white'
+                        : 'bg-[#101622] border-white/10 text-gray-400 hover:text-white'
                         }`}
                     >
                       {cat}
@@ -388,7 +406,7 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
                     onChange={(e) => setNewTaskDate(e.target.value)}
                     className="w-full h-10 bg-[#101622] rounded-xl border border-white/10 px-3 text-white text-sm focus:outline-none focus:border-[#6F4CE7]"
                   >
-                    {WEEK_DAYS.map(d => (
+                    {weekDaysSnapshot.map(d => (
                       <option key={d.date} value={d.date}>{d.day} - dia {d.date}</option>
                     ))}
                   </select>

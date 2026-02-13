@@ -28,7 +28,12 @@ async function listModels() {
         // Hack: The SDK doesn't expose listModels directly globally easily in all versions, 
         // but fully supported in v1beta check.
 
-        const modelsToCheck = ["gemini-1.5-flash", "gemini-pro", "gemini-1.0-pro", "gemini-1.5-pro", "gemini-1.5-flash-latest"];
+        const modelsToCheck = [
+            "gemini-2.0-flash",
+            "gemini-2.5-flash",
+            "gemini-3-flash-preview",
+            "gemini-1.5-flash"
+        ];
 
         for (const modelName of modelsToCheck) {
             console.log(`\nTesting model: ${modelName}`);

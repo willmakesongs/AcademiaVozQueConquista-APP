@@ -19,6 +19,7 @@ import Navigation from '../components/CAGED/Navigation';
 
 // CAGED Services
 import { preloadGuitarSamples, initAudio, setMetronomeVolume, playMetronomeSound, preloadDrumSamples } from '../services/CAGED/audio';
+import { GuitarTuner } from '../components/Studio/GuitarTuner';
 
 interface Props {
     onNavigate: (screen: Screen) => void;
@@ -469,35 +470,23 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
         setTimeout(() => setPixCopyStatus('Copiar Chave'), 2000);
     };
 
-    const uploadToB2 = async (file: Blob | File, folder: string, filename: string): Promise<string> => {
-        // 1. Get Presigned URL from Edge Function
-        const { data, error: funcError } = await supabase.functions.invoke('b2-proxy', {
-            body: {
-                filename,
-                contentType: file.type || 'image/jpeg',
-                folder
-            }
-        });
+    const uploadToSupabase = async (file: Blob | File, filename: string): Promise<string> => {
+        const { data, error } = await supabase.storage
+            .from('avatars')
+            .upload(`${user?.id}/${filename}`, file, {
+                cacheControl: '3600',
+                upsert: true
+            });
 
-        if (funcError || !data?.url) {
-            throw new Error(`Failed to get upload URL: ${funcError?.message || 'Unknown error'}`);
+        if (error) {
+            throw error;
         }
 
-        // 2. Upload directly to B2 via PUT
-        const uploadResponse = await fetch(data.url, {
-            method: 'PUT',
-            body: file,
-            headers: {
-                'Content-Type': file.type || 'image/jpeg'
-            }
-        });
+        const { data: publicData } = supabase.storage
+            .from('avatars')
+            .getPublicUrl(data.path);
 
-        if (!uploadResponse.ok) {
-            throw new Error(`Upload failed: ${uploadResponse.statusText}`);
-        }
-
-        // 3. Construct Public URL
-        return `${STORAGE_BASE_URL}/${data.path}`;
+        return publicData.publicUrl;
     };
 
     const handlePhotoCapture = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -544,10 +533,10 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                 reader.readAsDataURL(file);
             });
 
-            // 2. Upload to B2 via Proxy
+            // 2. Upload to Supabase Storage
             const fileExt = 'jpg';
             const fileName = `avatar_${Date.now()}.${fileExt}`;
-            const publicUrl = await uploadToB2(compressedBlob, 'avatars', fileName);
+            const publicUrl = await uploadToSupabase(compressedBlob, fileName);
 
             // 4. Update Profile in context
             await updateProfileAvatar(publicUrl);
@@ -608,9 +597,9 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                 }, 'image/png');
             });
 
-            // 2. Upload to B2 via Proxy
+            // 2. Upload to Supabase Storage
             const fileName = `signature_${user.id}_${Date.now()}.png`;
-            const publicUrl = await uploadToB2(blob, 'signatures', fileName);
+            const publicUrl = await uploadToSupabase(blob, fileName);
 
             // 4. Update Profile
             const { error: updateError } = await supabase
@@ -639,19 +628,26 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
         if (!file || !user) return;
 
         try {
-            // 1. Validar tamanho/tipo se necessário
+            // 1. Validar tamanho/tipo
             if (file.size > 5 * 1024 * 1024) { // 5MB
                 alert('O arquivo deve ter no máximo 5MB.');
                 return;
             }
 
-            // 2. Upload para B2 via Proxy
+            // 2. Upload para bucket PRIVADO 'receipts'
             const fileExt = file.name.split('.').pop() || 'jpg';
-            const fileName = `receipt_${user.id}_${Date.now()}.${fileExt}`;
-            const publicUrl = await uploadToB2(file, 'receipts', fileName);
+            const filePath = `${user.id}/receipt_${Date.now()}.${fileExt}`;
 
-            // 4. Inserir no Banco de Dados
-            // Sanitizar o valor numérico (removendo vírgulas que causam erro no Postgres)
+            const { error: uploadError } = await supabase.storage
+                .from('receipts')
+                .upload(filePath, file, {
+                    cacheControl: '3600',
+                    upsert: false
+                });
+
+            if (uploadError) throw uploadError;
+
+            // 3. Inserir no Banco de Dados (armazena path, não URL pública)
             const rawAmount = String(user.amount || '97');
             const numericAmount = parseFloat(rawAmount.replace(',', '.'));
 
@@ -660,21 +656,20 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                 .insert({
                     user_id: user.id,
                     amount: isNaN(numericAmount) ? 97 : numericAmount,
-                    receipt_url: publicUrl,
+                    receipt_url: filePath,
                     status: 'pending'
                 });
 
             if (dbError) throw dbError;
 
-            // 5. Redirecionar para WhatsApp (Nova Estratégia)
+            // 4. WhatsApp — avisa professor sem expor link do comprovante
             const teacherPhone = '5535997565329';
-            const message = `Segue o recibo de pagamento referente às minhas aulas de canto.\n\nComprovante: ${publicUrl}`;
+            const message = `Olá! Acabei de enviar o comprovante de pagamento referente às minhas aulas pelo app. Por favor, confira no painel do VQC App. 🎵`;
             const encodedMessage = encodeURIComponent(message);
             const whatsappUrl = `https://wa.me/${teacherPhone}?text=${encodedMessage}`;
 
-            // Abrir WhatsApp e avisar o usuário
             window.open(whatsappUrl, '_blank');
-            alert('Comprovante enviado! Abrindo o WhatsApp para avisar o professor.');
+            alert('Comprovante enviado com segurança! Abrindo o WhatsApp para avisar o professor.');
             setActiveView('menu');
 
         } catch (error: any) {
@@ -811,6 +806,18 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                         </button>
 
                         <button
+                            onClick={() => setActiveView('tuner')}
+                            className="bg-[#1A202C] p-4 rounded-2xl border border-white/5 hover:border-green-500/50 transition-all group text-left relative overflow-hidden hover:shadow-lg hover:shadow-green-900/20"
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-br from-green-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center text-green-500 mb-3 group-hover:scale-110 transition-transform">
+                                <span className="material-symbols-rounded">graphic_eq</span>
+                            </div>
+                            <h4 className="font-bold text-white text-sm">Afinador 440Hz</h4>
+                            <p className="text-[10px] text-gray-500 mt-1">Guitarras e Violões.</p>
+                        </button>
+
+                        <button
                             onClick={() => setActiveView('chord_dictionary')}
                             className="bg-[#1A202C] p-4 rounded-2xl border border-white/5 hover:border-[#0081FF]/50 transition-all group text-left relative overflow-hidden hover:shadow-lg hover:shadow-blue-900/20"
                         >
@@ -820,18 +827,6 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                             </div>
                             <h4 className="font-bold text-white text-sm">Dicionário de Acordes</h4>
                             <p className="text-[10px] text-gray-500 mt-1">Biblioteca CAGED Chediak.</p>
-                        </button>
-
-                        <button
-                            onClick={() => setActiveView('tuner')}
-                            className="bg-[#1A202C] p-4 rounded-2xl border border-white/5 hover:border-[#0081FF]/50 transition-all group text-left relative overflow-hidden hover:shadow-lg hover:shadow-blue-900/20"
-                        >
-                            <div className="absolute inset-0 bg-gradient-to-br from-[#0081FF]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                            <div className="w-10 h-10 rounded-xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] mb-3 group-hover:scale-110 transition-transform">
-                                <span className="material-symbols-rounded">tune</span>
-                            </div>
-                            <h4 className="font-bold text-white text-sm">Afinador</h4>
-                            <p className="text-[10px] text-gray-500 mt-1">Ajuste seu instrumento.</p>
                         </button>
 
                         <button
@@ -1790,100 +1785,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
 
 
 
-    const renderTuner = () => {
-        const isPianoActive = !!pianoNote;
-        const displayNote = isPianoActive ? pianoNote?.replace(/[0-9]/g, '') : pitchNote;
-        const displayOctave = isPianoActive ? pianoNote?.slice(-1) : pitchOctave;
-        const displayHz = isPianoActive ? pianoFreq : null;
 
-        const isTuned = !isPianoActive && Math.abs(pitchCents) < 10 && pitchNote !== '-';
-
-        const circleBorderColor = isPianoActive
-            ? 'border-[#0081FF]'
-            : (isTuned ? 'border-[#0081FF]' : 'border-[#1A202C]');
-
-        const circleBgColor = isPianoActive
-            ? 'bg-[#0081FF]/10'
-            : (isTuned ? 'bg-[#0081FF]/5' : 'bg-[#1A202C]');
-
-        return (
-            <div className="flex-1 flex flex-col animate-in slide-in-from-right relative">
-                {renderHeader('Afinador', () => { stopMic(); setActiveView('menu'); })}
-
-                <div className="flex-1 flex flex-col items-center pt-4 relative z-10 min-h-[400px]">
-
-                    {/* TUNER CIRCLE */}
-                    <div className={`relative w-56 h-56 top-4 sm:w-64 sm:h-64 mx-auto rounded-full border-8 flex items-center justify-center transition-all duration-300 ${circleBorderColor} ${circleBgColor}`}>
-                        <div className="text-center">
-                            <div className={`text-7xl sm:text-8xl font-bold font-mono tracking-tighter ${isPianoActive ? 'text-[#0081FF]' : 'text-white'}`}>
-                                {displayNote}
-                            </div>
-                            {displayOctave !== null && (
-                                <div className={`text-2xl font-medium ${isPianoActive ? 'text-[#0081FF]/70' : 'text-gray-500'}`}>
-                                    {displayOctave}
-                                </div>
-                            )}
-                            {isPianoActive && displayHz && (
-                                <div className="text-sm font-mono text-[#0081FF]/50 mt-1">
-                                    {displayHz} Hz
-                                </div>
-                            )}
-                        </div>
-
-                        {!isPianoActive && pitchNote !== '-' && (
-                            <div
-                                className="absolute top-0 bottom-0 w-1 bg-[#FF00BC] origin-center transition-transform duration-100 ease-linear rounded-full opacity-70"
-                                style={{ transform: `rotate(${pitchCents}deg)` }}
-                            ></div>
-                        )}
-
-                        {isPianoActive ? (
-                            <div className="absolute -bottom-4 bg-[#0081FF] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-[#0081FF]/20">
-                                Piano
-                            </div>
-                        ) : (Math.abs(pitchCents) < 10 && pitchNote !== '-') ? (
-                            <div className="absolute -bottom-4 bg-[#0081FF] text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-lg shadow-[#0081FF]/20">
-                                Afinado
-                            </div>
-                        ) : null}
-                    </div>
-
-                    {!isPianoActive && isMicOn && pitchNote !== '-' && (
-                        <div className="flex justify-center items-center gap-2 mt-8 mb-4">
-                            <div className={`w-3 h-3 rounded-full ${pitchCents < -10 ? 'bg-[#FF00BC]' : 'bg-gray-700'}`}></div>
-                            <span className="text-xs font-bold text-gray-500 uppercase tracking-widest px-2">
-                                {Math.abs(pitchCents) < 10 ? 'AFINADO' : (pitchCents < 0 ? 'BAIXO' : 'ALTO')}
-                            </span>
-                            <div className={`w-3 h-3 rounded-full ${pitchCents > 10 ? 'bg-[#FF00BC]' : 'bg-gray-700'}`}></div>
-                        </div>
-                    )}
-
-                    <div className="mt-8 mb-4">
-                        {!isMicOn ? (
-                            <button
-                                onClick={startMic}
-                                className="px-8 py-3 rounded-xl bg-white/5 text-white font-bold hover:bg-white/10 transition-colors border border-white/10 flex items-center gap-2"
-                            >
-                                <span className="material-symbols-rounded">mic</span>
-                                Ligar Microfone
-                            </button>
-                        ) : (
-                            !isPianoActive && (
-                                <button
-                                    onClick={stopMic}
-                                    className="px-6 py-2 rounded-lg text-gray-500 text-xs hover:text-white transition-colors flex items-center gap-2"
-                                >
-                                    <span className="material-symbols-rounded text-sm">mic_off</span>
-                                    Parar
-                                </button>
-                            )
-                        )}
-                    </div>
-
-                </div>
-            </div>
-        );
-    };
 
     const renderCAGEDHeader = () => {
         let title = "";
@@ -1981,7 +1883,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
             {activeView === 'subscription' && renderSubscription()}
             {activeView === 'contract' && renderContract()}
             {activeView === 'vocal_test' && renderVocalTest()}
-            {activeView === 'tuner' && renderTuner()}
+            {activeView === 'tuner' && <GuitarTuner onBack={() => setActiveView('menu')} />}
             {activeView === 'chord_dictionary' && renderChordDictionary()}
 
 

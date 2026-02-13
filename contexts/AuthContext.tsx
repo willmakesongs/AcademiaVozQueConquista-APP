@@ -210,7 +210,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           status: (data.status as any) || 'active',
           onboardingCompleted: data.onboarding_completed,
           plan: data.plan || 'Plano Pro',
-          nextDueDate: data.next_due_date || '2026-02-02',
+          nextDueDate: data.next_due_date || new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
           amount: data.amount || '97,00',
           phone: data.phone || meta.phone || authUser?.phone || '',
           bio: data.bio || '',

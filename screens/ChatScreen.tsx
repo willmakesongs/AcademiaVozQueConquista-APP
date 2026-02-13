@@ -26,10 +26,16 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
         if (cachedMessages && cachedUserId === user?.id) {
             return cachedMessages;
         }
+
+        const isGuest = user?.id === 'guest';
+        const welcomeText = isGuest
+            ? "Olá! Sou a Lorena IA, sua mentora na Academia Voz Que Conquista. ✨\n\nEstou aqui para te mostrar como podemos transformar sua voz. Mas antes de começarmos, como você gostaria de ser chamado?"
+            : `Olá, ${user?.name || 'Voz'}! 🎶✨ Eu sou a Lorena IA, sua mentora na Academia Voz Que Conquista. Como posso te ajudar na sua jornada musical hoje? \n\nPosso sugerir exercícios, tirar dúvidas técnicas ou te ajudar com sua prática!`;
+
         return [{
             id: 'welcome',
             role: 'model',
-            text: `Olá, ${user?.name || 'Voz'}! 🎶✨ Eu sou a Lorena IA. Como posso ajudar a brilhar sua voz hoje? \n\nPosso sugerir exercícios, tirar dúvidas do método ou encontrar um karaokê pra você treinar!`
+            text: welcomeText
         }];
     });
 

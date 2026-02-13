@@ -47,6 +47,12 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         year: new Date().getFullYear()
     });
     const [teachers, setTeachers] = useState<any[]>([]);
+    const [teacherExpenses, setTeacherExpenses] = useState<any[]>([]);
+    const [expandedTeacher, setExpandedTeacher] = useState<string | null>(null);
+    const [editingExpenses, setEditingExpenses] = useState<Record<string, { travel: string, food: string, notes: string }>>({});
+    const [editingRepasse, setEditingRepasse] = useState<Record<string, string>>({});
+    const [editingStudentRepasse, setEditingStudentRepasse] = useState<Record<string, { fixed?: string, percent?: string }>>({});
+    const [savingExpense, setSavingExpense] = useState(false);
 
     // States UI
     const [searchQuery, setSearchQuery] = useState('');
@@ -57,7 +63,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [syncStatus, setSyncStatus] = useState<'synced' | 'error' | 'loading'>('loading');
-    const [newReceiptNotice, setNewReceiptNotice] = useState<{ userName: string, amount: string } | null>(null);
+    const [newReceiptNotice, setNewReceiptNotice] = useState<{ userName: string, amount: string, userId?: string } | null>(null);
 
     // States Detalhes
     const [selectedStudent, setSelectedStudent] = useState<StudentSummary | null>(null);
@@ -124,17 +130,24 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     schema: 'public',
                     table: 'payment_receipts'
                 },
-                (payload) => {
+                async (payload) => {
                     console.log('New receipt uploaded!', payload);
                     fetchData(); // Refresh all data
 
-                    // Show Popup Notification
+                    // Show Popup Notification with student name
                     const newR = payload.new as any;
                     if (newR && newR.status === 'pending') {
-                        // We need the name, so we fetch it or just use a generic "Novo Recibo"
-                        // Since we just called fetchData, we can try to find the student name later or just show a generic msg
-                        setNewReceiptNotice({ userName: 'Um aluno', amount: newR.amount });
-                        setTimeout(() => setNewReceiptNotice(null), 5000);
+                        let studentName = 'Um aluno';
+                        try {
+                            const { data: profile } = await supabase
+                                .from('profiles')
+                                .select('name')
+                                .eq('id', newR.user_id)
+                                .single();
+                            if (profile?.name) studentName = profile.name;
+                        } catch (_) { }
+                        setNewReceiptNotice({ userName: studentName, amount: newR.amount, userId: newR.user_id });
+                        setTimeout(() => setNewReceiptNotice(null), 8000);
                     }
                 }
             )
@@ -289,6 +302,16 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     filteredHistory = hData.filter(h => myStudentIds.includes(h.student_id));
                 }
                 setPaymentHistory(filteredHistory);
+            }
+
+            // Fetch Teacher Expenses (admin only)
+            if (isActuallyAdmin) {
+                const { data: expData } = await supabase
+                    .from('teacher_expenses')
+                    .select('*')
+                    .eq('month', financePeriod.month)
+                    .eq('year', financePeriod.year);
+                if (expData) setTeacherExpenses(expData);
             }
 
             if (force) alert('Dados atualizados com sucesso da nuvem! ☁️');
@@ -1014,49 +1037,351 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     );
 
                 case 'repasse':
+                    if (!isActuallyAdmin) return <p className="text-gray-500 text-sm text-center py-8">Acesso restrito ao administrador.</p>;
+
+                    const handleSaveExpense = async (teacherId: string) => {
+                        setSavingExpense(true);
+                        try {
+                            const exp = editingExpenses[teacherId];
+                            if (exp) {
+                                const { error } = await supabase
+                                    .from('teacher_expenses')
+                                    .upsert({
+                                        teacher_id: teacherId,
+                                        month: financePeriod.month,
+                                        year: financePeriod.year,
+                                        travel_expense: parseFloat(exp.travel) || 0,
+                                        food_expense: parseFloat(exp.food) || 0,
+                                        notes: exp.notes || '',
+                                        updated_at: new Date().toISOString()
+                                    }, { onConflict: 'teacher_id,month,year' });
+                                if (error) throw error;
+                            }
+                            // Save repasse percent for each course
+                            const teacherCourses = courses.filter(c => c.teacher_id === teacherId);
+                            for (const course of teacherCourses) {
+                                const key = `${teacherId}_${course.id}`;
+                                if (editingRepasse[key] !== undefined) {
+                                    const newPercent = parseFloat(editingRepasse[key]) || 0;
+                                    await supabase.from('courses').update({ repasse_percent: newPercent }).eq('id', course.id);
+                                }
+                            }
+                            // Save individual student repasses
+                            const studentEntries = Object.entries(editingStudentRepasse) as [string, { fixed?: string, percent?: string }][];
+                            for (const [enrollmentId, values] of studentEntries) {
+                                const updateData: any = {};
+                                // Handle Fixed Amount
+                                if (values.fixed !== undefined) {
+                                    updateData.repasse_fixed_amount = values.fixed === '' ? null : parseFloat(values.fixed);
+                                }
+                                // Handle Custom Percentage
+                                if (values.percent !== undefined) {
+                                    updateData.repasse_custom_percentage = values.percent === '' ? null : parseFloat(values.percent);
+                                }
+
+                                if (Object.keys(updateData).length > 0) {
+                                    const { error: sError } = await supabase
+                                        .from('student_courses')
+                                        .update(updateData)
+                                        .eq('id', enrollmentId);
+                                    if (sError) throw sError;
+                                }
+                            }
+
+                            await fetchData();
+                            alert('Valores salvos com sucesso! ✅');
+                        } catch (err: any) {
+                            alert('Erro ao salvar: ' + err.message);
+                        } finally {
+                            setSavingExpense(false);
+                        }
+                    };
+
+                    // Calculate grand totals
+                    let grandTotalRepasse = 0;
+
                     return (
-                        <div className="space-y-4">
-                            <div className="bg-[#1A202C] rounded-3xl border border-white/5 overflow-hidden">
-                                <table className="w-full text-left text-xs">
-                                    <thead className="bg-black/20 text-gray-500 uppercase">
-                                        <tr>
-                                            <th className="p-4 font-black">Professor</th>
-                                            <th className="p-4 font-black">Alunos</th>
-                                            <th className="p-4 font-black">Repasse</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-white/5">
-                                        {teachers.map(teacher => {
-                                            let teacherTotalRepasse = 0;
-                                            let teacherActiveStudents = 0;
+                        <div className="space-y-3">
+                            {teachers.filter(t => t.role !== 'admin' && !['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(t.email?.toLowerCase().trim())).map(teacher => {
+                                const teacherCourses = courses.filter(c => c.teacher_id === teacher.id);
+                                const expense = teacherExpenses.find(e => e.teacher_id === teacher.id);
+                                const isExpanded = expandedTeacher === teacher.id;
 
-                                            courses.filter(c => c.teacher_id === teacher.id).forEach(course => {
-                                                const courseMetrics = calculateMetrics(course.id);
-                                                const repassePercent = (course as any).repasse_percent || 50;
-                                                teacherTotalRepasse += (courseMetrics.totalRecebido * (repassePercent / 100));
-                                                teacherActiveStudents += courseMetrics.activeStudentsCount;
-                                            });
+                                let teacherRepasseFromCourses = 0;
+                                let teacherActiveStudents = 0;
+                                let teacherTotalMensal = 0;
 
-                                            return (
-                                                <tr key={teacher.id}>
-                                                    <td className="p-4">
-                                                        <div className="flex items-center gap-2">
-                                                            <div className="w-6 h-6 rounded-full bg-[#0081FF]/20 text-[#0081FF] flex items-center justify-center font-bold text-[10px]">
-                                                                {teacher.name.charAt(0)}
+                                const courseDetails = teacherCourses.map(course => {
+                                    // Calculate based on active students' monthly amounts for this course
+                                    let courseMonthlyTotal = 0;
+                                    let courseStudentCount = 0;
+                                    let courseRepasse = 0;
+
+                                    const courseStudents = students.filter(student => {
+                                        if (student.status === 'inactive') return false;
+                                        const enrolledCourses = student.courses || [];
+                                        return enrolledCourses.some(c => c.course_id === course.id);
+                                    }).map(student => {
+                                        const enrollment = student.courses!.find(c => c.course_id === course.id)!;
+                                        courseStudentCount++;
+
+                                        const studentAmount = enrollment.amount != null
+                                            ? Number(enrollment.amount)
+                                            : (student.amount / (student.courses!.length || 1));
+
+                                        courseMonthlyTotal += studentAmount;
+
+                                        // Determine repasse for this SPECIFIC student
+                                        const studentOverride = editingStudentRepasse[enrollment.id];
+                                        const defaultPercent = editingRepasse[`${teacher.id}_${course.id}`] !== undefined
+                                            ? parseFloat(editingRepasse[`${teacher.id}_${course.id}`]) || 0
+                                            : Number(course.repasse_percent) || 50;
+
+                                        let studentRepasse = 0;
+                                        if (studentOverride?.fixed !== undefined) {
+                                            studentRepasse = parseFloat(studentOverride.fixed) || 0;
+                                        } else if (enrollment.repasse_fixed_amount != null) {
+                                            studentRepasse = Number(enrollment.repasse_fixed_amount);
+                                        } else if (studentOverride?.percent !== undefined) {
+                                            studentRepasse = studentAmount * ((parseFloat(studentOverride.percent) || 0) / 100);
+                                        } else if (enrollment.repasse_custom_percentage != null) {
+                                            studentRepasse = studentAmount * (Number(enrollment.repasse_custom_percentage) / 100);
+                                        } else {
+                                            studentRepasse = studentAmount * (defaultPercent / 100);
+                                        }
+
+                                        courseRepasse += studentRepasse;
+                                        return { student, enrollment, studentAmount, studentRepasse };
+                                    });
+
+                                    teacherRepasseFromCourses += courseRepasse;
+                                    teacherActiveStudents += courseStudentCount;
+                                    teacherTotalMensal += courseMonthlyTotal;
+
+                                    return { course, courseStudentCount, courseMonthlyTotal, courseRepasse, students: courseStudents };
+                                });
+
+                                const travelExp = editingExpenses[teacher.id]?.travel !== undefined
+                                    ? parseFloat(editingExpenses[teacher.id].travel) || 0
+                                    : Number(expense?.travel_expense) || 0;
+                                const foodExp = editingExpenses[teacher.id]?.food !== undefined
+                                    ? parseFloat(editingExpenses[teacher.id].food) || 0
+                                    : Number(expense?.food_expense) || 0;
+
+                                const totalLiquido = teacherRepasseFromCourses + travelExp + foodExp;
+                                grandTotalRepasse += totalLiquido;
+
+                                return (
+                                    <div key={teacher.id} className="bg-[#1A202C] rounded-2xl border border-white/5 overflow-hidden">
+                                        {/* Header — clicável */}
+                                        <button
+                                            onClick={() => {
+                                                setExpandedTeacher(isExpanded ? null : teacher.id);
+                                                if (!isExpanded && !editingExpenses[teacher.id]) {
+                                                    setEditingExpenses(prev => ({
+                                                        ...prev,
+                                                        [teacher.id]: {
+                                                            travel: String(expense?.travel_expense || 0),
+                                                            food: String(expense?.food_expense || 0),
+                                                            notes: expense?.notes || ''
+                                                        }
+                                                    }));
+                                                    teacherCourses.forEach(c => {
+                                                        const key = `${teacher.id}_${c.id}`;
+                                                        if (editingRepasse[key] === undefined) {
+                                                            setEditingRepasse(prev => ({ ...prev, [key]: String(c.repasse_percent || 50) }));
+                                                        }
+                                                    });
+                                                }
+                                            }}
+                                            className="w-full p-4 flex items-center gap-3 hover:bg-white/5 transition-all"
+                                        >
+                                            <div className="w-10 h-10 rounded-full bg-[#0081FF]/20 text-[#0081FF] flex items-center justify-center font-black text-sm shrink-0">
+                                                {teacher.name.charAt(0)}
+                                            </div>
+                                            <div className="flex-1 text-left">
+                                                <p className="text-white font-bold text-sm">{teacher.name}</p>
+                                                <p className="text-gray-500 text-[10px]">{teacherActiveStudents} alunos • {teacherCourses.length} cursos</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-[#0081FF] font-black text-sm">R$ {totalLiquido.toFixed(2)}</p>
+                                                <p className="text-gray-600 text-[10px]">TOTAL</p>
+                                            </div>
+                                            <span className={`material-symbols-rounded text-gray-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`}>expand_more</span>
+                                        </button>
+
+                                        {/* Painel expandido */}
+                                        {isExpanded && (
+                                            <div className="border-t border-white/5 p-4 space-y-5">
+                                                {/* Detalhes por curso */}
+                                                <div className="space-y-4">
+                                                    <p className="text-[10px] text-gray-500 font-bold uppercase flex items-center gap-1"><span className="material-symbols-rounded text-xs">school</span> Cursos & Repasses Individuais</p>
+
+                                                    {courseDetails.map(({ course, courseStudentCount, courseMonthlyTotal, courseRepasse, students: courseStudents }) => (
+                                                        <div key={course.id} className="space-y-2">
+                                                            {/* Cabeçalho do Curso */}
+                                                            <div className="flex items-center justify-between p-3 bg-black/40 rounded-xl border border-white/5">
+                                                                <div className="flex-1 min-w-0">
+                                                                    <p className="text-white text-xs font-black truncate">{getCourseIcon(course.slug)} {course.nome}</p>
+                                                                    <p className="text-gray-500 text-[10px] uppercase font-bold">{courseStudentCount} alunos • R$ {courseMonthlyTotal.toFixed(2)} mensal</p>
+                                                                </div>
+                                                                <div className="text-right">
+                                                                    <p className="text-[#0081FF] font-black text-xs">R$ {courseRepasse.toFixed(2)}</p>
+                                                                    <p className="text-gray-600 text-[8px] uppercase">Repasse Total</p>
+                                                                </div>
                                                             </div>
-                                                            <span className="text-white font-bold">{teacher.name}</span>
+
+                                                            {/* Lista de Alunos do Curso */}
+                                                            <div className="ml-3 space-y-1.5 border-l-2 border-white/5 pl-3">
+                                                                {courseStudents.map(({ student, enrollment, studentAmount, studentRepasse }) => (
+                                                                    <div key={student.id} className="bg-black/20 rounded-xl p-3 border border-white/5 space-y-3">
+                                                                        <div className="flex items-center justify-between">
+                                                                            <div className="flex items-center gap-2">
+                                                                                <img src={student.avatarUrl} alt="" className="w-6 h-6 rounded-full border border-white/10" />
+                                                                                <p className="text-white text-[11px] font-bold">{student.name}</p>
+                                                                            </div>
+                                                                            <p className="text-gray-500 text-[10px]">Mensal: R$ {studentAmount.toFixed(2)}</p>
+                                                                        </div>
+
+                                                                        <div className="grid grid-cols-2 gap-2">
+                                                                            <div className="flex flex-col gap-1">
+                                                                                <label className="text-[8px] text-gray-500 font-black uppercase">Fixo (R$)</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    placeholder="Ex: 150"
+                                                                                    value={editingStudentRepasse[enrollment.id]?.fixed ?? (enrollment.repasse_fixed_amount != null ? String(enrollment.repasse_fixed_amount) : '')}
+                                                                                    onChange={(e) => setEditingStudentRepasse(prev => ({
+                                                                                        ...prev,
+                                                                                        [enrollment.id]: { ...prev[enrollment.id], fixed: e.target.value }
+                                                                                    }))}
+                                                                                    className="h-8 bg-[#101622] border border-white/10 rounded-lg px-2 text-white text-xs focus:border-[#0081FF] focus:outline-none"
+                                                                                />
+                                                                            </div>
+                                                                            <div className="flex flex-col gap-1">
+                                                                                <label className="text-[8px] text-gray-500 font-black uppercase">Percentual (%)</label>
+                                                                                <input
+                                                                                    type="number"
+                                                                                    placeholder="Ex: 50"
+                                                                                    value={editingStudentRepasse[enrollment.id]?.percent ?? (enrollment.repasse_custom_percentage != null ? String(enrollment.repasse_custom_percentage) : '')}
+                                                                                    onChange={(e) => setEditingStudentRepasse(prev => ({
+                                                                                        ...prev,
+                                                                                        [enrollment.id]: { ...prev[enrollment.id], percent: e.target.value }
+                                                                                    }))}
+                                                                                    className="h-8 bg-[#101622] border border-white/10 rounded-lg px-2 text-white text-xs focus:border-[#0081FF] focus:outline-none"
+                                                                                />
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <div className="flex justify-between items-center bg-[#0081FF]/5 px-2 py-1 rounded-lg">
+                                                                            <span className="text-gray-500 text-[9px] font-bold uppercase">Repasse Calculado</span>
+                                                                            <span className="text-[#0081FF] text-[11px] font-black">R$ {studentRepasse.toFixed(2)}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                ))}
+                                                            </div>
                                                         </div>
-                                                    </td>
-                                                    <td className="p-4 text-gray-400">{teacherActiveStudents}</td>
-                                                    <td className="p-4 text-[#0081FF] font-black">R$ {teacherTotalRepasse.toLocaleString()}</td>
-                                                </tr>
-                                            );
-                                        })}
-                                    </tbody>
-                                </table>
+                                                    ))}
+                                                    {courseDetails.length === 0 && <p className="text-gray-600 text-xs italic text-center py-2">Nenhum curso vinculado.</p>}
+                                                </div>
+
+                                                {/* Despesas */}
+                                                <div className="space-y-2">
+                                                    <p className="text-[10px] text-gray-500 font-bold uppercase flex items-center gap-1"><span className="material-symbols-rounded text-xs">receipt</span> Despesas Mensais</p>
+                                                    <div className="grid grid-cols-2 gap-2">
+                                                        <div className="p-3 bg-black/20 rounded-xl border border-white/5">
+                                                            <label className="text-[10px] text-gray-500 block mb-1">🚗 Viagem</label>
+                                                            <div className="flex items-center gap-1">
+                                                                <span className="text-gray-500 text-xs">R$</span>
+                                                                <input
+                                                                    type="number"
+                                                                    value={editingExpenses[teacher.id]?.travel ?? String(expense?.travel_expense || 0)}
+                                                                    onChange={(e) => setEditingExpenses(prev => ({
+                                                                        ...prev,
+                                                                        [teacher.id]: { ...prev[teacher.id], travel: e.target.value }
+                                                                    }))}
+                                                                    className="w-full h-8 bg-[#101622] border border-white/10 rounded-lg px-2 text-white text-xs font-bold focus:outline-none focus:border-[#0081FF]"
+                                                                    min="0" step="0.01"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                        <div className="p-3 bg-black/20 rounded-xl border border-white/5">
+                                                            <label className="text-[10px] text-gray-500 block mb-1">🍽️ Alimentação</label>
+                                                            <div className="flex items-center gap-1">
+                                                                <span className="text-gray-500 text-xs">R$</span>
+                                                                <input
+                                                                    type="number"
+                                                                    value={editingExpenses[teacher.id]?.food ?? String(expense?.food_expense || 0)}
+                                                                    onChange={(e) => setEditingExpenses(prev => ({
+                                                                        ...prev,
+                                                                        [teacher.id]: { ...prev[teacher.id], food: e.target.value }
+                                                                    }))}
+                                                                    className="w-full h-8 bg-[#101622] border border-white/10 rounded-lg px-2 text-white text-xs font-bold focus:outline-none focus:border-[#0081FF]"
+                                                                    min="0" step="0.01"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="p-3 bg-black/20 rounded-xl border border-white/5">
+                                                        <label className="text-[10px] text-gray-500 block mb-1">📝 Observações</label>
+                                                        <input
+                                                            type="text"
+                                                            value={editingExpenses[teacher.id]?.notes ?? (expense?.notes || '')}
+                                                            onChange={(e) => setEditingExpenses(prev => ({
+                                                                ...prev,
+                                                                [teacher.id]: { ...prev[teacher.id], notes: e.target.value }
+                                                            }))}
+                                                            className="w-full h-8 bg-[#101622] border border-white/10 rounded-lg px-2 text-white text-xs focus:outline-none focus:border-[#0081FF]"
+                                                            placeholder="Ex: vem de outra cidade..."
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                {/* Resumo Final */}
+                                                <div className="p-3 bg-[#0081FF]/5 rounded-xl border border-[#0081FF]/20 space-y-1">
+                                                    <div className="flex justify-between text-xs">
+                                                        <span className="text-gray-400">Repasse dos cursos</span>
+                                                        <span className="text-white font-bold">R$ {teacherRepasseFromCourses.toFixed(2)}</span>
+                                                    </div>
+                                                    {travelExp > 0 && (
+                                                        <div className="flex justify-between text-xs">
+                                                            <span className="text-gray-400">+ Viagem</span>
+                                                            <span className="text-white">R$ {travelExp.toFixed(2)}</span>
+                                                        </div>
+                                                    )}
+                                                    {foodExp > 0 && (
+                                                        <div className="flex justify-between text-xs">
+                                                            <span className="text-gray-400">+ Alimentação</span>
+                                                            <span className="text-white">R$ {foodExp.toFixed(2)}</span>
+                                                        </div>
+                                                    )}
+                                                    <div className="flex justify-between text-sm border-t border-[#0081FF]/20 pt-1 mt-1">
+                                                        <span className="text-[#0081FF] font-black">TOTAL REPASSE</span>
+                                                        <span className="text-[#0081FF] font-black">R$ {totalLiquido.toFixed(2)}</span>
+                                                    </div>
+                                                </div>
+
+                                                {/* Botão Salvar */}
+                                                <button
+                                                    onClick={() => handleSaveExpense(teacher.id)}
+                                                    disabled={savingExpense}
+                                                    className="w-full h-11 rounded-xl bg-[#0081FF] text-white font-black text-xs uppercase tracking-widest hover:bg-[#0081FF]/80 transition-all disabled:opacity-50"
+                                                >
+                                                    {savingExpense ? 'Salvando...' : '💾 Salvar Valores'}
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                );
+                            })}
+
+                            {/* Total Geral */}
+                            <div className="bg-[#0081FF]/10 rounded-2xl border border-[#0081FF]/20 p-4 flex justify-between items-center">
+                                <span className="text-white font-bold text-sm">Total Repasse (todos)</span>
+                                <span className="text-[#0081FF] font-black text-lg">R$ {grandTotalRepasse.toFixed(2)}</span>
                             </div>
-                            <p className="text-[10px] text-gray-500 italic px-4">
-                                * O valor do repasse é calculado sobre o total recebido no período selecionado, considerando o rateio proporcional para alunos em múltiplos cursos.
+
+                            <p className="text-[10px] text-gray-500 italic px-2">
+                                * Repasse = (Recebido × %) + Viagem + Alimentação. Somente Admin tem acesso.
                             </p>
                         </div>
                     );
@@ -1097,7 +1422,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                             { id: 'overview', label: 'Geral', icon: 'payments' },
                             { id: 'by_course', label: 'Cursos', icon: 'analytics' },
                             { id: 'status', label: 'Alunos', icon: 'group' },
-                            { id: 'repasse', label: 'Repasse', icon: 'handshake' }
+                            ...(isActuallyAdmin ? [{ id: 'repasse', label: 'Repasse', icon: 'handshake' }] : [])
                         ].map((tab: any) => (
                             <button
                                 key={tab.id}
@@ -1826,15 +2151,29 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     <span className="uppercase tracking-wide">Confirmar Pagamento</span>
                                 </button>
                                 {receipts.find(r => r.userId === selectedStudent.id && r.status === 'pending') && (
-                                    <a
-                                        href={receipts.find(r => r.userId === selectedStudent.id && r.status === 'pending')?.receiptUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                    <button
+                                        onClick={async () => {
+                                            const receipt = receipts.find(r => r.userId === selectedStudent.id && r.status === 'pending');
+                                            if (!receipt?.receiptUrl) return;
+                                            // Support both old public URLs and new file paths
+                                            if (receipt.receiptUrl.startsWith('http')) {
+                                                window.open(receipt.receiptUrl, '_blank');
+                                            } else {
+                                                const { data, error } = await supabase.storage
+                                                    .from('receipts')
+                                                    .createSignedUrl(receipt.receiptUrl, 3600);
+                                                if (data?.signedUrl) {
+                                                    window.open(data.signedUrl, '_blank');
+                                                } else {
+                                                    alert('Erro ao gerar link do comprovante: ' + (error?.message || 'Tente novamente.'));
+                                                }
+                                            }
+                                        }}
                                         className="w-12 h-12 rounded-xl bg-[#6F4CE7]/10 text-[#6F4CE7] flex items-center justify-center border border-[#6F4CE7]/20 hover:bg-[#6F4CE7]/20 transition-all"
                                         title="Ver Comprovante"
                                     >
                                         <span className="material-symbols-rounded text-xl">receipt</span>
-                                    </a>
+                                    </button>
                                 )}
                             </div>
 
@@ -2104,6 +2443,74 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                 )}
                             </div>
 
+                            {/* Comprovantes de Pagamento */}
+                            <div className="p-3 bg-white/5 rounded-xl border border-white/5 space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <p className="text-[10px] text-gray-500 font-bold uppercase flex items-center gap-1.5">
+                                        <span className="material-symbols-rounded text-sm text-[#6F4CE7]">receipt_long</span>
+                                        Comprovantes de Pagamento
+                                    </p>
+                                </div>
+                                {(() => {
+                                    const studentReceipts = receipts.filter(r => r.userId === selectedStudent.id);
+                                    if (studentReceipts.length === 0) {
+                                        return (
+                                            <p className="text-xs text-gray-600 italic text-center py-2">Nenhum comprovante enviado.</p>
+                                        );
+                                    }
+                                    return (
+                                        <div className="space-y-2 max-h-48 overflow-y-auto hide-scrollbar">
+                                            {studentReceipts.map((r: any) => (
+                                                <div key={r.id} className="flex items-center justify-between p-2.5 bg-black/20 rounded-lg border border-white/5">
+                                                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${r.status === 'pending' ? 'bg-[#FF00BC]/20 text-[#FF00BC]' :
+                                                            r.status === 'approved' ? 'bg-[#0081FF]/20 text-[#0081FF]' :
+                                                                'bg-gray-500/20 text-gray-400'
+                                                            }`}>
+                                                            <span className="material-symbols-rounded text-sm">
+                                                                {r.status === 'pending' ? 'pending' : r.status === 'approved' ? 'check_circle' : 'cancel'}
+                                                            </span>
+                                                        </div>
+                                                        <div className="min-w-0">
+                                                            <p className="text-xs font-bold text-white">R$ {Number(r.amount).toFixed(2)}</p>
+                                                            <p className="text-[10px] text-gray-500">
+                                                                {new Date(r.createdAt).toLocaleDateString('pt-BR')} •
+                                                                <span className={`font-bold ml-1 ${r.status === 'pending' ? 'text-[#FF00BC]' :
+                                                                    r.status === 'approved' ? 'text-[#0081FF]' : 'text-gray-400'
+                                                                    }`}>
+                                                                    {r.status === 'pending' ? 'Pendente' : r.status === 'approved' ? 'Aprovado' : 'Rejeitado'}
+                                                                </span>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                    <button
+                                                        onClick={async () => {
+                                                            if (!r.receiptUrl) return;
+                                                            if (r.receiptUrl.startsWith('http')) {
+                                                                window.open(r.receiptUrl, '_blank');
+                                                            } else {
+                                                                const { data, error } = await supabase.storage
+                                                                    .from('receipts')
+                                                                    .createSignedUrl(r.receiptUrl, 3600);
+                                                                if (data?.signedUrl) {
+                                                                    window.open(data.signedUrl, '_blank');
+                                                                } else {
+                                                                    alert('Erro ao abrir comprovante: ' + (error?.message || 'Tente novamente.'));
+                                                                }
+                                                            }
+                                                        }}
+                                                        className="w-9 h-9 rounded-lg bg-[#6F4CE7]/10 text-[#6F4CE7] flex items-center justify-center border border-[#6F4CE7]/20 hover:bg-[#6F4CE7]/20 transition-all shrink-0"
+                                                        title="Ver Comprovante"
+                                                    >
+                                                        <span className="material-symbols-rounded text-lg">visibility</span>
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    );
+                                })()}
+                            </div>
+
                             <div className="space-y-2">
                                 <p className="text-[10px] text-gray-500 font-bold uppercase ml-1">Observações de desenvolvimento</p>
                                 <textarea
@@ -2309,21 +2716,26 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             />
             {/* Popup Notification for New Receipts */}
             {newReceiptNotice && (
-                <div className="fixed top-20 left-4 right-4 z-[100] animate-in slide-in-from-top-4 duration-300">
-                    <div className="bg-[#1A202C] border-2 border-[#0081FF] rounded-2xl p-4 shadow-2xl flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] shrink-0">
-                            <span className="material-symbols-rounded text-2xl">payments</span>
+                <div className="fixed top-20 left-4 right-4 z-[300] animate-in slide-in-from-top-4 duration-300">
+                    <div className="bg-[#1A202C] border-2 border-[#FF00BC] rounded-2xl p-4 shadow-2xl shadow-[#FF00BC]/10 flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-full bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC] shrink-0 animate-pulse">
+                            <span className="material-symbols-rounded text-2xl">receipt_long</span>
                         </div>
                         <div className="flex-1">
-                            <h4 className="text-white font-bold text-sm">Novo Comprovante Recebido!</h4>
-                            <p className="text-gray-400 text-xs text-balance">Verifique o novo pagamento na aba financeira.</p>
+                            <h4 className="text-white font-bold text-sm">💰 Novo Comprovante!</h4>
+                            <p className="text-gray-400 text-xs"><span className="text-[#FF00BC] font-bold">{newReceiptNotice.userName}</span> enviou R$ {Number(newReceiptNotice.amount).toFixed(2)}</p>
                         </div>
                         <button
                             onClick={() => {
+                                const student = students.find(s => s.id === newReceiptNotice?.userId);
                                 setNewReceiptNotice(null);
-                                setActiveTab('reports');
+                                if (student) {
+                                    openStudentDetails(student);
+                                } else {
+                                    setActiveTab('reports');
+                                }
                             }}
-                            className="bg-[#0081FF] text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider"
+                            className="bg-[#FF00BC] text-white px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider shadow-lg shadow-[#FF00BC]/20"
                         >
                             Ver Agora
                         </button>

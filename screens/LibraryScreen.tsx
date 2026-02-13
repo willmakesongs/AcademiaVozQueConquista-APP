@@ -788,7 +788,21 @@ export const LibraryScreen: React.FC<Props> = ({
                       }
                       // Regular content (printable sheet) as the last page
                       return (
-                        <div dangerouslySetInnerHTML={{ __html: selectedTopic.content || '' }} />
+                        <div className="animate-in fade-in slide-in-from-bottom duration-500 pb-12">
+                          <div dangerouslySetInnerHTML={{ __html: selectedTopic.content || '' }} />
+                          <div className="mt-8 flex justify-center">
+                            <button
+                              onClick={() => {
+                                setCurrentPage(totalChords - 1);
+                                contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+                              }}
+                              className="px-8 py-4 bg-white/5 border border-white/10 rounded-2xl text-white font-bold flex items-center gap-2 active:bg-white/10 transition-colors"
+                            >
+                              <span className="material-symbols-rounded">arrow_back</span>
+                              Voltar para os Acordes
+                            </button>
+                          </div>
+                        </div>
                       );
                     }
 
@@ -1113,6 +1127,7 @@ export const LibraryScreen: React.FC<Props> = ({
                         if (s.includes('violino')) return '🎻';
                         if (s.includes('saxofone') || s.includes('sax')) return '🎷';
                         if (s.includes('producao') || s.includes('studio')) return '🎧';
+                        if (s.includes('teoria')) return '📖';
                         return '🎹';
                       })()}
                     </div>
