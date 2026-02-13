@@ -776,7 +776,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                     <h2 className="text-2xl font-bold text-white mb-1">{user?.name || 'Visitante'}</h2>
                     <div className="flex justify-center gap-2">
                         <span className="px-3 py-1 rounded-full bg-[#0081FF]/10 text-[#0081FF] border border-[#0081FF]/20 text-[10px] font-bold uppercase tracking-wider">
-                            {user?.role === 'admin' ? 'Fundador / ADM' : (user?.role === 'teacher' ? 'Professor' : 'Aluno Pro')}
+                            {isAdmin ? 'Fundador / ADM' : (user?.role === 'teacher' ? 'Professor' : 'Aluno Pro')}
                         </span>
                         {vocalType !== 'Indefinido' && (
                             <span className="px-3 py-1 rounded-full bg-[#6F4CE7]/10 text-[#6F4CE7] border border-[#6F4CE7]/20 text-[10px] font-bold uppercase tracking-wider">
@@ -871,8 +871,12 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                                         <span className="material-symbols-rounded text-lg">attach_money</span>
                                     </div>
                                     <div className="text-left">
-                                        <span className="text-sm font-semibold text-white block">Painel Financeiro</span>
-                                        <span className="text-[10px] text-gray-500 block">Gerenciar pagamentos e alunos</span>
+                                        <span className="text-sm font-semibold text-white block">
+                                            {isAdmin ? 'Painel Financeiro' : 'Dashboard do Professor'}
+                                        </span>
+                                        <span className="text-[10px] text-gray-500 block">
+                                            {isAdmin ? 'Gerenciar pagamentos e alunos' : 'Gerenciar meus alunos'}
+                                        </span>
                                     </div>
                                 </div>
                                 <span className="material-symbols-rounded text-gray-600">chevron_right</span>

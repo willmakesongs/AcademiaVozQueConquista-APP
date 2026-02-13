@@ -294,7 +294,7 @@ const AppContent = () => {
             onNavigate={handleNavigate}
             onLogout={handleLogout}
             onFinancialClick={() => {
-              setDashboardInitialTab('reports');
+              setDashboardInitialTab(isAdmin ? 'reports' : 'students');
               setDashboardResetKey(prev => prev + 1);
               setScreen(Screen.TEACHER_DASHBOARD);
             }}
