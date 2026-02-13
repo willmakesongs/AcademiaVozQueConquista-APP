@@ -137,6 +137,7 @@ function formatDayOfMonth(dateString?: string) {
 
 export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinancialClick }) => {
     const { user, updateProfileAvatar, refreshUser } = useAuth();
+    const isAdmin = user?.role === 'admin' || (user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase().trim()));
     const { isOfflineMode, setOfflineMode, downloadProgress, downloadAll } = usePlayback();
 
 
