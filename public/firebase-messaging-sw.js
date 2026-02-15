@@ -1,11 +1,11 @@
 // Scripts for firebase messaging
-importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/9.0.0/firebase-messaging-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.8.0/firebase-messaging-compat.js');
 
 // Initialize the Firebase app in the service worker by passing in
 // your app's Firebase config object.
 firebase.initializeApp({
-    apiKey: "AIzaSyAAm9oyGu8kWAND8QN49-RMWgX5d9d6YoE",
+    apiKey: "AIzaSyAAm9oyGu8kWANd8QN49-RMWgX5d9d6YoE",
     authDomain: "academia-vqc.firebaseapp.com",
     projectId: "academia-vqc",
     storageBucket: "academia-vqc.firebasestorage.app",

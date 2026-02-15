@@ -11,7 +11,7 @@ import { STORAGE_BASE_URL } from '../constants';
 import * as Tone from 'tone';
 
 // Lucide Icons
-import { Sparkles, BookOpen, Clock, Music } from 'lucide-react';
+import { Sparkles, BookOpen, Clock, Music, Bell, HelpCircle, WifiOff, X } from 'lucide-react';
 
 // CAGED Components
 import ChordLibrary from '../components/CAGED/ChordLibrary';
@@ -229,6 +229,9 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
     const [pixCopyStatus, setPixCopyStatus] = useState('Copiar Chave');
 
     // Notificações
+    const [loading, setLoading] = useState(true);
+    const [updating, setUpdating] = useState(false);
+    const [showHelpModal, setShowHelpModal] = useState(false);
     const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>(
         typeof Notification !== 'undefined' ? Notification.permission : 'default'
     );
@@ -239,15 +242,31 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
             return;
         }
 
-        const permission = await Notification.requestPermission();
-        setNotificationPermission(permission);
+        try {
+            const permission = await Notification.requestPermission();
+            setNotificationPermission(permission);
 
-        if (permission === 'granted') {
-            console.log('Permissão concedida! Capturando token...');
-            if (user?.id) {
-                await requestForToken(user.id);
+            if (permission === 'granted') {
+                console.log('Permissão concedida! Capturando token...');
+                if (user?.id) {
+                    const result = await requestForToken(user.id);
+                    // result agora é { token: string | null, error?: string }
+                    if (result && result.token) {
+                        alert('Notificações habilitadas com sucesso!');
+                    } else if (result && result.error === null) {
+                        // Workaround: Silencia erro se FCM estiver desativado temporariamente
+                        console.log('Notificações permitidas, mas FCM temporariamente inativo (sem token).');
+                    } else {
+                        const errorMessage = result?.error || 'Erro desconhecido.';
+                        alert(`Permissão concedida, mas falhou ao gerar o token.\n\nDetalhe do erro: ${errorMessage}\n\nTire um print desta tela e envie para o suporte.`);
+                    }
+                }
+            } else if (permission === 'denied') {
+                setShowHelpModal(true);
             }
-            alert('Notificações habilitadas com sucesso!');
+        } catch (error) {
+            console.error('Erro ao solicitar permissão:', error);
+            alert('Ocorreu um erro ao solicitar permissão para notificações.');
         }
     };
 
@@ -1018,33 +1037,40 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                                     <span className="text-[10px] text-gray-500 block">Avisos de aula e novidades</span>
                                 </div>
                             </div>
-                            <button
-                                onClick={requestNotificationPermission}
-                                className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all ${notificationPermission === 'granted'
-                                    ? 'bg-green-500/10 text-green-500 border border-green-500/20'
-                                    : 'bg-[#0081FF] text-white shadow-lg shadow-[#0081FF]/20'
-                                    }`}
-                            >
-                                {notificationPermission === 'granted' ? 'Habilitado' : 'Habilitar'}
-                            </button>
+                            <div className="flex items-center gap-2">
+                                <button
+                                    onClick={() => setShowHelpModal(true)}
+                                    className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                                    title="Ajuda com notificações"
+                                >
+                                    <HelpCircle className="h-4 w-4" />
+                                </button>
+                                <button
+                                    onClick={requestNotificationPermission}
+                                    className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all ${notificationPermission === 'granted'
+                                        ? 'bg-green-500/10 text-green-500 border border-green-500/20'
+                                        : 'bg-[#0081FF] text-white shadow-lg shadow-[#0081FF]/20'
+                                        }`}
+                                >
+                                    {notificationPermission === 'granted' ? 'Habilitado' : 'Habilitar'}
+                                </button>
+                            </div>
                         </div>
 
                         <div className="p-4 flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                                <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-400">
-                                    <span className="material-symbols-rounded text-lg">cloud_off</span>
+                                <div className="w-10 h-10 rounded-xl bg-[#FFB020]/10 flex items-center justify-center text-[#FFB020]">
+                                    <WifiOff className="h-5 w-5" />
                                 </div>
-                                <div className="text-left">
-                                    <span className="text-sm font-semibold text-white block">Modo Offline</span>
-                                    <span className="text-[10px] text-gray-500 block">Usar áudios sem internet</span>
+                                <div>
+                                    <h3 className="text-sm font-bold text-white">Modo Offline</h3>
+                                    <p className="text-xs text-gray-500">Usar áudios sem internet</p>
                                 </div>
                             </div>
-                            <button
-                                onClick={() => setOfflineMode(!isOfflineMode)}
-                                className={`w-12 h-6 rounded-full transition-all relative ${isOfflineMode ? 'bg-[#0081FF]' : 'bg-gray-700'}`}
-                            >
-                                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${isOfflineMode ? 'left-7' : 'left-1'}`}></div>
-                            </button>
+                            <div className="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" className="sr-only peer" />
+                                <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#0081FF]/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#0081FF]"></div>
+                            </div>
                         </div>
 
                         {isOfflineMode && (
@@ -1061,7 +1087,59 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                     </div>
                 </div>
 
-                <button
+                {/* Modal de Ajuda de Notificações */}
+                {showHelpModal && (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+                        <div className="bg-[#151A26] w-full max-w-sm rounded-2xl border border-white/10 overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+                            <div className="p-6">
+                                <div className="flex items-center justify-between mb-6">
+                                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                                        <Bell className="h-5 w-5 text-[#0081FF]" />
+                                        Habilitar Notificações
+                                    </h3>
+                                    <button
+                                        onClick={() => setShowHelpModal(false)}
+                                        className="text-gray-400 hover:text-white transition-colors"
+                                    >
+                                        <X className="h-5 w-5" />
+                                    </button>
+                                </div>
+
+                                <p className="text-sm text-gray-300 mb-4">
+                                    Seu navegador bloqueou as notificações. Siga os passos abaixo para permitir:
+                                </p>
+
+                                <ol className="space-y-4 text-sm text-gray-400 list-decimal pl-4 marker:text-[#0081FF] marker:font-bold">
+                                    <li>
+                                        Feche este aplicativo.
+                                    </li>
+                                    <li>
+                                        Na tela inicial do seu celular, <strong>pressione e segure</strong> o ícone do App.
+                                    </li>
+                                    <li>
+                                        Toque no ícone <strong>( i )</strong> ou em <strong>"Informações do app"</strong>.
+                                    </li>
+                                    <li>
+                                        Vá em <strong>"Notificações"</strong>.
+                                    </li>
+                                    <li>
+                                        Ative a opção <strong>"Permitir notificações"</strong>.
+                                    </li>
+                                    <li>
+                                        Abra o App novamente e clique em <strong>"Habilitar"</strong>.
+                                    </li>
+                                </ol>
+
+                                <button
+                                    onClick={() => setShowHelpModal(false)}
+                                    className="w-full mt-6 bg-[#0081FF] text-white py-3 rounded-xl font-bold hover:bg-[#0066CC] transition-colors shadow-lg shadow-[#0081FF]/20"
+                                >
+                                    Entendi
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}        <button
                     onClick={onLogout}
                     className="w-full py-4 rounded-xl border border-[#FF00BC]/20 text-[#FF00BC] hover:bg-[#FF00BC]/5 transition-colors font-semibold text-sm flex items-center justify-center gap-2"
                 >

@@ -50,6 +50,7 @@ export interface TwisterExercise {
 export interface Module {
   id: string;
   courseId?: string; // e.g., "canto", "violao"
+  category?: string; // e.g., "Técnica e Treino"
   number: string;
   title: string;
   subtitle: string;

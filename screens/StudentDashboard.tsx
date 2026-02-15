@@ -2,7 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { Vocalize, Screen } from '../types';
 import { useAuth } from '../contexts/AuthContext';
-import { LORENA_AVATAR_URL, MODULES, VOCALIZES, MINIMALIST_LOGO_URL } from '../constants';
+import { supabase } from '../lib/supabaseClient'; // Import Supabase
+import { requestForToken } from '../lib/firebase'; // Import Firebase Messaging
+import { LORENA_AVATAR_URL, MODULES, MINIMALIST_LOGO_URL } from '../constants';
 
 interface Props {
     onNavigate: (screen: Screen) => void;
@@ -15,6 +17,11 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
 
     const [progress, setProgress] = useState(0);
     const [nextLesson, setNextLesson] = useState<{ id: string, title: string, type: 'topic' | 'vocalize' } | null>(null);
+
+    // Notification State
+    const [notifications, setNotifications] = useState<any[]>([]);
+    const [unreadCount, setUnreadCount] = useState(0);
+    const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
 
     useEffect(() => {
         document.title = "Início - Academia VQC";
@@ -41,7 +48,64 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
                 console.error("Erro ao calcular progresso:", e);
             }
         }
-    }, []);
+
+        // 0. Request Firebase Token
+        if (user?.id) {
+            requestForToken(user.id).then(({ token, error }) => {
+                if (error) console.error("FCM Token Error:", error);
+                else console.log("FCM Token Updated:", token);
+            });
+        }
+
+        // Fetch Notifications
+        const fetchNotifications = async () => {
+            if (!user?.id) return;
+            try {
+                const { data, error } = await supabase
+                    .from('notifications_history')
+                    .select('*')
+                    .eq('user_id', user.id)
+                    .order('created_at', { ascending: false })
+                    .limit(20);
+
+                if (data) {
+                    setNotifications(data);
+                    // Assuming 'read' status isn't tracked yet, we can check a local storage or add a field later.
+                    // For now, let's show count of 'pending' or just latest. 
+                    // Or better: any notification created after last 'read_at' timestamp (if we had one).
+                    // Simple approach: unread if status is 'pending' OR (better) use a local storage 'last_viewed_notifications'
+
+                    const lastViewed = localStorage.getItem('last_viewed_notifications');
+                    const newNotes = data.filter(n => !lastViewed || new Date(n.created_at).getTime() > new Date(lastViewed).getTime());
+                    setUnreadCount(newNotes.length);
+                }
+            } catch (err) {
+                console.error('Error fetching notifications:', err);
+            }
+        };
+
+        fetchNotifications();
+
+        // Subscribe to new notifications
+        const channel = supabase
+            .channel('public:notifications_history')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications_history', filter: `user_id=eq.${user?.id}` }, (payload) => {
+                setNotifications(prev => [payload.new, ...prev]);
+                setUnreadCount(prev => prev + 1);
+            })
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+
+    }, [user?.id]);
+
+    const handleOpenNotifications = () => {
+        setIsNotificationModalOpen(true);
+        setUnreadCount(0);
+        localStorage.setItem('last_viewed_notifications', new Date().toISOString());
+    };
 
     return (
         <div className="min-h-screen bg-[#101622] pb-40">
@@ -78,9 +142,14 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
                         </div>
                     </div>
                 </div>
-                <button className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white relative hover:bg-white/10 transition-colors">
+                <button
+                    onClick={handleOpenNotifications}
+                    className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-white relative hover:bg-white/10 transition-colors"
+                >
                     <span className="material-symbols-rounded">notifications</span>
-                    <span className="absolute top-2.5 right-3 w-2 h-2 bg-[#FF00BC] rounded-full border border-[#101622]"></span>
+                    {unreadCount > 0 && (
+                        <span className="absolute top-2.5 right-3 w-2 h-2 bg-[#FF00BC] rounded-full border border-[#101622] animate-pulse"></span>
+                    )}
                 </button>
             </header>
 
@@ -236,6 +305,45 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
                 </div>
 
             </div>
+
+            {/* Notification Modal */}
+            {isNotificationModalOpen && (
+                <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsNotificationModalOpen(false)}></div>
+                    <div className="relative w-full max-w-lg bg-[#1A202C] rounded-t-[32px] sm:rounded-[32px] p-6 animate-in slide-in-from-bottom-10 duration-300 border border-white/10 max-h-[80vh] flex flex-col">
+                        <div className="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-6 sm:hidden"></div>
+
+                        <div className="flex justify-between items-center mb-6 px-2">
+                            <h3 className="text-xl font-black flex items-center gap-3">
+                                <span className="material-symbols-rounded text-[#0081FF]">notifications</span>
+                                Notificações
+                            </h3>
+                            <button onClick={() => setIsNotificationModalOpen(false)} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400">
+                                <span className="material-symbols-rounded">close</span>
+                            </button>
+                        </div>
+
+                        <div className="overflow-y-auto flex-1 space-y-3 px-2 pb-4">
+                            {notifications.length > 0 ? (
+                                notifications.map((note) => (
+                                    <div key={note.id} className="bg-[#101622] p-4 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
+                                        <div className="flex justify-between items-start mb-1">
+                                            <h4 className="font-bold text-white text-sm">{note.title}</h4>
+                                            <span className="text-[10px] text-gray-500 font-bold uppercase">{new Date(note.created_at).toLocaleDateString()}</span>
+                                        </div>
+                                        <p className="text-xs text-gray-400">{note.body}</p>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-center py-12 text-gray-500">
+                                    <span className="material-symbols-rounded text-4xl mb-2 opacity-50">notifications_off</span>
+                                    <p className="text-sm">Nenhuma notificação por enquanto.</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

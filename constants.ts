@@ -221,6 +221,166 @@ const SINGEO_BASE_URL = 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/
 // MODULES DATA
 // -----------------------------------------------------------
 export const MODULES: Module[] = [
+    // --- GUITARRA: TÉCNICA E TREINO ---
+    {
+        id: 'm_guitar_tech_1',
+        courseId: 'guitarra',
+        category: 'Técnica e Treino',
+        number: '01',
+        title: 'TREINO DE TÉCNICA',
+        subtitle: 'Eficiência e Evolução',
+        description: 'Substitua o treino sem propósito por uma estrutura sólida que gera resultados reais.',
+        icon: 'dynamic_form',
+        topics: [
+            {
+                id: 'g_tech_anti_random',
+                title: 'O Sistema Anti-Aleatório',
+                description: 'A fundação para velocidade e precisão.',
+                content: `
+          <div class="space-y-6">
+            <div class="bg-gradient-to-br from-[#0081FF]/20 to-transparent p-8 rounded-[2.5rem] border border-white/5 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-20"></div>
+              <div class="w-16 h-16 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] mb-8 overflow-hidden">
+                <span class="material-symbols-rounded text-4xl">music_note</span>
+              </div>
+              <h3 class="text-3xl font-black text-white mb-6 tracking-tighter">Treino de Técnica Anti-Aleatório</h3>
+              <p class="text-gray-300 leading-relaxed text-lg">
+                Objetivo: Substituir o <strong>"treino sem propósito"</strong> por uma estrutura que gera velocidade, precisão e relaxamento.
+              </p>
+            </div>
+            
+            <div class="p-6 bg-[#1A202C] rounded-3xl border border-white/5 text-center">
+                <p class="text-gray-400 italic">
+                    "Exercícios aleatórios = Resultados aleatórios."
+                </p>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC]">
+                    <span class="material-symbols-rounded">warning</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">O Problema da Falta de Estrutura</h3>
+            </div>
+            
+            <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5 space-y-4">
+                <div class="p-4 bg-black/40 rounded-2xl border-l-4 border-[#FF00BC]">
+                    <h4 class="text-white font-bold text-sm mb-1">Qualidade > Quantidade</h4>
+                    <p class="text-xs text-gray-400">Seu sistema nervoso não se importa com a duração da prática, mas sim com os padrões que você repete.</p>
+                </div>
+                
+                <div class="p-4 bg-black/40 rounded-2xl border-l-4 border-orange-500">
+                    <h4 class="text-white font-bold text-sm mb-1">Fadiga ≠ Produtividade</h4>
+                    <p class="text-xs text-gray-400">Ficar exausto após 4 horas de treino pode estar apenas "travando" vícios e má técnica.</p>
+                </div>
+
+                <div class="p-4 bg-black/40 rounded-2xl border-l-4 border-[#0081FF]">
+                    <h4 class="text-white font-bold text-sm mb-1">O Diagnóstico</h4>
+                    <p class="text-xs text-gray-400">Se sua técnica desmorona ao aumentar a velocidade, o problema é falta de estabilidade e coordenação, não de força.</p>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="flex items-center gap-4 mb-2">
+                <div class="w-12 h-12 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
+                    <span class="material-symbols-rounded">account_tree</span>
+                </div>
+                <h3 class="text-2xl font-black text-white tracking-tighter">O Cronograma da Aula (3 Pilares)</h3>
+            </div>
+
+            <div class="space-y-4">
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="w-8 h-8 rounded-full bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF] font-bold">1</span>
+                        <h4 class="text-white font-bold">Exercícios de Estabilidade</h4>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-4">Ensine às suas mãos a sensação de controle relaxado.</p>
+                    <div class="bg-black/40 p-4 rounded-xl space-y-2">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-rounded text-[#0081FF] text-sm">check_circle</span>
+                            <span class="text-xs text-gray-300">Use metrônomo em tempo lento.</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-rounded text-[#0081FF] text-sm">check_circle</span>
+                            <span class="text-xs text-gray-300">Foco: Zero tensão e sincronização perfeita.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="w-8 h-8 rounded-full bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] font-bold">2</span>
+                        <h4 class="text-white font-bold">Padrões Principais</h4>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-4">Aumente a demanda técnica, mantendo o foco no controle.</p>
+                    <div class="bg-black/40 p-4 rounded-xl space-y-2">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-rounded text-[#6F4CE7] text-sm">check_circle</span>
+                            <span class="text-xs text-gray-300">Regra 1:1: Foco em um problema e uma solução.</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-rounded text-[#6F4CE7] text-sm">check_circle</span>
+                            <span class="text-xs text-gray-300">Sem distrações: Foque apenas no padrão isolado.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-[#1A202C] p-6 rounded-3xl border border-white/5">
+                    <div class="flex items-center gap-3 mb-3">
+                        <span class="w-8 h-8 rounded-full bg-[#FF00BC]/20 flex items-center justify-center text-[#FF00BC] font-bold">3</span>
+                        <h4 class="text-white font-bold">Treinos de Transferência</h4>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-4">Aplique a técnica em um contexto musical real.</p>
+                    <div class="bg-black/40 p-4 rounded-xl space-y-2">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-rounded text-[#FF00BC] text-sm">check_circle</span>
+                            <span class="text-xs text-gray-300">Transforme a mecânica em musicalidade.</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-rounded text-[#FF00BC] text-sm">check_circle</span>
+                            <span class="text-xs text-gray-300">Teste de Utilidade: Use o que soa musical.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+
+          <!-- slide -->
+
+          <div class="space-y-6">
+            <div class="bg-brand-gradient p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden text-center">
+                <div class="relative z-10">
+                    <div class="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center text-white mx-auto mb-6">
+                        <span class="material-symbols-rounded text-4xl">rocket_launch</span>
+                    </div>
+                    <h3 class="text-3xl font-black text-white mb-4 tracking-tighter">Mindset de Progresso</h3>
+                    <div class="space-y-4 text-left">
+                        <div class="flex gap-3">
+                            <span class="material-symbols-rounded text-white">done_all</span>
+                            <p class="text-white/90 text-sm"><strong>Estrutura vence motivação:</strong> Não espere a vontade, siga o sistema.</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <span class="material-symbols-rounded text-white">done_all</span>
+                            <p class="text-white/90 text-sm"><strong>Pratique com propósito:</strong> Evoluir é o objetivo, não apenas se cansar.</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <span class="material-symbols-rounded text-white">done_all</span>
+                            <p class="text-white/90 text-sm"><strong>Progresso > Exaustão:</strong> Qualidade gera resultados duradouros.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          </div>
+        `
+            }
+        ]
+    },
     // --- INTRODUÇÃO E FERRAMENTAS ---
     {
         id: 'm_classification',

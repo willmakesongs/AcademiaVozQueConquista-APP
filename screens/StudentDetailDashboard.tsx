@@ -3,7 +3,9 @@ import React, { useState, useEffect } from 'react';
 import { Screen, StudentSummary, StudyPlan, LessonReport, AttendanceRecord, Task } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
+import { AttendanceTracker } from '../components/features/attendance/AttendanceTracker';
 import { RoutineManager } from '../components/RoutineManager';
+import { STORAGE_BASE_URL } from '../constants';
 
 interface Props {
     studentId: string;
@@ -34,7 +36,7 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
 
     // Edição
     const [editingReport, setEditingReport] = useState<LessonReport | null>(null);
-    const [editingAttendance, setEditingAttendance] = useState<AttendanceRecord | null>(null);
+
 
     // Edição Financeira (Admin apenas)
     const [isEditingFinance, setIsEditingFinance] = useState(false);
@@ -44,7 +46,7 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
     // Form Fields
     const [newReportSummary, setNewReportSummary] = useState('');
     const [newReportHomework, setNewReportHomework] = useState('');
-    const [newAttendanceStatus, setNewAttendanceStatus] = useState<'present' | 'absent' | 'replaced' | 'to_be_replaced'>('present');
+
     const [newPlanTitle, setNewPlanTitle] = useState('');
     const [newPlanContent, setNewPlanContent] = useState('');
 
@@ -55,74 +57,74 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
     const [notificationTitle, setNotificationTitle] = useState('');
     const [notificationBody, setNotificationBody] = useState('');
 
-    useEffect(() => {
-        const fetchStudent = async () => {
-            if (!studentId) return;
-            setLoading(true);
-            try {
-                const { data, error } = await supabase
-                    .from('profiles')
-                    .select('*')
-                    .eq('id', studentId)
-                    .single();
+    const fetchStudent = async () => {
+        if (!studentId) return;
+        setLoading(true);
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', studentId)
+                .single();
 
-                if (data) {
-                    setStudent({
-                        id: data.id,
-                        name: data.name,
-                        avatarUrl: data.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name)}&background=random`,
-                        level: data.level || 'Iniciante',
-                        lastPractice: 'Hoje',
-                        progress: 0,
-                        status: data.status || 'active',
-                        phone: data.phone || '',
-                        age: String(data.age || ''),
-                        paymentDay: data.payment_day || '05',
-                        notes: data.notes || '',
-                        modality: data.modality || 'Online',
-                        scheduleDay: data.schedule_day || 'Seg',
-                        scheduleTime: data.schedule_time || '14:00',
-                        amount: data.amount || 97,
-                        address: data.address || '',
-                    });
-                    setEditAmount(String(data.amount || 97));
-                    setEditPaymentDay(data.payment_day || '05');
-                }
-
-                // Fetch Study Plan
-                const { data: planData } = await supabase
-                    .from('student_study_plans')
-                    .select('*')
-                    .eq('student_id', studentId)
-                    .eq('is_active', true)
-                    .order('created_at', { ascending: false })
-                    .limit(1)
-                    .maybeSingle();
-                if (planData) setStudyPlan(planData);
-
-                // Fetch Lesson Reports
-                const { data: reportsData } = await supabase
-                    .from('lesson_reports')
-                    .select('*')
-                    .eq('student_id', studentId)
-                    .order('lesson_date', { ascending: false });
-                if (reportsData) setLessonReports(reportsData);
-
-                // Fetch Attendance
-                const { data: attendanceData } = await supabase
-                    .from('attendance_records')
-                    .select('*')
-                    .eq('student_id', studentId)
-                    .order('date', { ascending: false });
-                if (attendanceData) setAttendanceRecords(attendanceData);
-
-            } catch (err) {
-                console.error('Error fetching student data:', err);
-            } finally {
-                setLoading(false);
+            if (data) {
+                setStudent({
+                    id: data.id,
+                    name: data.name,
+                    avatarUrl: data.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(data.name)}&background=random`,
+                    level: data.level || 'Iniciante',
+                    lastPractice: 'Hoje',
+                    progress: 0,
+                    status: data.status || 'active',
+                    phone: data.phone || '',
+                    age: String(data.age || ''),
+                    paymentDay: data.payment_day || '05',
+                    notes: data.notes || '',
+                    modality: data.modality || 'Online',
+                    scheduleDay: data.schedule_day || 'Seg',
+                    scheduleTime: data.schedule_time || '14:00',
+                    amount: data.amount || 97,
+                    address: data.address || '',
+                });
+                setEditAmount(String(data.amount || 97));
+                setEditPaymentDay(data.payment_day || '05');
             }
-        };
 
+            // Fetch Study Plan
+            const { data: planData } = await supabase
+                .from('student_study_plans')
+                .select('*')
+                .eq('student_id', studentId)
+                .eq('is_active', true)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+            if (planData) setStudyPlan(planData);
+
+            // Fetch Lesson Reports
+            const { data: reportsData } = await supabase
+                .from('lesson_reports')
+                .select('*')
+                .eq('student_id', studentId)
+                .order('lesson_date', { ascending: false });
+            if (reportsData) setLessonReports(reportsData);
+
+            // Fetch Attendance
+            const { data: attendanceData } = await supabase
+                .from('attendance_records')
+                .select('*')
+                .eq('student_id', studentId)
+                .order('date', { ascending: false });
+            if (attendanceData) setAttendanceRecords(attendanceData);
+
+        } catch (err) {
+            console.error('Error fetching student data:', err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
         fetchStudent();
     }, [studentId]);
 
@@ -181,55 +183,7 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
         }
     };
 
-    const handleAddAttendance = async () => {
-        setSaving(true);
-        try {
-            if (editingAttendance) {
-                const { error } = await supabase.from('attendance_records').update({
-                    status: newAttendanceStatus,
-                }).eq('id', editingAttendance.id);
-                if (error) throw error;
-            } else {
-                const { error } = await supabase.from('attendance_records').insert([{
-                    student_id: studentId,
-                    teacher_id: user?.id,
-                    status: newAttendanceStatus,
-                    date: new Date().toISOString().split('T')[0]
-                }]);
-                if (error) throw error;
-            }
 
-            // Refresh list
-            const { data } = await supabase
-                .from('attendance_records')
-                .select('*')
-                .eq('student_id', studentId)
-                .order('date', { ascending: false });
-            if (data) setAttendanceRecords(data);
-
-            setIsAttendanceModalOpen(false);
-            setEditingAttendance(null);
-        } catch (err) {
-            console.error('Error saving attendance:', err);
-            alert('Erro ao salvar presença');
-        } finally {
-            setSaving(false);
-        }
-    };
-
-    const handleDeleteAttendance = async (id: string | number) => {
-        if (!confirm('Excluir este registro de presença?')) return;
-        try {
-            const { error } = await supabase
-                .from('attendance_records')
-                .delete()
-                .eq('id', id);
-            if (error) throw error;
-            setAttendanceRecords(prev => prev.filter(a => a.id !== id));
-        } catch (err) {
-            console.error('Error deleting attendance:', err);
-        }
-    };
 
     const handleSavePlan = async () => {
         if (!newPlanTitle.trim()) return;
@@ -444,11 +398,6 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
                                 {attendanceRecords.slice(0, 3).map((record) => (
                                     <div
                                         key={record.id}
-                                        onClick={() => {
-                                            setEditingAttendance(record);
-                                            setNewAttendanceStatus(record.status as any);
-                                            setIsAttendanceModalOpen(true);
-                                        }}
                                         className={`h-10 rounded-xl flex items-center justify-center font-black cursor-pointer active:scale-95 transition-all ${record.status === 'present' ? 'bg-[#00C853]/10 text-[#00C853]' :
                                             record.status === 'absent' ? 'bg-[#FF3D00]/10 text-[#FF3D00]' :
                                                 'bg-[#0081FF]/10 text-[#0081FF]'
@@ -664,52 +613,25 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
                 </div>
             )}
 
-            {/* Modal: Presença */}
-            {isAttendanceModalOpen && (
+            {/* Modal: Presença (Novo Componente Isolado) */}
+            {isAttendanceModalOpen && student && (
                 <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsAttendanceModalOpen(false)}></div>
-                    <div className="relative w-full max-w-sm bg-[#1A202C] rounded-t-[32px] sm:rounded-[32px] p-8 animate-in slide-in-from-bottom-10 duration-300">
-                        <h3 className="text-xl font-black mb-6 text-center">Registrar Presença</h3>
-                        <div className="grid grid-cols-2 gap-3 mb-6">
-                            {[
-                                { id: 'present', label: 'Presente', icon: 'check_circle', color: '#00C853' },
-                                { id: 'absent', label: 'Falta', icon: 'cancel', color: '#FF3D00' },
-                                { id: 'replaced', label: 'Reposição', icon: 'sync', color: '#0081FF' },
-                                { id: 'to_be_replaced', label: 'A Repor', icon: 'schedule', color: '#FFAB00' }
-                            ].map((s) => (
-                                <button
-                                    key={s.id}
-                                    onClick={() => setNewAttendanceStatus(s.id as any)}
-                                    className={`p-4 rounded-2xl border transition-all flex flex-col items-center gap-2 ${newAttendanceStatus === s.id ? 'border-white/20 bg-white/5' : 'border-white/5 opacity-50'
-                                        }`}
-                                >
-                                    <span className="material-symbols-rounded" style={{ color: s.color }}>{s.icon}</span>
-                                    <span className="text-[10px] font-black uppercase tracking-wider">{s.label}</span>
-                                </button>
-                            ))}
-                        </div>
-                        <div className="flex gap-3">
-                            {editingAttendance && (
-                                <button
-                                    onClick={() => handleDeleteAttendance(editingAttendance.id)}
-                                    className="w-12 h-12 rounded-2xl bg-red-500/10 text-red-500 flex items-center justify-center border border-red-500/20"
-                                >
-                                    <span className="material-symbols-rounded">delete</span>
-                                </button>
-                            )}
-                            <button
-                                disabled={saving}
-                                onClick={handleAddAttendance}
-                                className="flex-1 py-4 bg-[#0081FF] rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2"
-                            >
-                                {saving && <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>}
-                                {editingAttendance ? 'Atualizar' : 'Confirmar'}
-                            </button>
-                            {!editingAttendance && <button onClick={() => setIsAttendanceModalOpen(false)} className="flex-1 py-4 font-bold text-gray-500">Voltar</button>}
-                        </div>
+                    <div className="relative z-10 w-full max-w-md">
+                        <AttendanceTracker
+                            student={student}
+                            course={undefined}
+                            teacherId={user?.id || ''}
+                            onClose={() => setIsAttendanceModalOpen(false)}
+                            onSuccess={() => {
+                                fetchStudent();
+                            }}
+                        />
                     </div>
                 </div>
             )}
+
+
 
             {/* Modal: Editar Plano de Estudos */}
             {isPlanModalOpen && (

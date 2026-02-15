@@ -966,106 +966,130 @@ export const LibraryScreen: React.FC<Props> = ({
               </div>
             )}
 
-            <div className="space-y-4">
-              {courseModules.map((module, index) => {
-                const isActive = expandedModule === module.id;
-                const moduleExercises = getVocalizesForModule(module.id);
-                const isTrial = user?.status === 'trial';
-                const isLocked = isTrial && index > 0;
+            <div className="space-y-8">
+              {(() => {
+                const groups: Record<string, Module[]> = {};
+                courseModules.forEach(m => {
+                  const cat = m.category || 'Geral';
+                  if (!groups[cat]) groups[cat] = [];
+                  groups[cat].push(m);
+                });
 
-                // Calcular status do módulo
-                const moduleTopics = module.topics;
-                const completedCount = moduleTopics.filter(t => checklistState[t.id]).length;
-                const status = completedCount === 0 ? 'not_started' : (completedCount === moduleTopics.length ? 'completed' : 'in_progress');
-
-                return (
-                  <div
-                    key={module.id}
-                    id={`module-${module.id}`}
-                    className={`rounded-2xl border transition-all duration-300 overflow-hidden ${isActive
-                      ? 'bg-[#1A202C] border-[#6F4CE7]/50 shadow-[0_0_30px_rgba(111,76,231,0.1)]'
-                      : (isLocked ? 'bg-[#1A202C]/30 border-white/5 opacity-70' : 'bg-[#1A202C]/50 border-white/5')
-                      }`}
-                  >
-                    <button
-                      onClick={() => toggleModule(module.id, isLocked)}
-                      className="w-full flex items-start p-5 text-left relative"
-                    >
-                      <div className={`mr-4 w-12 h-12 rounded-xl flex items-center justify-center shrink-0 font-bold text-lg transition-colors ${isActive ? 'bg-brand-gradient text-white' : (status === 'completed' ? 'bg-[#0081FF]/20 text-[#0081FF]' : 'bg-white/5 text-gray-500')
-                        }`}>
-                        {isLocked ? (
-                          <span className="material-symbols-rounded text-xl">lock</span>
-                        ) : (
-                          status === 'completed' ? (
-                            <span className="material-symbols-rounded">check</span>
-                          ) : (
-                            module.icon === 'custom_vqc_logo' ? (
-                              <img src={MINIMALIST_LOGO_URL} className="w-6 h-6 object-contain" alt="VQC" />
-                            ) : (
-                              module.icon ? (
-                                <span className="material-symbols-rounded">{module.icon}</span>
-                              ) : (
-                                module.number
-                              )
-                            )
-                          )
-                        )}
+                return Object.entries(groups).map(([category, items]) => (
+                  <div key={category} className="space-y-4">
+                    {category !== 'Geral' && (
+                      <div className="flex items-center gap-3 px-2">
+                        <div className="h-px flex-1 bg-white/5"></div>
+                        <h4 className="text-[10px] font-black text-gray-500 uppercase tracking-widest whitespace-nowrap">
+                          {category}
+                        </h4>
+                        <div className="h-px flex-1 bg-white/5"></div>
                       </div>
+                    )}
 
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-1">
-                          {status === 'in_progress' && <span className="w-1.5 h-1.5 rounded-full bg-[#0081FF] animate-pulse"></span>}
-                          <p className={`text-[9px] font-black uppercase tracking-widest ${status === 'completed' ? 'text-[#0081FF]' : (status === 'in_progress' ? 'text-[#0081FF]' : 'text-gray-600')}`}>
-                            {status === 'completed' ? 'CONCLUÍDO' : (status === 'in_progress' ? 'EM ANDAMENTO' : 'NÃO INICIADO')}
-                          </p>
-                        </div>
-                        <h3 className={`font-bold text-lg leading-tight mb-1 ${isActive ? 'text-white' : (isLocked ? 'text-gray-400' : 'text-gray-300')}`}>
-                          {module.title}
-                        </h3>
-                        <p className="text-xs text-gray-500 line-clamp-2">{module.description}</p>
-                      </div>
+                    <div className="space-y-4">
+                      {items.map((module, mIndex) => {
+                        const globalIndex = courseModules.indexOf(module);
+                        const isActive = expandedModule === module.id;
+                        const isTrial = user?.status === 'trial';
+                        const isLocked = isTrial && globalIndex > 0;
 
-                      <div className={`ml-2 mt-1 transition-transform duration-300 ${isActive ? 'rotate-180 text-[#6F4CE7]' : 'text-gray-600'}`}>
-                        {isLocked ? null : <span className="material-symbols-rounded">expand_more</span>}
-                      </div>
-                    </button>
+                        // Calcular status do módulo
+                        const moduleTopics = module.topics;
+                        const completedCount = moduleTopics.filter(t => checklistState[t.id]).length;
+                        const status = completedCount === 0 ? 'not_started' : (completedCount === moduleTopics.length ? 'completed' : 'in_progress');
 
-                    <div className={`transition-all duration-500 ease-in-out ${isActive ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
-                      <div className="px-5 pb-5 pt-0">
-                        <div className="mb-6 pl-4 border-l border-white/10 space-y-3">
-                          {module.topics.map(topic => (
-                            <div
-                              key={topic.id}
-                              className={`relative p-2 rounded-lg transition-colors flex items-center justify-between ${topic.content || topic.id.startsWith('10.1') || topic.id === 'tool_vocal_extension' ? 'active:bg-white/5 cursor-pointer' : ''}`}
-                              onClick={() => {
-                                if (topic.content || topic.id.startsWith('10.1') || topic.id === 'tool_vocal_extension') {
-                                  handleLessonOpen(topic, module.id);
-                                }
-                              }}
+                        return (
+                          <div
+                            key={module.id}
+                            id={`module-${module.id}`}
+                            className={`rounded-2xl border transition-all duration-300 overflow-hidden ${isActive
+                              ? 'bg-[#1A202C] border-[#6F4CE7]/50 shadow-[0_0_30px_rgba(111,76,231,0.1)]'
+                              : (isLocked ? 'bg-[#1A202C]/30 border-white/5 opacity-70' : 'bg-[#1A202C]/50 border-white/5')
+                              }`}
+                          >
+                            <button
+                              onClick={() => toggleModule(module.id, isLocked)}
+                              className="w-full flex items-start p-5 text-left relative"
                             >
-                              <div className="flex-1">
-                                <p className={`text-sm font-semibold ${checklistState[topic.id] ? 'text-gray-500 line-through' : (topic.content || topic.id.startsWith('10.1') || topic.id === 'tool_vocal_extension' ? 'text-[#0081FF]' : 'text-white')}`}>
-                                  {topic.title}
-                                </p>
-                                <p className="text-[10px] text-gray-600">{topic.description}</p>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                {checklistState[topic.id] && <span className="material-symbols-rounded text-[#0081FF] text-sm">check_circle</span>}
-                                {(topic.content || topic.id.startsWith('10.1') || topic.id === 'tool_vocal_extension') && (
-                                  <span className="material-symbols-rounded text-gray-600 text-sm">
-                                    {topic.id.startsWith('10.1') ? 'play_circle' : (topic.id === 'tool_vocal_extension' ? 'mic' : 'article')}
-                                  </span>
+                              <div className={`mr-4 w-12 h-12 rounded-xl flex items-center justify-center shrink-0 font-bold text-lg transition-colors ${isActive ? 'bg-brand-gradient text-white' : (status === 'completed' ? 'bg-[#0081FF]/20 text-[#0081FF]' : 'bg-white/5 text-gray-500')
+                                }`}>
+                                {isLocked ? (
+                                  <span className="material-symbols-rounded text-xl">lock</span>
+                                ) : (
+                                  status === 'completed' ? (
+                                    <span className="material-symbols-rounded">check</span>
+                                  ) : (
+                                    module.icon === 'custom_vqc_logo' ? (
+                                      <img src={MINIMALIST_LOGO_URL} className="w-6 h-6 object-contain" alt="VQC" />
+                                    ) : (
+                                      module.icon ? (
+                                        <span className="material-symbols-rounded">{module.icon}</span>
+                                      ) : (
+                                        module.number
+                                      )
+                                    )
+                                  )
                                 )}
                               </div>
-                            </div>
-                          ))}
-                        </div>
 
-                      </div>
+                              <div className="flex-1">
+                                <div className="flex items-center gap-2 mb-1">
+                                  {status === 'in_progress' && <span className="w-1.5 h-1.5 rounded-full bg-[#0081FF] animate-pulse"></span>}
+                                  <p className={`text-[9px] font-black uppercase tracking-widest ${status === 'completed' ? 'text-[#0081FF]' : (status === 'in_progress' ? 'text-[#0081FF]' : 'text-gray-600')}`}>
+                                    {status === 'completed' ? 'CONCLUÍDO' : (status === 'in_progress' ? 'EM ANDAMENTO' : 'NÃO INICIADO')}
+                                  </p>
+                                </div>
+                                <h3 className={`font-bold text-lg leading-tight mb-1 ${isActive ? 'text-white' : (isLocked ? 'text-gray-400' : 'text-gray-300')}`}>
+                                  {module.title}
+                                </h3>
+                                <p className="text-xs text-gray-500 line-clamp-2">{module.description}</p>
+                              </div>
+
+                              <div className={`ml-2 mt-1 transition-transform duration-300 ${isActive ? 'rotate-180 text-[#6F4CE7]' : 'text-gray-600'}`}>
+                                {isLocked ? null : <span className="material-symbols-rounded">expand_more</span>}
+                              </div>
+                            </button>
+
+                            <div className={`transition-all duration-500 ease-in-out ${isActive ? 'max-h-[1000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+                              <div className="px-5 pb-5 pt-0">
+                                <div className="mb-6 pl-4 border-l border-white/10 space-y-3">
+                                  {module.topics.map(topic => (
+                                    <div
+                                      key={topic.id}
+                                      className={`relative p-2 rounded-lg transition-colors flex items-center justify-between ${topic.content || topic.id.startsWith('10.1') || topic.id === 'tool_vocal_extension' ? 'active:bg-white/5 cursor-pointer' : ''}`}
+                                      onClick={() => {
+                                        if (topic.content || topic.id.startsWith('10.1') || topic.id === 'tool_vocal_extension') {
+                                          handleLessonOpen(topic, module.id);
+                                        }
+                                      }}
+                                    >
+                                      <div className="flex-1">
+                                        <p className={`text-sm font-semibold ${checklistState[topic.id] ? 'text-gray-500 line-through' : (topic.content || topic.id.startsWith('10.1') || topic.id === 'tool_vocal_extension' ? 'text-[#0081FF]' : 'text-white')}`}>
+                                          {topic.title}
+                                        </p>
+                                        <p className="text-[10px] text-gray-600">{topic.description}</p>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        {checklistState[topic.id] && <span className="material-symbols-rounded text-[#0081FF] text-sm">check_circle</span>}
+                                        {(topic.content || topic.id.startsWith('10.1') || topic.id === 'tool_vocal_extension') && (
+                                          <span className="material-symbols-rounded text-gray-600 text-sm">
+                                            {topic.id.startsWith('10.1') ? 'play_circle' : (topic.id === 'tool_vocal_extension' ? 'mic' : 'article')}
+                                          </span>
+                                        )}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
-                );
-              })}
+                ));
+              })()}
             </div>
           </>
         ) : (
