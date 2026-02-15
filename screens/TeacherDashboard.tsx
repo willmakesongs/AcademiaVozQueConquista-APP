@@ -3,10 +3,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Screen, StudentSummary, Appointment, PaymentReceipt, Course, StudentCourse } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
+import { RoutineManager } from '../components/RoutineManager';
 import { STORAGE_BASE_URL } from '../constants';
 
 interface Props {
-    onNavigate: (screen: Screen) => void;
+    onNavigate: (screen: Screen, studentId?: string) => void;
     onLogout: () => void;
     initialTab?: 'dashboard' | 'students' | 'history' | 'reports' | 'settings';
     isAdminView?: boolean;
@@ -31,12 +32,13 @@ const getCourseIcon = (slug: string) => {
 
 export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initialTab = 'dashboard', isAdminView = false }) => {
     const { user } = useAuth();
-    const isActuallyAdmin = user?.role === 'admin' || (user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase().trim()));
+    const isSuperAdmin = user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase().trim());
+    const isActuallyAdmin = user?.role === 'admin' || isSuperAdmin || (user?.email === 'guest@vocalizes.com.br');
 
     const [showConfig, setShowConfig] = useState(false);
     const [students, setStudents] = useState<StudentSummary[]>([]);
     const [appointments, setAppointments] = useState<Appointment[]>([]);
-    const [activeTab, setActiveTab] = useState<'dashboard' | 'students' | 'history' | 'reports' | 'settings'>(initialTab);
+    const [activeTab, setActiveTab] = useState<'dashboard' | 'students' | 'history' | 'reports' | 'settings' | 'notifications'>(initialTab);
     const [receipts, setReceipts] = useState<any[]>([]);
     const [paymentHistory, setPaymentHistory] = useState<any[]>([]);
     const [courses, setCourses] = useState<Course[]>([]);
@@ -54,6 +56,12 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     const [editingStudentRepasse, setEditingStudentRepasse] = useState<Record<string, { fixed?: string, percent?: string }>>({});
     const [savingExpense, setSavingExpense] = useState(false);
 
+    // Notificações Broadcast
+    const [isBroadcastModalOpen, setIsBroadcastModalOpen] = useState(false);
+    const [broadcastTitle, setBroadcastTitle] = useState('');
+    const [broadcastBody, setBroadcastBody] = useState('');
+    const [notificationsHistory, setNotificationsHistory] = useState<any[]>([]);
+
     // States UI
     const [searchQuery, setSearchQuery] = useState('');
     const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -67,6 +75,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
     // States Detalhes
     const [selectedStudent, setSelectedStudent] = useState<StudentSummary | null>(null);
+    const [isRoutineManagerOpen, setIsRoutineManagerOpen] = useState(false);
     const [vocalAssessment, setVocalAssessment] = useState<any | null>(null);
     const [notesInput, setNotesInput] = useState('');
     const [isEditing, setIsEditing] = useState(false);
@@ -158,6 +167,21 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         };
     }, []);
 
+    useEffect(() => {
+        if (activeTab === 'notifications') {
+            fetchNotificationsHistory();
+        }
+    }, [activeTab]);
+
+    const fetchNotificationsHistory = async () => {
+        const { data, error } = await supabase
+            .from('notifications_history')
+            .select('*')
+            .order('created_at', { ascending: false })
+            .limit(20);
+        if (data) setNotificationsHistory(data);
+    };
+
     const fetchData = async (force: boolean = false) => {
         setLoadingAction(true);
         try {
@@ -245,7 +269,8 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     contractAgreedAt: s.contract_agreed_at,
                     signatureUrl: s.signature_url,
                     courses: studentCourses,
-                    teacher_id: s.teacher_id
+                    teacher_id: s.teacher_id,
+                    push_token: s.push_token
                 };
             });
 
@@ -257,7 +282,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             // Fetch Receipts - Filtered for teachers
             let receiptQuery = supabase
                 .from('payment_receipts')
-                .select('*, profiles:user_id(name, avatar_url, teacher_id)');
+                .select('*');
 
             if (user?.role === 'teacher' && !isAdminView && !isActuallyAdmin) {
                 // This requires profiles join or a subquery. Supabase handles inner join filters
@@ -266,17 +291,27 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             const { data: rData } = await receiptQuery.order('created_at', { ascending: false });
 
             if (rData) {
-                let mappedReceipts = rData.map((r: any) => ({
-                    id: r.id,
-                    userId: r.user_id,
-                    userName: r.profiles?.name || 'Aluno',
-                    userAvatar: r.profiles?.avatar_url,
-                    amount: r.amount,
-                    receiptUrl: r.receipt_url,
-                    status: r.status,
-                    createdAt: r.created_at,
-                    teacher_id: r.profiles?.teacher_id
-                }));
+                // Fetch profiles for these receipts separately to avoid complex join errors
+                const userIds = Array.from(new Set(rData.map((r: any) => r.user_id)));
+                const { data: profilesForReceipts } = await supabase
+                    .from('profiles')
+                    .select('id, name, avatar_url, teacher_id')
+                    .in('id', userIds);
+
+                let mappedReceipts = rData.map((r: any) => {
+                    const prof = profilesForReceipts?.find(p => p.id === r.user_id);
+                    return {
+                        id: r.id,
+                        userId: r.user_id,
+                        userName: prof?.name || 'Aluno',
+                        userAvatar: prof?.avatar_url,
+                        amount: r.amount,
+                        receiptUrl: r.receipt_url,
+                        status: r.status,
+                        createdAt: r.created_at,
+                        teacher_id: prof?.teacher_id
+                    };
+                });
 
                 // Client-side filter for receipts if teacher
                 if (user?.role === 'teacher' && !isAdminView && !isActuallyAdmin) {
@@ -333,6 +368,56 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         } finally {
             setLoadingAction(false);
             if (syncStatus === 'loading') setSyncStatus('synced'); // Default to synced if no error caught initially
+        }
+    };
+
+    const handleBroadcastNotifications = async () => {
+        if (!isSuperAdmin) {
+            alert('Apenas Lorena e Will podem enviar comunicações em massa.');
+            return;
+        }
+        if (!broadcastTitle.trim() || !broadcastBody.trim()) return;
+        setLoadingAction(true);
+
+        // Filtrar alunos com token
+        const targets = students.filter(s => s.push_token && s.status !== 'inactive');
+
+        if (targets.length === 0) {
+            alert('Nenhum aluno ativo com notificações habilitadas foi encontrado.');
+            setLoadingAction(false);
+            return;
+        }
+
+        if (!confirm(`Deseja enviar este aviso para ${targets.length} alunos?`)) {
+            setLoadingAction(false);
+            return;
+        }
+
+        try {
+            // Enviamos um por um ou via endpoint de broadcast se existir
+            // Para maior controle, vamos disparar em loop (idealmente seria batch no backend)
+            let successCount = 0;
+            for (const target of targets) {
+                const { error } = await supabase.functions.invoke('send-notification', {
+                    body: {
+                        userId: target.id,
+                        title: broadcastTitle,
+                        body: broadcastBody
+                    }
+                });
+                if (!error) successCount++;
+            }
+
+            alert(`Processo concluído! ${successCount} de ${targets.length} notificações foram enviadas.`);
+            setIsBroadcastModalOpen(false);
+            setBroadcastTitle('');
+            setBroadcastBody('');
+            fetchNotificationsHistory();
+        } catch (err) {
+            console.error('Broadcast error:', err);
+            alert('Houve um erro durante o disparo em massa.');
+        } finally {
+            setLoadingAction(false);
         }
     };
 
@@ -1010,7 +1095,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                             {statusFiltered.map(student => (
                                 <div key={student.id} onClick={() => setSelectedStudent(student)} className="bg-[#1A202C] p-4 rounded-2xl border border-white/5 flex items-center justify-between cursor-pointer hover:bg-white/5">
                                     <div className="flex items-center gap-3">
-                                        <img src={student.avatarUrl} className="w-10 h-10 rounded-full object-cover" />
+                                        <img src={student.avatarUrl} alt={student.name} className="w-10 h-10 rounded-full object-cover" />
                                         <div>
                                             <h4 className="text-sm font-bold text-white">{student.name}</h4>
                                             <div className="flex gap-1">
@@ -1237,8 +1322,8 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                                                     <div key={student.id} className="bg-black/20 rounded-xl p-3 border border-white/5 space-y-3">
                                                                         <div className="flex items-center justify-between">
                                                                             <div className="flex items-center gap-2">
-                                                                                <img src={student.avatarUrl} alt="" className="w-6 h-6 rounded-full border border-white/10" />
-                                                                                <p className="text-white text-[11px] font-bold">{student.name}</p>
+                                                                                <img src={student.avatarUrl} alt={student.name} className="w-6 h-6 rounded-full border border-white/10" />
+                                                                                <span className="text-[10px] text-gray-400">{student.name.split(' ')[0]}</span>
                                                                             </div>
                                                                             <p className="text-gray-500 text-[10px]">Mensal: R$ {studentAmount.toFixed(2)}</p>
                                                                         </div>
@@ -1502,7 +1587,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                         <div className="bg-[#1A202C] rounded-3xl border border-white/5 overflow-hidden">
                             {[
                                 { icon: 'edit', label: 'Editar Perfil Profissional', color: 'text-blue-400' },
-                                { icon: 'schedule', label: 'Horários Disponíveis', color: 'text-purple-400' },
+                                { icon: 'schedule', label: 'Horários Disponíveis', color: 'text-vibe-400' },
                                 { icon: 'history', label: 'Histórico de Atendimentos', color: 'text-orange-400' },
                                 { icon: 'description', label: 'Modelo de Contrato Padrao', color: 'text-green-400' }
                             ].map((item, idx) => (
@@ -1545,6 +1630,61 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     </button>
 
                     <p className="text-center text-[10px] text-gray-700 font-bold uppercase py-4">Versão 1.2.0-beta • 2026</p>
+                </div>
+            </div>
+        );
+    };
+
+    const renderNotifications = () => {
+        return (
+            <div className="flex-1 flex flex-col hide-scrollbar pb-32 overflow-y-auto px-6 pt-6">
+                <div className="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 className="text-white font-black text-xl tracking-tight">Comunicados</h3>
+                        <p className="text-[10px] text-gray-500 font-extrabold uppercase mt-1 tracking-widest">Avisos e Lembretes Push</p>
+                    </div>
+                    {isSuperAdmin && (
+                        <button
+                            onClick={() => setIsBroadcastModalOpen(true)}
+                            className="p-4 bg-[#0081FF] rounded-2xl flex items-center gap-2 shadow-lg shadow-[#0081FF]/20 active:scale-95 transition-all"
+                        >
+                            <span className="material-symbols-rounded text-white">campaign</span>
+                            <span className="text-[10px] text-white font-black uppercase">Novo Aviso Geral</span>
+                        </button>
+                    )}
+                </div>
+
+                <div className="space-y-4">
+                    <p className="text-[10px] font-black text-gray-500 uppercase ml-1">Histórico Recente</p>
+                    {notificationsHistory.length > 0 ? (
+                        notificationsHistory.map((n) => (
+                            <div key={n.id} className="bg-[#1A202C] p-5 rounded-3xl border border-white/5 space-y-3">
+                                <div className="flex justify-between items-start">
+                                    <h4 className="text-white font-bold text-sm">{n.title}</h4>
+                                    <span className={`text-[9px] font-black uppercase px-2 py-0.5 rounded-lg ${n.status === 'sent' ? 'bg-green-500/10 text-green-500' :
+                                        n.status === 'failed' ? 'bg-red-500/10 text-red-500' : 'bg-orange-500/10 text-orange-500'
+                                        }`}>
+                                        {n.status === 'sent' ? 'Enviado' : n.status === 'failed' ? 'Falhou' : 'Pendente'}
+                                    </span>
+                                </div>
+                                <p className="text-gray-400 text-xs leading-relaxed">{n.body}</p>
+                                <div className="flex justify-between items-center pt-2 border-t border-white/5">
+                                    <span className="text-[9px] text-gray-600 font-bold uppercase">{new Date(n.created_at).toLocaleString('pt-BR')}</span>
+                                    {n.user_id && (
+                                        <span className="text-[9px] text-[#0081FF] font-extrabold uppercase ml-auto">Para: {students.find(s => s.id === n.user_id)?.name || 'Aluno'}</span>
+                                    )}
+                                    {!n.user_id && (
+                                        <span className="text-[9px] text-vibe-400 font-extrabold uppercase ml-auto">Broadcast Geral</span>
+                                    )}
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="py-20 text-center bg-white/5 rounded-3xl border border-dashed border-white/10">
+                            <span className="material-symbols-rounded text-5xl text-gray-700 mb-4">history</span>
+                            <p className="text-gray-500 text-sm">Nenhuma notificação enviada ainda.</p>
+                        </div>
+                    )}
                 </div>
             </div>
         );
@@ -1639,19 +1779,21 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                         </div>
                     </div>
 
-                    {/* Pag. Pendentes */}
-                    <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5 relative overflow-hidden group hover:border-[#FF00BC]/30 transition-colors">
-                        <div className="flex justify-between items-start mb-4">
-                            <h3 className="text-[#94A3B8] font-bold text-sm">Pag. Pendentes</h3>
-                            <div className="w-8 h-8 rounded-xl bg-[#FF00BC]/10 text-[#FF00BC] flex items-center justify-center">
-                                <span className="material-symbols-rounded text-xl">warning</span>
+                    {/* Pag. Pendentes - Only for Admin */}
+                    {isActuallyAdmin && (
+                        <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5 relative overflow-hidden group hover:border-[#FF00BC]/30 transition-colors">
+                            <div className="flex justify-between items-start mb-4">
+                                <h3 className="text-[#94A3B8] font-bold text-sm">Pag. Pendentes</h3>
+                                <div className="w-8 h-8 rounded-xl bg-[#FF00BC]/10 text-[#FF00BC] flex items-center justify-center">
+                                    <span className="material-symbols-rounded text-xl">warning</span>
+                                </div>
+                            </div>
+                            <div className="flex items-baseline gap-2">
+                                <span className="text-4xl font-black text-white tracking-tight">{pendingPaymentsCount}</span>
+                                <span className="text-[10px] font-black uppercase text-red-400 bg-[#FF00BC]/10 px-2 py-1 rounded-lg tracking-wider">Atrasados</span>
                             </div>
                         </div>
-                        <div className="flex items-baseline gap-2">
-                            <span className="text-4xl font-black text-white tracking-tight">{pendingPaymentsCount}</span>
-                            <span className="text-[10px] font-black uppercase text-red-400 bg-[#FF00BC]/10 px-2 py-1 rounded-lg tracking-wider">Atrasados</span>
-                        </div>
-                    </div>
+                    )}
                 </div>
 
                 {/* Calendar Strip */}
@@ -1722,10 +1864,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                 {/* Student Info */}
                                 <div
                                     className="flex-1 flex items-center gap-3 min-w-0 cursor-pointer hover:opacity-80 transition-opacity"
-                                    onClick={() => {
-                                        const student = students.find(s => s.name === apt.studentName);
-                                        if (student) openStudentDetails(student);
-                                    }}
+                                    onClick={() => onNavigate(Screen.STUDENT_DETAIL, apt.studentId)}
                                 >
                                     <div className="relative">
                                         <img src={apt.avatarUrl} className="w-12 h-12 rounded-full object-cover border-2 border-[#151A23]" alt={apt.studentName} />
@@ -1773,9 +1912,9 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     {/* Actions */}
                                     <div className="flex flex-col gap-2 pl-2">
                                         <button
-                                            onClick={() => {
-                                                const student = students.find(s => s.name === apt.studentName);
-                                                if (student) openStudentDetails(student);
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                onNavigate(Screen.STUDENT_DETAIL, apt.studentId);
                                             }}
                                             className="w-9 h-9 rounded-full bg-[#0081FF]/10 text-[#0081FF] flex items-center justify-center hover:bg-[#0081FF] hover:text-white transition-all shadow-sm"
                                         >
@@ -1869,21 +2008,23 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 <div className="flex-1 overflow-y-auto hide-scrollbar px-6 py-4 space-y-4 pb-32">
                     <div className="flex justify-between items-center mb-2 px-1">
                         <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Total: {filteredStudents.length} alunos {studentFilter === 'active' ? 'ativos' : 'inativos'}</p>
-                        <button onClick={handleDownloadTXT} className="text-[10px] font-black text-[#0081FF] uppercase flex items-center gap-1 hover:underline">
-                            <span className="material-symbols-rounded text-sm">download</span> Exportar .TXT
-                        </button>
+                        {isActuallyAdmin && (
+                            <button onClick={handleDownloadTXT} className="text-[10px] font-black text-[#0081FF] uppercase flex items-center gap-1 hover:underline">
+                                <span className="material-symbols-rounded text-sm">download</span> Exportar .TXT
+                            </button>
+                        )}
                     </div>
 
                     {filteredStudents.length > 0 ? (
                         filteredStudents.map(student => (
                             <button
                                 key={student.id}
-                                onClick={() => openStudentDetails(student)}
+                                onClick={() => onNavigate(Screen.STUDENT_DETAIL, student.id)}
                                 className="w-full bg-[#1A202C] p-4 rounded-3xl border border-white/5 flex items-center justify-between hover:border-white/10 active:scale-[0.98] transition-all text-left"
                             >
                                 <div className="flex items-center gap-4">
                                     <div className="relative">
-                                        <img src={student.avatarUrl} className="w-12 h-12 rounded-full object-cover border-2 border-[#101622]" alt="" />
+                                        <img src={student.avatarUrl} className="w-12 h-12 rounded-full object-cover border-2 border-[#101622]" alt={student.name} />
                                         <div className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-[#101622] ${student.status === 'active' ? 'bg-[#0081FF]' : student.status === 'trial' ? 'bg-[#FF00BC]' : student.status === 'inactive' ? 'bg-gray-500' : 'bg-[#FF00BC]'}`}>
                                             {student.status === 'trial' && <span className="material-symbols-rounded text-[8px] text-white absolute inset-0 flex items-center justify-center font-bold">bolt</span>}
                                         </div>
@@ -1957,6 +2098,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             case 'dashboard': return renderAgenda();
             case 'students': return renderStudentList();
             case 'reports': return renderFinancial();
+            case 'notifications': return renderNotifications();
             case 'settings': return renderSettings();
             default: return renderAgenda();
         }
@@ -1973,7 +2115,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                             <span className="material-symbols-rounded text-2xl">menu</span>
                         </button>
                         <h2 className="text-xl font-black text-white tracking-tight">
-                            {activeTab === 'dashboard' ? 'Agenda' : activeTab === 'students' ? 'Alunos' : activeTab === 'reports' ? 'Financeiro' : 'Ajustes'}
+                            {activeTab === 'dashboard' ? 'Agenda' : activeTab === 'students' ? 'Alunos' : activeTab === 'reports' ? 'Financeiro' : activeTab === 'notifications' ? 'Comunicados' : 'Ajustes'}
                         </h2>
                     </div>
                     <button onClick={() => setShowConfig(!showConfig)} className="relative">
@@ -1996,15 +2138,13 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
                 {/* Navigation Tabs (Novas Abas Superiores) */}
                 <div className="px-6 pb-0 overflow-x-auto hide-scrollbar flex gap-4">
-                    {(isAdminView ? [
-                        { id: 'dashboard', label: 'Início', icon: 'calendar_month' },
-                        { id: 'students', label: 'Alunos', icon: 'groups' },
+                    {[
+                        { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+                        { id: 'students', label: 'Alunos', icon: 'group' },
                         { id: 'reports', label: 'Financeiro', icon: 'payments' },
+                        { id: 'notifications', label: 'Avisos', icon: 'campaign' },
                         { id: 'settings', label: 'Ajustes', icon: 'settings' }
-                    ] : [
-                        { id: 'dashboard', label: 'Início', icon: 'calendar_month' },
-                        { id: 'students', label: 'Alunos', icon: 'groups' }
-                    ]).map(tab => (
+                    ].map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
@@ -2033,8 +2173,8 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             {/* Spacer for Global Bottom Nav (This ensures content isn't covered) */}
             <div className="h-[150px] shrink-0 w-full bg-[#101622]"></div>
 
-            {/* Botão de Add - FIXED e sem sobreposição - HIDE for non-admins if preferred by user rule */}
-            {isAdminView && (
+            {/* Botão de Add - FIXED e sem sobreposição - Only for Admin */}
+            {isActuallyAdmin && (
                 <button
                     onClick={() => setIsAddModalOpen(true)}
                     className="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-[#0081FF] text-white shadow-lg flex items-center justify-center z-50 hover:scale-110 active:scale-95 transition-all shadow-[#0081FF]/30"
@@ -2063,7 +2203,9 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                                 <div className="w-6 h-6 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
                                             </div>
                                         ) : (
-                                            <img src={selectedStudent.avatarUrl} className="w-full h-full object-cover" alt="" />
+                                            <div className="w-full h-full bg-[#1A202C] flex items-center justify-center">
+                                                <img src={selectedStudent.avatarUrl} className="w-full h-full object-cover" alt={selectedStudent.name} />
+                                            </div>
                                         )}
                                     </div>
                                     <button
@@ -2142,39 +2284,48 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                             </div>
 
                             {/* Payment Action Bar */}
-                            <div className="mb-3 flex items-center gap-2">
-                                <button
-                                    onClick={handleConfirmPayment}
-                                    className="flex-1 bg-[#0081FF] text-white h-12 rounded-xl flex items-center justify-center gap-3 text-xs font-bold shadow-lg shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all"
-                                >
-                                    <span className="material-symbols-rounded text-xl">check_circle</span>
-                                    <span className="uppercase tracking-wide">Confirmar Pagamento</span>
-                                </button>
-                                {receipts.find(r => r.userId === selectedStudent.id && r.status === 'pending') && (
+                            <div className="mb-3 flex flex-col gap-2">
+                                <div className="flex items-center gap-2">
                                     <button
-                                        onClick={async () => {
-                                            const receipt = receipts.find(r => r.userId === selectedStudent.id && r.status === 'pending');
-                                            if (!receipt?.receiptUrl) return;
-                                            // Support both old public URLs and new file paths
-                                            if (receipt.receiptUrl.startsWith('http')) {
-                                                window.open(receipt.receiptUrl, '_blank');
-                                            } else {
-                                                const { data, error } = await supabase.storage
-                                                    .from('receipts')
-                                                    .createSignedUrl(receipt.receiptUrl, 3600);
-                                                if (data?.signedUrl) {
-                                                    window.open(data.signedUrl, '_blank');
-                                                } else {
-                                                    alert('Erro ao gerar link do comprovante: ' + (error?.message || 'Tente novamente.'));
-                                                }
-                                            }
-                                        }}
-                                        className="w-12 h-12 rounded-xl bg-[#6F4CE7]/10 text-[#6F4CE7] flex items-center justify-center border border-[#6F4CE7]/20 hover:bg-[#6F4CE7]/20 transition-all"
-                                        title="Ver Comprovante"
+                                        onClick={handleConfirmPayment}
+                                        className="flex-1 bg-[#0081FF] text-white h-12 rounded-xl flex items-center justify-center gap-3 text-xs font-bold shadow-lg shadow-blue-500/20 hover:scale-[1.02] active:scale-95 transition-all"
                                     >
-                                        <span className="material-symbols-rounded text-xl">receipt</span>
+                                        <span className="material-symbols-rounded text-xl">check_circle</span>
+                                        <span className="uppercase tracking-wide">Confirmar Pagamento</span>
                                     </button>
-                                )}
+                                    {receipts.find(r => r.userId === selectedStudent.id && r.status === 'pending') && (
+                                        <button
+                                            onClick={async () => {
+                                                const receipt = receipts.find(r => r.userId === selectedStudent.id && r.status === 'pending');
+                                                if (!receipt?.receiptUrl) return;
+                                                // Support both old public URLs and new file paths
+                                                if (receipt.receiptUrl.startsWith('http')) {
+                                                    window.open(receipt.receiptUrl, '_blank');
+                                                } else {
+                                                    const { data, error } = await supabase.storage
+                                                        .from('receipts')
+                                                        .createSignedUrl(receipt.receiptUrl, 3600);
+                                                    if (data?.signedUrl) {
+                                                        window.open(data.signedUrl, '_blank');
+                                                    } else {
+                                                        alert('Erro ao gerar link do comprovante: ' + (error?.message || 'Tente novamente.'));
+                                                    }
+                                                }
+                                            }}
+                                            className="w-12 h-12 rounded-xl bg-[#6F4CE7]/10 text-[#6F4CE7] flex items-center justify-center border border-[#6F4CE7]/20 hover:bg-[#6F4CE7]/20 transition-all"
+                                            title="Ver Comprovante"
+                                        >
+                                            <span className="material-symbols-rounded text-xl">receipt</span>
+                                        </button>
+                                    )}
+                                </div>
+                                <button
+                                    onClick={() => setIsRoutineManagerOpen(true)}
+                                    className="w-full bg-[#1A202C] text-white border border-white/10 h-12 rounded-xl flex items-center justify-center gap-3 text-xs font-bold hover:bg-white/5 transition-all"
+                                >
+                                    <span className="material-symbols-rounded text-xl text-[#FF00BC]">calendar_month</span>
+                                    <span className="uppercase tracking-wide">Gerenciar Cronograma</span>
+                                </button>
                             </div>
 
                             <div className="grid grid-cols-2 gap-3 mb-3">
@@ -2740,6 +2891,73 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                             Ver Agora
                         </button>
                     </div>
+                </div>
+            )}
+
+            {/* Modal: Broadcast de Notificações */}
+            {isBroadcastModalOpen && (
+                <div className="fixed inset-0 z-[300] flex items-end justify-center sm:items-center p-4">
+                    <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setIsBroadcastModalOpen(false)}></div>
+                    <div className="relative w-full max-w-lg bg-[#1A202C] rounded-t-[32px] sm:rounded-[32px] p-8 animate-in slide-in-from-bottom-10 duration-300 shadow-2xl">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-12 h-12 rounded-2xl bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
+                                <span className="material-symbols-rounded text-3xl">campaign</span>
+                            </div>
+                            <div>
+                                <h3 className="text-xl font-black text-white">Comunicado Geral</h3>
+                                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mt-0.5">Envia para todos os alunos ativos</p>
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="text-[10px] font-black uppercase text-gray-500 mb-2 block ml-1">Título do Aviso</label>
+                                <input
+                                    type="text"
+                                    value={broadcastTitle}
+                                    onChange={(e) => setBroadcastTitle(e.target.value)}
+                                    placeholder="Ex: Aula Coletiva nesta Sexta! 🎼"
+                                    className="w-full h-14 bg-[#101622] border border-white/5 rounded-2xl px-4 text-sm text-white focus:outline-none focus:border-[#0081FF] transition-all"
+                                />
+                            </div>
+                            <div>
+                                <label className="text-[10px] font-black uppercase text-gray-500 mb-2 block ml-1">Conteúdo da Mensagem</label>
+                                <textarea
+                                    value={broadcastBody}
+                                    onChange={(e) => setBroadcastBody(e.target.value)}
+                                    placeholder="Escreva aqui a mensagem principal que os alunos receberão como notificação push..."
+                                    className="w-full h-32 bg-[#101622] border border-white/5 rounded-2xl p-4 text-sm text-white focus:outline-none focus:border-[#0081FF] transition-all resize-none"
+                                />
+                            </div>
+                            <div className="bg-blue-500/10 border border-blue-500/20 rounded-2xl p-4 flex gap-3">
+                                <span className="material-symbols-rounded text-[#0081FF]">info</span>
+                                <p className="text-[10px] text-[#0081FF] font-bold leading-tight">
+                                    ESTA MENSAGEM SERÁ ENVIADA PARA TODOS OS ALUNOS ATIVOS QUE POSSUEM NOTIFICAÇÕES HABILITADAS.
+                                </p>
+                            </div>
+                            <div className="flex gap-4 pt-4">
+                                <button onClick={() => setIsBroadcastModalOpen(false)} className="flex-1 py-4 font-black text-[10px] uppercase text-gray-500 tracking-widest">Cancelar</button>
+                                <button
+                                    disabled={loadingAction || !broadcastTitle.trim() || !broadcastBody.trim()}
+                                    onClick={handleBroadcastNotifications}
+                                    className="flex-[2] h-14 bg-[#0081FF] rounded-2xl font-black text-xs uppercase tracking-widest text-white shadow-lg shadow-[#0081FF]/20 flex items-center justify-center gap-2 active:scale-95 transition-all disabled:opacity-30"
+                                >
+                                    {loadingAction && <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>}
+                                    DISPARAR AGORA
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Routine Manager Modal */}
+            {isRoutineManagerOpen && selectedStudent && (
+                <div className="fixed inset-0 z-[210] overflow-hidden flex flex-col bg-[#101622] animate-in slide-in-from-bottom duration-300">
+                    <RoutineManager
+                        student={selectedStudent}
+                        onClose={() => setIsRoutineManagerOpen(false)}
+                    />
                 </div>
             )}
         </div>

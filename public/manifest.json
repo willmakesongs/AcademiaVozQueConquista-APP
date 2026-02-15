@@ -1,0 +1,23 @@
+{
+    "name": "Academia Voz Que Conquista",
+    "short_name": "VQC APP",
+    "description": "Treinos vocais, oratória e performance no seu bolso.",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#101622",
+    "theme_color": "#101622",
+    "orientation": "portrait",
+    "icons": [
+        {
+            "src": "/logo192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/logo192.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}

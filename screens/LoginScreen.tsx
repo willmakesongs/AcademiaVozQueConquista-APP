@@ -202,7 +202,9 @@ export const LoginScreen: React.FC = () => {
               <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 transition-colors group-focus-within:text-[#0081FF] group-focus-within:scale-110 duration-300">
                 <span className="material-symbols-rounded">person</span>
               </div>
+              <label htmlFor="login-name" className="sr-only">Nome Completo</label>
               <input
+                id="login-name"
                 type="text"
                 placeholder="Nome Completo"
                 value={name}
@@ -218,7 +220,9 @@ export const LoginScreen: React.FC = () => {
             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 transition-colors group-focus-within:text-[#0081FF] group-focus-within:scale-110 duration-300">
               <span className="material-symbols-rounded">mail</span>
             </div>
+            <label htmlFor="login-email" className="sr-only">Seu melhor email</label>
             <input
+              id="login-email"
               type="email"
               placeholder="Seu melhor email"
               value={email}
@@ -234,7 +238,9 @@ export const LoginScreen: React.FC = () => {
               <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 transition-colors group-focus-within:text-[#0081FF] group-focus-within:scale-110 duration-300">
                 <span className="material-symbols-rounded">call</span>
               </div>
+              <label htmlFor="login-phone" className="sr-only">Telefone / WhatsApp</label>
               <input
+                id="login-phone"
                 type="tel"
                 placeholder="Telefone / WhatsApp"
                 value={phone}
@@ -249,15 +255,17 @@ export const LoginScreen: React.FC = () => {
           {/* Master Password Input for Teachers */}
           {isSignUp && role === 'teacher' && (
             <div className="group relative animate-in fade-in slide-in-from-top-2">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-purple-400/70 transition-colors group-focus-within:text-[#0081FF] group-focus-within:scale-110 duration-300">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-vibe-400/70 transition-colors group-focus-within:text-[#0081FF] group-focus-within:scale-110 duration-300">
                 <span className="material-symbols-rounded">vpn_key</span>
               </div>
+              <label htmlFor="master-password" className="sr-only">Senha Mestre (Admin)</label>
               <input
+                id="master-password"
                 type="password"
                 placeholder="Senha Mestre (Admin)"
                 value={adminCode}
                 onChange={(e) => setAdminCode(e.target.value)}
-                className="w-full h-14 bg-[#0B0E14]/60 border border-[#FF00BC]/30 rounded-2xl pl-12 pr-4 text-white placeholder-white/20 focus:outline-none focus:border-purple-500 focus:bg-[#0B0E14] focus:ring-1 focus:ring-purple-500/50 transition-all duration-300"
+                className="w-full h-14 bg-[#0B0E14]/60 border border-[#FF00BC]/30 rounded-2xl pl-12 pr-4 text-white placeholder-white/20 focus:outline-none focus:border-vibe-500 focus:bg-[#0B0E14] focus:ring-1 focus:ring-vibe-500/50 transition-all duration-300"
                 required
               />
             </div>
@@ -267,7 +275,9 @@ export const LoginScreen: React.FC = () => {
             <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30 transition-colors group-focus-within:text-[#0081FF] group-focus-within:scale-110 duration-300">
               <span className="material-symbols-rounded">lock</span>
             </div>
+            <label htmlFor="login-password" className="sr-only">Sua senha secreta</label>
             <input
+              id="login-password"
               type={showPassword ? "text" : "password"}
               placeholder="Sua senha secreta"
               value={password}

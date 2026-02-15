@@ -6,6 +6,7 @@ import { PlaybackProvider, usePlayback } from './contexts/PlaybackContext';
 import { LoginScreen } from './screens/LoginScreen';
 import { StudentDashboard } from './screens/StudentDashboard';
 import { BottomNav } from './components/BottomNav';
+import { onMessageListener } from './lib/firebase';
 import { VOCALIZES } from './constants';
 
 // Code-splitting: telas carregadas sob demanda para melhorar performance inicial
@@ -22,6 +23,7 @@ const ChatScreen = React.lazy(() => import('./screens/ChatScreen').then(m => ({ 
 const StudioScreen = React.lazy(() => import('./screens/StudioScreen').then(m => ({ default: m.StudioScreen })));
 const BlockedScreen = React.lazy(() => import('./screens/BlockedScreen').then(m => ({ default: m.BlockedScreen })));
 const VisitorConversionScreen = React.lazy(() => import('./screens/VisitorConversionScreen').then(m => ({ default: m.VisitorConversionScreen })));
+const StudentDetailDashboard = React.lazy(() => import('./screens/StudentDetailDashboard').then(m => ({ default: m.StudentDetailDashboard })));
 
 const AppContent = () => {
   const { user, loading, signOut, visitorTimeRemaining } = useAuth();
@@ -32,11 +34,25 @@ const AppContent = () => {
   const [libraryResetKey, setLibraryResetKey] = useState(0);
   const [profileResetKey, setProfileResetKey] = useState(0);
   const [dashboardResetKey, setDashboardResetKey] = useState(0);
+  const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
   const [dashboardInitialTab, setDashboardInitialTab] = useState<'dashboard' | 'students' | 'reports'>('dashboard');
   const [libraryExpandedModule, setLibraryExpandedModule] = useState<string | null>(null);
   const [libraryScrollY, setLibraryScrollY] = useState(0);
   const [libraryActiveCourseSlug, setLibraryActiveCourseSlug] = useState<string | null>(null);
   const isAdmin = user?.role === 'admin' || (user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase().trim()));
+
+  // Code-splitting: telas carregadas sob demanda para melhorar performance inicial
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then((registration) => {
+          console.log('SW registered:', registration);
+        }).catch((error) => {
+          console.log('SW registration failed:', error);
+        });
+      });
+    }
+  }, []);
 
   // Visitor Warning State
   const [showVisitorWarning, setShowVisitorWarning] = useState(false);
@@ -74,6 +90,16 @@ const AppContent = () => {
       }
     }
   }, [visitorTimeRemaining]);
+
+  // Listener de Notificações em Foreground
+  useEffect(() => {
+    onMessageListener().then((payload: any) => {
+      console.log('Notificação recebida:', payload);
+      if (payload.notification) {
+        alert(`${payload.notification.title}\n${payload.notification.body}`);
+      }
+    }).catch(err => console.log('failed: ', err));
+  }, []);
 
   // AUTO-SYNC: Mantém currentVocalize sincronizado com o que está tocando no fundo
   // Isso resolve o problema de retornar para a aba "Academia" e o player resetar
@@ -113,10 +139,10 @@ const AppContent = () => {
   };
 
   // Wrapper para navegação padrão para lidar com o histórico
-  const handleNavigate = (targetScreen: Screen) => {
+  const handleNavigate = (targetScreen: Screen, studentId?: string) => {
     // Se for navegar para telas secundárias manualmente, salva o histórico
-    if (targetScreen === Screen.PLAYER || targetScreen === Screen.TWISTERS || targetScreen === Screen.BREATHING || targetScreen === Screen.CHAT || targetScreen === Screen.STUDIO) {
-      if (screen !== Screen.PLAYER && screen !== Screen.TWISTERS && screen !== Screen.BREATHING && screen !== Screen.CHAT && screen !== Screen.STUDIO) {
+    if (targetScreen === Screen.PLAYER || targetScreen === Screen.TWISTERS || targetScreen === Screen.BREATHING || targetScreen === Screen.CHAT || targetScreen === Screen.STUDIO || targetScreen === Screen.STUDENT_DETAIL) {
+      if (screen !== Screen.PLAYER && screen !== Screen.TWISTERS && screen !== Screen.BREATHING && screen !== Screen.CHAT && screen !== Screen.STUDIO && screen !== Screen.STUDENT_DETAIL) {
         setPreviousScreen(screen);
       }
     }
@@ -127,6 +153,11 @@ const AppContent = () => {
 
       setDashboardResetKey(prev => prev + 1);
     }
+
+    if (studentId) {
+      setSelectedStudentId(studentId);
+    }
+
     setScreen(targetScreen);
   };
 
@@ -302,6 +333,14 @@ const AppContent = () => {
         );
       case Screen.CALENDAR:
         return <CalendarScreen onBack={() => setScreen(Screen.TEACHER_DASHBOARD)} />;
+      case Screen.STUDENT_DETAIL:
+        return (
+          <StudentDetailDashboard
+            studentId={selectedStudentId || ''}
+            onBack={() => setScreen(previousScreen)}
+            onNavigate={handleNavigate}
+          />
+        );
       default:
         return <div className="p-10 text-center text-white">Tela em construção: {screen}</div>;
     }

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import { MODULES, LORENA_AVATAR_URL } from '../constants';
+import { Logo } from '../components/Logo';
 
 interface Props {
     onBack: () => void;
@@ -83,17 +84,64 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
         setMessages(prev => [...prev, botPlaceholder]);
 
         try {
-            // Chamada para a Edge Function Lorena Brain
-            const { data, error } = await supabase.functions.invoke('lorena-ai-brain', {
-                body: {
+            const SUPABASE_URL = 'https://sedjnyryixudxmmkeoam.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNlZGpueXJ5aXh1ZHhtbWtlb2FtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjcyODE0NDIsImV4cCI6MjA4Mjg1NzQ0Mn0.5NozVbt66LPMGYLBd2be_IOX3PttYBZETcowwNOkTRA';
+
+            const response = await fetch(`${SUPABASE_URL}/functions/v1/lorena-ai-brain`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${user?.id === 'guest' ? '' : (await supabase.auth.getSession()).data.session?.access_token || ''}`,
+                    'apikey': (supabase as any).supabaseKey || ''
+                },
+                body: JSON.stringify({
                     query: userText,
                     user_id: user?.id,
-                    history: messages.slice(-10) // Envia as últimas 10 mensagens para contexto
-                }
+                    history: messages.slice(-10)
+                })
             });
 
-            if (error || !data) {
-                throw new Error(error?.message || "Falha na resposta da Lorena");
+            if (!response.ok) {
+                throw new Error("Falha na resposta da Lorena");
+            }
+
+            const reader = response.body?.getReader();
+            const decoder = new TextDecoder();
+            let fullText = '';
+
+            if (reader) {
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+
+                    const chunk = decoder.decode(value, { stream: true });
+                    fullText += chunk;
+
+                    // Tentar limpar JSON se a resposta vier no formato {"answer": "..."}
+                    let displayedText = fullText;
+                    if (displayedText.trim().startsWith('{')) {
+                        try {
+                            const parsed = JSON.parse(displayedText + (done ? '' : '}')); // Tenta fechar o JSON se incompleto
+                            if (parsed.answer) displayedText = parsed.answer;
+                        } catch (e) {
+                            // Se falhar o parse (JSON incompleto no stream), removemos o lixo visível
+                            displayedText = displayedText.replace(/^\{"answer":"/, '').replace(/"\}$/, '').replace(/\\n/g, '\n');
+                        }
+                    }
+
+                    setMessages(prev => {
+                        const newMsgs = [...prev];
+                        const targetIndex = newMsgs.findIndex(m => m.id === botMsgId);
+                        if (targetIndex !== -1) {
+                            newMsgs[targetIndex] = {
+                                ...newMsgs[targetIndex],
+                                text: displayedText,
+                                isLoading: true
+                            };
+                        }
+                        return newMsgs;
+                    });
+                }
             }
 
             setMessages(prev => {
@@ -102,7 +150,6 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                 if (targetIndex !== -1) {
                     newMsgs[targetIndex] = {
                         ...newMsgs[targetIndex],
-                        text: data.answer,
                         isLoading: false
                     };
                 }
@@ -159,7 +206,15 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                     <div key={msg.id} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'} animate-in fade-in slide-in-from-bottom-2`}>
                         <div className={`max-w-[90%] rounded-2xl p-4 text-sm leading-relaxed ${msg.role === 'user' ? 'bg-[#1A202C] text-white rounded-tr-none border border-white/10' : 'bg-gradient-to-br from-[#2D3748] to-[#1A202C] text-gray-100 rounded-tl-none border border-white/5'}`}>
                             <div className="whitespace-pre-wrap">{msg.text}</div>
-                            {msg.isLoading && <span className="inline-block w-1.5 h-4 ml-1 bg-[#FF00BC] animate-pulse align-middle"></span>}
+                            {msg.isLoading && !msg.text && (
+                                <div className="flex items-center gap-2 mt-1">
+                                    <Logo size="sm" className="opacity-50 animate-pulse" />
+                                    <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest animate-pulse">Pensando...</span>
+                                </div>
+                            )}
+                            {msg.isLoading && msg.text && (
+                                <Logo size="sm" className="inline-block ml-2 opacity-30 animate-pulse align-middle" />
+                            )}
                         </div>
                     </div>
                 ))}

@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Menu, X, Music, ChevronDown, Book, Search, Tooltip } from 'lucide-react';
+import { Menu, X, Music, ChevronDown, Book, Search } from 'lucide-react';
 
 interface NavigationProps {
   onViewChange: (view: 'identifier' | 'library') => void;
@@ -11,16 +11,16 @@ const Navigation: React.FC<NavigationProps> = ({ onViewChange, currentView }) =>
   const [isOpen, setIsOpen] = useState(false);
 
   const navItems = [
-    { 
-      name: 'Acordes', 
+    {
+      name: 'Acordes',
       items: [
-        { name: 'Monte o Acorde', id: 'identifier', icon: <Search size={14}/> },
-        { name: 'Biblioteca de Acordes', id: 'library', icon: <Book size={14}/> },
-        { name: 'Progressões', id: 'progressions', icon: <Music size={14}/> }
-      ] 
+        { name: 'Monte o Acorde', id: 'identifier', icon: <Search size={14} /> },
+        { name: 'Biblioteca de Acordes', id: 'library', icon: <Book size={14} /> },
+        { name: 'Progressões', id: 'progressions', icon: <Music size={14} /> }
+      ]
     },
-    { name: 'Escalas', items: [{ name: 'Localizador', id: 'identifier', icon: <Search size={14}/> }] },
-    { name: 'Ferramentas', items: [{ name: 'Metrônomo Pro', id: 'identifier', icon: <Music size={14}/> }] },
+    { name: 'Escalas', items: [{ name: 'Localizador', id: 'identifier', icon: <Search size={14} /> }] },
+    { name: 'Ferramentas', items: [{ name: 'Metrônomo Pro', id: 'identifier', icon: <Music size={14} /> }] },
   ];
 
   const handleNavClick = (viewId: string) => {
@@ -41,7 +41,7 @@ const Navigation: React.FC<NavigationProps> = ({ onViewChange, currentView }) =>
               </div>
               <span className="font-black text-xl tracking-tighter">Will Make <span className="text-[#0081FF]">Chords</span></span>
             </div>
-            
+
             <div className="hidden md:block ml-10">
               <div className="flex items-baseline space-x-2">
                 {navItems.map((item) => (
@@ -51,8 +51,8 @@ const Navigation: React.FC<NavigationProps> = ({ onViewChange, currentView }) =>
                     </button>
                     <div className="absolute left-0 mt-1 w-64 rounded-xl shadow-2xl py-2 bg-white ring-1 ring-black ring-opacity-5 hidden group-hover:block animate-in fade-in slide-in-from-top-2 duration-200">
                       {item.items.map((sub) => (
-                        <button 
-                          key={sub.name} 
+                        <button
+                          key={sub.name}
                           onClick={() => handleNavClick(sub.id)}
                           className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 hover:text-blue-600 transition-colors border-b border-slate-50 last:border-0"
                         >
@@ -68,9 +68,9 @@ const Navigation: React.FC<NavigationProps> = ({ onViewChange, currentView }) =>
           </div>
 
           <div className="hidden md:flex items-center gap-4">
-              <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
-                Status: <span className="text-[#0081FF]">Live Edition</span>
-              </div>
+            <div className="text-[9px] font-black text-slate-500 uppercase tracking-widest bg-white/5 px-3 py-1.5 rounded-full border border-white/5">
+              Status: <span className="text-[#0081FF]">Live Edition</span>
+            </div>
           </div>
 
           <div className="md:hidden">

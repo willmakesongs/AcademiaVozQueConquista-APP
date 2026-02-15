@@ -151,9 +151,10 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
         <div className="grid grid-cols-2 gap-4">
           <button
             onClick={() => setIsNoteModalOpen(true)}
+            aria-label={`Trocar Tom (Atual: ${selectedRoot})`}
             className="group bg-[#1C1C1E] p-6 md:p-8 rounded-[2rem] border border-white/5 shadow-sm flex flex-col items-center justify-center hover:bg-white/[0.02] transition-all active:scale-[0.98]"
           >
-            <span className="text-[9px] font-bold text-[#007AFF] uppercase tracking-[0.4em] mb-2 opacity-40 group-hover:opacity-100 transition-opacity">Tom</span>
+            <span className="text-[9px] font-bold text-[#0081FF] uppercase tracking-[0.4em] mb-2 opacity-40 group-hover:opacity-100 transition-opacity">Tom</span>
             <span className="text-3xl md:text-5xl font-bold text-white tracking-tighter">
               {selectedRoot}
             </span>
@@ -161,9 +162,10 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
 
           <button
             onClick={() => setIsModalOpen(true)}
+            aria-label={`Trocar Qualidade (Atual: ${selectedType})`}
             className="group bg-[#1C1C1E] p-6 md:p-8 rounded-[2rem] border border-white/5 shadow-sm flex flex-col items-center justify-center hover:bg-white/[0.02] transition-all active:scale-[0.98]"
           >
-            <span className="text-[9px] font-bold text-[#007AFF] uppercase tracking-[0.4em] mb-2 opacity-40 group-hover:opacity-100 transition-opacity">Tipo</span>
+            <span className="text-[9px] font-bold text-[#0081FF] uppercase tracking-[0.4em] mb-2 opacity-40 group-hover:opacity-100 transition-opacity">Tipo</span>
             <span className="text-xl md:text-3xl font-bold text-white tracking-tighter text-center">
               {selectedType === 'major' || selectedType === '' ? 'Maior' : (selectedType === 'minor' ? 'm' : (selectedType === 'm7b5' ? 'm7(b5)' : selectedType))}
             </span>
@@ -178,7 +180,9 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
                 <button
                   key={shape}
                   onClick={() => { setActiveShape(shape); if (isEditing) setIsEditing(false); }}
-                  className={`w-10 h-10 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl text-sm sm:text-lg font-bold transition-all ${activeShape === shape ? 'bg-[#007AFF] text-white shadow-xl scale-110 z-10' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'
+                  aria-label={`Shape ${shape}`}
+                  title={`Shape ${shape}`}
+                  className={`w-10 h-10 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl text-sm sm:text-lg font-bold transition-all ${activeShape === shape ? 'bg-[#0081FF] text-white shadow-xl scale-110 z-10' : 'bg-white/5 text-gray-400 hover:text-white hover:bg-white/10'
                     }`}
                 >
                   {shape}
@@ -187,7 +191,7 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
             </div>
 
             <div className="flex flex-col items-center gap-2">
-              <span className="text-[10px] font-bold text-[#007AFF] uppercase tracking-[0.5em] opacity-40">Shapes CAGED</span>
+              <span className="text-[10px] font-bold text-[#0081FF] uppercase tracking-[0.5em] opacity-40">Shapes CAGED</span>
               {hasCustomVersion && !isEditing && (
                 <div className="bg-orange-500/10 text-orange-500 text-[9px] font-bold px-4 py-2 rounded-full uppercase tracking-widest flex items-center gap-1.5 border border-orange-500/20 animate-in fade-in zoom-in-95">
                   <Sparkles size={10} /> Shape Customizado
@@ -223,7 +227,7 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
             <div className="flex flex-row w-full max-w-sm mx-auto gap-3 mb-10">
               <button
                 onClick={() => handlePlayChord()}
-                className={`group flex-1 h-14 rounded-2xl font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2 ${isAnimating ? 'bg-[#007AFF]/60 text-white' : 'bg-[#007AFF] text-white shadow-lg shadow-[#007AFF]/20'
+                className={`group flex-1 h-14 rounded-2xl font-bold text-sm transition-all active:scale-95 flex items-center justify-center gap-2 ${isAnimating ? 'bg-[#0081FF]/60 text-white' : 'bg-[#0081FF] text-white shadow-lg shadow-[#0081FF]/20'
                   }`}
               >
                 <Volume2 size={18} />
@@ -255,7 +259,7 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
                   {hasCustomVersion && (
                     <button
                       onClick={handleResetOverride}
-                      className="w-14 h-14 rounded-2xl bg-[#FF00BC]/10 border border-[#FF00BC]/20 text-[#FF00BC] hover:bg-[#FF00BC] hover:text-white transition-all active:scale-95 flex items-center justify-center"
+                      className="w-14 h-14 rounded-2xl bg-[#0081FF]/10 border border-[#0081FF]/20 text-[#0081FF] hover:bg-[#0081FF] hover:text-white transition-all active:scale-95 flex items-center justify-center"
                       title="Restaurar Padrão"
                     >
                       <RotateCcw size={18} />
@@ -317,7 +321,7 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
           <div className="absolute inset-0 bg-black/95 backdrop-blur-2xl" onClick={() => setIsNoteModalOpen(false)}></div>
           <div className="relative w-full max-w-sm bg-[#1C1C1E] border border-white/10 rounded-[40px] shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-300">
             <div className="p-8 border-b border-white/5 flex items-center justify-between">
-              <h3 className="text-xl font-bold text-white tracking-tight">Escolha o <span className="text-[#007AFF]">Tom</span></h3>
+              <h3 className="text-xl font-bold text-white tracking-tight">Escolha o <span className="text-[#0081FF]">Tom</span></h3>
               <button onClick={() => setIsNoteModalOpen(false)} className="w-10 h-10 bg-white/5 rounded-full flex items-center justify-center transition-all text-gray-400 active:scale-90">
                 <X size={20} />
               </button>
@@ -328,7 +332,7 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
                   <button
                     key={note}
                     onClick={() => { setSelectedRoot(note); setIsNoteModalOpen(false); if (isEditing) setIsEditing(false); }}
-                    className={`h-20 rounded-2xl font-bold text-lg transition-all flex items-center justify-center ${selectedRoot === note ? 'bg-[#007AFF] text-white shadow-xl scale-[1.02]' : 'bg-white/5 text-gray-400 hover:bg-white/10 active:scale-95'
+                    className={`h-20 rounded-2xl font-bold text-lg transition-all flex items-center justify-center ${selectedRoot === note ? 'bg-[#0081FF] text-white shadow-xl scale-[1.02]' : 'bg-white/5 text-gray-400 hover:bg-white/10 active:scale-95'
                       }`}
                   >
                     {note}

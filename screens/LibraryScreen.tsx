@@ -239,6 +239,7 @@ export const LibraryScreen: React.FC<Props> = ({
 
   // Carrega estado salvo do checklist, cursos e vínculos ao iniciar
   useEffect(() => {
+    document.title = "Academia - Academia VQC";
     const saved = localStorage.getItem('checklist_progress');
     if (saved) {
       try {
@@ -879,9 +880,9 @@ export const LibraryScreen: React.FC<Props> = ({
           <div className="flex items-center gap-2">
             <span className="text-xl">🎓</span>
             <div>
-              <h1 className="text-lg font-black text-white uppercase tracking-tighter">
+              <h2 className="text-lg font-black text-white uppercase tracking-tighter">
                 {activeCourse?.nome || 'Academia'}
-              </h1>
+              </h2>
               <div className="flex items-center gap-2">
                 <div className="w-24 h-1.5 bg-white/5 rounded-full overflow-hidden">
                   <div className="h-full bg-[#0081FF] transition-all duration-1000" style={{ width: `${progress}%` }}></div>
@@ -1083,7 +1084,7 @@ export const LibraryScreen: React.FC<Props> = ({
 
             <div className="flex justify-between items-center mb-6">
               <div className="flex items-center gap-3">
-                <img src={MINIMALIST_LOGO_URL} className="w-6 h-6 object-contain" alt="" />
+                <img src={MINIMALIST_LOGO_URL} className="w-6 h-6 object-contain" alt="VQC Logo" />
                 <h2 className="text-xl font-black text-white uppercase tracking-tighter">Escolha seu Curso</h2>
               </div>
               <button
@@ -1169,7 +1170,7 @@ export const LibraryScreen: React.FC<Props> = ({
             {/* Header com Avatar */}
             <div className="bg-gradient-to-br from-[#2D3748] to-[#1A202C] p-8 text-center relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-[#FF00BC] blur-[60px] opacity-10"></div>
-              <div className="w-20 h-20 rounded-full bg-brand-gradient p-1 mx-auto mb-4 relative z-10 shadow-xl shadow-purple-900/40">
+              <div className="w-20 h-20 rounded-full bg-brand-gradient p-1 mx-auto mb-4 relative z-10 shadow-xl shadow-vibe-900/40">
                 <div className="w-full h-full bg-[#1A202C] rounded-full overflow-hidden flex items-center justify-center">
                   <img src={LORENA_AVATAR_URL} className="w-full h-full object-cover" alt="Lorena IA" />
                 </div>

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Screen, Task } from '../types';
-import { INITIAL_TASKS } from '../constants'; // Importando dados centralizados
+import { INITIAL_TASKS } from '../constants';
+import { supabase } from '../lib/supabaseClient';
+import { useAuth } from '../contexts/AuthContext';
 
 interface Props {
   onNavigate: (screen: Screen) => void;
@@ -35,20 +37,18 @@ const getWeekDays = () => {
 const CATEGORIES = ['Aquecimento', 'Técnica', 'Repertório', 'Saúde Vocal'];
 
 export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
+  const { user } = useAuth();
   const weekDaysSnapshot = React.useMemo(() => getWeekDays(), []);
   const todayStr = new Date().getDate().toString().padStart(2, '0');
 
   const [selectedDate, setSelectedDate] = useState(todayStr);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // INICIALIZAÇÃO COM LOCAL STORAGE
-  // Se houver dados salvos, usa eles. Se não, usa o INITIAL_TASKS.
-  const [tasks, setTasks] = useState<Task[]>(() => {
-    if (typeof window !== 'undefined') {
-      const savedTasks = localStorage.getItem('vocalizes_routine_tasks');
-      return savedTasks ? JSON.parse(savedTasks) : INITIAL_TASKS;
-    }
-    return INITIAL_TASKS;
-  });
+  // SEO Title
+  useEffect(() => {
+    document.title = "Minha Rotina | Academia VQC";
+  }, []);
 
   // UI States
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -63,11 +63,37 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
   const [newTaskDuration, setNewTaskDuration] = useState('15');
   const [newTaskDate, setNewTaskDate] = useState(todayStr);
 
-  // PERSISTÊNCIA AUTOMÁTICA
-  // Sempre que 'tasks' mudar (adicionar, editar, excluir), salva no localStorage
   useEffect(() => {
-    localStorage.setItem('vocalizes_routine_tasks', JSON.stringify(tasks));
-  }, [tasks]);
+    document.title = "Minha Rotina - Academia VQC";
+    if (user?.id) {
+      fetchTasks();
+    }
+  }, [user?.id, selectedDate]);
+
+  const fetchTasks = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('routines')
+        .select('*')
+        .eq('user_id', user?.id)
+        .eq('date', selectedDate)
+        .order('time', { ascending: true });
+
+      if (error) throw error;
+      setTasks(data || []);
+    } catch (err) {
+      console.error('Error fetching tasks Supabase:', err);
+      // Fallback para localStorage se der erro (mantém compatibilidade local)
+      const savedTasks = localStorage.getItem('vocalizes_routine_tasks');
+      if (savedTasks) {
+        const local = JSON.parse(savedTasks);
+        setTasks(local.filter((t: any) => t.date === selectedDate));
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Fecha o menu se clicar fora (simples)
   useEffect(() => {
@@ -111,36 +137,35 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
     setOpenMenuId(null);
   };
 
-  const handleSaveTask = () => {
+  const handleSaveTask = async () => {
     if (!newTaskTitle.trim()) return;
 
-    if (editingTask) {
-      // EDITAR: Usa atualização funcional para garantir estado consistente
-      setTasks(prevTasks => prevTasks.map(t => {
-        if (t.id === editingTask.id) {
-          return {
-            ...t,
-            title: newTaskTitle,
-            category: newTaskCategory,
-            time: newTaskTime,
-            duration: `${newTaskDuration} min`,
-            date: newTaskDate
-          };
-        }
-        return t;
-      }));
-    } else {
-      // ADICIONAR NOVO
-      const newTask: Task = {
-        id: Date.now().toString(), // Garante ID único como string
-        title: newTaskTitle,
-        category: newTaskCategory,
-        time: newTaskTime,
-        duration: `${newTaskDuration} min`,
-        date: newTaskDate,
-        status: 'pending'
-      };
-      setTasks(prevTasks => [...prevTasks, newTask]);
+    const taskData: any = {
+      user_id: user?.id,
+      title: newTaskTitle,
+      category: newTaskCategory,
+      time: newTaskTime,
+      duration: `${newTaskDuration} min`,
+      date: newTaskDate,
+      status: 'pending'
+    };
+
+    try {
+      if (editingTask) {
+        const { error } = await supabase
+          .from('routines')
+          .update(taskData)
+          .eq('id', editingTask.id);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('routines')
+          .insert([taskData]);
+        if (error) throw error;
+      }
+      fetchTasks();
+    } catch (err) {
+      console.error('Error saving task to Supabase:', err);
     }
 
     resetForm();
@@ -154,21 +179,43 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
   };
 
   // Confirma exclusão (executa ação)
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (taskToDelete) {
-      setTasks(prevTasks => prevTasks.filter(t => String(t.id) !== String(taskToDelete.id)));
+      try {
+        const { error } = await supabase
+          .from('routines')
+          .delete()
+          .eq('id', taskToDelete.id);
+        if (error) throw error;
+        fetchTasks();
+      } catch (err) {
+        console.error('Error deleting task:', err);
+      }
       setTaskToDelete(null);
     }
   };
 
-  const toggleTaskStatus = (taskId: string | number) => {
-    setTasks(prevTasks => prevTasks.map(t => {
-      if (t.id === taskId) {
-        if (t.status === 'locked') return t; // Don't toggle locked
-        return { ...t, status: t.status === 'pending' ? 'completed' : 'pending' };
-      }
-      return t;
-    }));
+  const toggleTaskStatus = async (taskId: string | number) => {
+    const task = tasks.find(t => t.id === taskId);
+    if (!task || task.status === 'locked') return;
+
+    const newStatus = task.status === 'pending' ? 'completed' : 'pending';
+
+    try {
+      // Atualização otimista
+      setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: newStatus } : t));
+
+      const { error } = await supabase
+        .from('routines')
+        .update({ status: newStatus })
+        .eq('id', taskId);
+
+      if (error) throw error;
+    } catch (err) {
+      console.error('Error toggling status:', err);
+      // Reverte se der erro
+      setTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: task.status } : t));
+    }
   };
 
   const toggleMenu = (e: React.MouseEvent, taskId: string | number) => {
@@ -260,13 +307,15 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
 
               {filteredTasks.map((task, index) => {
                 const isLast = index === filteredTasks.length - 1;
+                const isGuidance = task.is_guidance;
+
                 return (
-                  <div key={task.id} className={`relative pl-12 ${!isLast ? 'mb-6' : ''}`}>
-                    {/* Status Indicator Dot (Clickable to toggle status) */}
+                  <div key={task.id} className={`relative pl-12 ${!isLast ? 'mb-8' : ''}`}>
+                    {/* Status Indicator Dot */}
                     <button
                       onClick={() => toggleTaskStatus(task.id)}
-                      className={`absolute left-0 top-1 w-10 h-10 rounded-full border-4 border-[#101622] flex items-center justify-center z-10 transition-colors ${task.status === 'completed' ? 'bg-[#0081FF] text-white' :
-                        task.status === 'pending' ? 'bg-[#FF00BC] text-white hover:bg-[#FF00BC]/80' :
+                      className={`absolute left-0 top-1 w-10 h-10 rounded-full border-4 border-[#101622] flex items-center justify-center z-10 transition-all ${task.status === 'completed' ? 'bg-[#0081FF] text-white' :
+                        task.status === 'pending' ? (isGuidance ? 'bg-[#FF00BC] text-white' : 'bg-[#6F4CE7] text-white') :
                           'bg-[#1A202C] text-gray-600 border-white/5'
                         }`}
                     >
@@ -278,63 +327,101 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
 
                     {/* Card */}
                     <div
-                      onClick={() => task.status !== 'locked' && handleOpenEditModal(task)}
-                      className={`p-4 rounded-xl border transition-all cursor-pointer group relative ${task.status === 'pending'
-                        ? 'bg-[#1A202C] border-[#FF00BC]/50 shadow-[0_0_20px_rgba(255,0,188,0.1)]'
-                        : 'bg-[#1A202C]/50 border-white/5 opacity-80'
+                      className={`p-5 rounded-2xl border transition-all relative ${isGuidance
+                        ? 'bg-[#FF00BC]/5 border-[#FF00BC]/20 shadow-[0_0_25px_rgba(255,0,188,0.1)]'
+                        : task.status === 'pending'
+                          ? 'bg-[#1A202C] border-white/10 shadow-lg'
+                          : 'bg-[#1A202C]/40 border-white/5 opacity-80'
                         }`}
                     >
-                      {/* MORE OPTIONS BUTTON CONTAINER */}
-                      <div
-                        className="absolute top-2 right-2 z-20"
-                        onClick={(e) => e.stopPropagation()} // Garante que cliques no menu não abram o player
-                      >
+                      {/* MORE OPTIONS BUTTON */}
+                      <div className="absolute top-3 right-3 z-20">
                         <button
                           onClick={(e) => toggleMenu(e, task.id)}
-                          className="w-8 h-8 flex items-center justify-center rounded-full text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                          className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:text-white hover:bg-white/5"
                         >
                           <span className="material-symbols-rounded text-xl">more_vert</span>
                         </button>
 
-                        {/* DROPDOWN MENU */}
                         {openMenuId === task.id && (
-                          <div className="absolute right-0 top-8 w-32 bg-[#151A23] border border-white/10 rounded-xl shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-30">
+                          <div className="absolute right-0 top-8 w-32 bg-[#1A202C] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-30">
                             <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleOpenEditModal(task);
-                              }}
+                              onClick={(e) => { e.stopPropagation(); handleOpenEditModal(task); }}
                               className="w-full text-left px-4 py-3 text-xs font-bold text-white hover:bg-white/5 flex items-center gap-2"
                             >
-                              <span className="material-symbols-rounded text-sm">edit</span>
-                              Editar
+                              <span className="material-symbols-rounded text-sm">edit</span> Editar
                             </button>
                             <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDeleteRequest(task);
-                              }}
-                              className="w-full text-left px-4 py-3 text-xs font-bold text-red-400 hover:bg-[#FF00BC]/10 flex items-center gap-2"
+                              onClick={(e) => { e.stopPropagation(); handleDeleteRequest(task); }}
+                              className="w-full text-left px-4 py-3 text-xs font-bold text-red-400 hover:bg-red-400/5 flex items-center gap-2"
                             >
-                              <span className="material-symbols-rounded text-sm">delete</span>
-                              Excluir
+                              <span className="material-symbols-rounded text-sm">delete</span> Excluir
                             </button>
                           </div>
                         )}
                       </div>
 
-                      <div className="flex justify-between items-start mb-2 pr-6">
-                        <span className={`text-xs font-bold px-2 py-0.5 rounded ${task.status === 'pending' ? 'bg-[#FF00BC]/10 text-[#FF00BC]' : 'bg-white/5 text-gray-400'
-                          }`}>
-                          {task.time}
-                        </span>
-                        <span className="text-[10px] text-gray-500 uppercase tracking-wider">{task.category}</span>
+                      <div className="flex justify-between items-start mb-3 pr-8">
+                        <div className="flex items-center gap-2">
+                          <span className={`text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider ${isGuidance ? 'bg-[#FF00BC] text-white' : 'bg-[#0081FF]/10 text-[#0081FF]'}`}>
+                            {task.time}
+                          </span>
+                          <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest">{task.category}</span>
+                        </div>
                       </div>
 
-                      <h4 className="font-bold text-white mb-1 group-hover:text-[#0081FF] transition-colors pr-4">{task.title}</h4>
-                      <div className="flex items-center gap-2 text-xs text-gray-400">
+                      <h4 className={`text-base font-bold text-white mb-2 pr-6 ${isGuidance ? 'text-[#FF00BC]' : ''}`}>{task.title}</h4>
+
+                      {/* Rich Description */}
+                      {task.description && (
+                        <div className="mb-4 text-xs text-gray-300 leading-relaxed whitespace-pre-wrap opacity-90 border-l-2 border-white/5 pl-3 py-1">
+                          {task.description}
+                        </div>
+                      )}
+
+                      {/* Video Player Embed (Simple) */}
+                      {task.video_url && (
+                        <div className="mt-4 mb-3 rounded-xl overflow-hidden border border-white/10 bg-black/40">
+                          {task.video_url.includes('youtube.com') || task.video_url.includes('youtu.be') ? (
+                            <div className="aspect-video">
+                              <iframe
+                                width="100%"
+                                height="100%"
+                                src={`https://www.youtube.com/embed/${task.video_url.split('v=')[1] || task.video_url.split('/').pop()}`}
+                                frameBorder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                              ></iframe>
+                            </div>
+                          ) : (
+                            <video controls className="w-full">
+                              <source src={task.video_url} type="video/mp4" />
+                            </video>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Audio Player */}
+                      {task.audio_url && (
+                        <div className="mt-3 bg-black/20 p-3 rounded-xl border border-white/5 flex items-center gap-3">
+                          <button
+                            className="w-10 h-10 rounded-full bg-[#0081FF] text-white flex items-center justify-center shadow-lg shadow-[#0081FF]/20"
+                            onClick={() => window.open(task.audio_url, '_blank')}
+                          >
+                            <span className="material-symbols-rounded">play_arrow</span>
+                          </button>
+                          <div className="flex-1">
+                            <p className="text-[10px] font-black text-gray-500 uppercase">Referência em Áudio</p>
+                            <div className="h-1.5 w-full bg-white/5 rounded-full mt-1.5">
+                              <div className="h-full w-1/3 bg-[#0081FF] rounded-full"></div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="flex items-center gap-2 mt-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">
                         <span className="material-symbols-rounded text-sm">schedule</span>
-                        {task.duration}
+                        Foco: {task.duration}
                       </div>
                     </div>
                   </div>
@@ -348,7 +435,7 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
       {/* FAB for Add */}
       <button
         onClick={handleOpenAddModal}
-        className="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-[#6F4CE7] text-white shadow-lg shadow-purple-900/40 flex items-center justify-center hover:scale-110 transition-transform z-20"
+        className="fixed bottom-24 right-6 w-14 h-14 rounded-full bg-[#6F4CE7] text-white shadow-lg shadow-vibe-900/40 flex items-center justify-center hover:scale-110 transition-transform z-20"
       >
         <span className="material-symbols-rounded text-2xl">add</span>
       </button>
@@ -439,7 +526,7 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
               <button
                 onClick={handleSaveTask}
                 disabled={!newTaskTitle.trim()}
-                className="w-full h-12 bg-[#6F4CE7] hover:bg-[#5b3dc4] text-white font-bold rounded-xl shadow-lg shadow-purple-900/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
+                className="w-full h-12 bg-[#6F4CE7] hover:bg-[#5b3dc4] text-white font-bold rounded-xl shadow-lg shadow-vibe-900/20 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-2"
               >
                 <span className="material-symbols-rounded">{editingTask ? 'save' : 'add_task'}</span>
                 {editingTask ? 'Salvar Alterações' : 'Adicionar à Rotina'}

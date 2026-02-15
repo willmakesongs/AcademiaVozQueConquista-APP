@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { SelectedNote, FretboardMode } from '../types';
-import { getNoteAt, formatMusicText, getIntervalAt, calculateFinger } from '../services/chordLogic';
+import { getNoteAt, formatMusicText, getIntervalAt, calculateFinger } from '../services/CAGED/chordLogic';
 
 interface ChordChartProps {
     selectedNotes: SelectedNote[];

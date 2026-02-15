@@ -433,7 +433,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
             <div className="relative w-full h-[35vh] shrink-0 transition-all duration-500 bg-[#0D121C] overflow-hidden border-b border-white/5">
                 {/* Flash Effect */}
                 {/* Flash Effect */}
-                <div className={`absolute inset-0 bg-[#6F4CE7]/20 pointer-events-none z-10 ${visualBeat ? 'opacity-100 transition-none' : 'opacity-0 transition-opacity duration-300'}`} />
+                <div className={`absolute inset-0 bg-[#0081FF]/20 pointer-events-none z-10 ${visualBeat ? 'opacity-100 transition-none' : 'opacity-0 transition-opacity duration-300'}`} />
 
                 {/* Big Beat Number */}
                 {/* Big Beat Number */}
@@ -441,7 +441,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                     <span
                         className={`text-[100px] font-black tracking-tighter transition-all duration-75 select-none ${isPlaying
                             ? 'opacity-100 scale-100 text-white'
-                            : 'opacity-20 scale-95 text-[#6F4CE7]/30'
+                            : 'opacity-20 scale-95 text-[#0081FF]/30'
                             }`}
                         style={{ fontVariantNumeric: 'tabular-nums' }}
                     >
@@ -453,7 +453,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                 <div className="absolute top-0 bottom-0 left-0 right-0 z-30 opacity-80 mix-blend-screen pointer-events-none">
                     {isPlaying && (
                         <div
-                            className="absolute top-0 bottom-0 w-1.5 bg-[#6F4CE7] shadow-[0_0_20px_#6F4CE7]"
+                            className="absolute top-0 bottom-0 w-1.5 bg-[#0081FF] shadow-[0_0_20px_#0081FF]"
                             style={{ animation: `pendulumScan ${60 / bpm}s linear infinite alternate` }}
                         />
                     )}
@@ -472,7 +472,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
 
                     {/* HEADER */}
                     <div className="w-full flex items-center justify-center border-b border-white/5 pb-4 gap-3">
-                        <h1 className="text-[#6F4CE7] font-black tracking-[0.3em] text-sm uppercase glow-text">
+                        <h1 className="text-[#0081FF] font-black tracking-[0.3em] text-sm uppercase glow-text">
                             METRÔNOMO
                         </h1>
                         <img src={MINIMALIST_LOGO_URL} alt="VQC Logo" className="h-5 w-auto object-contain opacity-90" />
@@ -487,7 +487,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                         <div className="flex items-center justify-between w-full px-4">
                             <button
                                 onClick={() => adjustBpm(-1)}
-                                className="w-12 h-12 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:border-[#6F4CE7]/50 hover:bg-[#6F4CE7]/10 transition-all active:scale-90 shadow-lg shadow-black/20"
+                                className="w-12 h-12 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:border-[#0081FF]/50 hover:bg-[#0081FF]/10 transition-all active:scale-90 shadow-lg shadow-black/20"
                             >
                                 <span className="material-symbols-rounded text-2xl">remove</span>
                             </button>
@@ -496,14 +496,14 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                                 <span className="text-7xl font-light text-white tracking-tighter tabular-nums leading-none drop-shadow-[0_0_15px_rgba(111,76,231,0.3)]">
                                     {bpm}
                                 </span>
-                                <span className="text-[#6F4CE7] text-[10px] font-bold uppercase tracking-widest mt-2">
+                                <span className="text-[#0081FF] text-[10px] font-bold uppercase tracking-widest mt-2">
                                     {currentMarking}
                                 </span>
                             </div>
 
                             <button
                                 onClick={() => adjustBpm(1)}
-                                className="w-12 h-12 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:border-[#6F4CE7]/50 hover:bg-[#6F4CE7]/10 transition-all active:scale-90 shadow-lg shadow-black/20"
+                                className="w-12 h-12 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:border-[#0081FF]/50 hover:bg-[#0081FF]/10 transition-all active:scale-90 shadow-lg shadow-black/20"
                             >
                                 <span className="material-symbols-rounded text-2xl">add</span>
                             </button>
@@ -516,7 +516,8 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                             max="300"
                             value={bpm}
                             onChange={(e) => setBpm(parseInt(e.target.value))}
-                            className="w-full h-1 bg-[#1A1F2E] rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-[#6F4CE7] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-[0_0_10px_#6F4CE7] hover:bg-[#252A3B] transition-colors"
+                            aria-label="Ajuste de BPM"
+                            className="w-full h-1 bg-[#1A1F2E] rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-[#0081FF] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow-[0_0_10px_#0081FF] hover:bg-[#252A3B] transition-colors"
                         />
                         <div
                             ref={scrollRef}
@@ -531,7 +532,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                                     }}
                                     onClick={() => setBpm((m.min + m.max) / 2)}
                                     className={`whitespace-nowrap text-xs tracking-[0.2em] uppercase transition-all duration-300 snap-center shrink-0 ${currentMarking === m.label
-                                        ? 'text-[#6F4CE7] font-black scale-110'
+                                        ? 'text-[#0081FF] font-black scale-110'
                                         : 'text-zinc-500 hover:text-zinc-300 font-medium'
                                         }`}
                                 >
@@ -553,7 +554,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                             onClick={handleToggle}
                             className={`rounded-xl font-bold tracking-widest uppercase text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg ${isPlaying
                                 ? 'bg-[#E11D48] text-white shadow-[#E11D48]/30 border border-[#E11D48]'
-                                : 'bg-gradient-to-r from-[#6F4CE7] to-[#8B5CF6] text-white hover:opacity-90 shadow-[#6F4CE7]/30 border border-[#6F4CE7]/20'
+                                : 'bg-gradient-to-r from-[#0081FF] to-[#8B5CF6] text-white hover:opacity-90 shadow-[#0081FF]/30 border border-[#0081FF]/20'
                                 }`}
                         >
                             {isPlaying ? (
@@ -564,7 +565,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                         </button>
                         <button
                             onClick={cycleSoundMode}
-                            className="bg-[#1A1F2E] hover:bg-[#252A3B] rounded-xl text-[#6F4CE7] font-black tracking-tighter uppercase text-[9px] border border-[#6F4CE7]/20 transition-all active:scale-95 shadow-lg shadow-black/20 flex flex-col items-center justify-center leading-none px-1"
+                            className="bg-[#1A1F2E] hover:bg-[#252A3B] rounded-xl text-[#0081FF] font-black tracking-tighter uppercase text-[9px] border border-[#0081FF]/20 transition-all active:scale-95 shadow-lg shadow-black/20 flex flex-col items-center justify-center leading-none px-1"
                         >
                             <span className="text-[8px] text-gray-500 font-bold mb-0.5 opacity-50">SOM:</span>
                             {SOUND_OPTIONS.find(opt => opt.id === soundMode)?.label}
@@ -575,7 +576,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                     <div className="w-full bg-[#1A1F2E] rounded-2xl p-4 border border-white/5 mt-2">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-full bg-[#6F4CE7]/20 flex items-center justify-center p-0.5 overflow-hidden">
+                                <div className="w-8 h-8 rounded-full bg-[#0081FF]/20 flex items-center justify-center p-0.5 overflow-hidden">
                                     <img src="/metronome-icon.png" alt="Metrônomo" className="w-full h-full object-contain rounded-full" />
                                 </div>
                                 <span className="text-xs font-bold text-white uppercase tracking-wider">
@@ -594,7 +595,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                                 <button
                                     onClick={() => setTargetDuration(null)}
                                     className={`px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest whitespace-nowrap transition-all border ${targetDuration === null
-                                        ? 'bg-[#6F4CE7] text-white border-[#6F4CE7] shadow-lg shadow-[#6F4CE7]/20'
+                                        ? 'bg-[#0081FF] text-white border-[#0081FF] shadow-lg shadow-[#0081FF]/20'
                                         : 'bg-black/20 text-gray-500 border-white/5 hover:border-white/10 hover:text-gray-300'
                                         }`}
                                 >
@@ -605,7 +606,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                                         key={min}
                                         onClick={() => setTargetDuration(min)}
                                         className={`px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest whitespace-nowrap transition-all border ${targetDuration === min
-                                            ? 'bg-[#6F4CE7] text-white border-[#6F4CE7] shadow-lg shadow-[#6F4CE7]/20'
+                                            ? 'bg-[#0081FF] text-white border-[#0081FF] shadow-lg shadow-[#0081FF]/20'
                                             : 'bg-black/20 text-gray-500 border-white/5 hover:border-white/10 hover:text-gray-300'
                                             }`}
                                     >
@@ -635,7 +636,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                                 value={myBpm}
                                 onChange={(e) => setMyBpm(e.target.value)}
                                 placeholder="000"
-                                className="w-full bg-black/20 border border-white/10 rounded-2xl py-3 px-4 text-center font-mono text-xl font-bold text-white placeholder-white/10 focus:outline-none focus:border-[#6F4CE7]/50 focus:bg-[#6F4CE7]/5 transition-all"
+                                className="w-full bg-black/20 border border-white/10 rounded-2xl py-3 px-4 text-center font-mono text-xl font-bold text-white placeholder-white/10 focus:outline-none focus:border-[#0081FF]/50 focus:bg-[#0081FF]/5 transition-all"
                             />
                             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-gray-500 font-bold pointer-events-none">
                                 BPM
@@ -660,7 +661,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                         {/* Header */}
                         <div className="flex items-center justify-between p-6 border-b border-white/5 bg-[#151925]">
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7]">
+                                <div className="w-10 h-10 rounded-full bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
                                     <span className="material-symbols-rounded">menu_book</span>
                                 </div>
                                 <div>
@@ -679,8 +680,8 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                         {/* Content */}
                         <div className="flex-1 overflow-y-auto p-6 pb-32 text-gray-300 space-y-8 leading-relaxed text-sm scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
 
-                            <div className="bg-[#6F4CE7]/10 rounded-2xl p-6 border border-[#6F4CE7]/20 shadow-lg shadow-[#6F4CE7]/5">
-                                <h3 className="text-[#6F4CE7] font-black text-lg mb-2 flex items-center gap-2">
+                            <div className="bg-[#0081FF]/10 rounded-2xl p-6 border border-[#0081FF]/20 shadow-lg shadow-[#0081FF]/5">
+                                <h3 className="text-[#0081FF] font-black text-lg mb-2 flex items-center gap-2">
                                     <span>🎯</span> O METRÔNOMO NÃO É PRESSA — É CONTROLE
                                 </h3>
                                 <p className="text-white text-sm font-medium leading-relaxed">
@@ -715,15 +716,15 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                                 </h4>
                                 <div className="space-y-3">
                                     <div className="bg-black/20 p-4 rounded-xl border border-white/5">
-                                        <span className="text-[#6F4CE7] font-bold block mb-1">1. Escolha um tempo confortável</span>
-                                        <p>Algo entre 50 e 70 BPM para começar. Se errar → abaixe o BPM. <span className="text-[#6F4CE7] font-bold">Sem ego.</span></p>
+                                        <span className="text-[#0081FF] font-bold block mb-1">1. Escolha um tempo confortável</span>
+                                        <p>Algo entre 50 e 70 BPM para começar. Se errar → abaixe o BPM. <span className="text-[#0081FF] font-bold">Sem ego.</span></p>
                                     </div>
                                     <div className="bg-black/20 p-4 rounded-xl border border-white/5">
-                                        <span className="text-[#6F4CE7] font-bold block mb-1">2. Toque sem correr atrás do clique</span>
+                                        <span className="text-[#0081FF] font-bold block mb-1">2. Toque sem correr atrás do clique</span>
                                         <p>O clique não é algo pra “perseguir”. Ele é o chão firme onde você pisa. Você deve encaixar as notas dentro do pulso, não depois.</p>
                                     </div>
                                     <div className="bg-black/20 p-4 rounded-xl border border-white/5">
-                                        <span className="text-[#6F4CE7] font-bold block mb-1">3. Só aumente quando estiver 100% limpo</span>
+                                        <span className="text-[#0081FF] font-bold block mb-1">3. Só aumente quando estiver 100% limpo</span>
                                         <ul className="flex flex-wrap gap-3 mt-2">
                                             <li className="text-[10px] font-bold bg-white/5 px-2 py-1 rounded-md text-green-400">✔ SEM TROPEÇAR</li>
                                             <li className="text-[10px] font-bold bg-white/5 px-2 py-1 rounded-md text-green-400">✔ SEM ACELERAR</li>
@@ -749,7 +750,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                                 </section>
                             </div>
 
-                            <section className="bg-[#1A1F2E] p-5 rounded-2xl border border-[#6F4CE7]/20">
+                            <section className="bg-[#1A1F2E] p-5 rounded-2xl border border-[#0081FF]/20">
                                 <h4 className="text-white font-bold text-base mb-3 flex items-center gap-2">
                                     <span>📈</span> USO INTELIGENTE
                                 </h4>
@@ -767,7 +768,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                                         <span className="text-white font-bold">Gradual</span>
                                     </li>
                                 </ul>
-                                <p className="text-[10px] text-center text-[#6F4CE7] font-bold mt-4 uppercase tracking-widest">Pouco tempo bem feito &gt; horas bagunçadas</p>
+                                <p className="text-[10px] text-center text-[#0081FF] font-bold mt-4 uppercase tracking-widest">Pouco tempo bem feito &gt; horas bagunçadas</p>
                             </section>
 
                             <section className="bg-red-500/5 p-5 rounded-2xl border border-red-500/10">
@@ -787,7 +788,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                                     <span>✅</span> A VERDADE REAL
                                 </h4>
                                 <p className="text-xs mb-3 text-green-200/70">O metrônomo melhora groove, afinação rítmica, segurança e acelera o aprendizado.</p>
-                                <div className="text-[#6F4CE7] font-bold italic text-center p-4 bg-[#6F4CE7]/5 rounded-xl border border-[#6F4CE7]/10">
+                                <div className="text-[#0081FF] font-bold italic text-center p-4 bg-[#0081FF]/5 rounded-xl border border-[#0081FF]/10">
                                     “Quem domina o tempo domina a música. O metrônomo não limita — ele liberta sua evolução.”
                                 </div>
                             </section>

@@ -118,14 +118,14 @@ export const RepertoireView: React.FC<Props> = ({ onBack }) => {
                 {/* Search Bar */}
                 <div className="relative mb-6 group">
                     <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
-                        <span className="material-symbols-rounded text-[#8B5CF6] group-focus-within:text-[#A78BFA] transition-colors">search</span>
+                        <span className="material-symbols-rounded text-[#0081FF] group-focus-within:text-[#0081FF]/80 transition-colors">search</span>
                     </div>
                     <input
                         type="text"
                         placeholder="O que você quer cantar hoje?"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-[#1E1E2E] text-white pl-12 pr-4 py-4 rounded-2xl border border-white/5 focus:border-[#8B5CF6]/50 focus:ring-1 focus:ring-[#8B5CF6]/50 focus:outline-none transition-all placeholder-gray-500 shadow-lg"
+                        className="w-full bg-[#1E1E2E] text-white pl-12 pr-4 py-4 rounded-2xl border border-white/5 focus:border-[#0081FF]/50 focus:ring-1 focus:ring-[#0081FF]/50 focus:outline-none transition-all placeholder-gray-500 shadow-lg"
                     />
                     {searchTerm && (
                         <button
@@ -146,7 +146,7 @@ export const RepertoireView: React.FC<Props> = ({ onBack }) => {
                             className={`
                         px-5 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all
                         ${selectedCategory === cat
-                                    ? 'bg-[#8B5CF6] text-white shadow-[0_0_15px_rgba(139,92,246,0.4)]'
+                                    ? 'bg-[#0081FF] text-white shadow-[0_0_15px_rgba(0,129,255,0.4)]'
                                     : 'bg-[#1E1E2E] text-gray-400 border border-white/5 active:bg-white/5'}
                     `}
                         >
@@ -185,13 +185,13 @@ export const RepertoireView: React.FC<Props> = ({ onBack }) => {
                                 <div className="flex-1 text-left min-w-0">
                                     <h3 className="text-white font-bold text-base truncate mb-0.5 leading-tight">{music.title}</h3>
                                     <p className="text-xs text-gray-400 flex items-center gap-1.5 truncate">
-                                        <span className="material-symbols-rounded text-[14px] text-[#8B5CF6]">music_note</span>
+                                        <span className="material-symbols-rounded text-[14px] text-[#0081FF]">music_note</span>
                                         {music.artist}
                                     </p>
                                 </div>
 
                                 {/* Action Button */}
-                                <div className="w-10 h-10 rounded-full bg-[#8B5CF6] flex items-center justify-center text-white shadow-lg active:scale-110 transition-transform flex-shrink-0">
+                                <div className="w-10 h-10 rounded-full bg-[#0081FF] flex items-center justify-center text-white shadow-lg active:scale-110 transition-transform flex-shrink-0">
                                     <span className="material-symbols-rounded">play_arrow</span>
                                 </div>
                             </div>
@@ -241,7 +241,7 @@ export const RepertoireView: React.FC<Props> = ({ onBack }) => {
                     ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center relative">
                             {/* Blurred Background */}
-                            <img src={selected.thumbnailUrl} className="absolute inset-0 w-full h-full object-cover opacity-30 blur-xl" />
+                            <img src={selected.thumbnailUrl} alt={selected.title} className="absolute inset-0 w-full h-full object-cover opacity-30 blur-xl" />
 
                             <div className="relative z-10 flex flex-col items-center p-6 text-center">
                                 <span className="material-symbols-rounded text-5xl mb-4 text-white/20">music_off</span>
@@ -249,7 +249,7 @@ export const RepertoireView: React.FC<Props> = ({ onBack }) => {
                                 <p className="text-gray-400 text-sm mb-6">Esta versão específica ainda não está no nosso acervo.</p>
                                 <button
                                     onClick={() => setCurrentKey('0')}
-                                    className="px-6 py-2 bg-[#8B5CF6] text-white rounded-full text-sm font-bold active:bg-[#7C3AED] transition-colors shadow-lg"
+                                    className="px-6 py-2 bg-[#0081FF] text-white rounded-full text-sm font-bold active:bg-[#006bd1] transition-colors shadow-lg"
                                 >
                                     Voltar para Original
                                 </button>
@@ -264,7 +264,7 @@ export const RepertoireView: React.FC<Props> = ({ onBack }) => {
                         <h2 className="text-2xl font-bold text-white mb-1">{selected.title}</h2>
                         <p className="text-gray-400 text-lg">{selected.artist}</p>
                     </div>
-                    <button className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-[#8B5CF6] active:bg-white/10 transition-colors">
+                    <button className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center text-[#FF00BC] active:bg-white/10 transition-colors">
                         <span className="material-symbols-rounded text-2xl">favorite</span>
                     </button>
                 </div>
@@ -272,17 +272,17 @@ export const RepertoireView: React.FC<Props> = ({ onBack }) => {
                 {/* Key Control Card - The "Hero" Feature */}
                 <div className="bg-[#1E1E2E] p-6 rounded-3xl border border-white/5 mb-6 relative overflow-hidden">
                     {/* Background Glow */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-[#8B5CF6] blur-[80px] opacity-10"></div>
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-[#0081FF] blur-[80px] opacity-10"></div>
 
                     <div className="relative z-10">
                         <div className="flex justify-between items-center mb-6">
                             <div className="flex items-center gap-2">
-                                <span className="material-symbols-rounded text-[#8B5CF6]">graphic_eq</span>
+                                <span className="material-symbols-rounded text-[#0081FF]">graphic_eq</span>
                                 <span className="text-xs font-bold text-white uppercase tracking-wider">Controle de Tom</span>
                             </div>
                             <button
                                 onClick={() => setCurrentKey('0')}
-                                className="text-[10px] font-bold text-[#8B5CF6] border border-[#8B5CF6]/30 px-2 py-1 rounded-lg active:bg-[#8B5CF6]/10 transition-colors uppercase"
+                                className="text-[10px] font-bold text-[#0081FF] border border-[#0081FF]/30 px-2 py-1 rounded-lg active:bg-[#0081FF]/10 transition-colors uppercase"
                             >
                                 Resetar
                             </button>
@@ -317,7 +317,7 @@ export const RepertoireView: React.FC<Props> = ({ onBack }) => {
                                 {['-2', '-1', '0', '+1', '+2'].map(key => (
                                     <div
                                         key={key}
-                                        className={`w-2 h-2 rounded-full transition-all duration-300 ${currentKey === key ? 'bg-[#8B5CF6] scale-150' : 'bg-white/10'}`}
+                                        className={`w-2 h-2 rounded-full transition-all duration-300 ${currentKey === key ? 'bg-[#0081FF] scale-150' : 'bg-white/10'}`}
                                     />
                                 ))}
                             </div>

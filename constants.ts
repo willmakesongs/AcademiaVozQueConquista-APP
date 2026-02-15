@@ -4062,7 +4062,7 @@ export const MODULES: Module[] = [
                 </div>
 
                 <div class="bg-[#1A202C] p-4 rounded-xl border border-white/5 flex gap-4 items-center">
-                   <div class="w-10 h-10 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0">
+                   <div class="w-10 h-10 rounded-full bg-vibe-500/20 text-vibe-400 flex items-center justify-center shrink-0">
                       <span class="material-symbols-rounded">bedtime</span>
                    </div>
                    <div>
@@ -4791,7 +4791,7 @@ export const MODULES: Module[] = [
                         </p>
                     </div>
 
-                    <button class="complete-practice-btn w-full py-4 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-purple-900/20 active:scale-95 transition-all flex items-center justify-center gap-2 group">
+                    <button class="complete-practice-btn w-full py-4 bg-brand-gradient rounded-2xl text-white font-black text-xs uppercase tracking-widest shadow-lg shadow-vibe-900/20 active:scale-95 transition-all flex items-center justify-center gap-2 group">
                         <span class="material-symbols-rounded text-sm group-hover:animate-bounce">workspace_premium</span>
                         Concluir Prática e Receber Feedback
                     </button>

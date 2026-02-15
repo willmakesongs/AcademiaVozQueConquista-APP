@@ -176,7 +176,7 @@ Termine sempre com um reforço de autoridade ou uma ação prática adequada ao 
 
         const genAI = new GoogleGenerativeAI(apiKey)
         const model = genAI.getGenerativeModel({
-            model: "gemini-3-flash-preview",
+            model: "gemini-1.5-flash",
             systemInstruction: { parts: [{ text: systemPrompt }] }
         })
 
@@ -199,15 +199,34 @@ Termine sempre com um reforço de autoridade ou uma ação prática adequada ao 
             history: chatHistory,
         });
 
-        const result = await chat.sendMessage(query);
-        const answer = result.response.text();
+        const result = await chat.sendMessageStream(query);
 
-        return new Response(JSON.stringify({
-            answer,
-            mode,
-            contextUsed: mode === 'brain' ? contextData : null
-        }), {
-            headers: { ...corsHeaders, "Content-Type": "application/json" }
+        // Criar um stream para a resposta
+        const stream = new ReadableStream({
+            async start(controller) {
+                const encoder = new TextEncoder();
+                try {
+                    for await (const chunk of result.stream) {
+                        const chunkText = chunk.text();
+                        if (chunkText) {
+                            controller.enqueue(encoder.encode(chunkText));
+                        }
+                    }
+                } catch (e) {
+                    console.error("Stream error:", e);
+                } finally {
+                    controller.close();
+                }
+            }
+        });
+
+        return new Response(stream, {
+            headers: {
+                ...corsHeaders,
+                "Content-Type": "text/event-stream",
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive"
+            }
         })
 
     } catch (error: any) {

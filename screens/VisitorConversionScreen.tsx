@@ -17,7 +17,7 @@ export const VisitorConversionScreen: React.FC<VisitorConversionScreenProps> = (
 
                 {/* Header Icon */}
                 <div className="flex justify-center mb-8">
-                    <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-[#0081FF] to-[#6F4CE7] flex items-center justify-center shadow-lg shadow-purple-500/30">
+                    <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-[#0081FF] to-[#6F4CE7] flex items-center justify-center shadow-lg shadow-vibe-500/30">
                         <span className="material-symbols-rounded text-5xl text-white">sentiment_satisfied</span>
                     </div>
                 </div>

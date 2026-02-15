@@ -9,7 +9,7 @@ import { Sparkles, BookOpen, Clock } from 'lucide-react';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<'library' | 'metronome'>('library');
-  
+
   // Persistência do Modo do Braço
   const [displayMode, setDisplayMode] = useState<FretboardMode>(() => {
     const saved = localStorage.getItem('fretboard_mode');
@@ -23,7 +23,7 @@ const App: React.FC = () => {
   const [soundType, setSoundType] = useState('loop');
   const [volume, setVolume] = useState(80);
   const [isMuted, setIsMuted] = useState(false);
-  
+
   const timerRef = useRef<number | null>(null);
   const measureRef = useRef(0);
 
@@ -46,15 +46,15 @@ const App: React.FC = () => {
     if (isMetronomePlaying) {
       // 30 / bpm = colcheia
       const interval = (30 / bpm) * 1000;
-      
+
       if (timerRef.current) clearInterval(timerRef.current);
-      
+
       // Reiniciar ciclo visual/lógico ao dar play (opcional, mas bom para sincronia)
-      
+
       timerRef.current = window.setInterval(() => {
         setTick(prev => {
-          const nextTick = (prev + 1) % 8; 
-          
+          const nextTick = (prev + 1) % 8;
+
           if (nextTick === 0) {
             measureRef.current = (measureRef.current + 1) % 4;
           }
@@ -65,7 +65,7 @@ const App: React.FC = () => {
 
           // Tocar som
           if (soundType === 'loop' || isDownBeat) {
-             playMetronomeSound(soundType, isAccent, nextTick, isFillBar);
+            playMetronomeSound(soundType, isAccent, nextTick, isFillBar);
           }
 
           return nextTick;
@@ -94,17 +94,17 @@ const App: React.FC = () => {
     let icon = null;
     let description = "";
 
-    switch(currentView) {
+    switch (currentView) {
       case 'library':
         title = "DICIONÁRIO";
         highlight = "CAGED";
-        icon = <BookOpen size={12} className="text-[#0081FF]"/>;
+        icon = <BookOpen size={12} className="text-[#0081FF]" />;
         description = "Biblioteca Universal de Acordes";
         break;
       case 'metronome':
         title = "ESTUDE COM";
         highlight = "METRÔNOMO";
-        icon = <Clock size={12} className="text-[#0081FF]"/>;
+        icon = <Clock size={12} className="text-[#0081FF]" />;
         description = "Precisão Digital Studio";
         break;
     }
@@ -113,11 +113,11 @@ const App: React.FC = () => {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div>
           <div className="flex items-center gap-2 text-[#0081FF] font-black text-[10px] uppercase tracking-[0.4em] mb-2">
-             <Sparkles size={14} /> Criado por: @WilsonClaudiano
+            <Sparkles size={14} /> Criado por: @WilsonClaudiano
           </div>
-          <h1 className="text-4xl md:text-7xl font-black tracking-tighter text-white mb-2 leading-none uppercase">
+          <h2 className="text-4xl md:text-7xl font-black tracking-tighter text-white mb-2 leading-none uppercase">
             {title} <span className="text-[#0081FF]">{highlight}</span>
-          </h1>
+          </h2>
           <p className="text-slate-500 font-bold flex items-center gap-2 uppercase text-[10px] tracking-[0.2em]">
             {icon} {description}
           </p>
@@ -128,8 +128,8 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#08090d] text-slate-200">
-      <Navigation 
-        currentView={currentView} 
+      <Navigation
+        currentView={currentView}
         onViewChange={setCurrentView}
         metronomeState={{ isPlaying: isMetronomePlaying, bpm }}
         onToggleMetronome={toggleMetronome}
@@ -139,27 +139,27 @@ const App: React.FC = () => {
         {renderHeader()}
 
         {currentView === 'library' && (
-          <ChordLibrary 
-            displayMode={displayMode} 
-            onModeChange={setDisplayMode} 
+          <ChordLibrary
+            displayMode={displayMode}
+            onModeChange={setDisplayMode}
           />
         )}
-        
+
         {currentView === 'metronome' && (
           <div className="flex justify-center items-center py-10 md:py-20 animate-in zoom-in duration-500">
-             <Metronome 
-               bpm={bpm}
-               setBpm={setBpm}
-               isPlaying={isMetronomePlaying}
-               onTogglePlay={toggleMetronome}
-               tick={tick}
-               soundType={soundType}
-               setSoundType={setSoundType}
-               volume={volume}
-               setVolume={setVolume}
-               isMuted={isMuted}
-               setIsMuted={setIsMuted}
-             />
+            <Metronome
+              bpm={bpm}
+              setBpm={setBpm}
+              isPlaying={isMetronomePlaying}
+              onTogglePlay={toggleMetronome}
+              tick={tick}
+              soundType={soundType}
+              setSoundType={setSoundType}
+              volume={volume}
+              setVolume={setVolume}
+              isMuted={isMuted}
+              setIsMuted={setIsMuted}
+            />
           </div>
         )}
       </main>
@@ -167,13 +167,13 @@ const App: React.FC = () => {
       <footer className="mt-20 border-t border-white/5 bg-black/40 py-20 px-8">
         <div className="max-w-[1600px] mx-auto flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left">
           <div className="flex items-center gap-5">
-             <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-2xl shadow-[#0081FF]/30">
-                <Sparkles size={32}/>
-             </div>
-             <div>
-               <span className="font-black tracking-tighter text-3xl text-white block">Will Make <span className="text-[#0081FF]">Chords</span></span>
-               <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-700">Harmonic Engine v3.0</span>
-             </div>
+            <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-2xl shadow-[#0081FF]/30">
+              <Sparkles size={32} />
+            </div>
+            <div>
+              <span className="font-black tracking-tighter text-3xl text-white block">Will Make <span className="text-[#0081FF]">Chords</span></span>
+              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-700">Harmonic Engine v3.0</span>
+            </div>
           </div>
         </div>
       </footer>

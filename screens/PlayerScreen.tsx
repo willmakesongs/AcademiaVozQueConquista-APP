@@ -64,7 +64,10 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     currentTimeRef.current = currentTime;
     lastSyncRef.current = { audioTime: currentTime, perfTime: performance.now() };
     setSmoothTime(currentTime);
-  }, [currentTime]);
+    if (vocalize?.title) {
+      document.title = `${vocalize.title} - Academia VQC`;
+    }
+  }, [currentTime, vocalize]);
 
   // High-precision animation loop for smooth time interpolation
   useEffect(() => {
@@ -88,28 +91,28 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
   const logoConfig = [
     { color: '#0081FF', baseHeight: 70 },
     { color: '#0081FF', baseHeight: 35 },
-    { color: '#6F4CE7', baseHeight: 25 },
-    { color: '#9333EA', baseHeight: 85 },
+    { color: '#0081FF', baseHeight: 25 },
+    { color: '#FF00BC', baseHeight: 85 },
     { color: '#FF00BC', baseHeight: 45 },
     { color: '#FF00BC', baseHeight: 25 },
   ];
 
   const scaleConfig = [
     { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
-    { color: '#0055D4', baseHeight: 32, label: 'Ré', level: 1 },
-    { color: '#002B7F', baseHeight: 44, label: 'Mi', level: 2 },
-    { color: '#4B369D', baseHeight: 56, label: 'Fá', level: 3 },
-    { color: '#6F4CE7', baseHeight: 68, label: 'Sol', level: 4 },
-    { color: '#9333EA', baseHeight: 80, label: 'Lá', level: 5 },
-    { color: '#C026D3', baseHeight: 92, label: 'Si', level: 6 },
+    { color: '#0070ED', baseHeight: 32, label: 'Ré', level: 1 },
+    { color: '#0055D4', baseHeight: 44, label: 'Mi', level: 2 },
+    { color: '#FF00A0', baseHeight: 56, label: 'Fá', level: 3 },
+    { color: '#FF00BC', baseHeight: 68, label: 'Sol', level: 4 },
+    { color: '#FF00BC', baseHeight: 80, label: 'Lá', level: 5 },
+    { color: '#FF00BC', baseHeight: 92, label: 'Si', level: 6 },
     { color: '#FF00BC', baseHeight: 110, label: 'Dó', level: 7 },
   ];
 
   const scaleDescConfig = [
     { color: '#FF00BC', baseHeight: 110, label: 'Dó', level: 7 },
-    { color: '#C026D3', baseHeight: 92, label: 'Si', level: 6 },
-    { color: '#9333EA', baseHeight: 80, label: 'Lá', level: 5 },
-    { color: '#6F4CE7', baseHeight: 68, label: 'Sol', level: 4 },
+    { color: '#FF00BC', baseHeight: 92, label: 'Si', level: 6 },
+    { color: '#FF00BC', baseHeight: 80, label: 'Lá', level: 5 },
+    { color: '#0081FF', baseHeight: 68, label: 'Sol', level: 4 },
     { color: '#4B369D', baseHeight: 56, label: 'Fá', level: 3 },
     { color: '#002B7F', baseHeight: 44, label: 'Mi', level: 2 },
     { color: '#0055D4', baseHeight: 32, label: 'Ré', level: 1 },
@@ -119,15 +122,15 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
   const triadConfig = [
     { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
     { color: '#002B7F', baseHeight: 44, label: 'Mi', level: 2 },
-    { color: '#6F4CE7', baseHeight: 68, label: 'Sol', level: 4 },
+    { color: '#0081FF', baseHeight: 68, label: 'Sol', level: 4 },
     { color: '#FF00BC', baseHeight: 110, label: 'Dó', level: 7 },
   ];
 
   const arpeggioConfig = [
     { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
     { color: '#002B7F', baseHeight: 44, label: 'Mi', level: 2 },
-    { color: '#6F4CE7', baseHeight: 68, label: 'Sol', level: 4 },
-    { color: '#C026D3', baseHeight: 92, label: 'Si', level: 6 },
+    { color: '#0081FF', baseHeight: 68, label: 'Sol', level: 4 },
+    { color: '#FF00BC', baseHeight: 92, label: 'Si', level: 6 },
     { color: '#FF00BC', baseHeight: 110, label: 'Dó', level: 7 },
   ];
 
@@ -135,8 +138,8 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
     { color: '#0055D4', baseHeight: 32, label: 'Ré', level: 1 },
     { color: '#002B7F', baseHeight: 44, label: 'Mi', level: 2 },
-    { color: '#6F4CE7', baseHeight: 68, label: 'Sol', level: 4 },
-    { color: '#9333EA', baseHeight: 80, label: 'Lá', level: 5 },
+    { color: '#0081FF', baseHeight: 68, label: 'Sol', level: 4 },
+    { color: '#FF00BC', baseHeight: 80, label: 'Lá', level: 5 },
     { color: '#FF00BC', baseHeight: 110, label: 'Dó', level: 7 },
   ];
 
@@ -154,26 +157,26 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
     { color: '#25308E', baseHeight: 50, label: 'F', level: 3 },
     { color: '#4B369D', baseHeight: 56, label: 'F#', level: 3.5 },
     { color: '#5D41C2', baseHeight: 62, label: 'G', level: 4 },
-    { color: '#6F4CE7', baseHeight: 68, label: 'G#', level: 4.5 },
+    { color: '#0081FF', baseHeight: 68, label: 'G#', level: 4.5 },
     { color: '#8141EA', baseHeight: 74, label: 'A', level: 5 },
-    { color: '#9333EA', baseHeight: 80, label: 'A#', level: 5.5 },
+    { color: '#FF00BC', baseHeight: 80, label: 'A#', level: 5.5 },
     { color: '#AA2DBF', baseHeight: 86, label: 'B', level: 6 },
-    { color: '#C026D3', baseHeight: 92, label: 'C', level: 7 },
+    { color: '#FF00BC', baseHeight: 92, label: 'C', level: 7 },
   ];
 
   const intervalsConfig = [
     { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
-    { color: '#0055D4', baseHeight: 32, label: 'Ré', level: 1 },
+    { color: '#0070ED', baseHeight: 32, label: 'Ré', level: 1 },
     { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
-    { color: '#002B7F', baseHeight: 44, label: 'Mi', level: 2 },
+    { color: '#0055D4', baseHeight: 44, label: 'Mi', level: 2 },
     { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
-    { color: '#4B369D', baseHeight: 56, label: 'Fá', level: 3 },
+    { color: '#002B7F', baseHeight: 56, label: 'Fá', level: 3 },
     { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
-    { color: '#6F4CE7', baseHeight: 68, label: 'Sol', level: 4 },
+    { color: '#FF00A0', baseHeight: 68, label: 'Sol', level: 4 },
     { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
-    { color: '#9333EA', baseHeight: 80, label: 'Lá', level: 5 },
+    { color: '#FF00BC', baseHeight: 80, label: 'Lá', level: 5 },
     { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
-    { color: '#C026D3', baseHeight: 92, label: 'Si', level: 6 },
+    { color: '#FF00BC', baseHeight: 92, label: 'Si', level: 6 },
     { color: '#0081FF', baseHeight: 20, label: 'Dó', level: 0 },
     { color: '#FF00BC', baseHeight: 110, label: 'Dó', level: 7 },
   ];
@@ -671,7 +674,7 @@ export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev
       onTouchMove={onTouchMove}
       onTouchEnd={onTouchEnd}
     >
-      <div className={`absolute top-[-20%] left-1/2 -translate-x-1/2 w-[120%] h-[60%] bg-[#6F4CE7] blur-[150px] pointer-events-none transition-opacity duration-1000 ${isPlayingState ? 'opacity-30' : 'opacity-10'}`}></div>
+      <div className={`absolute top-[-20%] left-1/2 -translate-x-1/2 w-[120%] h-[60%] bg-[#0081FF] blur-[150px] pointer-events-none transition-opacity duration-1000 ${isPlayingState ? 'opacity-30' : 'opacity-10'}`}></div>
 
       <style>{`
 input[type = 'range']:: -webkit - slider - thumb {
@@ -739,11 +742,12 @@ input[type = 'range']:: -webkit - slider - runnable - track {
               disabled={isPlaybackLoading || (DISABLE_ALL_PLAYERS && !isAdmin)}
               className="relative flex items-center justify-center w-60 h-60 active:scale-95 transition-transform group"
             >
+              <div className={`absolute inset-0 bg-[#0081FF]/20 pointer-events-none z-10 ${isPlayingState ? 'opacity-100 transition-none' : 'opacity-0 transition-opacity duration-300'}`} />
               {/* Outer Glow */}
               <div
                 className="absolute inset-0 rounded-full blur-3xl opacity-20 transition-all duration-300"
                 style={{
-                  backgroundColor: preparationTime > 0 ? '#6F4CE7' : (localBreathingTime < 5 ? '#0081FF' : '#FF00BC'),
+                  backgroundColor: preparationTime > 0 ? '#0081FF' : (localBreathingTime < 5 ? '#0081FF' : '#FF00BC'),
                   transform: preparationTime > 0 ? 'scale(1)' : `scale(${localBreathingTime < 5 ? 0.8 + (localBreathingTime / 5) * 0.4 : 1.2 - ((localBreathingTime - 5) / selectedBreathingTime) * 0.4})`
                 }}
               ></div>
@@ -755,10 +759,10 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                   background: preparationTime > 0
                     ? 'radial-gradient(circle, #1A202C 0%, #2D3748 100%)'
                     : (localBreathingTime < 5
-                      ? 'radial-gradient(circle, #0081FF 0%, #6F4CE7 100%)'
+                      ? 'radial-gradient(circle, #0081FF 0%, #0081FF 100%)'
                       : 'radial-gradient(circle, #FF00BC 0%, #610047 100%)'),
                   transform: preparationTime > 0 ? 'scale(1)' : `scale(${localBreathingTime < 5 ? 0.8 + (localBreathingTime / 5) * 0.4 : 1.2 - ((localBreathingTime - 5) / selectedBreathingTime) * 0.4})`,
-                  boxShadow: `0 0 60px ${preparationTime > 0 ? '#6F4CE740' : (localBreathingTime < 5 ? '#0081FF60' : '#FF00BC60')}`
+                  boxShadow: `0 0 60px ${preparationTime > 0 ? '#0081FF40' : (localBreathingTime < 5 ? '#0081FF60' : '#FF00BC60')}`
                 }}
               >
                 {!isPlayingState && !isPlaybackLoading && (
@@ -858,7 +862,10 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                   {activeConfig.map((bar, index) => (
                     <div key={index} className="flex flex-col items-center gap-2">
                       {(bar as any).label && (
-                        <span className={`text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${isPlayingState ? 'text-white opacity-100' : 'text-transparent opacity-0'}`}>
+                        <span className={`text-[10px] font-black uppercase tracking-wider transition-all duration-300 ${isPlayingState
+                          ? 'opacity-100 scale-100 text-white'
+                          : 'opacity-20 scale-95 text-[#0081FF]/30'
+                          }`}>
                           {(bar as any).label}
                         </span>
                       )}
@@ -927,7 +934,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                 <button
                   onClick={() => handleTrain('example')}
                   className={`relative w-24 h-24 rounded-full flex flex-col items-center justify-center transition-all duration-700 border-[3px] overflow-hidden shadow-2xl ${activeSource === 'example' && isPlaying
-                    ? 'bg-[#1A202C] border-[#6F4CE7] shadow-[#6F4CE7]/40 scale-105'
+                    ? 'bg-[#1A202C] border-[#0081FF] shadow-[#0081FF]/40 scale-105'
                     : 'bg-white/5 border-white/10 opacity-70 hover:opacity-100 hover:border-white/20'
                     }`}
                 >
@@ -958,7 +965,7 @@ input[type = 'range']:: -webkit - slider - runnable - track {
                   <button
                     onClick={() => handleTrain('example')}
                     className={`relative w-20 h-20 rounded-full flex flex-col items-center justify-center transition-all duration-700 border-[3px] overflow-hidden shadow-xl ${activeSource === 'example' && isPlaying
-                      ? 'bg-[#1A202C] border-[#6F4CE7] shadow-[#6F4CE7]/40 scale-105'
+                      ? 'bg-[#1A202C] border-[#0081FF] shadow-[#0081FF]/40 scale-105'
                       : 'bg-white/5 border-white/10 opacity-70 hover:opacity-100 hover:border-white/20'
                       }`}
                   >
@@ -1051,7 +1058,9 @@ input[type = 'range']:: -webkit - slider - runnable - track {
 
           {/* Progress Bar & Seek */}
           <div className="w-full max-w-sm px-2">
+            <label htmlFor="seek-bar" className="sr-only">Barra de Progresso do Áudio</label>
             <input
+              id="seek-bar"
               type="range"
               min="0"
               max={duration || 100}

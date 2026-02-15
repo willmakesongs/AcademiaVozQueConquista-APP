@@ -4,6 +4,7 @@ import { Screen, User, StudentSummary, Appointment, SelectedNote, FretboardMode 
 import { useAuth } from '../contexts/AuthContext';
 import { usePlayback } from '../contexts/PlaybackContext';
 import { supabase } from '../lib/supabaseClient';
+import { requestForToken } from '../lib/firebase';
 import { Logo } from '../components/Logo';
 import { PianoScreen } from './PianoScreen';
 import { STORAGE_BASE_URL } from '../constants';
@@ -226,6 +227,29 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
 
     // --- ESTADO DO BOTÃO PIX ---
     const [pixCopyStatus, setPixCopyStatus] = useState('Copiar Chave');
+
+    // Notificações
+    const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>(
+        typeof Notification !== 'undefined' ? Notification.permission : 'default'
+    );
+
+    const requestNotificationPermission = async () => {
+        if (!('Notification' in window)) {
+            alert('Notificações não são suportadas neste navegador.');
+            return;
+        }
+
+        const permission = await Notification.requestPermission();
+        setNotificationPermission(permission);
+
+        if (permission === 'granted') {
+            console.log('Permissão concedida! Capturando token...');
+            if (user?.id) {
+                await requestForToken(user.id);
+            }
+            alert('Notificações habilitadas com sucesso!');
+        }
+    };
 
 
     // Limpeza de áudio ao sair
@@ -796,7 +820,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
 
                         <button
                             onClick={() => setActiveView('vocal_test')}
-                            className="bg-[#1A202C] p-4 rounded-2xl border border-white/5 hover:border-[#6F4CE7]/50 transition-all group text-left relative overflow-hidden hover:shadow-lg hover:shadow-purple-900/20"
+                            className="bg-[#1A202C] p-4 rounded-2xl border border-white/5 hover:border-[#6F4CE7]/50 transition-all group text-left relative overflow-hidden hover:shadow-lg hover:shadow-vibe-900/20"
                         >
                             <div className="absolute inset-0 bg-gradient-to-br from-[#6F4CE7]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             <div className="w-10 h-10 rounded-xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] mb-3 group-hover:scale-110 transition-transform">
@@ -844,7 +868,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
 
                         <button
                             onClick={() => onNavigate(Screen.STUDIO)}
-                            className="bg-[#1A202C] p-4 rounded-2xl border border-white/5 hover:border-[#6F4CE7]/50 transition-all group text-left relative overflow-hidden hover:shadow-lg hover:shadow-purple-900/20"
+                            className="bg-[#1A202C] p-4 rounded-2xl border border-white/5 hover:border-[#6F4CE7]/50 transition-all group text-left relative overflow-hidden hover:shadow-lg hover:shadow-vibe-900/20"
                         >
                             <div className="absolute inset-0 bg-gradient-to-br from-[#6F4CE7]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             <div className="w-10 h-10 rounded-xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] mb-3 group-hover:scale-110 transition-transform">
@@ -927,10 +951,10 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                 {/* Seção Minha Conta */}
                 <div>
                     <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 px-1">Minha Conta</h3>
-                    <div className="bg-[#1A202C] rounded-2xl border border-white/5 overflow-hidden">
+                    <div className="bg-[#1A202C] rounded-2xl border border-white/5 overflow-hidden divide-y divide-white/5">
                         <button
                             onClick={() => setActiveView('personal_data')}
-                            className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors border-b border-white/5"
+                            className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
                         >
                             <div className="flex items-center gap-4">
                                 <div className="w-8 h-8 rounded-lg bg-[#0081FF]/10 flex items-center justify-center text-blue-400">
@@ -944,7 +968,6 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                             <span className="material-symbols-rounded text-gray-600">chevron_right</span>
                         </button>
 
-                        {/* Ocultar Assinatura para Admins/Professores */}
                         {(user?.role !== 'admin' && user?.role !== 'teacher') && (
                             <button
                                 onClick={() => setActiveView('subscription')}
@@ -965,7 +988,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
 
                         <button
                             onClick={() => setActiveView('contract')}
-                            className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors border-t border-white/5"
+                            className="w-full flex items-center justify-between p-4 hover:bg-white/5 transition-colors"
                         >
                             <div className="flex items-center gap-4">
                                 <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-400">
@@ -978,62 +1001,63 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                             </div>
                             <span className="material-symbols-rounded text-gray-600">chevron_right</span>
                         </button>
+                    </div>
+                </div>
 
-
-                        {/* Seção Ajustes & Offline */}
-                        <div>
-                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 px-1">Configurações do App</h3>
-                            <div className="bg-[#1A202C] rounded-2xl border border-white/5 overflow-hidden divide-y divide-white/5">
-                                <div className="p-4 flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-400">
-                                            <span className="material-symbols-rounded text-lg">cloud_off</span>
-                                        </div>
-                                        <div className="text-left">
-                                            <span className="text-sm font-semibold text-white block">Modo Offline</span>
-                                            <span className="text-[10px] text-gray-500 block">Salvar áudios no dispositivo</span>
-                                        </div>
-                                    </div>
-                                    <button
-                                        onClick={() => setOfflineMode(!isOfflineMode)}
-                                        className={`w-12 h-6 rounded-full transition-colors relative ${isOfflineMode ? 'bg-[#0081FF]' : 'bg-gray-700'}`}
-                                    >
-                                        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-all ${isOfflineMode ? 'right-1' : 'left-1'}`}></div>
-                                    </button>
+                {/* Seção Configurações do App */}
+                <div>
+                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 px-1">Configurações do App</h3>
+                    <div className="bg-[#1A202C] rounded-2xl border border-white/5 overflow-hidden divide-y divide-white/5">
+                        <div className="p-4 flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
+                                    <span className="material-symbols-rounded text-lg">notifications</span>
                                 </div>
-
-                                {isOfflineMode && (
-                                    <div className="p-4 bg-white/5 animate-in slide-in-from-top duration-300">
-                                        <div className="flex justify-between items-center mb-3">
-                                            <span className="text-xs text-gray-300">Sincronizar todos os áudios</span>
-                                            {downloadProgress > 0 && (
-                                                <span className="text-[10px] font-bold text-[#0081FF]">{downloadProgress}%</span>
-                                            )}
-                                        </div>
-
-                                        {downloadProgress > 0 ? (
-                                            <div className="w-full h-1.5 bg-gray-800 rounded-full overflow-hidden mb-2">
-                                                <div
-                                                    className="h-full bg-[#0081FF] transition-all duration-300"
-                                                    style={{ width: `${downloadProgress}%` }}
-                                                ></div>
-                                            </div>
-                                        ) : (
-                                            <button
-                                                onClick={downloadAll}
-                                                className="w-full py-2 rounded-lg bg-[#0081FF]/10 text-[#0081FF] text-xs font-bold border border-[#0081FF]/20 hover:bg-[#0081FF]/20 transition-colors"
-                                            >
-                                                Baixar Tudo (Modo Offline)
-                                            </button>
-                                        )}
-                                        <p className="text-[9px] text-gray-500 mt-2">
-                                            Isso fará o carregamento dos áudios ser instantâneo, mesmo sem internet.
-                                        </p>
-                                    </div>
-                                )}
-
+                                <div className="text-left">
+                                    <span className="text-sm font-semibold text-white block">Notificações Push</span>
+                                    <span className="text-[10px] text-gray-500 block">Avisos de aula e novidades</span>
+                                </div>
                             </div>
+                            <button
+                                onClick={requestNotificationPermission}
+                                className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all ${notificationPermission === 'granted'
+                                    ? 'bg-green-500/10 text-green-500 border border-green-500/20'
+                                    : 'bg-[#0081FF] text-white shadow-lg shadow-[#0081FF]/20'
+                                    }`}
+                            >
+                                {notificationPermission === 'granted' ? 'Habilitado' : 'Habilitar'}
+                            </button>
                         </div>
+
+                        <div className="p-4 flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                                <div className="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center text-orange-400">
+                                    <span className="material-symbols-rounded text-lg">cloud_off</span>
+                                </div>
+                                <div className="text-left">
+                                    <span className="text-sm font-semibold text-white block">Modo Offline</span>
+                                    <span className="text-[10px] text-gray-500 block">Usar áudios sem internet</span>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setOfflineMode(!isOfflineMode)}
+                                className={`w-12 h-6 rounded-full transition-all relative ${isOfflineMode ? 'bg-[#0081FF]' : 'bg-gray-700'}`}
+                            >
+                                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${isOfflineMode ? 'left-7' : 'left-1'}`}></div>
+                            </button>
+                        </div>
+
+                        {isOfflineMode && (
+                            <div className="p-4 bg-white/5">
+                                <button
+                                    onClick={downloadAll}
+                                    disabled={downloadProgress > 0}
+                                    className="w-full py-2 rounded-lg bg-[#0081FF]/10 text-[#0081FF] text-[10px] font-bold border border-[#0081FF]/20 hover:bg-[#0081FF]/20 transition-colors disabled:opacity-50"
+                                >
+                                    {downloadProgress > 0 ? `Baixando... ${downloadProgress}%` : 'Sincronizar Todos os Áudios'}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -1051,8 +1075,8 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                         <Logo size="sm" />
                     </div>
                 </div>
-            </div >
-        </div >
+            </div>
+        </div>
     );
 
     const renderPersonalData = () => (
@@ -1217,7 +1241,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
 
             <div className="p-6 flex-1 overflow-y-auto hide-scrollbar">
                 {/* Cartão do Plano Customizado com Nova Arte */}
-                <div className="relative w-full h-48 rounded-2xl overflow-hidden mb-8 shadow-2xl shadow-purple-900/30 group bg-black">
+                <div className="relative w-full h-48 rounded-2xl overflow-hidden mb-8 shadow-2xl shadow-vibe-900/30 group bg-black">
                     <img
                         src="https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/PNGs-JPEG/Capaassinates.png"
                         alt="Cartão Assinatura"
@@ -1342,7 +1366,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                 {/* Student Card */}
                 <div className="bg-[#1A202C] rounded-3xl p-6 border border-white/5 shadow-xl">
                     <div className="flex items-center gap-4 mb-6">
-                        <img src={user?.avatarUrl} className="w-16 h-16 rounded-full border-2 border-[#0081FF]/30 p-0.5" alt="" />
+                        <img src={user?.avatarUrl} className="w-16 h-16 rounded-full border-2 border-[#0081FF]/30 p-0.5" alt={user?.name || "Profile"} />
                         <div>
                             <h4 className="text-lg font-bold text-white leading-tight">{user?.name}</h4>
                             <p className="text-xs text-gray-500 uppercase tracking-widest font-black">Plano {user?.plan || 'Vocalizes Pro'}</p>

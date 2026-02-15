@@ -17,6 +17,7 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
     const [nextLesson, setNextLesson] = useState<{ id: string, title: string, type: 'topic' | 'vocalize' } | null>(null);
 
     useEffect(() => {
+        document.title = "Início - Academia VQC";
         const saved = localStorage.getItem('checklist_progress');
         if (saved) {
             try {
@@ -138,12 +139,12 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
                 {/* Section: LORENA IA (Destaque Principal) */}
                 <div
                     onClick={() => onNavigate(Screen.CHAT)}
-                    className="relative overflow-hidden bg-gradient-to-br from-[#1A202C] to-[#25213b] p-5 rounded-2xl border border-[#6F4CE7]/30 active:scale-[0.98] active:bg-[#6F4CE7]/5 cursor-pointer shadow-lg shadow-purple-900/10 touch-manipulation"
+                    className="relative overflow-hidden bg-gradient-to-br from-[#1A202C] to-[#25213b] p-5 rounded-2xl border border-[#6F4CE7]/30 active:scale-[0.98] active:bg-[#6F4CE7]/5 cursor-pointer shadow-lg shadow-vibe-900/10 touch-manipulation"
                 >
                     <div className="absolute top-0 right-0 w-40 h-40 bg-[#6F4CE7] blur-[80px] opacity-10 group-hover:opacity-25 transition-opacity"></div>
 
                     <div className="flex items-start gap-4 relative z-10">
-                        <div className="w-12 h-12 rounded-full bg-brand-gradient p-[2px] shrink-0 shadow-lg shadow-purple-900/40">
+                        <div className="w-12 h-12 rounded-full bg-brand-gradient p-[2px] shrink-0 shadow-lg shadow-vibe-900/40">
                             <div className="w-full h-full bg-[#1A202C] rounded-full flex items-center justify-center overflow-hidden">
                                 <img
                                     src={LORENA_AVATAR_URL}

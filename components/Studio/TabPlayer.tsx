@@ -13,31 +13,16 @@ export const TabPlayer: React.FC = () => {
     useEffect(() => {
         if (!alphaTabRef.current) return;
 
-        const settings: Settings = {
+        const settings: any = {
             core: {
                 engine: 'html5',
-                logLevel: 1,
             },
             display: {
                 scale: 1.0,
-                stretchForce: 0.8,
-            },
-            notation: {
-                elements: {
-                    scoreTitle: true,
-                    scoreSubTitle: true,
-                    scoreArtist: true,
-                    scoreAlbum: true,
-                    scoreWords: true,
-                    scoreMusic: true,
-                    scoreWordsAndMusic: true,
-                    scoreCopyright: true,
-                },
             },
             player: {
                 enablePlayer: true,
                 enableCursor: true,
-                enableUserInteraction: true,
                 soundFont: 'https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf2',
             },
         };

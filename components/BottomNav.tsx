@@ -74,7 +74,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentScreen, onNavigate,
             >
               <img
                 src={LORENA_AVATAR_URL}
-                alt="Lorena IA"
+                alt="Lorena IA Avatar"
                 className="w-full h-full object-cover opacity-90"
               />
               <div className="absolute inset-0 bg-gradient-to-tr from-[#0081FF]/20 to-[#FF00BC]/20 mix-blend-overlay"></div>

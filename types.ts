@@ -15,7 +15,8 @@ export enum Screen {
   ADMIN_SETTINGS = 'ADMIN_SETTINGS',
   CONTRACT = 'CONTRACT',
   ONBOARDING = 'ONBOARDING',
-  STUDIO = 'STUDIO'
+  STUDIO = 'STUDIO',
+  STUDENT_DETAIL = 'STUDENT_DETAIL'
 }
 
 export interface Vocalize {
@@ -96,6 +97,7 @@ export interface User {
   lastPracticeDate?: string;
   badges?: string[];
   teacher_id?: string;
+  push_token?: string;
 }
 
 export interface PaymentReceipt {
@@ -133,6 +135,7 @@ export interface StudentSummary {
   xp?: number;
   streak?: number;
   teacher_id?: string;
+  push_token?: string;
 }
 
 export interface Appointment {
@@ -155,6 +158,10 @@ export interface Task {
   status: 'pending' | 'completed' | 'locked';
   category: string;
   date: string;
+  description?: string;
+  audio_url?: string;
+  video_url?: string;
+  is_guidance?: boolean;
 }
 
 export interface Course {
@@ -213,3 +220,36 @@ export const CHORD_TYPES = [
   '9', 'maj9', 'm9',
   'm7b5', '5', '7b9'
 ];
+
+export interface StudyPlan {
+  id: string;
+  student_id: string;
+  teacher_id: string;
+  title: string;
+  content: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface LessonReport {
+  id: string;
+  student_id: string;
+  teacher_id: string;
+  course_id?: string;
+  lesson_date: string;
+  summary: string;
+  homework: string;
+  created_at: string;
+}
+
+export interface AttendanceRecord {
+  id: string;
+  student_id: string;
+  teacher_id: string;
+  course_id?: string;
+  date: string;
+  status: 'present' | 'absent' | 'replaced' | 'to_be_replaced';
+  notes?: string;
+  created_at: string;
+}

@@ -179,7 +179,7 @@ export const BreathingScreen: React.FC<Props> = ({ onBack }) => {
 
           <button 
             onClick={() => setViewState('tme_test')}
-            className="w-full py-4 rounded-xl bg-brand-gradient text-white font-bold shadow-lg shadow-purple-900/40 hover:scale-105 transition-transform"
+            className="w-full py-4 rounded-xl bg-brand-gradient text-white font-bold shadow-lg shadow-vibe-900/40 hover:scale-105 transition-transform"
           >
               Estou Alinhado
           </button>
