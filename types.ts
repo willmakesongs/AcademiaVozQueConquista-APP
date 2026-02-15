@@ -162,6 +162,8 @@ export interface Task {
   description?: string;
   audio_url?: string;
   video_url?: string;
+  registration_url?: string;
+  registration_date?: string;
   is_guidance?: boolean;
 }
 

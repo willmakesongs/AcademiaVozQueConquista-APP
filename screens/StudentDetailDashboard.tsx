@@ -4,6 +4,8 @@ import { Screen, StudentSummary, StudyPlan, LessonReport, AttendanceRecord, Task
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import { AttendanceTracker } from '../components/features/attendance/AttendanceTracker';
+import { NotificationHistory } from '../components/features/notifications/NotificationHistory';
+import { ScheduleManager } from '../components/features/notifications/ScheduleManager';
 import { RoutineManager } from '../components/RoutineManager';
 import { STORAGE_BASE_URL } from '../constants';
 
@@ -37,7 +39,6 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
     // Edição
     const [editingReport, setEditingReport] = useState<LessonReport | null>(null);
 
-
     // Edição Financeira (Admin apenas)
     const [isEditingFinance, setIsEditingFinance] = useState(false);
     const [editAmount, setEditAmount] = useState<string>('');
@@ -56,6 +57,8 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
     // Notificação
     const [notificationTitle, setNotificationTitle] = useState('');
     const [notificationBody, setNotificationBody] = useState('');
+    const [notificationStatus, setNotificationStatus] = useState<'idle' | 'success' | 'error'>('idle');
+    const [activeNotificationTab, setActiveNotificationTab] = useState<'send' | 'history' | 'schedule'>('send');
 
     const fetchStudent = async () => {
         if (!studentId) return;
@@ -183,8 +186,6 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
         }
     };
 
-
-
     const handleSavePlan = async () => {
         if (!newPlanTitle.trim()) return;
         setSaving(true);
@@ -252,6 +253,7 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
     const handleSendNotification = async () => {
         if (!notificationTitle.trim() || !notificationBody.trim()) return;
         setSaving(true);
+        setNotificationStatus('idle');
         try {
             // Chamada para a Edge Function do Supabase
             const { data, error } = await supabase.functions.invoke('send-notification', {
@@ -264,13 +266,12 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
 
             if (error) throw error;
 
-            alert('Notificação enviada com sucesso!');
-            setIsNotificationModalOpen(false);
+            setNotificationStatus('success');
             setNotificationTitle('');
             setNotificationBody('');
         } catch (err) {
             console.error('Error sending notification:', err);
-            alert('Erro ao enviar notificação. Verifique se o aluno tem as notificações habilitadas.');
+            setNotificationStatus('error');
         } finally {
             setSaving(false);
         }
@@ -678,43 +679,123 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
             {/* Modal: Enviar Notificação */}
             {isNotificationModalOpen && (
                 <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4">
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsNotificationModalOpen(false)}></div>
-                    <div className="relative w-full max-w-lg bg-[#1A202C] rounded-t-[32px] sm:rounded-[32px] p-8 animate-in slide-in-from-bottom-10 duration-300">
-                        <h3 className="text-xl font-black mb-6 flex items-center gap-3">
-                            <span className="material-symbols-rounded text-[#0081FF]">send</span>
-                            Enviar Notificação Push
-                        </h3>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="text-[10px] font-black uppercase text-gray-500 mb-2 block">Título da Mensagem</label>
-                                <input
-                                    type="text"
-                                    value={notificationTitle}
-                                    onChange={(e) => setNotificationTitle(e.target.value)}
-                                    placeholder="Ex: Novo treinamento disponível!"
-                                    className="w-full bg-[#101622] border border-white/5 rounded-2xl p-4 text-sm focus:border-[#0081FF] transition-all"
-                                />
-                            </div>
-                            <div>
-                                <label className="text-[10px] font-black uppercase text-gray-500 mb-2 block">Conteúdo</label>
-                                <textarea
-                                    value={notificationBody}
-                                    onChange={(e) => setNotificationBody(e.target.value)}
-                                    placeholder="Descreva o aviso para o aluno..."
-                                    className="w-full bg-[#101622] border border-white/5 rounded-2xl p-4 text-sm focus:border-[#0081FF] transition-all min-h-[120px]"
-                                />
-                            </div>
-                            <div className="flex gap-4 pt-4">
-                                <button onClick={() => setIsNotificationModalOpen(false)} className="flex-1 py-4 font-bold text-gray-500">Voltar</button>
-                                <button
-                                    disabled={saving || !notificationTitle.trim() || !notificationBody.trim()}
-                                    onClick={handleSendNotification}
-                                    className="flex-[2] py-4 bg-[#0081FF] rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2"
-                                >
-                                    {saving && <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>}
-                                    Disparar Agora
-                                </button>
-                            </div>
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => { setIsNotificationModalOpen(false); setNotificationStatus('idle'); }}></div>
+                    <div className="relative w-full max-w-lg bg-[#1A202C] rounded-t-[32px] sm:rounded-[32px] p-8 animate-in slide-in-from-bottom-10 duration-300 border border-white/5 flex flex-col max-h-[85vh]">
+
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-xl font-black flex items-center gap-3">
+                                <span className="material-symbols-rounded text-[#0081FF]">notifications_active</span>
+                                Central de Notificações
+                            </h3>
+                            <button onClick={() => setIsNotificationModalOpen(false)} className="bg-white/5 p-2 rounded-full text-gray-400 hover:text-white transition-colors">
+                                <span className="material-symbols-rounded">close</span>
+                            </button>
+                        </div>
+
+                        {/* Tabs */}
+                        <div className="flex p-1 bg-[#101622] rounded-xl border border-white/5 mb-6 shrink-0">
+                            <button
+                                onClick={() => setActiveNotificationTab('send')}
+                                className={`flex-1 py-2 px-4 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeNotificationTab === 'send' ? 'bg-[#0081FF] text-white shadow-lg' : 'text-gray-500 hover:text-white'}`}
+                            >
+                                Enviar
+                            </button>
+                            <button
+                                onClick={() => setActiveNotificationTab('schedule')}
+                                className={`flex-1 py-2 px-4 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeNotificationTab === 'schedule' ? 'bg-[#0081FF] text-white shadow-lg' : 'text-gray-500 hover:text-white'}`}
+                            >
+                                Agendar
+                            </button>
+                            <button
+                                onClick={() => setActiveNotificationTab('history')}
+                                className={`flex-1 py-2 px-4 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${activeNotificationTab === 'history' ? 'bg-[#0081FF] text-white shadow-lg' : 'text-gray-500 hover:text-white'}`}
+                            >
+                                Histórico
+                            </button>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto custom-scrollbar pr-1">
+                            {activeNotificationTab === 'send' && (
+                                notificationStatus === 'success' ? (
+                                    <div className="text-center py-8 animate-in zoom-in duration-300">
+                                        <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                                            <span className="material-symbols-rounded text-4xl text-green-500">check_circle</span>
+                                        </div>
+                                        <h3 className="text-2xl font-black text-white mb-2">Enviada!</h3>
+                                        <p className="text-gray-400 mb-8">A notificação foi entregue para o aluno com sucesso.</p>
+                                        <button
+                                            onClick={() => { setIsNotificationModalOpen(false); setNotificationStatus('idle'); }}
+                                            className="w-full py-4 bg-[#00C853] text-white rounded-2xl font-black uppercase tracking-widest hover:bg-[#00C853]/80 transition-all shadow-lg shadow-[#00C853]/20"
+                                        >
+                                            Fechar Janela
+                                        </button>
+                                    </div>
+                                ) : notificationStatus === 'error' ? (
+                                    <div className="text-center py-8 animate-in zoom-in duration-300">
+                                        <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                                            <span className="material-symbols-rounded text-4xl text-red-500">error</span>
+                                        </div>
+                                        <h3 className="text-2xl font-black text-white mb-2">Erro no Envio</h3>
+                                        <p className="text-gray-400 mb-8 max-w-xs mx-auto">Não foi possível enviar a notificação. Verifique se o aluno habilitou as permissões.</p>
+                                        <div className="flex gap-4">
+                                            <button
+                                                onClick={() => { setIsNotificationModalOpen(false); setNotificationStatus('idle'); }}
+                                                className="flex-1 py-4 font-bold text-gray-500 hover:text-white"
+                                            >
+                                                Cancelar
+                                            </button>
+                                            <button
+                                                onClick={() => setNotificationStatus('idle')}
+                                                className="flex-[2] py-4 bg-[#0081FF] text-white rounded-2xl font-black uppercase tracking-widest hover:bg-[#0081FF]/80 transition-all shadow-lg"
+                                            >
+                                                Tentar Novamente
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+                                        <div>
+                                            <label className="text-[10px] font-black uppercase text-gray-500 mb-2 block">Título da Mensagem</label>
+                                            <input
+                                                type="text"
+                                                value={notificationTitle}
+                                                onChange={(e) => setNotificationTitle(e.target.value)}
+                                                placeholder="Ex: Novo treinamento disponível!"
+                                                className="w-full bg-[#101622] border border-white/5 rounded-2xl p-4 text-sm focus:border-[#0081FF] transition-all"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] font-black uppercase text-gray-500 mb-2 block">Conteúdo</label>
+                                            <textarea
+                                                value={notificationBody}
+                                                onChange={(e) => setNotificationBody(e.target.value)}
+                                                placeholder="Descreva o aviso para o aluno..."
+                                                className="w-full bg-[#101622] border border-white/5 rounded-2xl p-4 text-sm focus:border-[#0081FF] transition-all min-h-[120px]"
+                                            />
+                                        </div>
+                                        <button
+                                            disabled={saving || !notificationTitle.trim() || !notificationBody.trim()}
+                                            onClick={handleSendNotification}
+                                            className="w-full mt-4 py-4 bg-[#0081FF] rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#0081FF]/80 transition-all shadow-lg shadow-[#0081FF]/20"
+                                        >
+                                            {saving && <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>}
+                                            Disparar Agora
+                                        </button>
+                                    </div>
+                                )
+                            )}
+
+                            {activeNotificationTab === 'history' && (
+                                <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                                    <NotificationHistory userId={studentId} />
+                                </div>
+                            )}
+
+                            {activeNotificationTab === 'schedule' && (
+                                <div className="animate-in fade-in slide-in-from-right-4 duration-300">
+                                    <ScheduleManager userId={studentId} />
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -761,4 +842,3 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
         </div>
     );
 };
-

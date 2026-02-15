@@ -3,6 +3,7 @@ import { Screen, Task } from '../types';
 import { INITIAL_TASKS } from '../constants';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../contexts/AuthContext';
+import { MediaRecorder } from '../components/features/study/MediaRecorder';
 
 interface Props {
   onNavigate: (screen: Screen) => void;
@@ -55,6 +56,8 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
   const [openMenuId, setOpenMenuId] = useState<string | number | null>(null);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null); // State para modal de exclusão
+  const [recordingTask, setRecordingTask] = useState<Task | null>(null);
+  const [recordingMode, setRecordingMode] = useState<'audio' | 'video'>('audio');
 
   // Form States
   const [newTaskTitle, setNewTaskTitle] = useState('');
@@ -379,45 +382,55 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
                         </div>
                       )}
 
-                      {/* Video Player Embed (Simple) */}
-                      {task.video_url && (
-                        <div className="mt-4 mb-3 rounded-xl overflow-hidden border border-white/10 bg-black/40">
-                          {task.video_url.includes('youtube.com') || task.video_url.includes('youtu.be') ? (
-                            <div className="aspect-video">
-                              <iframe
-                                width="100%"
-                                height="100%"
-                                src={`https://www.youtube.com/embed/${task.video_url.split('v=')[1] || task.video_url.split('/').pop()}`}
-                                frameBorder="0"
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                              ></iframe>
-                            </div>
-                          ) : (
-                            <video controls className="w-full">
-                              <source src={task.video_url} type="video/mp4" />
-                            </video>
-                          )}
-                        </div>
-                      )}
-
-                      {/* Audio Player */}
-                      {task.audio_url && (
-                        <div className="mt-3 bg-black/20 p-3 rounded-xl border border-white/5 flex items-center gap-3">
+                      <div className="flex flex-wrap gap-4 mt-6">
+                        {/* Example Media (Teacher side) */}
+                        {task.video_url && (
                           <button
-                            className="w-10 h-10 rounded-full bg-[#0081FF] text-white flex items-center justify-center shadow-lg shadow-[#0081FF]/20"
+                            className="flex items-center gap-2 px-3 py-2 bg-[#0081FF]/10 rounded-xl border border-[#0081FF]/20 text-[#0081FF]"
+                            onClick={() => window.open(task.video_url, '_blank')}
+                          >
+                            <span className="material-symbols-rounded text-lg">videocam</span>
+                            <span className="text-[10px] font-black uppercase">Exemplo</span>
+                          </button>
+                        )}
+                        {task.audio_url && (
+                          <button
+                            className="flex items-center gap-2 px-3 py-2 bg-[#6F4CE7]/10 rounded-xl border border-[#6F4CE7]/20 text-[#6F4CE7]"
                             onClick={() => window.open(task.audio_url, '_blank')}
                           >
-                            <span className="material-symbols-rounded">play_arrow</span>
+                            <span className="material-symbols-rounded text-lg">mic</span>
+                            <span className="text-[10px] font-black uppercase">Exemplo</span>
                           </button>
-                          <div className="flex-1">
-                            <p className="text-[10px] font-black text-gray-500 uppercase">Referência em Áudio</p>
-                            <div className="h-1.5 w-full bg-white/5 rounded-full mt-1.5">
-                              <div className="h-full w-1/3 bg-[#0081FF] rounded-full"></div>
-                            </div>
+                        )}
+
+                        {/* Student Registration */}
+                        {task.registration_url ? (
+                          <button
+                            className="flex items-center gap-2 px-3 py-2 bg-green-500/10 rounded-xl border border-green-500/20 text-green-500"
+                            onClick={() => window.open(task.registration_url, '_blank')}
+                          >
+                            <span className="material-symbols-rounded text-lg">check_circle</span>
+                            <span className="text-[10px] font-black uppercase">Meu Estudo</span>
+                          </button>
+                        ) : (
+                          <div className="flex gap-2">
+                            <button
+                              onClick={() => { setRecordingTask(task); setRecordingMode('audio'); }}
+                              className="flex items-center gap-2 px-3 py-2 bg-white/5 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:bg-white/10"
+                            >
+                              <span className="material-symbols-rounded text-lg">mic</span>
+                              <span className="text-[10px] font-black uppercase">Gravar Áudio</span>
+                            </button>
+                            <button
+                              onClick={() => { setRecordingTask(task); setRecordingMode('video'); }}
+                              className="flex items-center gap-2 px-3 py-2 bg-white/5 rounded-xl border border-white/10 text-gray-400 hover:text-white hover:bg-white/10"
+                            >
+                              <span className="material-symbols-rounded text-lg">videocam</span>
+                              <span className="text-[10px] font-black uppercase">Gravar Vídeo</span>
+                            </button>
                           </div>
-                        </div>
-                      )}
+                        )}
+                      </div>
 
                       <div className="flex items-center gap-2 mt-4 text-[10px] font-black text-gray-500 uppercase tracking-widest">
                         <span className="material-symbols-rounded text-sm">schedule</span>
@@ -431,6 +444,35 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
           )}
         </div>
       </div>
+
+      {/* MODAL: Recorder */}
+      {recordingTask && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-in fade-in duration-200">
+          <MediaRecorder
+            mode={recordingMode}
+            onCancel={() => setRecordingTask(null)}
+            onComplete={async (url) => {
+              try {
+                const { error } = await supabase
+                  .from('routines')
+                  .update({
+                    registration_url: url,
+                    registration_date: new Date().toISOString(),
+                    status: 'completed'
+                  })
+                  .eq('id', recordingTask.id);
+
+                if (error) throw error;
+                setRecordingTask(null);
+                fetchTasks();
+              } catch (err) {
+                console.error('Error saving registration:', err);
+                alert('Erro ao salvar registro de estudo.');
+              }
+            }}
+          />
+        </div>
+      )}
 
       {/* FAB for Add */}
       <button

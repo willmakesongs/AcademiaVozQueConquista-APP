@@ -147,8 +147,8 @@ export const RoutineManager: React.FC<Props> = ({ student, onClose }) => {
                                 key={d.date}
                                 onClick={() => setSelectedDate(d.date)}
                                 className={`flex flex-col items-center justify-center w-14 h-20 rounded-2xl border transition-all shrink-0 ${selectedDate === d.date
-                                        ? 'bg-[#0081FF] border-[#0081FF] shadow-lg shadow-[#0081FF]/20'
-                                        : 'bg-[#1A202C] border-white/5 text-gray-400'
+                                    ? 'bg-[#0081FF] border-[#0081FF] shadow-lg shadow-[#0081FF]/20'
+                                    : 'bg-[#1A202C] border-white/5 text-gray-400'
                                     }`}
                             >
                                 <span className="text-[10px] font-bold mb-1">{d.label}</span>
@@ -182,9 +182,19 @@ export const RoutineManager: React.FC<Props> = ({ student, onClose }) => {
                                         </div>
                                     </div>
                                     <h4 className="font-bold text-white mb-2">{task.title}</h4>
-                                    <div className="flex gap-4">
-                                        {task.video_url && <span className="material-symbols-rounded text-xs text-[#0081FF]">videocam</span>}
-                                        {task.audio_url && <span className="material-symbols-rounded text-xs text-[#6F4CE7]">mic</span>}
+                                    <div className="flex flex-wrap gap-4 mt-3">
+                                        {task.video_url && <span className="flex items-center gap-1.5 px-2 py-1 bg-[#0081FF]/10 rounded-lg text-[#0081FF] text-[9px] font-black uppercase"><span className="material-symbols-rounded text-xs">videocam</span> Exemplo</span>}
+                                        {task.audio_url && <span className="flex items-center gap-1.5 px-2 py-1 bg-[#6F4CE7]/10 rounded-lg text-[#6F4CE7] text-[9px] font-black uppercase"><span className="material-symbols-rounded text-xs">mic</span> Exemplo</span>}
+
+                                        {task.registration_url && (
+                                            <button
+                                                onClick={() => window.open(task.registration_url, '_blank')}
+                                                className="flex items-center gap-1.5 px-2 py-1 bg-green-500/10 border border-green-500/20 rounded-lg text-green-500 text-[9px] font-black uppercase hover:bg-green-500/20 transition-all"
+                                            >
+                                                <span className="material-symbols-rounded text-xs">play_circle</span>
+                                                Ver Estudo do Aluno
+                                            </button>
+                                        )}
                                         {task.description && <span className="material-symbols-rounded text-xs text-green-500">description</span>}
                                     </div>
                                 </div>
@@ -286,6 +296,22 @@ export const RoutineManager: React.FC<Props> = ({ student, onClose }) => {
                                 />
                             </div>
                         </div>
+
+                        {editingTask?.registration_url && (
+                            <div className="space-y-1.5">
+                                <label className="text-[10px] font-black text-green-500 uppercase ml-1">Registro do Aluno</label>
+                                <div className="flex items-center gap-3 p-3 bg-green-500/5 border border-green-500/20 rounded-xl">
+                                    <span className="material-symbols-rounded text-green-500">check_circle</span>
+                                    <span className="text-xs text-green-100 flex-1 truncate">{editingTask.registration_url}</span>
+                                    <button
+                                        onClick={() => window.open(editingTask.registration_url, '_blank')}
+                                        className="text-[10px] font-black uppercase text-green-500 hover:underline"
+                                    >
+                                        Abrir
+                                    </button>
+                                </div>
+                            </div>
+                        )}
 
                         <div className="p-4 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-between">
                             <div>

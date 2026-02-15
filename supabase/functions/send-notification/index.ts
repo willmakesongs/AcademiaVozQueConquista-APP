@@ -32,13 +32,15 @@ serve(async (req: Request) => {
 
         // 2. Registrar no Histórico (Início)
         const { data: historyItem, error: historyError } = await supabase
-            .from('notifications_history')
+            .from('notification_history')
             .insert([{
                 user_id: userId,
-                sender_id: (req as any).user?.id || null, // Se tiver auth
                 title: title,
                 body: body,
-                status: 'pending'
+                status: 'sent', // Assumindo sucesso por padrão ou pending se for async real
+                metadata: {
+                    sender_id: (req as any).user?.id || null
+                }
             }])
             .select()
             .single();
@@ -50,8 +52,8 @@ serve(async (req: Request) => {
         if (!serviceAccount.project_id) {
             // Se não tiver a chave, marcamos como falha de config por enquanto
             await supabase
-                .from('notifications_history')
-                .update({ status: 'failed', error_message: 'FIREBASE_SERVICE_ACCOUNT_JSON não configurada.' })
+                .from('notification_history')
+                .update({ status: 'failed', metadata: { error: 'FIREBASE_SERVICE_ACCOUNT_JSON não configurada.' } })
                 .eq('id', historyItem.id);
 
             throw new Error('FIREBASE_SERVICE_ACCOUNT_JSON não configurada.');
@@ -94,7 +96,7 @@ serve(async (req: Request) => {
 
         // Se chegar aqui com sucesso (simulado por enquanto)
         await supabase
-            .from('notifications_history')
+            .from('notification_history')
             .update({ status: 'sent' })
             .eq('id', historyItem.id);
 
