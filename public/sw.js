@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vqc-cache-v3';
+const CACHE_NAME = 'vqc-cache-v4';
 const ASSETS_TO_CACHE = [
     '/manifest.json',
     '/logo192.png',
