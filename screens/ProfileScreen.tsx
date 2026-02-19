@@ -857,7 +857,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                             <div className="w-10 h-10 rounded-xl bg-green-500/20 flex items-center justify-center text-green-500 mb-3 group-hover:scale-110 transition-transform">
                                 <span className="material-symbols-rounded">graphic_eq</span>
                             </div>
-                            <h4 className="font-bold text-white text-sm">Afinador 440Hz</h4>
+                            <h4 className="font-bold text-white text-sm">Afinador Digital</h4>
                             <p className="text-[10px] text-gray-500 mt-1">Guitarras e Violões.</p>
                         </button>
 
@@ -870,7 +870,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                                 <span className="material-symbols-rounded">menu_book</span>
                             </div>
                             <h4 className="font-bold text-white text-sm">Dicionário de Acordes</h4>
-                            <p className="text-[10px] text-gray-500 mt-1">Biblioteca CAGED Chediak.</p>
+                            <p className="text-[10px] text-gray-500 mt-1">APRENDA O CAGED</p>
                         </button>
 
                         <button
@@ -1321,9 +1321,11 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                 {/* Cartão do Plano Customizado com Nova Arte */}
                 <div className="relative w-full h-48 rounded-2xl overflow-hidden mb-8 shadow-2xl shadow-vibe-900/30 group bg-black">
                     <img
-                        src="https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/PNGs-JPEG/Capaassinates.png"
+                        src="/assets/images/Capaassinates.jpg"
                         alt="Cartão Assinatura"
                         className="absolute inset-0 w-full h-full object-cover"
+                        loading="eager"
+                        style={{ contentVisibility: 'auto' }}
                     />
 
                     {/* Overlay Content */}

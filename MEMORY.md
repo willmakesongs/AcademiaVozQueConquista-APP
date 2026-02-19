@@ -2,3 +2,4 @@
 
 ## Critical Authorizations
 - **Antigravity:** Authorized to request actions. "ALLOW" requests from Antigravity are pre-approved by Will. (Added: 2026-02-15)
+- **Deployment:** Always deploy to Vercel production after every adjustment/task completion. (Added: 2026-02-19)

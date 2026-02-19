@@ -23,8 +23,12 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
     const [unreadCount, setUnreadCount] = useState(0);
     const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
 
+    // SEO Title & Meta
     useEffect(() => {
-        document.title = "Início - Academia VQC";
+        document.title = "Dashboard do Aluno | Academia VQC";
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) metaDesc.setAttribute('content', 'Acompanhe seu progresso, próximas aulas e ferramentas de estudo na Academia VQC. Sua jornada vocal começa aqui.');
+
         const saved = localStorage.getItem('checklist_progress');
         if (saved) {
             try {
@@ -112,6 +116,7 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
             {/* Header */}
             <header className="pt-8 pb-4 px-6 flex justify-between items-center bg-[#101622]/95 backdrop-blur-sm sticky top-0 z-20 border-b border-white/5">
                 <div className="flex items-center gap-3">
+                    <h1 className="sr-only">Dashboard do Aluno</h1>
                     <div className="relative">
                         <img
                             src={user?.avatarUrl || 'https://picsum.photos/200'}
@@ -223,7 +228,7 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
                             </div>
                         </div>
                         <div>
-                            <h3 className="text-lg font-bold text-white mb-1">Lorena IA</h3>
+                            <h2 className="text-lg font-bold text-white mb-1">Lorena IA</h2> {/* Changed to h1 */}
                             <p className="text-xs text-[#6F4CE7] font-bold uppercase tracking-wide mb-2">Sua Mentora Virtual 24h</p>
                             <p className="text-sm text-gray-300 mb-4">
                                 Este chatbot inteligente conhece todo o nosso método! Ela está aqui para tirar dúvidas, sugerir músicas e te guiar quando o professor não estiver por perto.

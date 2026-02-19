@@ -67,7 +67,9 @@ export const RoutineScreen: React.FC<Props> = ({ onNavigate }) => {
   const [newTaskDate, setNewTaskDate] = useState(todayStr);
 
   useEffect(() => {
-    document.title = "Minha Rotina - Academia VQC";
+    document.title = "Minha Rotina | Academia VQC";
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute('content', 'Organize seus estudos diários de canto e performance na Academia VQC. Cronograma personalizado para sua evolução.');
     if (user?.id) {
       fetchTasks();
     }

@@ -48,7 +48,9 @@ export const CalendarScreen: React.FC<Props> = ({ onBack }) => {
   const [events, setEvents] = useState<any[]>(STATIC_EVENTS);
 
   useEffect(() => {
-    document.title = "Agenda - Academia VQC";
+    document.title = "Agenda de Aulas | Academia VQC";
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute('content', 'Consulte seus horários de aula, agendamentos e agenda semanal na Academia VQC. Mantenha seu ritmo de estudos organizado.');
     loadEvents();
   }, []);
 

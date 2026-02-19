@@ -25,9 +25,11 @@ export const TwisterScreen: React.FC<Props> = ({ onBack, initialExerciseId }) =>
     const audioCtxRef = useRef<AudioContext | null>(null);
     const timerRef = useRef<number | null>(null);
 
-    // SEO Title
+    // SEO Title & Meta Description
     useEffect(() => {
         document.title = "Trava-Línguas | Academia VQC";
+        const metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) metaDesc.setAttribute('content', 'Aprimore sua articulação e dicção com os trava-línguas da Academia VQC. Exercícios práticos para clareza vocal.');
     }, []);
 
     // Seleciona exercício inicial se fornecido

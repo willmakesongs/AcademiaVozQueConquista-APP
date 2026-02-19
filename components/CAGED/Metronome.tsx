@@ -122,13 +122,16 @@ const Metronome: React.FC<MetronomeProps> = ({
 
       {/* Volume Control */}
       <div className="flex items-center gap-4 bg-white/[0.03] px-5 py-3.5 rounded-2xl border border-white/5 w-full max-w-xs transition-colors hover:bg-white/[0.05]">
+        <label htmlFor="metronome-volume" className="sr-only">Volume do Metrônomo</label>
         <button
           onClick={toggleMute}
           className="text-gray-500 hover:text-white transition-colors p-1"
+          aria-label={isMuted ? "Desmutar Metrônomo" : "Mutar Metrônomo"}
         >
           {getVolumeIcon()}
         </button>
         <input
+          id="metronome-volume"
           type="range" min="0" max="100" value={volume}
           onChange={handleVolumeChange}
           aria-label="Volume do Metrônomo"
@@ -179,22 +182,28 @@ const Metronome: React.FC<MetronomeProps> = ({
         <div className="flex items-center gap-6 justify-center">
           <button
             onClick={() => { initAudio(); adjustBpm(-1); }}
-            className="w-11 h-11 rounded-full bg-white/5 border border-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all active:scale-90"
+            aria-label="Diminuir 1 BPM"
+            className="w-11 h-11 rounded-full bg-white/5 border border-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all active:scale-90 shadow-sm"
           >
             <Minus size={18} />
           </button>
 
-          <input
-            type="range" min="40" max="240" value={bpm}
-            onChange={(e) => { initAudio(); setBpm(parseInt(e.target.value)); }}
-            aria-label="Ajuste de BPM"
-            title="Ajuste de BPM"
-            className="w-full max-w-[200px] h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-[#0081FF] transition-all"
-          />
+          <div className="flex-grow max-w-[200px] flex flex-col gap-2">
+            <label htmlFor="bpm-slider" className="sr-only">Ajuste de BPM</label>
+            <input
+              id="bpm-slider"
+              type="range" min="40" max="240" value={bpm}
+              onChange={(e) => { initAudio(); setBpm(parseInt(e.target.value)); }}
+              aria-label="Ajuste de BPM"
+              title="Ajuste de BPM"
+              className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-[#0081FF] transition-all"
+            />
+          </div>
 
           <button
             onClick={() => { initAudio(); adjustBpm(1); }}
-            className="w-11 h-11 rounded-full bg-white/5 border border-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all active:scale-90"
+            aria-label="Aumentar 1 BPM"
+            className="w-11 h-11 rounded-full bg-white/5 border border-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 transition-all active:scale-90 shadow-sm"
           >
             <Plus size={18} />
           </button>

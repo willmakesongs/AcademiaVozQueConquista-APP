@@ -141,7 +141,7 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[150] bg-green-600 text-white px-8 py-5 rounded-[2.5rem] shadow-[0_20px_60px_rgba(0,0,0,0.4)] flex items-center gap-4 animate-in slide-in-from-top-4">
           <Database size={24} className="animate-pulse" />
           <div className="flex flex-col">
-            <span className="font-black text-sm uppercase tracking-tighter">Dicionário Chediak Atualizado</span>
+            <span className="font-black text-sm uppercase tracking-tighter">Dicionário CAGED Atualizado</span>
             <span className="text-[10px] opacity-80 font-bold uppercase tracking-widest">Padrão aplicado a todas as tonalidades.</span>
           </div>
         </div>
@@ -152,7 +152,8 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
           <button
             onClick={() => setIsNoteModalOpen(true)}
             aria-label={`Trocar Tom (Atual: ${selectedRoot})`}
-            className="group bg-[#1C1C1E] p-6 md:p-8 rounded-[2rem] border border-white/5 shadow-sm flex flex-col items-center justify-center hover:bg-white/[0.02] transition-all active:scale-[0.98]"
+            title={`Trocar Tom (Atual: ${selectedRoot})`}
+            className="group bg-[#1C1C1E] p-6 md:p-8 rounded-[2rem] border border-white/5 shadow-md flex flex-col items-center justify-center hover:bg-white/[0.02] transition-all active:scale-[0.98] hover:shadow-lg"
           >
             <span className="text-[9px] font-bold text-[#0081FF] uppercase tracking-[0.4em] mb-2 opacity-40 group-hover:opacity-100 transition-opacity">Tom</span>
             <span className="text-3xl md:text-5xl font-bold text-white tracking-tighter">
@@ -163,7 +164,8 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
           <button
             onClick={() => setIsModalOpen(true)}
             aria-label={`Trocar Qualidade (Atual: ${selectedType})`}
-            className="group bg-[#1C1C1E] p-6 md:p-8 rounded-[2rem] border border-white/5 shadow-sm flex flex-col items-center justify-center hover:bg-white/[0.02] transition-all active:scale-[0.98]"
+            title={`Trocar Qualidade (Atual: ${selectedType})`}
+            className="group bg-[#1C1C1E] p-6 md:p-8 rounded-[2rem] border border-white/5 shadow-md flex flex-col items-center justify-center hover:bg-white/[0.02] transition-all active:scale-[0.98] hover:shadow-lg"
           >
             <span className="text-[9px] font-bold text-[#0081FF] uppercase tracking-[0.4em] mb-2 opacity-40 group-hover:opacity-100 transition-opacity">Tipo</span>
             <span className="text-xl md:text-3xl font-bold text-white tracking-tighter text-center">
@@ -270,7 +272,7 @@ const ChordLibrary: React.FC<ChordLibraryProps> = ({ displayMode, onModeChange }
             </div>
 
             <div className="text-center opacity-30">
-              <p className="text-[10px] font-medium text-gray-500 uppercase tracking-widest">Padrão Almir Chediak High-Fidelity</p>
+              <p className="text-[10px] font-medium text-gray-500 uppercase tracking-widest">Padrão Academia VQC High-Fidelity</p>
             </div>
           </div>
         </div>
