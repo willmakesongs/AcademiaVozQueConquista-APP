@@ -166,12 +166,17 @@ export const LoginScreen: React.FC = () => {
             <Logo size="xl" className="relative drop-shadow-2xl transition-transform duration-500 group-hover:scale-110" />
           </div>
 
-          <h1 className="text-3xl font-bold text-white tracking-tight mb-2 text-center drop-shadow-lg">
-            ACADEMIA VQC
-          </h1>
-          <p className="text-[#FF00BC] font-bold tracking-[0.2em] text-[10px] uppercase">
-            Lorena Pimentel
-          </p>
+          <div className="text-center group cursor-default">
+            <h1 className="text-white tracking-tight drop-shadow-lg flex flex-col items-center leading-none">
+              <span className="text-lg font-light opacity-80 uppercase tracking-[0.3em] mb-1">Academia</span>
+              <span className="text-3xl font-black bg-clip-text text-transparent bg-brand-gradient">
+                VOZ QUE CONQUISTA
+              </span>
+            </h1>
+            <p className="text-[#FF00BC] font-bold tracking-[0.3em] text-[10px] uppercase mt-3">
+              Lorena Pimentel
+            </p>
+          </div>
         </div>
 
         {/* Role Selector */}
