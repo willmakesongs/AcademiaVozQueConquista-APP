@@ -25,9 +25,9 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
 
     // SEO Title & Meta
     useEffect(() => {
-        document.title = "Dashboard do Aluno | Academia VQC";
+        document.title = "Escola de Música & Tecnologia | Academia VQC";
         const metaDesc = document.querySelector('meta[name="description"]');
-        if (metaDesc) metaDesc.setAttribute('content', 'Acompanhe seu progresso, próximas aulas e ferramentas de estudo na Academia VQC. Sua jornada vocal começa aqui.');
+        if (metaDesc) metaDesc.setAttribute('content', 'Acesse seus cursos de música, oratória e instrumentos. A tecnologia do app unida ao seu ensino presencial.');
 
         const saved = localStorage.getItem('checklist_progress');
         if (saved) {
