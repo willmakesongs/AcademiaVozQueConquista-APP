@@ -25,7 +25,7 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
 
     // SEO Title & Meta
     useEffect(() => {
-        document.title = "Academia de Música & Tecnologia | Academia VQC";
+        document.title = "Academia de Música e Artes Voz que Conquista Lorena Pimentel";
         const metaDesc = document.querySelector('meta[name="description"]');
         if (metaDesc) metaDesc.setAttribute('content', 'Acesse seus cursos de música, oratória e instrumentos. A tecnologia do app unida ao seu ensino presencial.');
 
