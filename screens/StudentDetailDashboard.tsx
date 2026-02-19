@@ -64,13 +64,30 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
         if (!studentId) return;
         setLoading(true);
         try {
-            const { data, error } = await supabase
-                .from('profiles')
-                .select('*')
-                .eq('id', studentId)
-                .single();
+            // Executar consultas em paralelo para máxima performance
+            const [profileRes, planRes, reportsRes, attendanceRes] = await Promise.all([
+                supabase.from('profiles').select('*').eq('id', studentId).single(),
+                supabase.from('student_study_plans')
+                    .select('*')
+                    .eq('student_id', studentId)
+                    .eq('is_active', true)
+                    .order('created_at', { ascending: false })
+                    .limit(1)
+                    .maybeSingle(),
+                supabase.from('lesson_reports')
+                    .select('*')
+                    .eq('student_id', studentId)
+                    .order('lesson_date', { ascending: false })
+                    .limit(20),
+                supabase.from('attendance_records')
+                    .select('*')
+                    .eq('student_id', studentId)
+                    .order('date', { ascending: false })
+                    .limit(20)
+            ]);
 
-            if (data) {
+            if (profileRes.data) {
+                const data = profileRes.data;
                 setStudent({
                     id: data.id,
                     name: data.name,
@@ -93,32 +110,9 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
                 setEditPaymentDay(data.payment_day || '05');
             }
 
-            // Fetch Study Plan
-            const { data: planData } = await supabase
-                .from('student_study_plans')
-                .select('*')
-                .eq('student_id', studentId)
-                .eq('is_active', true)
-                .order('created_at', { ascending: false })
-                .limit(1)
-                .maybeSingle();
-            if (planData) setStudyPlan(planData);
-
-            // Fetch Lesson Reports
-            const { data: reportsData } = await supabase
-                .from('lesson_reports')
-                .select('*')
-                .eq('student_id', studentId)
-                .order('lesson_date', { ascending: false });
-            if (reportsData) setLessonReports(reportsData);
-
-            // Fetch Attendance
-            const { data: attendanceData } = await supabase
-                .from('attendance_records')
-                .select('*')
-                .eq('student_id', studentId)
-                .order('date', { ascending: false });
-            if (attendanceData) setAttendanceRecords(attendanceData);
+            if (planRes.data) setStudyPlan(planRes.data);
+            if (reportsRes.data) setLessonReports(reportsRes.data);
+            if (attendanceRes.data) setAttendanceRecords(attendanceRes.data);
 
         } catch (err) {
             console.error('Error fetching student data:', err);
