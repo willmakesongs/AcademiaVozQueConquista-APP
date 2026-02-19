@@ -843,7 +843,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                         >
                             <div className="absolute inset-0 bg-gradient-to-br from-[#6F4CE7]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             <div className="w-10 h-10 rounded-xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] mb-3 group-hover:scale-110 transition-transform">
-                                <span className="material-symbols-rounded">graphic_eq</span>
+                                <span className="material-symbols-rounded">mic</span>
                             </div>
                             <h4 className="font-bold text-white text-sm">Extensão Vocal</h4>
                             <p className="text-[10px] text-gray-500 mt-1">Descubra sua classificação.</p>
@@ -891,7 +891,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                         >
                             <div className="absolute inset-0 bg-gradient-to-br from-[#6F4CE7]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                             <div className="w-10 h-10 rounded-xl bg-[#6F4CE7]/20 flex items-center justify-center text-[#6F4CE7] mb-3 group-hover:scale-110 transition-transform">
-                                <img src="/metronome-icon.png" alt="Metrônomo" className="w-6 h-6 object-contain rounded-full" />
+                                <span className="material-symbols-rounded">speed</span>
                             </div>
                             <h4 className="font-bold text-white text-sm">Metrônomo VQC</h4>
                             <p className="text-[10px] text-gray-500 mt-1">Sua régua de tempo.</p>

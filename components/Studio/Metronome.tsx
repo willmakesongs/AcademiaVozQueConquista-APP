@@ -576,8 +576,8 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                     <div className="w-full bg-[#1A1F2E] rounded-2xl p-4 border border-white/5 mt-2">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2">
-                                <div className="w-8 h-8 rounded-full bg-[#0081FF]/20 flex items-center justify-center p-0.5 overflow-hidden">
-                                    <img src="/metronome-icon.png" alt="Metrônomo" className="w-full h-full object-contain rounded-full" />
+                                <div className="w-8 h-8 rounded-full bg-[#0081FF]/20 flex items-center justify-center text-[#0081FF]">
+                                    <span className="material-symbols-rounded text-xl">speed</span>
                                 </div>
                                 <span className="text-xs font-bold text-white uppercase tracking-wider">
                                     Tempo de Estudo
