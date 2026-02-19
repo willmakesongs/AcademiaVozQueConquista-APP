@@ -162,8 +162,8 @@ export const LoginScreen: React.FC = () => {
         {/* Brand Header */}
         <div className="flex flex-col items-center mb-10">
           <div className="mb-6 relative group cursor-default">
-            <div className="absolute inset-0 bg-brand-gradient blur-2xl opacity-30 group-hover:opacity-60 transition-opacity duration-500 rounded-full"></div>
-            <Logo size="xl" className="relative drop-shadow-2xl transition-transform duration-500 group-hover:scale-110" />
+            <div className="absolute inset-0 bg-brand-gradient blur-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-500 rounded-full scale-150"></div>
+            <Logo size="xl" className="relative transition-transform duration-500 group-hover:scale-110 mix-blend-screen" />
           </div>
 
           <div className="text-center group cursor-default">
