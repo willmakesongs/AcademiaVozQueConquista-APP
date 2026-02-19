@@ -61,7 +61,11 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
     const [activeNotificationTab, setActiveNotificationTab] = useState<'send' | 'history' | 'schedule'>('send');
 
     const fetchStudent = async () => {
-        if (!studentId) return;
+        if (!studentId) {
+            console.warn('StudentDetailDashboard: studentId is missing');
+            setLoading(false);
+            return;
+        }
         setLoading(true);
         try {
             // Executar consultas em paralelo para máxima performance

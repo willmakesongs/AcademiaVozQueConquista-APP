@@ -1,7 +1,7 @@
-const CACHE_NAME = 'vqc-cache-v8';
+const CACHE_NAME = 'vqc-cache-v9';
 const ASSETS_TO_CACHE = [
-    '/manifest.json',
-    '/logo192.png',
+    '/vqc.webmanifest',
+    '/pwa-icon-v5.png',
     '/favicon.ico',
     '/favicon.png'
 ];
