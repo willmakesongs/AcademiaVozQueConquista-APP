@@ -5,6 +5,8 @@ import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import { RoutineManager } from '../components/RoutineManager';
 import { STORAGE_BASE_URL } from '../constants';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface Props {
     onNavigate: (screen: Screen, studentId?: string) => void;
@@ -113,6 +115,12 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
     const [paymentDay, setPaymentDay] = useState('05');
     const [newStudentAmount, setNewStudentAmount] = useState('97');
     const [studentFilter, setStudentFilter] = useState<'active' | 'inactive'>('active');
+
+    // Exportação de Agenda
+    const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+    const [exportFormat, setExportFormat] = useState<'pdf' | 'txt'>('pdf');
+    const [exportPeriod, setExportPeriod] = useState<'week' | 'month'>('week');
+    const [exportScope, setExportScope] = useState<'my_courses' | 'all'>('my_courses');
 
     const filteredStudents = students.filter(student => {
         const matchesSearch = student.name.toLowerCase().includes(searchQuery.toLowerCase());
@@ -815,6 +823,140 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         } finally {
             setLoadingAction(false);
         }
+    };
+
+    const handleExportAgenda = () => {
+        const currentDate = selectedDate || new Date();
+        const year = currentDate.getFullYear();
+        const month = currentDate.getMonth();
+
+        // Determinar o intervalo de datas
+        let startDate: Date, endDate: Date;
+        if (exportPeriod === 'week') {
+            const first = currentDate.getDate() - (currentDate.getDay() === 0 ? 6 : currentDate.getDay() - 1);
+            startDate = new Date(year, month, first);
+            endDate = new Date(year, month, first + 6);
+        } else {
+            startDate = new Date(year, month, 1);
+            endDate = new Date(year, month + 1, 0);
+        }
+
+        const myTeacherCourseIds = courses.filter(c => c.teacher_id === user?.id).map(c => c.id);
+
+        // Gerar os dias do intervalo
+        const daysInPeriod: Date[] = [];
+        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+            daysInPeriod.push(new Date(d));
+        }
+
+        // Construir os dados da agenda
+        const agendaData: { date: Date, time: string, studentName: string, courseName: string, phone: string }[] = [];
+
+        daysInPeriod.forEach(day => {
+            if (day.getDay() === 0) return; // Pula domingo
+            const dayLabel = WEEK_DAYS[day.getDay() === 0 ? 6 : day.getDay() - 1]; // WEEK_DAYS começa na Segunda
+
+            students.forEach(s => {
+                if (s.status === 'inactive') return;
+
+                const relevantCourses = exportScope === 'my_courses' && myTeacherCourseIds.length > 0
+                    ? (s.courses?.filter(c => myTeacherCourseIds.includes(c.course_id)) || [])
+                    : (s.courses || []);
+
+                if (exportScope === 'my_courses' && myTeacherCourseIds.length > 0 && relevantCourses.length === 0) return;
+
+                const profileMatches = s.scheduleDay === dayLabel;
+                const anyCourseMatches = relevantCourses.some(c => c.schedule_day === dayLabel);
+
+                if (profileMatches || anyCourseMatches) {
+                    const enrollment = relevantCourses.find(c => c.schedule_day === dayLabel);
+                    const scheduleTime = enrollment?.schedule_time || s.scheduleTime || '14:00';
+                    const courseName = courses.find(c => c.id === enrollment?.course_id)?.nome || (s.courses && s.courses.length > 0 ? courses.find(c => c.id === s.courses![0].course_id)?.nome : 'Aula');
+
+                    agendaData.push({
+                        date: day,
+                        time: scheduleTime,
+                        studentName: s.name,
+                        courseName: courseName || 'Geral',
+                        phone: s.phone || 'Sem número'
+                    });
+                }
+            });
+        });
+
+        // Ordenar por data e hora
+        agendaData.sort((a, b) => {
+            if (a.date.getTime() !== b.date.getTime()) return a.date.getTime() - b.date.getTime();
+            return a.time.localeCompare(b.time);
+        });
+
+        const periodLabel = exportPeriod === 'week' ? 'Semanal' : 'Mensal';
+        const scopeLabel = exportScope === 'all' ? 'Academia' : 'Meus Cursos';
+        const fileName = `Agenda_${periodLabel}_${scopeLabel}.pdf`.replace(/ /g, '_');
+
+        if (exportFormat === 'pdf') {
+            const doc = new jsPDF();
+
+            doc.setFontSize(18);
+            doc.text(`Agenda ${periodLabel} - ${scopeLabel}`, 14, 22);
+            doc.setFontSize(11);
+            doc.setTextColor(100);
+            doc.text(`Período: ${startDate.toLocaleDateString('pt-BR')} até ${endDate.toLocaleDateString('pt-BR')}`, 14, 30);
+
+            const tableColumn = ["Data", "Horário", "Aluno", "Curso", "Contato"];
+            const tableRows: any[] = [];
+
+            agendaData.forEach(item => {
+                const dateStr = item.date.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' });
+                tableRows.push([
+                    dateStr,
+                    item.time,
+                    item.studentName,
+                    item.courseName,
+                    item.phone
+                ]);
+            });
+
+            autoTable(doc, {
+                head: [tableColumn],
+                body: tableRows,
+                startY: 38,
+                theme: 'striped',
+                headStyles: { fillColor: [0, 129, 255] },
+                styles: { fontSize: 9 }
+            });
+
+            doc.save(fileName);
+        } else {
+            // Gerar TXT
+            let txtContent = `=== Agenda ${periodLabel.toUpperCase()} - ${scopeLabel.toUpperCase()} ===\n`;
+            txtContent += `Período: ${startDate.toLocaleDateString('pt-BR')} até ${endDate.toLocaleDateString('pt-BR')}\n\n`;
+
+            let currentDateStr = '';
+            agendaData.forEach(item => {
+                const dateStr = item.date.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit' });
+                if (currentDateStr !== dateStr) {
+                    txtContent += `\n--- ${dateStr.toUpperCase()} ---\n`;
+                    currentDateStr = dateStr;
+                }
+                txtContent += `[${item.time}] ${item.studentName} | ${item.courseName} | Tel: ${item.phone}\n`;
+            });
+
+            if (agendaData.length === 0) {
+                txtContent += 'Nenhum aluno agendado para este período.';
+            }
+
+            const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = fileName.replace('.pdf', '.txt');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        setIsExportModalOpen(false);
     };
 
     const handleDeleteStudent = () => {
@@ -1801,22 +1943,32 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     <div className="bg-[#1A202C] rounded-[32px] p-6 border border-white/5">
                         {/* Month Header */}
                         <div className="flex justify-between items-center mb-6 px-2">
-                            <button onClick={() => {
-                                const newDate = new Date(selectedDate);
-                                newDate.setDate(newDate.getDate() - 7);
-                                setSelectedDate(newDate);
-                            }} className="w-8 h-8 rounded-full hover:bg-white/5 flex items-center justify-center transition-colors text-gray-400 hover:text-white">
-                                <span className="material-symbols-rounded">chevron_left</span>
-                            </button>
+                            <div className="flex items-center gap-4">
+                                <button onClick={() => {
+                                    const newDate = new Date(selectedDate);
+                                    newDate.setDate(newDate.getDate() - 7);
+                                    setSelectedDate(newDate);
+                                }} className="w-8 h-8 rounded-full hover:bg-white/5 flex items-center justify-center transition-colors text-gray-400 hover:text-white">
+                                    <span className="material-symbols-rounded">chevron_left</span>
+                                </button>
 
-                            <h3 className="text-sm font-black text-white uppercase tracking-widest">{monthYear}</h3>
+                                <h3 className="text-sm font-black text-white uppercase tracking-widest">{monthYear}</h3>
 
-                            <button onClick={() => {
-                                const newDate = new Date(selectedDate);
-                                newDate.setDate(newDate.getDate() + 7);
-                                setSelectedDate(newDate);
-                            }} className="w-8 h-8 rounded-full hover:bg-white/5 flex items-center justify-center transition-colors text-gray-400 hover:text-white">
-                                <span className="material-symbols-rounded">chevron_right</span>
+                                <button onClick={() => {
+                                    const newDate = new Date(selectedDate);
+                                    newDate.setDate(newDate.getDate() + 7);
+                                    setSelectedDate(newDate);
+                                }} className="w-8 h-8 rounded-full hover:bg-white/5 flex items-center justify-center transition-colors text-gray-400 hover:text-white">
+                                    <span className="material-symbols-rounded">chevron_right</span>
+                                </button>
+                            </div>
+
+                            <button
+                                onClick={() => setIsExportModalOpen(true)}
+                                className="w-10 h-10 rounded-full bg-[#0081FF]/10 text-[#0081FF] hover:bg-[#0081FF]/20 flex items-center justify-center transition-colors shadow-sm"
+                                title="Exportar Agenda"
+                            >
+                                <span className="material-symbols-rounded text-[20px]">download</span>
                             </button>
                         </div>
 
@@ -2184,6 +2336,87 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 </button>
             )}
 
+            {/* Modal de Exportação */}
+            {isExportModalOpen && (
+                <div className="fixed inset-0 z-[300] flex flex-col justify-end p-4 bg-black/80 backdrop-blur-sm animate-in fade-in" onClick={() => setIsExportModalOpen(false)}>
+                    <div className="bg-[#1A202C] w-full max-w-md mx-auto rounded-[32px] p-6 shadow-2xl border border-white/10 flex flex-col gap-6 animate-in slide-in-from-bottom" onClick={e => e.stopPropagation()}>
+                        <div className="flex justify-between items-center">
+                            <h3 className="font-bold text-white text-lg">Exportar Agenda</h3>
+                            <button onClick={() => setIsExportModalOpen(false)} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 active:scale-90 transition-all">
+                                <span className="material-symbols-rounded text-sm">close</span>
+                            </button>
+                        </div>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Formato do Arquivo</label>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => setExportFormat('pdf')}
+                                        className={`flex-1 flex flex-col items-center justify-center py-4 rounded-xl border-2 transition-all ${exportFormat === 'pdf' ? 'border-[#0081FF] bg-[#0081FF]/10 text-white' : 'border-white/5 bg-black/20 text-gray-400'}`}
+                                    >
+                                        <span className="material-symbols-rounded mb-1">picture_as_pdf</span>
+                                        <span className="font-bold text-sm">PDF (Tabela)</span>
+                                    </button>
+                                    <button
+                                        onClick={() => setExportFormat('txt')}
+                                        className={`flex-1 flex flex-col items-center justify-center py-4 rounded-xl border-2 transition-all ${exportFormat === 'txt' ? 'border-[#0081FF] bg-[#0081FF]/10 text-white' : 'border-white/5 bg-black/20 text-gray-400'}`}
+                                    >
+                                        <span className="material-symbols-rounded mb-1">subject</span>
+                                        <span className="font-bold text-sm">TXT (Texto)</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Período</label>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => setExportPeriod('week')}
+                                        className={`flex-1 py-3 font-bold text-sm rounded-xl transition-all ${exportPeriod === 'week' ? 'bg-white/20 text-white' : 'bg-black/20 text-gray-400'}`}
+                                    >
+                                        Dessa Semana
+                                    </button>
+                                    <button
+                                        onClick={() => setExportPeriod('month')}
+                                        className={`flex-1 py-3 font-bold text-sm rounded-xl transition-all ${exportPeriod === 'month' ? 'bg-white/20 text-white' : 'bg-black/20 text-gray-400'}`}
+                                    >
+                                        Desse Mês
+                                    </button>
+                                </div>
+                            </div>
+
+                            {isActuallyAdmin && (
+                                <div>
+                                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2 block">Escopo de Alunos</label>
+                                    <div className="flex gap-2">
+                                        <button
+                                            onClick={() => setExportScope('my_courses')}
+                                            className={`flex-1 py-3 font-bold text-sm rounded-xl transition-all ${exportScope === 'my_courses' ? 'bg-white/20 text-white' : 'bg-black/20 text-gray-400'}`}
+                                        >
+                                            Meus Cursos
+                                        </button>
+                                        <button
+                                            onClick={() => setExportScope('all')}
+                                            className={`flex-1 py-3 font-bold text-sm rounded-xl transition-all ${exportScope === 'all' ? 'bg-white/20 text-white' : 'bg-black/20 text-gray-400'}`}
+                                        >
+                                            Academia Inteira
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
+                            <button
+                                onClick={handleExportAgenda}
+                                className="w-full mt-4 py-4 rounded-xl bg-[#0081FF] text-white font-black uppercase tracking-wider hover:brightness-110 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                            >
+                                <span className="material-symbols-rounded">file_download</span>
+                                Baixar Arquivo
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* Modals */}
             {selectedStudent && (
