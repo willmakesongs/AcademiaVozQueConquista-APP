@@ -18,6 +18,36 @@ export const attendanceService = {
     return data;
   },
 
+  async updateAttendance(id: string, record: Partial<Omit<AttendanceRecord, 'id' | 'created_at'>>) {
+    const { data, error } = await supabase
+      .from('attendance_records')
+      .update(record)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error updating attendance:', error);
+      throw error;
+    }
+
+    return data;
+  },
+
+  async deleteAttendance(id: string) {
+    const { error } = await supabase
+      .from('attendance_records')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting attendance:', error);
+      throw error;
+    }
+
+    return true;
+  },
+
   async getAttendanceByStudent(studentId: string) {
     const { data, error } = await supabase
       .from('attendance_records')

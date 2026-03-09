@@ -3,6 +3,13 @@ import { Vocalize, User, StudentSummary, Appointment, Module, TwisterExercise, T
 // CONFIGURAÇÃO GLOBAL: Desativar todos os players para manutenção/assinantes
 export const DISABLE_ALL_PLAYERS = false;
 
+// ADMINISTRADORES DO SISTEMA
+export const ADMIN_EMAILS = [
+    'lorenapimenteloficial@gmail.com',
+    'willmakesongs@gmail.com',
+    'claudianostudio@gmail.com'
+];
+
 // URL BASE PARA ARMAZENAMENTO (Áudio e Vídeo)
 // Quando migrar para o Backblaze, basta trocar esta URL pela nova URL do Bucket
 // export const STORAGE_BASE_URL = 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com';
@@ -214,6 +221,7 @@ export const CHORD_CARD_TEMPLATE = (imageUrl: string, title: string, downloadUrl
 
 // Base URL for vocalizes
 export const MINIMALIST_LOGO_URL = 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/PNGs-JPEG/VQLOGOMINIMALISTA.png';
+export const MUSICALIZACAO_ICON_URL = '/musicalizacao-icon-dark.png';
 const VOCALIZES_BASE_URL = `${STORAGE_BASE_URL}/VOCALIZES%20mp3/`;
 const SINGEO_BASE_URL = 'https://AcademiaVQC-App.s3.us-east-005.backblazeb2.com/Vocalizes+SINGEO/';
 

@@ -4,7 +4,7 @@ import { Screen, StudentSummary, Appointment, PaymentReceipt, Course, StudentCou
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
 import { RoutineManager } from '../components/RoutineManager';
-import { STORAGE_BASE_URL } from '../constants';
+import { STORAGE_BASE_URL, MUSICALIZACAO_ICON_URL } from '../constants';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 
@@ -24,7 +24,9 @@ const getCourseIcon = (slug: string) => {
     if (s.includes('guitarra')) return '🎸';
     if (s.includes('bateria')) return '🥁';
     if (s.includes('oratoria') || s.includes('fala')) return '🗣️';
-    if (s.includes('musicalizacao') || s.includes('infantil')) return '👶';
+    if (s.includes('musicalizacao') || s.includes('infantil')) {
+        return <img src={MUSICALIZACAO_ICON_URL} alt="👶" className="w-5 h-5 object-contain inline-block align-text-bottom rounded-md mr-1" />;
+    }
     if (s.includes('piano') || s.includes('teclado')) return '🎹';
     if (s.includes('violino')) return '🎻';
     if (s.includes('saxofone') || s.includes('sax')) return '🎷';
@@ -644,9 +646,14 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         }
     };
 
-    const openStudentDetails = (student: StudentSummary) => {
+    const openStudentEditModal = (student: StudentSummary) => {
         setSelectedStudent(student);
         setIsEditing(false);
+    };
+
+    const openStudentDetails = (student: StudentSummary) => {
+        if (!student) return;
+        onNavigate(Screen.STUDENT_DETAIL, student.id + ':pedagogy');
     };
 
     // Load Notes and Assessment when student selected
@@ -850,7 +857,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         }
 
         // Construir os dados da agenda
-        const agendaData: { date: Date, time: string, studentName: string, courseName: string, phone: string }[] = [];
+        const agendaData: { date: Date, time: string, studentName: string, courseName: string, teacherName: string, phone: string, notes: string }[] = [];
 
         daysInPeriod.forEach(day => {
             if (day.getDay() === 0) return; // Pula domingo
@@ -871,14 +878,18 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 if (profileMatches || anyCourseMatches) {
                     const enrollment = relevantCourses.find(c => c.schedule_day === dayLabel);
                     const scheduleTime = enrollment?.schedule_time || s.scheduleTime || '14:00';
-                    const courseName = courses.find(c => c.id === enrollment?.course_id)?.nome || (s.courses && s.courses.length > 0 ? courses.find(c => c.id === s.courses![0].course_id)?.nome : 'Aula');
+                    const courseObj = courses.find(c => c.id === enrollment?.course_id) || (s.courses && s.courses.length > 0 ? courses.find(c => c.id === s.courses![0].course_id) : undefined);
+                    const courseName = courseObj?.nome || 'Geral';
+                    const teacherName = teachers.find(t => t.id === courseObj?.teacher_id)?.name || 'Todos';
 
                     agendaData.push({
                         date: day,
                         time: scheduleTime,
                         studentName: s.name,
-                        courseName: courseName || 'Geral',
-                        phone: s.phone || 'Sem número'
+                        courseName: courseName,
+                        teacherName: teacherName,
+                        phone: s.phone || 'Sem número',
+                        notes: s.notes || ''
                     });
                 }
             });
@@ -903,17 +914,18 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             doc.setTextColor(100);
             doc.text(`Período: ${startDate.toLocaleDateString('pt-BR')} até ${endDate.toLocaleDateString('pt-BR')}`, 14, 30);
 
-            const tableColumn = ["Data", "Horário", "Aluno", "Curso", "Contato"];
+            const tableColumn = ["Curso", "Professor", "Data", "Horário", "Aluno", "Observações"];
             const tableRows: any[] = [];
 
             agendaData.forEach(item => {
                 const dateStr = item.date.toLocaleDateString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit' });
                 tableRows.push([
+                    item.courseName,
+                    item.teacherName,
                     dateStr,
                     item.time,
                     item.studentName,
-                    item.courseName,
-                    item.phone
+                    item.notes || '-'
                 ]);
             });
 
@@ -939,7 +951,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     txtContent += `\n--- ${dateStr.toUpperCase()} ---\n`;
                     currentDateStr = dateStr;
                 }
-                txtContent += `[${item.time}] ${item.studentName} | ${item.courseName} | Tel: ${item.phone}\n`;
+                txtContent += `[${item.time}] ${item.studentName} | Curso: ${item.courseName} | Prof: ${item.teacherName} | Obs: ${item.notes || '-'}\n`;
             });
 
             if (agendaData.length === 0) {
@@ -1168,7 +1180,11 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                     </h3>
                                     <div className="space-y-2">
                                         {pendingReceipts.slice(0, 3).map(r => (
-                                            <div key={r.id} className="flex justify-between items-center text-xs">
+                                            <div
+                                                key={r.id}
+                                                onClick={() => onNavigate(Screen.STUDENT_DETAIL, r.userId + ':finance')}
+                                                className="flex justify-between items-center text-xs cursor-pointer hover:bg-white/5 p-1 rounded transition-colors"
+                                            >
                                                 <span className="text-white">{r.userName}</span>
                                                 <span className="text-gray-400">R$ {r.amount}</span>
                                             </div>
@@ -1235,7 +1251,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                     return (
                         <div className="space-y-3">
                             {statusFiltered.map(student => (
-                                <div key={student.id} onClick={() => setSelectedStudent(student)} className="bg-[#1A202C] p-4 rounded-2xl border border-white/5 flex items-center justify-between cursor-pointer hover:bg-white/5">
+                                <div key={student.id} onClick={() => onNavigate(Screen.STUDENT_DETAIL, student.id + ':finance')} className="bg-[#1A202C] p-4 rounded-2xl border border-white/5 flex items-center justify-between cursor-pointer hover:bg-white/5">
                                     <div className="flex items-center gap-3">
                                         <img src={student.avatarUrl} alt={student.name} className="w-10 h-10 rounded-full object-cover" />
                                         <div>
@@ -1853,6 +1869,9 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
         const weekDates = getWeekDates(selectedDate);
         const selectedDayLabel = WEEK_DAYS[selectedDate.getDay() === 0 ? 6 : selectedDate.getDay() - 1];
 
+        const myTeachingCourseIds = courses.filter(c => c.teacher_id === user?.id).map(c => c.id);
+        const myTeachingCourses = courses.filter(c => c.teacher_id === user?.id);
+
         const dayAppointments = students.filter(s => {
             if (s.status === 'inactive') return false;
 
@@ -1860,22 +1879,45 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
             if (selectedCourseId !== 'all') {
                 const enrollment = s.courses?.find(c => c.course_id === selectedCourseId);
                 if (enrollment) {
-                    return enrollment.schedule_day === selectedDayLabel;
+                    // If enrollment has a specific day, it must match. 
+                    // If not, we fallback to the profile day IF it matches.
+                    if (enrollment.schedule_day) {
+                        return enrollment.schedule_day === selectedDayLabel;
+                    }
                 }
-                // Fallback to profile if no specific enrollment data but course is associated
+
+                // Fallback: check if the student is in this course at all 
+                // AND if the profile day matches.
                 const isEnrolled = s.courses?.some(c => c.course_id === selectedCourseId);
                 return isEnrolled && s.scheduleDay === selectedDayLabel;
             }
 
-            // If "All Courses" is selected, match if profile OR any enrollment matches
-            const profileMatches = s.scheduleDay === selectedDayLabel;
-            const anyCourseMatches = s.courses?.some(c => c.schedule_day === selectedDayLabel);
-            return profileMatches || anyCourseMatches;
+            // If "All Courses" is selected, match only within courses this teacher ministers
+            const myEnrollments = s.courses?.filter(c => myTeachingCourseIds.includes(c.course_id)) || [];
+
+            if (myEnrollments.length > 0) {
+                // If any of my enrollments has this specific day set, it's a match.
+                const hasSpecificMatch = myEnrollments.some(c => c.schedule_day === selectedDayLabel);
+                if (hasSpecificMatch) return true;
+
+                // If no specific match, check if they have any of MY courses AND the profile day matches
+                // AND that profile day is NOT explicitly contradicted by another enrollment of mine.
+                return s.scheduleDay === selectedDayLabel;
+            }
+
+            // Fallback for Admin who is NOT a teacher or purely relying on profile schedule
+            if (isActuallyAdmin && myTeachingCourseIds.length === 0) {
+                return s.scheduleDay === selectedDayLabel;
+            }
+
+            return false;
         }).map(s => {
-            // Get data based on context
+            const myEnrollments = s.courses?.filter(c => myTeachingCourseIds.includes(c.course_id)) || [];
+
+            // Find the most specific enrollment for this day
             const enrollment = selectedCourseId !== 'all'
                 ? s.courses?.find(c => c.course_id === selectedCourseId)
-                : s.courses?.find(c => c.schedule_day === selectedDayLabel); // Pick first matching enrollment if in "All" view
+                : (myEnrollments.find(c => c.schedule_day === selectedDayLabel) || myEnrollments[0]);
 
             const scheduleTime = enrollment?.schedule_time || s.scheduleTime || '14:00';
 
@@ -1906,40 +1948,37 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
 
         return (
             <div className="flex-1 overflow-y-auto hide-scrollbar pb-32">
-                {/* Top Statistics Cards */}
-                <div className="grid grid-cols-2 gap-4 px-6 pt-6 mb-8">
-                    {/* Alunos Hoje */}
-                    <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5 relative overflow-hidden group hover:border-[#0081FF]/30 transition-colors">
-                        <div className="flex justify-between items-start mb-4">
-                            <h3 className="text-[#94A3B8] font-bold text-sm">Alunos Hoje</h3>
-                            <div className="w-8 h-8 rounded-xl bg-[#0081FF]/10 text-[#0081FF] flex items-center justify-center">
-                                <span className="material-symbols-rounded text-xl">groups</span>
-                            </div>
-                        </div>
-                        <div className="flex items-end gap-2">
-                            <span className="text-4xl font-black text-white tracking-tight">{studentsTodayCount}</span>
-                        </div>
+                {/* Course Filter Tabs for Agenda */}
+                <div className="px-6 pt-6">
+                    <div className="flex gap-2 overflow-x-auto hide-scrollbar pb-2">
+                        {(!user?.role || user?.role === 'admin' || isAdminView || isActuallyAdmin || myTeachingCourses.length > 1) && (
+                            <button
+                                onClick={() => setSelectedCourseId('all')}
+                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${selectedCourseId === 'all'
+                                    ? 'bg-[#0081FF] text-white border-[#0081FF] shadow-lg shadow-[#0081FF]/20'
+                                    : 'bg-[#1A202C] text-gray-500 border-white/5 hover:border-white/10'
+                                    }`}
+                            >
+                                {isActuallyAdmin && myTeachingCourses.length === 0 ? 'Agenda Academia' : 'Minha Agenda'}
+                            </button>
+                        )}
+                        {myTeachingCourses.map(course => (
+                            <button
+                                key={course.id}
+                                onClick={() => setSelectedCourseId(course.id)}
+                                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all border ${selectedCourseId === course.id
+                                    ? 'bg-[#0081FF] text-white border-[#0081FF] shadow-lg shadow-[#0081FF]/20'
+                                    : 'bg-[#1A202C] text-gray-500 border-white/5 hover:border-white/10'
+                                    }`}
+                            >
+                                {course.nome}
+                            </button>
+                        ))}
                     </div>
-
-                    {/* Pag. Pendentes - Only for Admin */}
-                    {isActuallyAdmin && (
-                        <div className="bg-[#1A202C] rounded-[24px] p-5 border border-white/5 relative overflow-hidden group hover:border-[#FF00BC]/30 transition-colors">
-                            <div className="flex justify-between items-start mb-4">
-                                <h3 className="text-[#94A3B8] font-bold text-sm">Pag. Pendentes</h3>
-                                <div className="w-8 h-8 rounded-xl bg-[#FF00BC]/10 text-[#FF00BC] flex items-center justify-center">
-                                    <span className="material-symbols-rounded text-xl">warning</span>
-                                </div>
-                            </div>
-                            <div className="flex items-baseline gap-2">
-                                <span className="text-4xl font-black text-white tracking-tight">{pendingPaymentsCount}</span>
-                                <span className="text-[10px] font-black uppercase text-red-400 bg-[#FF00BC]/10 px-2 py-1 rounded-lg tracking-wider">Atrasados</span>
-                            </div>
-                        </div>
-                    )}
                 </div>
 
                 {/* Calendar Strip */}
-                <div className="px-6 mb-8">
+                <div className="px-6 mt-4 mb-8">
                     <div className="bg-[#1A202C] rounded-[32px] p-6 border border-white/5">
                         {/* Month Header */}
                         <div className="flex justify-between items-center mb-6 px-2">
@@ -2016,7 +2055,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                 {/* Student Info */}
                                 <div
                                     className="flex-1 flex items-center gap-3 min-w-0 cursor-pointer hover:opacity-80 transition-opacity"
-                                    onClick={() => onNavigate(Screen.STUDENT_DETAIL, apt.studentId)}
+                                    onClick={() => openStudentDetails(students.find(s => s.id === apt.id)!)}
                                 >
                                     <div className="relative">
                                         <img src={apt.avatarUrl} className="w-12 h-12 rounded-full object-cover border-2 border-[#151A23]" alt={apt.studentName} />
@@ -2066,7 +2105,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                onNavigate(Screen.STUDENT_DETAIL, apt.studentId);
+                                                openStudentEditModal(students.find(s => s.id === apt.id)!);
                                             }}
                                             className="w-9 h-9 rounded-full bg-[#0081FF]/10 text-[#0081FF] flex items-center justify-center hover:bg-[#0081FF] hover:text-white transition-all shadow-sm"
                                         >
@@ -2171,7 +2210,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                         filteredStudents.map(student => (
                             <button
                                 key={student.id}
-                                onClick={() => onNavigate(Screen.STUDENT_DETAIL, student.id)}
+                                onClick={() => openStudentEditModal(student)}
                                 className="w-full bg-[#1A202C] p-4 rounded-3xl border border-white/5 flex items-center justify-between hover:border-white/10 active:scale-[0.98] transition-all text-left"
                             >
                                 <div className="flex items-center gap-4">
@@ -2291,7 +2330,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                 {/* Navigation Tabs (Novas Abas Superiores) */}
                 <div className="px-6 pb-0 overflow-x-auto hide-scrollbar flex gap-4">
                     {[
-                        { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+                        { id: 'dashboard', label: 'Agenda', icon: 'dashboard' },
                         { id: 'students', label: 'Alunos', icon: 'group' },
                         { id: 'reports', label: 'Financeiro', icon: 'payments' },
                         { id: 'notifications', label: 'Avisos', icon: 'campaign' },
@@ -3114,7 +3153,7 @@ export const TeacherDashboard: React.FC<Props> = ({ onNavigate, onLogout, initia
                                 const student = students.find(s => s.id === newReceiptNotice?.userId);
                                 setNewReceiptNotice(null);
                                 if (student) {
-                                    openStudentDetails(student);
+                                    onNavigate(Screen.STUDENT_DETAIL, student.id + ':finance');
                                 } else {
                                     setActiveTab('reports');
                                 }

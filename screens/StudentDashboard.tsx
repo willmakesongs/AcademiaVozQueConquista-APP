@@ -66,7 +66,7 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
             if (!user?.id) return;
             try {
                 const { data, error } = await supabase
-                    .from('notifications_history')
+                    .from('notification_history')
                     .select('*')
                     .eq('user_id', user.id)
                     .order('created_at', { ascending: false })
@@ -92,8 +92,8 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
 
         // Subscribe to new notifications
         const channel = supabase
-            .channel('public:notifications_history')
-            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notifications_history', filter: `user_id=eq.${user?.id}` }, (payload) => {
+            .channel('public:notification_history')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'notification_history', filter: `user_id=eq.${user?.id}` }, (payload) => {
                 setNotifications(prev => [payload.new, ...prev]);
                 setUnreadCount(prev => prev + 1);
             })
@@ -111,10 +111,19 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
         localStorage.setItem('last_viewed_notifications', new Date().toISOString());
     };
 
+    const handleDeleteNotification = async (id: string) => {
+        try {
+            await supabase.from('notification_history').delete().eq('id', id);
+            setNotifications(prev => prev.filter(n => n.id !== id));
+        } catch (err) {
+            console.error('Error deleting notification:', err);
+        }
+    };
+
     return (
         <div className="min-h-screen bg-[#101622] pb-40">
             {/* Header */}
-            <header className="pt-8 pb-4 px-6 flex justify-between items-center bg-[#101622]/95 backdrop-blur-sm sticky top-0 z-20 border-b border-white/5">
+            <header className="pb-4 px-6 flex justify-between items-center bg-[#101622]/95 backdrop-blur-sm sticky top-0 z-20 border-b border-white/5" style={{ paddingTop: 'calc(2rem + env(safe-area-inset-top))' }}>
                 <div className="flex items-center gap-3">
                     <h1 className="sr-only">Dashboard do Aluno</h1>
                     <div className="relative">
@@ -333,12 +342,19 @@ export const StudentDashboard: React.FC<Props> = ({ onNavigate, onPlayVocalize }
                         <div className="overflow-y-auto flex-1 space-y-3 px-2 pb-4">
                             {notifications.length > 0 ? (
                                 notifications.map((note) => (
-                                    <div key={note.id} className="bg-[#101622] p-4 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
-                                        <div className="flex justify-between items-start mb-1">
+                                    <div key={note.id} className="relative group bg-[#101622] p-4 rounded-2xl border border-white/5 hover:border-white/10 transition-colors">
+                                        <div className="flex justify-between items-start mb-1 pr-8">
                                             <h4 className="font-bold text-white text-sm">{note.title}</h4>
                                             <span className="text-[10px] text-gray-500 font-bold uppercase">{new Date(note.created_at).toLocaleDateString()}</span>
                                         </div>
-                                        <p className="text-xs text-gray-400">{note.body}</p>
+                                        <p className="text-xs text-gray-400 pr-8">{note.body}</p>
+                                        <button
+                                            onClick={(e) => { e.stopPropagation(); handleDeleteNotification(note.id); }}
+                                            className="absolute top-1/2 -translate-y-1/2 right-4 w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-red-500 hover:bg-white/10 transition-all active:scale-95 opacity-80 sm:opacity-0 sm:group-hover:opacity-100"
+                                            title="Deletar notificação"
+                                        >
+                                            <span className="material-symbols-rounded text-sm">delete</span>
+                                        </button>
                                     </div>
                                 ))
                             ) : (

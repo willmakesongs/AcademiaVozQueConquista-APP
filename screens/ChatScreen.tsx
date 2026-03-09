@@ -107,7 +107,6 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
 
             const reader = response.body?.getReader();
             const decoder = new TextDecoder();
-            let fullText = '';
 
             if (reader) {
                 while (true) {
@@ -115,19 +114,6 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                     if (done) break;
 
                     const chunk = decoder.decode(value, { stream: true });
-                    fullText += chunk;
-
-                    // Tentar limpar JSON se a resposta vier no formato {"answer": "..."}
-                    let displayedText = fullText;
-                    if (displayedText.trim().startsWith('{')) {
-                        try {
-                            const parsed = JSON.parse(displayedText + (done ? '' : '}')); // Tenta fechar o JSON se incompleto
-                            if (parsed.answer) displayedText = parsed.answer;
-                        } catch (e) {
-                            // Se falhar o parse (JSON incompleto no stream), removemos o lixo visível
-                            displayedText = displayedText.replace(/^\{"answer":"/, '').replace(/"\}$/, '').replace(/\\n/g, '\n');
-                        }
-                    }
 
                     setMessages(prev => {
                         const newMsgs = [...prev];
@@ -135,7 +121,7 @@ export const ChatScreen: React.FC<Props> = ({ onBack }) => {
                         if (targetIndex !== -1) {
                             newMsgs[targetIndex] = {
                                 ...newMsgs[targetIndex],
-                                text: displayedText,
+                                text: (newMsgs[targetIndex].text || '') + chunk,
                                 isLoading: true
                             };
                         }

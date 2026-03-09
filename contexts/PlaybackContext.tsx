@@ -1,6 +1,6 @@
 
 import React, { createContext, useContext, useRef, useState, useCallback, useEffect } from 'react';
-import { VOCALIZES, MODULES, DISABLE_ALL_PLAYERS } from '../constants';
+import { ADMIN_EMAILS, VOCALIZES, MODULES, DISABLE_ALL_PLAYERS } from '../constants';
 import { useAuth } from './AuthContext';
 
 interface PlaybackContextType {
@@ -96,7 +96,7 @@ export const PlaybackProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const isAudioBlocked = useCallback(() => {
         if (!DISABLE_ALL_PLAYERS) return false;
         if (!user || !user.email) return true;
-        const adminEmails = ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'];
+        const adminEmails = ADMIN_EMAILS;
         return !adminEmails.includes(user.email.toLowerCase());
     }, [user]);
 

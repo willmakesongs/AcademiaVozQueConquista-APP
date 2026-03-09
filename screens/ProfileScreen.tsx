@@ -7,7 +7,7 @@ import { supabase } from '../lib/supabaseClient';
 import { requestForToken } from '../lib/firebase';
 import { Logo } from '../components/Logo';
 import { PianoScreen } from './PianoScreen';
-import { STORAGE_BASE_URL } from '../constants';
+import { ADMIN_EMAILS, STORAGE_BASE_URL } from '../constants';
 import * as Tone from 'tone';
 
 // Lucide Icons
@@ -138,7 +138,7 @@ function formatDayOfMonth(dateString?: string) {
 
 export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinancialClick }) => {
     const { user, updateProfileAvatar, refreshUser } = useAuth();
-    const isAdmin = user?.role === 'admin' || (user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase().trim()));
+    const isAdmin = user?.role === 'admin' || (user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase().trim()));
     const { isOfflineMode, setOfflineMode, downloadProgress, downloadAll } = usePlayback();
 
 
@@ -619,10 +619,8 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
             await refreshUser();
             setIsEditing(false);
             setActiveView('menu');
-            alert('Perfil atualizado com sucesso!');
         } catch (error: any) {
             console.error('Erro ao atualizar perfil:', error);
-            alert('Erro ao atualizar perfil: ' + error.message);
         }
     };
 
@@ -785,14 +783,14 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
             >
                 <span className="material-symbols-rounded">arrow_back</span>
             </button>
-            <h1 className="text-xl font-bold text-white">{title}</h1>
+            <h2 className="text-xl font-bold text-white">{title}</h2>
         </div>
     );
 
     const renderMenu = () => (
         <div className="flex-1 overflow-y-auto hide-scrollbar animate-in slide-in-from-left duration-300 pb-40">
             {/* Header Profile Info */}
-            <div className="pt-10 px-6 pb-8 bg-gradient-to-b from-[#1A202C] to-[#101622] text-center border-b border-white/5 relative overflow-hidden">
+            <div className="px-6 pb-8 bg-gradient-to-b from-[#1A202C] to-[#101622] text-center border-b border-white/5 relative overflow-hidden" style={{ paddingTop: 'calc(2.5rem + env(safe-area-inset-top))' }}>
                 <div className="absolute top-[-50px] left-1/2 -translate-x-1/2 w-[150%] h-[200px] bg-[#0081FF]/10 blur-[80px] rounded-full pointer-events-none"></div>
 
                 <div className="relative z-10">
@@ -1159,7 +1157,7 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
 
     const renderPersonalData = () => (
         <div className="flex-1 flex flex-col bg-[#101622] animate-in slide-in-from-right">
-            {renderHeader('Dados Pessoais', () => setActiveView('menu'))}
+            {renderHeader('Dados Pessoais', () => { handleSaveProfile(); })}
 
             <div className="p-6 flex-1 overflow-y-auto hide-scrollbar">
                 <div className="bg-[#1A202C] p-6 rounded-2xl border border-white/5 mb-6 text-center">
@@ -1293,22 +1291,8 @@ export const ProfileScreen: React.FC<Props> = ({ onNavigate, onLogout, onFinanci
                 </div>
             </div>
 
-            <div className="p-6 border-t border-white/5 bg-[#151A23] pb-32">
-                {isEditing ? (
-                    <button
-                        onClick={handleSaveProfile}
-                        className="w-full h-12 rounded-xl bg-[#0081FF] text-white font-bold hover:bg-[#006bd1] transition-colors"
-                    >
-                        Salvar Alterações
-                    </button>
-                ) : (
-                    <button
-                        onClick={() => setIsEditing(true)}
-                        className="w-full h-12 rounded-xl bg-white/5 border border-white/5 text-white font-bold hover:bg-white/10 transition-colors"
-                    >
-                        Editar Perfil
-                    </button>
-                )}
+            <div className="p-6 border-t border-white/5 bg-[#151A23] pb-32 flex justify-center text-xs text-gray-500 font-bold uppercase">
+                As alterações são salvas automaticamente
             </div>
         </div>
     );

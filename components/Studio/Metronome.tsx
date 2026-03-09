@@ -378,6 +378,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                     className="absolute bottom-0 w-full bg-[#0081FF] transition-all duration-75 group-hover:bg-[#3399FF]"
                     style={{ height: `${value * 100}%` }}
                 />
+                <label className="sr-only">Ajuste de {label}</label>
                 <input
                     type="range"
                     min="0"
@@ -510,7 +511,9 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                         </div>
 
                         {/* Slider (Fine Tune) */}
+                        <label htmlFor="tempo-slider" className="sr-only">Ajuste de BPM Fino</label>
                         <input
+                            id="tempo-slider"
                             type="range"
                             min="30"
                             max="300"
@@ -554,7 +557,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                             onClick={handleToggle}
                             className={`rounded-xl font-bold tracking-widest uppercase text-xs flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg ${isPlaying
                                 ? 'bg-[#E11D48] text-white shadow-[#E11D48]/30 border border-[#E11D48]'
-                                : 'bg-gradient-to-r from-[#0081FF] to-[#8B5CF6] text-white hover:opacity-90 shadow-[#0081FF]/30 border border-[#0081FF]/20'
+                                : 'bg-gradient-to-r from-[#0081FF] to-[#00C1D4] text-white hover:opacity-90 shadow-[#0081FF]/30 border border-[#0081FF]/20'
                                 }`}
                         >
                             {isPlaying ? (
@@ -631,7 +634,9 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                             </span>
                         </div>
                         <div className="relative w-32">
+                            <label htmlFor="record-bpm" className="sr-only">Meu Recorde</label>
                             <input
+                                id="record-bpm"
                                 type="number"
                                 value={myBpm}
                                 onChange={(e) => setMyBpm(e.target.value)}
@@ -686,7 +691,7 @@ export const Metronome: React.FC<MetronomeProps> = ({ exerciseName = 'Treino Pro
                                 </h3>
                                 <p className="text-white text-sm font-medium leading-relaxed">
                                     O objetivo do metrônomo não é tocar rápido. É tocar certo, estável e consciente.
-                                    <span className="block mt-2 text-[#8B5CF6]">Velocidade vem sozinha quando o cérebro aprende o movimento com precisão.</span>
+                                    <span className="block mt-2 text-[#00C1D4]">Velocidade vem sozinha quando o cérebro aprende o movimento com precisão.</span>
                                 </p>
                             </div>
 

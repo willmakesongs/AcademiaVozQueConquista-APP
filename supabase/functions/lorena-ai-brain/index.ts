@@ -176,7 +176,7 @@ Termine sempre com um reforço de autoridade ou uma ação prática adequada ao 
 
         const genAI = new GoogleGenerativeAI(apiKey)
         const model = genAI.getGenerativeModel({
-            model: "gemini-1.5-flash",
+            model: "gemini-3-flash-preview",
             systemInstruction: { parts: [{ text: systemPrompt }] }
         })
 
@@ -223,9 +223,10 @@ Termine sempre com um reforço de autoridade ou uma ação prática adequada ao 
         return new Response(stream, {
             headers: {
                 ...corsHeaders,
-                "Content-Type": "text/event-stream",
+                "Content-Type": "text/plain; charset=utf-8",
                 "Cache-Control": "no-cache",
-                "Connection": "keep-alive"
+                "Connection": "keep-alive",
+                "X-Accel-Buffering": "no"
             }
         })
 

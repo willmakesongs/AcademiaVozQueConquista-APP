@@ -36,11 +36,26 @@ export const OnboardingScreen: React.FC<Props> = ({ onComplete }) => {
         const fetchCourses = async () => {
             const { data } = await supabase.from('courses').select('*').eq('ativo', true);
             if (data) {
-                setCourses(data);
+                const priority = ['canto', 'piano', 'guitarra', 'violao', 'musicalizacao infantil'];
+                const normalize = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+                const sortedData = [...data].sort((a, b) => {
+                    const normA = normalize(a.nome || a.slug);
+                    const normB = normalize(b.nome || b.slug);
+                    const indexA = priority.indexOf(normA);
+                    const indexB = priority.indexOf(normB);
+
+                    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                    if (indexA !== -1) return -1;
+                    if (indexB !== -1) return 1;
+                    return (a.nome || a.slug).localeCompare(b.nome || b.slug);
+                });
+
+                setCourses(sortedData);
                 // Pre-select Canto by default if available
-                const canto = data.find(c => c.slug === 'canto');
+                const canto = sortedData.find(c => c.slug === 'canto');
                 if (canto) setSelectedCourseId(canto.id);
-                else if (data.length > 0) setSelectedCourseId(data[0].id);
+                else if (sortedData.length > 0) setSelectedCourseId(sortedData[0].id);
             }
         };
         fetchCourses();

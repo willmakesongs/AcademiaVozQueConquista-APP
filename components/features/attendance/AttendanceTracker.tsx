@@ -1,12 +1,13 @@
 
 import React, { useState } from 'react';
 import { attendanceService } from '../../../services/attendanceService';
-import { User, Course } from '../../../types';
+import { User, Course, AttendanceRecord } from '../../../types';
 
 interface AttendanceTrackerProps {
     student: User;
     course?: Course;
     teacherId: string;
+    record?: AttendanceRecord; // Added for editing mode
     onClose: () => void;
     onSuccess?: () => void;
 }
@@ -15,11 +16,12 @@ export const AttendanceTracker: React.FC<AttendanceTrackerProps> = ({
     student,
     course,
     teacherId,
+    record,
     onClose,
     onSuccess
 }) => {
-    const [status, setStatus] = useState<'present' | 'absent' | 'replaced' | 'to_be_replaced'>('present');
-    const [notes, setNotes] = useState('');
+    const [status, setStatus] = useState<'present' | 'absent' | 'replaced' | 'to_be_replaced'>(record?.status || 'present');
+    const [notes, setNotes] = useState(record?.notes || '');
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
 
@@ -28,19 +30,43 @@ export const AttendanceTracker: React.FC<AttendanceTrackerProps> = ({
         setLoading(true);
 
         try {
-            await attendanceService.markAttendance({
-                student_id: student.id,
-                teacher_id: teacherId,
-                course_id: course?.id,
-                date: new Date().toISOString().split('T')[0],
-                status,
-                notes
-            });
+            if (record) {
+                await attendanceService.updateAttendance(record.id, {
+                    status,
+                    notes
+                });
+            } else {
+                await attendanceService.markAttendance({
+                    student_id: student.id,
+                    teacher_id: teacherId,
+                    course_id: course?.id,
+                    date: new Date().toISOString().split('T')[0],
+                    status,
+                    notes
+                });
+            }
             setSuccess(true);
             if (onSuccess) onSuccess();
             setTimeout(onClose, 2000);
         } catch (error) {
             alert('Erro ao registrar presença. Tente novamente.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!record) return;
+        if (!window.confirm('Deseja excluir este registro de presença?')) return;
+
+        setLoading(true);
+        try {
+            await attendanceService.deleteAttendance(record.id);
+            setSuccess(true);
+            if (onSuccess) onSuccess();
+            setTimeout(onClose, 2000);
+        } catch (error) {
+            alert('Erro ao excluir presença. Tente novamente.');
         } finally {
             setLoading(false);
         }
@@ -57,7 +83,9 @@ export const AttendanceTracker: React.FC<AttendanceTrackerProps> = ({
 
     return (
         <div className="bg-[#1A202C] p-6 rounded-xl border border-gray-700 w-full max-w-md mx-auto">
-            <h2 className="text-2xl font-bold text-white mb-4">Registrar Presença</h2>
+            <h2 className="text-2xl font-bold text-white mb-4">
+                {record ? 'Editar Presença' : 'Registrar Presença'}
+            </h2>
 
             <div className="mb-6 flex items-center gap-4">
                 <img
@@ -108,6 +136,16 @@ export const AttendanceTracker: React.FC<AttendanceTrackerProps> = ({
                 </div>
 
                 <div className="flex gap-3 pt-4">
+                    {record && (
+                        <button
+                            type="button"
+                            onClick={handleDelete}
+                            disabled={loading}
+                            className="w-12 h-12 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-500 flex items-center justify-center border border-red-500/20 transition-colors shrink-0 disabled:opacity-50"
+                        >
+                            <span className="material-symbols-rounded">delete</span>
+                        </button>
+                    )}
                     <button
                         type="button"
                         onClick={onClose}
@@ -123,7 +161,7 @@ export const AttendanceTracker: React.FC<AttendanceTrackerProps> = ({
                         {loading ? (
                             <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                         ) : (
-                            'Salvar Presença'
+                            record ? 'Salvar Alterações' : 'Salvar Presença'
                         )}
                     </button>
                 </div>

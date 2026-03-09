@@ -7,7 +7,7 @@ import { LoginScreen } from './screens/LoginScreen';
 import { StudentDashboard } from './screens/StudentDashboard';
 import { BottomNav } from './components/BottomNav';
 import { onMessageListener } from './lib/firebase';
-import { VOCALIZES } from './constants';
+import { ADMIN_EMAILS, VOCALIZES } from './constants';
 
 // Code-splitting: telas carregadas sob demanda para melhorar performance inicial
 const OnboardingScreen = React.lazy(() => import('./screens/OnboardingScreen').then(m => ({ default: m.OnboardingScreen })));
@@ -36,10 +36,11 @@ const AppContent = () => {
   const [dashboardResetKey, setDashboardResetKey] = useState(0);
   const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);
   const [dashboardInitialTab, setDashboardInitialTab] = useState<'dashboard' | 'students' | 'reports'>('dashboard');
+  const [studentDetailInitialTab, setStudentDetailInitialTab] = useState<'pedagogy' | 'finance'>('pedagogy');
   const [libraryExpandedModule, setLibraryExpandedModule] = useState<string | null>(null);
   const [libraryScrollY, setLibraryScrollY] = useState(0);
   const [libraryActiveCourseSlug, setLibraryActiveCourseSlug] = useState<string | null>(null);
-  const isAdmin = user?.role === 'admin' || (user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase().trim()));
+  const isAdmin = user?.role === 'admin' || (user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase().trim()));
 
   // Code-splitting: telas carregadas sob demanda para melhorar performance inicial
   useEffect(() => {
@@ -65,7 +66,10 @@ const AppContent = () => {
           if (user.role === 'student' && !user.onboardingCompleted) {
             setScreen(Screen.ONBOARDING);
           } else {
-            const initialScreen = user.role === 'student' ? Screen.STUDENT_DASHBOARD : Screen.TEACHER_DASHBOARD;
+            // Determine initial screen: ADMIN or TEACHER -> Dashboard | STUDENT -> Student Dashboard
+            const isActuallyAdmin = user.role === 'admin' || (user.email && ADMIN_EMAILS.includes(user.email.toLowerCase().trim()));
+            const initialScreen = (isActuallyAdmin || user.role === 'teacher') ? Screen.TEACHER_DASHBOARD : Screen.STUDENT_DASHBOARD;
+
             setScreen(initialScreen);
             setPreviousScreen(initialScreen);
           }
@@ -79,7 +83,12 @@ const AppContent = () => {
     if ((user?.status === 'blocked' || user?.status === 'inactive') && screen !== Screen.PROFILE && screen !== Screen.LOGIN && screen !== Screen.ONBOARDING) {
       setScreen(Screen.PROFILE);
     }
-  }, [user, loading, screen]);
+
+    // Prevents rendering Student Detail without an ID
+    if (screen === Screen.STUDENT_DETAIL && !selectedStudentId) {
+      setScreen(user?.role === 'student' ? Screen.STUDENT_DASHBOARD : Screen.TEACHER_DASHBOARD);
+    }
+  }, [user, loading, screen, selectedStudentId]);
 
   // Visitor Warning Logic (2 min warning)
   useEffect(() => {
@@ -121,6 +130,8 @@ const AppContent = () => {
 
   const handleLogout = async () => {
     await signOut();
+    setSelectedStudentId(null);
+    setDashboardInitialTab('dashboard');
     setScreen(Screen.LOGIN);
   };
 
@@ -139,23 +150,42 @@ const AppContent = () => {
   };
 
   // Wrapper para navegação padrão para lidar com o histórico
-  const handleNavigate = (targetScreen: Screen, studentId?: string) => {
+  const handleNavigate = (targetScreen: Screen, studentIdParam?: string) => {
     // Se for navegar para telas secundárias manualmente, salva o histórico
     if (targetScreen === Screen.PLAYER || targetScreen === Screen.TWISTERS || targetScreen === Screen.BREATHING || targetScreen === Screen.CHAT || targetScreen === Screen.STUDIO || targetScreen === Screen.STUDENT_DETAIL) {
       if (screen !== Screen.PLAYER && screen !== Screen.TWISTERS && screen !== Screen.BREATHING && screen !== Screen.CHAT && screen !== Screen.STUDIO && screen !== Screen.STUDENT_DETAIL) {
         setPreviousScreen(screen);
       }
     }
+
+    let actualStudentId = studentIdParam;
+    let targetTab: any = null;
+
+    if (studentIdParam && studentIdParam.includes(':')) {
+      [actualStudentId, targetTab] = studentIdParam.split(':');
+    }
+
     if (targetScreen === Screen.TEACHER_DASHBOARD || targetScreen === Screen.ADMIN_DASHBOARD || targetScreen === Screen.ADMIN_SETTINGS) {
-      if (targetScreen === Screen.ADMIN_DASHBOARD || (targetScreen === Screen.TEACHER_DASHBOARD && isAdmin)) setDashboardInitialTab('dashboard');
-      else if (targetScreen === Screen.ADMIN_SETTINGS) setDashboardInitialTab('settings');
-      else if (dashboardInitialTab !== 'reports') setDashboardInitialTab('students');
+      if (actualStudentId) {
+        setDashboardInitialTab(targetTab || 'students');
+      } else if (targetScreen === Screen.ADMIN_DASHBOARD || (targetScreen === Screen.TEACHER_DASHBOARD && isAdmin)) {
+        setDashboardInitialTab('dashboard');
+      } else if (targetScreen === Screen.ADMIN_SETTINGS) {
+        setDashboardInitialTab('settings');
+      } else if (dashboardInitialTab !== 'reports') {
+        setDashboardInitialTab('students');
+      }
 
       setDashboardResetKey(prev => prev + 1);
     }
 
-    if (studentId) {
-      setSelectedStudentId(studentId);
+    // Limpa o ID se não houver um novo, para evitar persistência "suja"
+    if (actualStudentId) {
+      setSelectedStudentId(actualStudentId);
+      setStudentDetailInitialTab(targetTab || 'pedagogy');
+    } else {
+      setSelectedStudentId(null);
+      setStudentDetailInitialTab('pedagogy');
     }
 
     setScreen(targetScreen);
@@ -244,6 +274,7 @@ const AppContent = () => {
             isAdminView={isAdmin}
             onNavigate={handleNavigate}
             onLogout={handleLogout}
+            initialSelectedStudentId={selectedStudentId}
           />
         );
       case Screen.ADMIN_DASHBOARD:
@@ -334,10 +365,17 @@ const AppContent = () => {
       case Screen.CALENDAR:
         return <CalendarScreen onBack={() => setScreen(Screen.TEACHER_DASHBOARD)} />;
       case Screen.STUDENT_DETAIL:
+        if (!selectedStudentId) {
+          return null;
+        }
         return (
           <StudentDetailDashboard
-            studentId={selectedStudentId || ''}
-            onBack={() => setScreen(previousScreen)}
+            studentId={selectedStudentId}
+            initialTab={studentDetailInitialTab}
+            onBack={() => {
+              setSelectedStudentId(null);
+              setScreen(previousScreen);
+            }}
             onNavigate={handleNavigate}
           />
         );

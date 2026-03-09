@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Screen, Module, Vocalize, Course, StudentCourse } from '../types';
-import { MODULES, VOCALIZES, DISABLE_ALL_PLAYERS, MINIMALIST_LOGO_URL, LORENA_AVATAR_URL, PIANO_CHORDS } from '../constants';
+import { ADMIN_EMAILS, MODULES, VOCALIZES, DISABLE_ALL_PLAYERS, MINIMALIST_LOGO_URL, LORENA_AVATAR_URL, PIANO_CHORDS, MUSICALIZACAO_ICON_URL } from '../constants';
 import { PianoChordViewer } from '../components/PianoChordViewer';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
@@ -233,7 +233,7 @@ export const LibraryScreen: React.FC<Props> = ({
   const [isChordFullscreen, setIsChordFullscreen] = useState(false);
   const [activeInlineBtn, setActiveInlineBtn] = useState<HTMLElement | null>(null);
 
-  const isAdmin = user?.role === 'admin' || (user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase()));
+  const isAdmin = user?.role === 'admin' || (user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase().trim()));
 
   const visualizerIntervalRef = useRef<number | null>(null);
 
@@ -262,15 +262,19 @@ export const LibraryScreen: React.FC<Props> = ({
         ]);
 
         if (cRes.data) {
+          const priority = ['canto', 'piano', 'guitarra', 'violao', 'musicalizacao infantil'];
+          const normalize = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
           const sorted = [...cRes.data].sort((a, b) => {
-            const priority = ['canto', 'piano'];
-            const indexA = priority.indexOf(a.slug.toLowerCase());
-            const indexB = priority.indexOf(b.slug.toLowerCase());
+            const normA = normalize(a.nome || a.slug);
+            const normB = normalize(b.nome || b.slug);
+            const indexA = priority.indexOf(normA);
+            const indexB = priority.indexOf(normB);
 
             if (indexA !== -1 && indexB !== -1) return indexA - indexB;
             if (indexA !== -1) return -1;
             if (indexB !== -1) return 1;
-            return 0;
+            return (a.nome || a.slug).localeCompare(b.nome || b.slug);
           });
           setCourses(sorted);
         }
@@ -875,7 +879,7 @@ export const LibraryScreen: React.FC<Props> = ({
       )}
 
       {/* HEADER DO CURSO (CONTEXTO FIXO) */}
-      <header className="pt-8 pb-4 px-6 sticky top-0 bg-[#101622]/95 backdrop-blur-md z-20 border-b border-white/5 shadow-lg">
+      <header className="pb-4 px-6 sticky top-0 bg-[#101622]/95 backdrop-blur-md z-20 border-b border-white/5 shadow-lg" style={{ paddingTop: 'calc(2rem + env(safe-area-inset-top))' }}>
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
             <span className="text-xl">🎓</span>
@@ -1146,7 +1150,7 @@ export const LibraryScreen: React.FC<Props> = ({
                         if (s.includes('bateria')) return '🥁';
                         if (s.includes('oratoria') || s.includes('fala')) return '🗣️';
                         if (s.includes('musicalizacao') || s.includes('infantil')) {
-                          return <img src="/musicalizacao-icon-dark.png" alt="Musicalização" className="w-full h-full object-cover rounded-2xl" />;
+                          return <img src={MUSICALIZACAO_ICON_URL} alt="Musicalização" className="w-full h-full object-cover rounded-2xl" />;
                         }
                         if (s.includes('piano') || s.includes('teclado')) return '🎹';
                         if (s.includes('violino')) return '🎻';

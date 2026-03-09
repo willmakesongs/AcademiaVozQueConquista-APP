@@ -108,7 +108,7 @@ export const TwisterScreen: React.FC<Props> = ({ onBack, initialExerciseId }) =>
     if (!selectedExercise) {
         return (
             <div className="min-h-screen bg-[#101622] pb-24 relative flex flex-col">
-                <header className="pt-8 pb-4 px-6 sticky top-0 bg-[#101622]/95 backdrop-blur-sm z-20 border-b border-white/5">
+                <header className="pb-4 px-6 sticky top-0 bg-[#101622]/95 backdrop-blur-sm z-20 border-b border-white/5" style={{ paddingTop: 'calc(2rem + env(safe-area-inset-top))' }}>
                     <div className="flex items-center gap-3 mb-2">
                         <button
                             onClick={onBack}
@@ -187,7 +187,7 @@ export const TwisterScreen: React.FC<Props> = ({ onBack, initialExerciseId }) =>
     return (
         <div className="min-h-screen bg-[#101622] flex flex-col relative overflow-hidden pb-24">
             {/* Header with Navigation */}
-            <div className="pt-8 px-6 pb-2 flex items-center justify-between z-10 bg-[#101622] border-b border-white/5 shadow-md">
+            <div className="px-6 pb-2 flex items-center justify-between z-10 bg-[#101622] border-b border-white/5 shadow-md" style={{ paddingTop: 'calc(2rem + env(safe-area-inset-top))' }}>
                 <button
                     onClick={() => {
                         // Se foi aberto diretamente via biblioteca (deep link), volta para lá.

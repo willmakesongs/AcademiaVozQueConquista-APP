@@ -3,25 +3,32 @@ import React, { useState, useEffect } from 'react';
 import { Screen, StudentSummary, StudyPlan, LessonReport, AttendanceRecord, Task } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabaseClient';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { AttendanceTracker } from '../components/features/attendance/AttendanceTracker';
 import { NotificationHistory } from '../components/features/notifications/NotificationHistory';
 import { ScheduleManager } from '../components/features/notifications/ScheduleManager';
 import { RoutineManager } from '../components/RoutineManager';
-import { STORAGE_BASE_URL } from '../constants';
+import { ADMIN_EMAILS, STORAGE_BASE_URL } from '../constants';
 
 interface Props {
     studentId: string;
     onBack: () => void;
     onNavigate: (screen: Screen, studentId?: string) => void;
+    initialTab?: 'pedagogy' | 'finance';
 }
 
-export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onNavigate }) => {
+export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onNavigate, initialTab = 'pedagogy' }) => {
     const { user } = useAuth();
-    const isAdmin = user?.role === 'admin' || (user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase().trim()));
+    const isAdmin = user?.role === 'admin' || (user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase().trim()));
 
     const [student, setStudent] = useState<StudentSummary | null>(null);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'pedagogy' | 'finance'>('pedagogy');
+    const [activeTab, setActiveTab] = useState<'pedagogy' | 'finance'>(initialTab);
+
+    useEffect(() => {
+        setActiveTab(initialTab);
+    }, [initialTab]);
 
     // Dados Pedagógicos
     const [studyPlan, setStudyPlan] = useState<StudyPlan | null>(null);
@@ -31,9 +38,11 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
     // States Modais
     const [isReportModalOpen, setIsReportModalOpen] = useState(false);
     const [isAttendanceModalOpen, setIsAttendanceModalOpen] = useState(false);
+    const [selectedAttendance, setSelectedAttendance] = useState<AttendanceRecord | undefined>(undefined);
     const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
     const [isRoutineManagerOpen, setIsRoutineManagerOpen] = useState(false);
     const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
+    const [isFinanceModalOpen, setIsFinanceModalOpen] = useState(false);
     const [saving, setSaving] = useState(false);
 
     // Edição
@@ -58,9 +67,10 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
     const [notificationTitle, setNotificationTitle] = useState('');
     const [notificationBody, setNotificationBody] = useState('');
     const [notificationStatus, setNotificationStatus] = useState<'idle' | 'success' | 'error'>('idle');
+    const [notificationErrorMessage, setNotificationErrorMessage] = useState('');
     const [activeNotificationTab, setActiveNotificationTab] = useState<'send' | 'history' | 'schedule'>('send');
 
-    const fetchStudent = async () => {
+    const fetchStudentData = async () => {
         if (!studentId) {
             console.warn('StudentDetailDashboard: studentId is missing');
             setLoading(false);
@@ -87,7 +97,6 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
                     .select('*')
                     .eq('student_id', studentId)
                     .order('date', { ascending: false })
-                    .limit(20)
             ]);
 
             if (profileRes.data) {
@@ -126,25 +135,37 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
     };
 
     useEffect(() => {
-        fetchStudent();
+        fetchStudentData();
     }, [studentId]);
 
     const handleAddReport = async () => {
         if (!newReportSummary.trim()) return;
+
+        // Captura o estado atual
+        const reportId = editingReport?.id;
+        const summary = newReportSummary;
+        const homework = newReportHomework;
+
+        // Fechamento otimista imediato
+        setIsReportModalOpen(false);
+        setEditingReport(null);
+        setNewReportSummary('');
+        setNewReportHomework('');
+
         setSaving(true);
         try {
-            if (editingReport) {
+            if (reportId) {
                 const { error } = await supabase.from('lesson_reports').update({
-                    summary: newReportSummary,
-                    homework: newReportHomework,
-                }).eq('id', editingReport.id);
+                    summary: summary,
+                    homework: homework,
+                }).eq('id', reportId);
                 if (error) throw error;
             } else {
                 const { error } = await supabase.from('lesson_reports').insert([{
                     student_id: studentId,
                     teacher_id: user?.id,
-                    summary: newReportSummary,
-                    homework: newReportHomework,
+                    summary: summary,
+                    homework: homework,
                     lesson_date: new Date().toISOString().split('T')[0]
                 }]);
                 if (error) throw error;
@@ -158,13 +179,8 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
                 .order('lesson_date', { ascending: false });
             if (data) setLessonReports(data);
 
-            setIsReportModalOpen(false);
-            setEditingReport(null);
-            setNewReportSummary('');
-            setNewReportHomework('');
         } catch (err) {
             console.error('Error saving report:', err);
-            alert('Erro ao salvar relatório');
         } finally {
             setSaving(false);
         }
@@ -184,25 +200,70 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
         }
     };
 
-    const handleSavePlan = async () => {
-        if (!newPlanTitle.trim()) return;
+    const handleDeletePlan = async () => {
+        const idToDelete = studyPlan?.id;
+        if (!idToDelete) return;
+
+        if (!confirm('Deseja excluir esta rotina de estudos?')) return;
+
         setSaving(true);
         try {
-            // Deactivate old plans
-            await supabase
+            const { error } = await supabase
                 .from('student_study_plans')
-                .update({ is_active: false })
-                .eq('student_id', studentId);
-
-            const { error } = await supabase.from('student_study_plans').insert([{
-                student_id: studentId,
-                teacher_id: user?.id,
-                title: newPlanTitle,
-                content: newPlanContent,
-                is_active: true
-            }]);
+                .delete()
+                .eq('id', idToDelete);
 
             if (error) throw error;
+
+            setStudyPlan(null);
+            setIsPlanModalOpen(false);
+            setNewPlanTitle('');
+            setNewPlanContent('');
+        } catch (err) {
+            console.error('Error deleting plan:', err);
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleSavePlan = async () => {
+        if (!newPlanTitle.trim()) return;
+
+        // Captura estado
+        const title = newPlanTitle;
+        const content = newPlanContent;
+        const currentPlanId = studyPlan?.id;
+
+        // Fechamento otimista imediato temporário
+        setIsPlanModalOpen(false);
+        setNewPlanTitle('');
+        setNewPlanContent('');
+
+        setSaving(true);
+        try {
+            if (currentPlanId) {
+                // UPDATE
+                const { error: updateError } = await supabase
+                    .from('student_study_plans')
+                    .update({
+                        title: title,
+                        content: content
+                    })
+                    .eq('id', currentPlanId);
+
+                if (updateError) throw updateError;
+            } else {
+                // INSERT NEW
+                const { error: insertError } = await supabase.from('student_study_plans').insert([{
+                    student_id: studentId,
+                    teacher_id: user?.id,
+                    title: title,
+                    content: content,
+                    is_active: true
+                }]);
+
+                if (insertError) throw insertError;
+            }
 
             // Refresh plan
             const { data } = await supabase
@@ -213,36 +274,34 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
                 .single();
             if (data) setStudyPlan(data);
 
-            setIsPlanModalOpen(false);
-            setNewPlanTitle('');
-            setNewPlanContent('');
         } catch (err) {
             console.error('Error saving plan:', err);
-            alert('Erro ao salvar plano');
         } finally {
             setSaving(false);
         }
     };
 
     const handleSaveFinance = async () => {
+        // Fechamento otimista imediato
+        setIsEditingFinance(false);
         setSaving(true);
         try {
-            const amountVal = parseFloat(editAmount.replace(',', '.'));
+            const amountVal = parseFloat(editAmount.toString().replace(',', '.'));
+            const paymentDayVal = editPaymentDay;
+
             const { error } = await supabase
                 .from('profiles')
                 .update({
                     amount: amountVal,
-                    payment_day: editPaymentDay
+                    payment_day: paymentDayVal
                 })
                 .eq('id', studentId);
 
             if (error) throw error;
 
-            setStudent(prev => prev ? { ...prev, amount: amountVal, paymentDay: editPaymentDay } : null);
-            setIsEditingFinance(false);
+            setStudent(prev => prev ? { ...prev, amount: amountVal, paymentDay: paymentDayVal } : null);
         } catch (err) {
             console.error('Error saving finance info:', err);
-            alert('Erro ao salvar informações financeiras');
         } finally {
             setSaving(false);
         }
@@ -252,27 +311,95 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
         if (!notificationTitle.trim() || !notificationBody.trim()) return;
         setSaving(true);
         setNotificationStatus('idle');
+        setNotificationErrorMessage('');
         try {
-            // Chamada para a Edge Function do Supabase
+            const { data: { session } } = await supabase.auth.getSession();
             const { data, error } = await supabase.functions.invoke('send-notification', {
                 body: {
                     userId: studentId,
                     title: notificationTitle,
                     body: notificationBody,
+                },
+                headers: {
+                    ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {})
                 }
             });
 
-            if (error) throw error;
+            if (error) {
+                console.error('Edge function returned error:', error);
+                let errorMessage = error.message;
+                if (error.context && typeof error.context.json === 'function') {
+                    try {
+                        const errData = await error.context.clone().json();
+                        errorMessage = errData.error || errorMessage;
+                    } catch (e) { }
+                }
+                throw new Error(errorMessage);
+            }
 
             setNotificationStatus('success');
             setNotificationTitle('');
             setNotificationBody('');
-        } catch (err) {
+            setNotificationErrorMessage('');
+        } catch (err: any) {
             console.error('Error sending notification:', err);
             setNotificationStatus('error');
+            const erroMsg = err.message || (err.context && err.context.error) || 'Ocorreu um erro desconhecido.';
+            setNotificationErrorMessage(erroMsg);
         } finally {
             setSaving(false);
         }
+    };
+
+    const downloadAttendancePDF = () => {
+        if (!student || attendanceRecords.length === 0) {
+            alert('Não há registros de presença para este aluno.');
+            return;
+        }
+
+        const doc = new jsPDF();
+
+        // Cabeçalho da VQC
+        doc.setFillColor(26, 32, 44);
+        doc.rect(0, 0, 210, 40, 'F');
+        doc.setTextColor(255, 255, 255);
+        doc.setFontSize(22);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Relatório de Frequência', 105, 18, { align: 'center' });
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'normal');
+        doc.text('Academia de Música Voz Que Conquista', 105, 26, { align: 'center' });
+        doc.text(`Aluno: ${student.name}`, 105, 32, { align: 'center' });
+
+        // Tabela
+        const tableData = attendanceRecords.map(record => {
+            let statusStr = '';
+            if (record.status === 'present') statusStr = 'Presente (P)';
+            else if (record.status === 'absent') statusStr = 'Falta (F)';
+            else if (record.status === 'replaced') statusStr = 'Reposto (R)';
+            else if (record.status === 'to_be_replaced') statusStr = 'A Repor';
+
+            const formattedDate = new Date(record.date).toLocaleDateString('pt-BR');
+
+            return [
+                formattedDate,
+                statusStr,
+                record.notes || '-'
+            ];
+        });
+
+        // @ts-ignore
+        autoTable(doc, {
+            head: [['Data da Aula', 'Status', 'Observações']],
+            body: tableData,
+            startY: 50,
+            theme: 'striped',
+            headStyles: { fillColor: [0, 129, 255], textColor: 255, fontStyle: 'bold' },
+            styles: { fontSize: 10, cellPadding: 4 },
+            alternateRowStyles: { fillColor: [245, 245, 245] },
+        });
+
+        doc.save(`Frequencia_${student.name.replace(/\\s+/g, '_')}.pdf`);
     };
 
     if (loading) {
@@ -295,7 +422,7 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
     return (
         <div className="min-h-screen bg-[#101622] text-white flex flex-col">
             {/* Header */}
-            <div className="p-6 bg-[#1A202C] border-b border-white/5 sticky top-0 z-30">
+            <div className="p-6 bg-[#1A202C] border-b border-white/5 sticky top-0 z-30" style={{ paddingTop: 'calc(1.5rem + env(safe-area-inset-top))' }}>
                 <div className="flex items-center gap-4 mb-6">
                     <button onClick={onBack} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center active:scale-90 transition-all">
                         <span className="material-symbols-rounded">arrow_back</span>
@@ -392,20 +519,36 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
 
                         {/* Seção: Presença */}
                         <div className="bg-[#1A202C] p-6 rounded-3xl border border-white/5">
-                            <h3 className="text-sm font-black uppercase text-gray-500 mb-4 tracking-widest">Controle de Presença</h3>
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-sm font-black uppercase text-gray-500 tracking-widest">Controle de Presença</h3>
+                                <button
+                                    onClick={downloadAttendancePDF}
+                                    className="h-8 px-3 rounded-full bg-[#0081FF]/10 text-[#0081FF] flex items-center justify-center gap-2 active:scale-95 transition-all"
+                                >
+                                    <span className="material-symbols-rounded text-sm">download</span>
+                                    <span className="text-[10px] font-black uppercase">PDF</span>
+                                </button>
+                            </div>
                             <div className="grid grid-cols-4 gap-2">
                                 {attendanceRecords.slice(0, 3).map((record) => (
                                     <div
                                         key={record.id}
+                                        onClick={() => {
+                                            setSelectedAttendance(record);
+                                            setIsAttendanceModalOpen(true);
+                                        }}
                                         className={`h-10 rounded-xl flex items-center justify-center font-black cursor-pointer active:scale-95 transition-all ${record.status === 'present' ? 'bg-[#00C853]/10 text-[#00C853]' :
                                             record.status === 'absent' ? 'bg-[#FF3D00]/10 text-[#FF3D00]' :
                                                 'bg-[#0081FF]/10 text-[#0081FF]'
                                             }`}>
-                                        {record.status === 'present' ? 'P' : record.status === 'absent' ? 'F' : 'R'}
+                                        {record.status === 'present' ? 'P' : record.status === 'absent' ? 'F' : record.status === 'replaced' ? 'R' : 'A'}
                                     </div>
                                 ))}
                                 <button
-                                    onClick={() => setIsAttendanceModalOpen(true)}
+                                    onClick={() => {
+                                        setSelectedAttendance(undefined);
+                                        setIsAttendanceModalOpen(true);
+                                    }}
                                     className="h-10 rounded-xl bg-white/5 flex items-center justify-center text-gray-500 active:scale-95 transition-all"
                                 >
                                     <span className="material-symbols-rounded text-sm">add</span>
@@ -530,21 +673,11 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
                                 {isEditingFinance && (
                                     <div className="flex gap-2 pt-2">
                                         <button
-                                            onClick={() => {
-                                                setEditAmount(String(student.amount || 97));
-                                                setEditPaymentDay(student.paymentDay || '05');
-                                                setIsEditingFinance(false);
-                                            }}
-                                            className="flex-1 py-3 text-xs font-bold text-gray-500 uppercase"
-                                        >
-                                            Cancelar
-                                        </button>
-                                        <button
                                             onClick={handleSaveFinance}
                                             disabled={saving}
                                             className="flex-1 py-3 bg-[#0081FF] text-white rounded-xl text-xs font-black uppercase shadow-lg shadow-[#0081FF]/20"
                                         >
-                                            {saving ? '...' : 'Salvar'}
+                                            {saving ? 'Salvando...' : 'Concluído'}
                                         </button>
                                     </div>
                                 )}
@@ -561,15 +694,15 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
 
             {/* Modal: Novo Relatório */}
             {isReportModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4">
+                <div className="fixed inset-0 z-[200] flex items-end justify-center sm:items-center p-4">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsReportModalOpen(false)}></div>
-                    <div className="relative w-full max-w-lg bg-[#1A202C] rounded-t-[32px] sm:rounded-[32px] p-8 animate-in slide-in-from-bottom-10 duration-300 border-t border-white/10 sm:border border-white/5">
-                        <div className="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-8 sm:hidden"></div>
-                        <h3 className="text-xl font-black mb-6 flex items-center gap-3">
+                    <div className="relative w-full max-w-lg bg-[#1A202C] rounded-t-[32px] sm:rounded-[32px] p-8 animate-in slide-in-from-bottom-10 duration-300 border-t border-white/10 sm:border border-white/5 flex flex-col max-h-[90vh]">
+                        <div className="w-12 h-1.5 bg-white/10 rounded-full mx-auto mb-8 sm:hidden shrink-0"></div>
+                        <h3 className="text-xl font-black mb-6 flex items-center gap-3 shrink-0">
                             <span className="material-symbols-rounded text-[#0081FF]">add_task</span>
                             Relatório de Aula
                         </h3>
-                        <div className="space-y-4">
+                        <div className="space-y-4 overflow-y-auto hide-scrollbar flex-1 pb-4">
                             <div>
                                 <label className="text-[10px] font-black uppercase text-gray-500 mb-2 block">Resumo da Aula</label>
                                 <textarea
@@ -597,14 +730,20 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
                                         <span className="material-symbols-rounded">delete</span>
                                     </button>
                                 )}
-                                <button onClick={() => { setIsReportModalOpen(false); setEditingReport(null); }} className="flex-1 py-4 font-bold text-gray-500 hover:text-white transition-colors">Cancelar</button>
                                 <button
-                                    disabled={saving || !newReportSummary.trim()}
-                                    onClick={handleAddReport}
-                                    className="flex-[2] py-4 bg-[#0081FF] rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-[#0081FF]/20 disabled:opacity-50 flex items-center justify-center gap-2"
+                                    onClick={() => {
+                                        if (newReportSummary.trim()) {
+                                            handleAddReport();
+                                        } else {
+                                            setIsReportModalOpen(false);
+                                            setEditingReport(null);
+                                        }
+                                    }}
+                                    disabled={saving}
+                                    className="flex-1 w-full py-4 text-white font-bold bg-[#0081FF] rounded-2xl flex items-center justify-center gap-2"
                                 >
                                     {saving && <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>}
-                                    {editingReport ? 'Atualizar' : 'Salvar'}
+                                    {saving ? 'Salvando...' : 'Fechar'}
                                 </button>
                             </div>
                         </div>
@@ -614,17 +753,16 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
 
             {/* Modal: Presença (Novo Componente Isolado) */}
             {isAttendanceModalOpen && student && (
-                <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4">
+                <div className="fixed inset-0 z-[200] flex items-end justify-center sm:items-center p-4">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsAttendanceModalOpen(false)}></div>
-                    <div className="relative z-10 w-full max-w-md">
+                    <div className="relative z-10 w-full max-w-md flex flex-col max-h-[90vh]">
                         <AttendanceTracker
                             student={student}
                             course={undefined}
                             teacherId={user?.id || ''}
+                            record={selectedAttendance}
                             onClose={() => setIsAttendanceModalOpen(false)}
-                            onSuccess={() => {
-                                fetchStudent();
-                            }}
+                            onSuccess={() => fetchStudentData()}
                         />
                     </div>
                 </div>
@@ -634,11 +772,11 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
 
             {/* Modal: Editar Plano de Estudos */}
             {isPlanModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4">
+                <div className="fixed inset-0 z-[200] flex items-end justify-center sm:items-center p-4">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsPlanModalOpen(false)}></div>
-                    <div className="relative w-full max-w-lg bg-[#1A202C] rounded-t-[32px] sm:rounded-[32px] p-8 animate-in slide-in-from-bottom-10 duration-300">
-                        <h3 className="text-xl font-black mb-6">Rotina de Estudos</h3>
-                        <div className="space-y-4">
+                    <div className="relative w-full max-w-lg bg-[#1A202C] rounded-t-[32px] sm:rounded-[32px] p-8 animate-in slide-in-from-bottom-10 duration-300 flex flex-col max-h-[90vh]">
+                        <h3 className="text-xl font-black mb-6 shrink-0">Rotina de Estudos</h3>
+                        <div className="space-y-4 overflow-y-auto hide-scrollbar flex-1 pb-4">
                             <div>
                                 <label className="text-[10px] font-black uppercase text-gray-500 mb-2 block">Título do Plano</label>
                                 <input
@@ -659,14 +797,28 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
                                 />
                             </div>
                             <div className="flex gap-4 pt-4">
-                                <button onClick={() => setIsPlanModalOpen(false)} className="flex-1 py-4 font-bold text-gray-500">Voltar</button>
+                                {studyPlan?.id && (
+                                    <button
+                                        onClick={handleDeletePlan}
+                                        disabled={saving}
+                                        className="w-12 h-12 rounded-2xl bg-red-500/10 text-red-500 flex items-center justify-center border border-red-500/20 shrink-0"
+                                    >
+                                        <span className="material-symbols-rounded">delete</span>
+                                    </button>
+                                )}
                                 <button
-                                    disabled={saving || !newPlanTitle.trim()}
-                                    onClick={handleSavePlan}
-                                    className="flex-[2] py-4 bg-[#0081FF] rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2"
+                                    onClick={() => {
+                                        if (newPlanTitle.trim()) {
+                                            handleSavePlan();
+                                        } else {
+                                            setIsPlanModalOpen(false);
+                                        }
+                                    }}
+                                    disabled={saving}
+                                    className="flex-1 py-4 text-white font-bold bg-[#0081FF] rounded-2xl flex items-center justify-center gap-2"
                                 >
                                     {saving && <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>}
-                                    Publicar
+                                    {saving ? 'Salvando...' : 'Salvar Alterações'}
                                 </button>
                             </div>
                         </div>
@@ -676,9 +828,9 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
 
             {/* Modal: Enviar Notificação */}
             {isNotificationModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-end justify-center sm:items-center p-4">
+                <div className="fixed inset-0 z-[200] flex items-end justify-center sm:items-center p-4">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => { setIsNotificationModalOpen(false); setNotificationStatus('idle'); }}></div>
-                    <div className="relative w-full max-w-lg bg-[#1A202C] rounded-t-[32px] sm:rounded-[32px] p-8 animate-in slide-in-from-bottom-10 duration-300 border border-white/5 flex flex-col max-h-[85vh]">
+                    <div className="relative w-full max-w-lg bg-[#1A202C] rounded-t-[32px] sm:rounded-[32px] p-8 animate-in slide-in-from-bottom-10 duration-300 border border-white/5 flex flex-col max-h-[90vh]">
 
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="text-xl font-black flex items-center gap-3">
@@ -734,7 +886,7 @@ export const StudentDetailDashboard: React.FC<Props> = ({ studentId, onBack, onN
                                             <span className="material-symbols-rounded text-4xl text-red-500">error</span>
                                         </div>
                                         <h3 className="text-2xl font-black text-white mb-2">Erro no Envio</h3>
-                                        <p className="text-gray-400 mb-8 max-w-xs mx-auto">Não foi possível enviar a notificação. Verifique se o aluno habilitou as permissões.</p>
+                                        <p className="text-gray-400 mb-8 max-w-xs mx-auto text-sm">{notificationErrorMessage || 'Não foi possível enviar a notificação. Verifique se o aluno habilitou as permissões.'}</p>
                                         <div className="flex gap-4">
                                             <button
                                                 onClick={() => { setIsNotificationModalOpen(false); setNotificationStatus('idle'); }}

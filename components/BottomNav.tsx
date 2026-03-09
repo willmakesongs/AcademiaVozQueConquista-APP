@@ -31,6 +31,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentScreen, onNavigate,
     onNavigate(target);
   }
 
+  const isAdminOrTeacher = role === 'admin' || role === 'teacher';
+
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-[#1A202C] border-t border-gray-800 pb-safe pt-2 px-6 shadow-2xl z-[150] touch-manipulation">
       <div className="flex justify-between items-center h-16 max-w-md mx-auto">
@@ -43,10 +45,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentScreen, onNavigate,
           className={`flex flex-col items-center gap-1 w-16 ${(isBlocked || isInactive) ? 'opacity-30 grayscale' : ''}`}
         >
           <span className={`material-symbols-rounded text-2xl ${getIconColor(role === 'admin' ? Screen.ADMIN_DASHBOARD : (role === 'student' ? Screen.STUDENT_DASHBOARD : Screen.TEACHER_DASHBOARD))}`}>
-            dashboard
+            {isAdminOrTeacher ? 'event_note' : 'dashboard'}
           </span>
           <span className={`text-[10px] font-medium ${getIconColor(role === 'admin' ? Screen.ADMIN_DASHBOARD : (role === 'student' ? Screen.STUDENT_DASHBOARD : Screen.TEACHER_DASHBOARD))}`}>
-            Início
+            {isAdminOrTeacher ? 'Agenda' : 'Início'}
           </span>
         </button>
 
@@ -58,7 +60,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentScreen, onNavigate,
             library_music
           </span>
           <span className={`text-[10px] font-medium ${getIconColor(Screen.LIBRARY)}`}>
-            Academia
+            {isAdminOrTeacher ? 'ACADEMIA' : 'ACADEMIA'}
           </span>
         </button>
 
@@ -83,7 +85,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentScreen, onNavigate,
 
           <span className="material-symbols-rounded text-2xl opacity-0">dashboard</span>
           <span className={`text-[10px] font-medium relative z-10 ${getIconColor(Screen.CHAT)}`}>
-            Lorena IA
+            {isAdminOrTeacher ? 'IA' : 'Lorena IA'}
           </span>
         </button>
 
@@ -92,10 +94,10 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentScreen, onNavigate,
           className={`flex flex-col items-center gap-1 w-16 ${(isBlocked || isOverdue || isInactive) ? 'opacity-30 grayscale' : ''}`}
         >
           <span className={`material-symbols-rounded text-2xl ${getIconColor(Screen.ROUTINE)}`}>
-            calendar_today
+            {isAdminOrTeacher ? 'calendar_month' : 'calendar_today'}
           </span>
           <span className={`text-[10px] font-medium ${getIconColor(Screen.ROUTINE)}`}>
-            Rotina
+            {isAdminOrTeacher ? 'ROTINAS' : 'ROTINAS'}
           </span>
         </button>
 
@@ -107,7 +109,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentScreen, onNavigate,
             person
           </span>
           <span className={`text-[10px] font-medium ${getIconColor(Screen.PROFILE)}`}>
-            Perfil
+            {isAdminOrTeacher ? 'Meu Perfil' : 'Perfil'}
           </span>
         </button>
       </div>

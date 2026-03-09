@@ -59,24 +59,25 @@ serve(async (req: Request) => {
             throw new Error('FIREBASE_SERVICE_ACCOUNT_JSON não configurada.');
         }
 
-        // Função simplificada para obter o Access Token (necessário para FCM v1)
-        // Em um cenário real, você usaria uma lib como google-auth ou assinaria um JWT
-        // Para este boilerplate, assumimos que o usuário usará uma lib ou configuraremos o script de deploy
+        // Generate Access Token using google-auth-library
+        const { JWT } = await import('npm:google-auth-library@9');
 
-        // Exemplo de chamada FCM v1
+        const jwtClient = new JWT({
+            email: serviceAccount.client_email,
+            key: serviceAccount.private_key,
+            scopes: ['https://www.googleapis.com/auth/firebase.messaging']
+        });
+
+        const tokens = await jwtClient.getAccessToken();
+        const accessToken = tokens.token;
+
+        if (!accessToken) {
+            throw new Error('Falha ao obter access token do Google Firebase');
+        }
+
         const fcmUrl = `https://fcm.googleapis.com/v1/projects/${serviceAccount.project_id}/messages:send`;
 
-        // NOTA: Para funcionar 100%, precisamos gerar um JWT do Google.
-        // Como isso exige assinar com a chave privada do Service Account,
-        // o ideal é usar a lib 'https://deno.land/x/google_auth/mod.ts' ou similar no deploy final.
-
-        /* 
-        const auth = new GoogleAuth(serviceAccount);
-        const accessToken = await auth.getAccessToken('https://www.googleapis.com/auth/firebase.messaging');
-        */
-
-        // Por enquanto, salvamos a lógica de disparo
-        const message = {
+        const messagePayload = {
             message: {
                 token: profile.push_token,
                 notification: {
@@ -91,18 +92,60 @@ serve(async (req: Request) => {
             }
         };
 
-        // Simulação de retorno enquanto aguardamos a chave final
-        console.log('Dados prontos para disparo:', message);
+        const fcmResponse = await fetch(fcmUrl, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(messagePayload)
+        });
 
-        // Se chegar aqui com sucesso (simulado por enquanto)
+        const fcmData = await fcmResponse.json();
+
+        if (!fcmResponse.ok) {
+            console.error("Erro do FCM:", fcmData);
+
+            // Check if error is related to an invalid, stale, or unfound token
+            const errorMessage = fcmData.error?.message || '';
+            const isInvalidToken = errorMessage.includes('Requested entity was not found') ||
+                errorMessage.includes('Invalid argument') ||
+                errorMessage.includes('registration token');
+
+            if (isInvalidToken) {
+                console.log(`Token inválido detectado para usuário ${userId}. Removendo do perfil.`);
+                // Clean up the invalid token from the profile
+                await supabase
+                    .from('profiles')
+                    .update({ push_token: null })
+                    .eq('id', userId);
+
+                await supabase
+                    .from('notification_history')
+                    .update({ status: 'failed', metadata: { error: 'Token de notificação inválido ou expirado. O usuário precisa abrir o app novamente para registrar um novo token.' } })
+                    .eq('id', historyItem.id);
+
+                throw new Error('O dispositivo do aluno não está mais registrado para receber notificações. Peça para ele abrir o aplicativo novamente.');
+            } else {
+                await supabase
+                    .from('notification_history')
+                    .update({ status: 'failed', metadata: { error: fcmData } })
+                    .eq('id', historyItem.id);
+
+                throw new Error(`FCM Error: ${errorMessage || 'Erro desconhecido'}`);
+            }
+        }
+
+        console.log('Notificação enviada com sucesso:', fcmData);
+
         await supabase
             .from('notification_history')
-            .update({ status: 'sent' })
+            .update({ status: 'sent', metadata: { fcm_response: fcmData } })
             .eq('id', historyItem.id);
 
         return new Response(JSON.stringify({
             success: true,
-            message: 'Notificação registrada e enviada.',
+            message: 'Notificação enviada com sucesso.',
             history_id: historyItem.id
         }), {
             headers: { ...corsHeaders, "Content-Type": "application/json" }

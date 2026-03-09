@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Screen, Vocalize } from '../types';
-import { VOCALIZES, DISABLE_ALL_PLAYERS, MINIMALIST_LOGO_URL } from '../constants';
+import { ADMIN_EMAILS, VOCALIZES, DISABLE_ALL_PLAYERS, MINIMALIST_LOGO_URL } from '../constants';
 import { usePlayback } from '../contexts/PlaybackContext';
 import { useAuth } from '../contexts/AuthContext';
 import { PitchVisualizer } from '../components/PitchVisualizer';
@@ -14,7 +14,7 @@ interface Props {
 
 export const PlayerScreen: React.FC<Props> = ({ vocalize, onBack, onNext, onPrev }) => {
   const { user, updateGamification } = useAuth();
-  const isAdmin = user?.role === 'admin' || (user?.email && ['lorenapimenteloficial@gmail.com', 'willmakesongs@gmail.com'].includes(user.email.toLowerCase()));
+  const isAdmin = user?.role === 'admin' || (user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase().trim()));
   const scaleIds = [
     'vqc-major-asc', 'vqc-minor-asc', 'vqc-major-desc', 'vqc-minor-desc',
     'vqc-triad-major', 'vqc-triad-minor', 'vqc-octave-jump', 'vqc-arpeggio-maj7',
